@@ -2,24 +2,53 @@
 
 ## Para instalar el entorno de desarrollo se debe:
 
-- Clonar el repositorio:
+- Clone GitHub repo
+```
+git clone https://github.com/dantofema/segmenter.git
+```
+- cd into your project
+```
+cd segmenter
+```
+- create .gitignore
+```
+echo "/node_modules
+/public/hot
+/public/storage
+/storage/*.key
+/vendor
+.env
+.env.backup
+.phpunit.result.cache
+Homestead.json
+Homestead.yaml
+npm-debug.log
+yarn-error.log" > .gitignore
+```
 
+
+- Install Composer Dependencies
 ```
-$ git clone  https://github.com/dantofema/segmenter.git
+composer install
 ```
 
-- Actualizar vía composer las dependencias (tener configurado el proxy de ser necesario)
+- Install NPM Dependencies
+```
+npm install
+```
+- Create a copy of your .env file & configure app
+```
+cp .env.example .env
+```
 
+- Generate an app encryption key
 ```
-$ composer update
+php artisan key:generate
 ```
 
--  Ejecutar servidor de desarrollo
+- Run app in http://localhost:8000
+```
+php artisan serve
+```
 
-```
-$ php artisan serve 
-```
-or
-```
-$ php artisan serve --host domainserver
-```
+From https://devmarketer.io/learn/setup-laravel-project-cloned-github-com/
