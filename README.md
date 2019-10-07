@@ -50,5 +50,14 @@ php artisan key:generate
 ```
 php artisan serve
 ```
+or
+```
+php artisan serve --host=domainserver --port=9999
+```
+
+- Para iniciar con una nueva base de datos debe crearse la base de datos y una vez configurada en .env
+```
+php artisan migrate
+```
 
 From https://devmarketer.io/learn/setup-laravel-project-cloned-github-com/
