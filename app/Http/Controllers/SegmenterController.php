@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Archivo;
 use Illuminate\Http\Request;
 use Auth;
 
@@ -35,7 +36,11 @@ class SegmenterController extends Controller
             $data['c1'] = $request->c1->store('segmentador');
         }
 
+        if (Archivo::cargar($request, Auth::user())) {
 
-        return view('segmenter/index', ['data' => $data]);
+            return view('segmenter/index', ['data' => $data]);
+        } else {
+            echo "Error en el modelo cargar";
+        }
     }
 }
