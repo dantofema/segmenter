@@ -23,6 +23,7 @@
     <div id="app">
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
             <div class="container">
+		@include('flash::message')
                 <a class="navbar-brand text-uppercase" href="{{ url('/') }}">
                     {{ config('app.name', 'Laravel') }}
                 </a>
@@ -33,7 +34,8 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav mr-auto">
-
+			<li><a href="{{ url('/users') }}">Users</a></li>
+			<li><a href="{{ url('/listado') }}">Listado</a></li>
                     </ul>
 
                     <!-- Right Side Of Navbar -->
@@ -76,5 +78,15 @@
             @yield('content')
         </main>
     </div>
+<!-- If using flash()->important() or flash()->overlay(), you'll need to pull in the JS for Twitter Bootstrap. -->
+<script src="//code.jquery.com/jquery.js"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+<script>
+    $('#flash-overlay-modal').modal();
+</script>
+<script>
+$('div.alert').not('.alert-important').delay(3000).fadeOut(350);
+</script>
 </body>
 </html>

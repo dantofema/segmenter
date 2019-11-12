@@ -6,10 +6,26 @@
         <div class="col-md-8">
             @isset($data)
                 <div class="alert alert-primary" role="alert">
-                    <p>El usuario {{Auth::user()->name}} subió los siguientes archivos:</p>
                     <ul>
                         @foreach ($data as $index => $value)
-                            <li>{{$index}} -> {{$value}}</li>
+   @if ($loop->first)
+        This is the first iteration.
+    @endif
+				@if (isset($data['file']))
+                    			<p>El usuario {{Auth::user()->name}} subió los siguientes archivos:</p>
+	                        	@foreach ($value as $index_file => $value_file)
+        	                    		<li>{{$index_file}} -> {{$value_file}}</li>
+					@endforeach
+				@else 
+				
+		                    <p>Y estas otras cosas... :</p>
+                	            <li>{{$index}} -> {{$value}}</li>
+				@endif
+
+    @if ($loop->last)
+        This is the last iteration.<br />
+	The current UNIX timestamp is {{ time() }}.
+    @endif
                         @endforeach
                     </ul>
                 </div>
@@ -21,6 +37,16 @@
                     <div class="col-sm-10">
                         <input type="file" class="form-control-file" id="shp" name="shp">
                     </div>
+		     @if (isset($epsgs))
+                    <div class="col-sm-10">
+                	<select name="epsg_id" class="form-control">
+			     <option></option>
+			        @foreach($epsgs as $id => $epsg)
+					<option value="{{$id}}"> {{$epsg}} </option>
+			        @endforeach
+			    </select>
+		    </div>
+		     @endif
                 </div>
                 <div class="form-group row">
                     <label for="shx" class="col-sm-2 col-form-label ">SHX</label>

@@ -18,9 +18,17 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/inicio', 'HomeController@index')->name('inicio');
-
+Route::resource('/listado', 'ListadoController',['only' => [
+   'index', 'show', 'save'
+]]);
+Route::post('/domicilio/guardar/','Domicilio@save');
 /**
  * Segmenter
  */
 Route::get('/segmentador', 'SegmenterController@index')->name('segmentador');
 Route::post('/segmentador/guardar', 'SegmenterController@store');
+
+Route::get('/', function () {
+    flash('Laravel 6 Flash Message')->success();
+    return view('welcome');
+});
