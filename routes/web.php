@@ -21,7 +21,7 @@ Route::get('/inicio', 'HomeController@index')->name('inicio');
 Route::resource('/listado', 'ListadoController',['only' => [
    'index', 'show', 'save'
 ]]);
-Route::post('/domicilio/guardar/','Domicilio@save');
+Route::post('/domicilio/guardar/','DomicilioController@save');
 /**
  * Segmenter
  */
@@ -32,3 +32,5 @@ Route::get('/', function () {
     flash('Laravel 6 Flash Message')->success();
     return view('welcome');
 });
+
+Route::post('/import', ['as'=>'import', 'uses'=>'Controller@import']);
