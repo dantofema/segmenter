@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Archivo;
 use Illuminate\Http\Request;
 use Auth;
 use Symfony\Component\Process\Process;
@@ -110,7 +111,10 @@ class SegmenterController extends Controller
                 }else{$data['file']['csv_info'] = 'Se Cargo un archivo de formato no esperado!';}
         }
 
-
-        return view('segmenter/index', ['data' => $data,'epsgs'=> $epsgs]);
+        if (Archivo::cargar($request, Auth::user())) {
+            return view('segmenter/index', ['data' => $data,'epsgs'=> $epsgs]);
+        } else {
+            echo "Error en el modelo cargar";
+        }
     }
 }
