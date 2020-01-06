@@ -9,6 +9,7 @@
     "license": "MIT",
     "require": {
         "php": "^7.2",
+        "brackets/craftable": "^5.0",
         "doctrine/dbal": "^2.10",
         "fideloper/proxy": "^4.0",
         "laracasts/flash": "^3.0",
@@ -19,6 +20,7 @@
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.2",
+        "brackets/admin-generator": "^5.0",
         "facade/ignition": "^1.4",
         "fzaninotto/faker": "^1.4",
         "laravel/ui": "^1.0",

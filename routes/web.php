@@ -40,3 +40,29 @@ Route::get('csv_file', 'CsvFile@index');
 Route::get('csv_file/export', 'CsvFile@csv_export')->name('export');
 
 Route::post('csv_file/import', 'CsvFile@csv_import')->name('import');
+
+
+/* Auto-generated admin routes */
+Route::middleware(['auth:' . config('admin-auth.defaults.guard'), 'admin'])->group(static function () {
+    Route::prefix('admin')->namespace('Admin')->name('admin/')->group(static function() {
+        Route::prefix('admin-users')->name('admin-users/')->group(static function() {
+            Route::get('/',                                             'AdminUsersController@index')->name('index');
+            Route::get('/create',                                       'AdminUsersController@create')->name('create');
+            Route::post('/',                                            'AdminUsersController@store')->name('store');
+            Route::get('/{adminUser}/edit',                             'AdminUsersController@edit')->name('edit');
+            Route::post('/{adminUser}',                                 'AdminUsersController@update')->name('update');
+            Route::delete('/{adminUser}',                               'AdminUsersController@destroy')->name('destroy');
+            Route::get('/{adminUser}/resend-activation',                'AdminUsersController@resendActivationEmail')->name('resendActivationEmail');
+        });
+    });
+});
+
+/* Auto-generated admin routes */
+Route::middleware(['auth:' . config('admin-auth.defaults.guard'), 'admin'])->group(static function () {
+    Route::prefix('admin')->namespace('Admin')->name('admin/')->group(static function() {
+        Route::get('/profile',                                      'ProfileController@editProfile')->name('edit-profile');
+        Route::post('/profile',                                     'ProfileController@updateProfile')->name('update-profile');
+        Route::get('/password',                                     'ProfileController@editPassword')->name('edit-password');
+        Route::post('/password',                                    'ProfileController@updatePassword')->name('update-password');
+    });
+});
