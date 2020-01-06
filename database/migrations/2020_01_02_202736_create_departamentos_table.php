@@ -31,6 +31,6 @@ class CreateDepartamentosTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('deparatmento');
+        Schema::dropIfExists('departamento');
     }
 }
