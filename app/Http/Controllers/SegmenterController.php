@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Config;
 use App\MyDB;
 use App\Listado;
+use App\Imports\CsvImport;
+use Maatwebsite\Excel;
 
 class SegmenterController extends Controller
 {
@@ -49,7 +51,7 @@ class SegmenterController extends Controller
 		$data['file']['shp_msg'] .= ". y nombre original: ".$original_name;
                 $original_extension = $request->shp->getClientOriginalExtension();
 		$data['file']['shp_msg'] .= ". y extension  original: ".$original_extension;
-
+		$random=rand();
 		$data['file']['shp'] = $request->shp->storeAs('segmentador', $request->shp->hashName().'.'.$request->shp->getClientOriginalExtension());
 
 		$epsg_id = $request->input('epsg_id');
@@ -86,13 +88,13 @@ class SegmenterController extends Controller
 	    }
         }
 	if ($request->hasFile('shx')) {
-            $data['file']['shx'] = $request->shx->store('segmentador');
+            $data['file']['shx'] = $request->shx->storeAs('segmentador', $request->shp->hashName().'.'.$request->shx->getClientOriginalExtension());
         }
         if ($request->hasFile('prj')) {
-            $data['file']['prj'] = $request->prj->store('segmentador');
+            $data['file']['prj'] = $request->prj->store('segmentador', $request->shp->hashName().'.'.$request->prj->getClientOriginalExtension());
         }
         if ($request->hasFile('dbf')) {
-            $data['file']['dbf'] = $request->dbf->store('segmentador');
+            $data['file']['dbf'] = $request->dbf->store('segmentador', $request->shp->hashName().'.'.$request->dbf->getClientOriginalExtension());
         }
         if ($request->hasFile('c1')) {
             $data['file']['c1'] = $request->c1->store('segmentador');
@@ -102,8 +104,15 @@ class SegmenterController extends Controller
 			$data['file']['csv_info'] = 'Se Cargo un csv.';
 			$process = Process::fromShellCommandline('echo "CSV: $original_name"  >> archivos.log');
 //			$process = Process::fromShellCommandline('
+/*
 			$data['file']['csv_detail'] = Listado::cargar_csv( storage_path().'/app/'.$data['file']['c1']);
 			 return view('listado/all', ['listado' => $data['file']['csv_detail'],'epsgs'=> $epsgs]);
+*/
+			$import = new CsvImport;
+			Excel::import($import,  storage_path().'/app/'.$data['file']['c1']);
+		//	dd('Row count: ' . $import->getRowCount()); 
+			return view('listado/all', ['listado' => $data['file']['csv_detail'],'epsgs'=> $epsgs]);
+
 		}elseif ($original_extension == 'dbf'){
                         $data['file']['csv_info'] = 'Se Cargo un DBF.';
                         $process = Process::fromShellCommandline('echo "DBF: $original_name"  >> archivos.log');

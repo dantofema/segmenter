@@ -34,3 +34,9 @@ Route::get('/', function () {
 });
 
 Route::post('/import', ['as'=>'import', 'uses'=>'Controller@import']);
+
+Route::get('csv_file', 'CsvFile@index');
+
+Route::get('csv_file/export', 'CsvFile@csv_export')->name('export');
+
+Route::post('csv_file/import', 'CsvFile@csv_import')->name('import');

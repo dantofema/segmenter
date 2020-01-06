@@ -14,13 +14,13 @@ class Listado extends Model
 
 	static public function cargar_csv($file){
          $fileD = fopen($file,"r");
-         $column=fgetcsv($fileD,0,"|");
+         $column=fgetcsv($fileD,0,",");
 	 $count=0;
 	  flash('Iniciando lectura de Domicilios...');
          while(!feof($fileD)){
 	  $count++;
 	  $rowData=[];
-          $rowData=fgetcsv($fileD,0,"|");
+          $rowData=fgetcsv($fileD,0,",");
           $inserted_data=[];
 	  if (is_array ($rowData)){
               foreach ($rowData as $key => $value_feature) {
@@ -44,7 +44,7 @@ class Listado extends Model
 	        $listado[]=$item_listado;
 
 	  }
-	  flash('Leido: '.$count.'registros')->overlay();
+	  flash('Leido: '.$count.' registros');
          }
          return $listado;
 	}

@@ -45,8 +45,7 @@ class Domicilio extends Migration
 		$table->string ( 'casa' );
 		$table->string ( 'dpto_habitacion' );
 		$table->string ( 'sector' );
-		$table->string ( 'edificio' ); //edificio
-// entrada, cod_tipo_viv, cod_tipo_vivredef, cod_subt_vivloc, descripcion, descripcion_lado, cod_no_enc, fec_no_enc, motivo_no_enc, fec_alta_viv, fec_ult_mod, cod_postal, orden_recorrido_mza, estado, esta_supervisado, creadoen, chequeadoen, editadoen, borradoen, creado, chequeado, editado, borrado, actualizador, supervisor, usuario, tipo_base, tipo_tarea
+		$table->string ( 'edificio' );
 		$table->string ( 'entrada' );
 		$table->string ( 'cod_tipo_viv' );
 		$table->string ( 'cod_tipo_vivredef' );
@@ -86,5 +85,6 @@ class Domicilio extends Migration
     public function down()
     {
         //
+	 Schema::drop('domicilios');
     }
 }
