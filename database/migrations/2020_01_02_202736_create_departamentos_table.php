@@ -20,8 +20,23 @@ class CreateDepartamentosTable extends Migration
 
         });
      **/
+
+	Schema::create('departamentos', function (Blueprint $table) {
+		$table->bigIncrements('id');
+		$table->string('codigo');
+		$table->string('nombre');
+		$table->integer('provincia_id');
+		$table->date('fecha_desde')->nullable();
+		$table->date('fecha_hasta')->nullable();
+		$table->integer('observacion_id')->nullable();
+		$table->integer('geometria_id')->nullable();
+		$table->foreign('provincia_id')->references('id')->on('provincia')->onDelete('cascade');
+		//$table->timestamps();
+	});
+/*
 	 $sql = file_get_contents(app_path() . '/developer_docs/departamentos.up.sql');
 	 DB::unprepared($sql);
+*/
     }
 
     /**
@@ -31,6 +46,6 @@ class CreateDepartamentosTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('departamento');
+        Schema::dropIfExists('departamentos');
     }
 }
