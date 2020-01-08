@@ -41,6 +41,12 @@ Route::get('csv_file/export', 'CsvFile@csv_export')->name('export');
 
 Route::post('csv_file/import', 'CsvFile@csv_import')->name('import');
 
+Route::get('search_provincia', 'AutoCompleteProvinciaController@index');
+Route::get('autocomplete_provincia', 'AutoCompleteProvinciaController@search');
+Route::get('provincia','ProvinciaController@index');
+
+Route::get('provs-list', 'ProvinciaController@provsList'); 
+Route::get('provs','ProvinciaController@index');
 
 /* Auto-generated admin routes */
 Route::middleware(['auth:' . config('admin-auth.defaults.guard'), 'admin'])->group(static function () {
@@ -66,3 +72,6 @@ Route::middleware(['auth:' . config('admin-auth.defaults.guard'), 'admin'])->gro
         Route::post('/password',                                    'ProfileController@updatePassword')->name('update-password');
     });
 });
+Auth::routes();
+
+Route::get('/home', 'HomeController@index')->name('home');
