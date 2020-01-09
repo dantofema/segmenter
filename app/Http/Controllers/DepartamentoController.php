@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Model\Departamento;
+use App\Model\Provincia;
 use Illuminate\Http\Request;
 
 class DepartamentoController extends Controller
@@ -81,5 +82,13 @@ class DepartamentoController extends Controller
     public function destroy(Departamento $departamento)
     {
         //
+    }
+
+
+    public function list($provincia)
+    {   
+        $deptos = Departamento::where('provincia_id',$provincia)->get();
+        return datatables()->of($deptos)
+            ->make(true);
     }
 }

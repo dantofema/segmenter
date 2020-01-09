@@ -83,9 +83,18 @@ class ProvinciaController extends Controller
      * @param  \App\Model\Provincia  $provincia
      * @return \Illuminate\Http\Response
      */
-    public function show(Provincia $provincia)
+    public function show($provincia)
     {
         //
+//	dd( Provincia::withCount('departamentos')->findOrFail($provincia));
+	return view('provview',['provincia' => Provincia::withCount('departamentos')->findOrFail($provincia)]);
+    }
+
+    public function show_post($provincia)
+    {
+        //
+//	dd( Provincia::withCount('departamentos')->findOrFail($provincia));
+	return view('provinfo',['provincia' => Provincia::withCount('departamentos')->findOrFail($provincia)]);
     }
 
     /**
