@@ -10,7 +10,7 @@ class Provincia extends Model
     protected $table='provincia';
 
     protected $fillable = [
-        'codigo','nombre'
+        'id','codigo','nombre'
     ];
 
      /**

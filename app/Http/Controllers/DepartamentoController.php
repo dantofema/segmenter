@@ -13,9 +13,10 @@ class DepartamentoController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Provincia $provincia = null)
     {
         //
+	return view('deptos', ['provincia' => $provincia]);
     }
 
     /**
@@ -39,16 +40,6 @@ class DepartamentoController extends Controller
         //
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Model\Departamento  $departamento
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Departamento $departamento)
-    {
-        //
-    }
 
     /**
      * Show the form for editing the specified resource.
@@ -85,10 +76,34 @@ class DepartamentoController extends Controller
     }
 
 
-    public function list($provincia)
+    public function list(Provincia $provincia)
     {   
-        $deptos = Departamento::where('provincia_id',$provincia)->get();
+        $deptos = $provincia->departamentos()->withCount('localidades')->get(); //Departamento::where('provincia_id',$provincia)->get(['codigo','nombre']);
+//	dd($deptos);
         return datatables()->of($deptos)
             ->make(true);
     }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  \App\Model\Departamento  $departamento
+     * @return \Illuminate\Http\Response
+     */
+   public function show(Departamento $departamento)
+    {
+        //
+      //dd($departamento);
+        return view('deptoview',['departamento' => $departamento->loadCount('localidades')]);
+    }
+
+    public function show_post(Departamento $departamento)
+    {
+        //
+        //return view('provinfo',['provincia' => Provincia::withCount('departamentos')->findOrFail($provincia)]);
+        return view('deptoinfo',['departamento' => $departamento->loadCount('localidades')]);
+    }
+
+
+
 }

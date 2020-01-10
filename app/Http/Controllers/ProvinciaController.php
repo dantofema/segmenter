@@ -38,18 +38,6 @@ class ProvinciaController extends Controller
          $provsQuery->where('codigo','=',$codigo);
         }
 
-/* 
-        $start_date = (!empty($_GET["start_date"])) ? ($_GET["start_date"]) : ('');
-        $end_date = (!empty($_GET["end_date"])) ? ($_GET["end_date"]) : ('');
- 
-        if($start_date && $end_date){
-     
-         $start_date = date('Y-m-d', strtotime($start_date));
-         $end_date = date('Y-m-d', strtotime($end_date));
-          
-//         $provsQuery->whereRaw("date(provs.created_at) >= '" . $start_date . "' AND date(provs.created_at) <= '" . $end_date . "'");
-        }
-*/
         $provs = $provsQuery->select('*')->withCount('departamentos');
         return datatables()->of($provs)
             ->make(true);
@@ -83,18 +71,18 @@ class ProvinciaController extends Controller
      * @param  \App\Model\Provincia  $provincia
      * @return \Illuminate\Http\Response
      */
-    public function show($provincia)
+    public function show(Provincia $provincia)
     {
         //
-//	dd( Provincia::withCount('departamentos')->findOrFail($provincia));
-	return view('provview',['provincia' => Provincia::withCount('departamentos')->findOrFail($provincia)]);
+//	dd($provincia);
+	return view('provview',['provincia' => $provincia->loadCount('departamentos')]);
     }
 
-    public function show_post($provincia)
+    public function show_post(Provincia $provincia)
     {
         //
-//	dd( Provincia::withCount('departamentos')->findOrFail($provincia));
-	return view('provinfo',['provincia' => Provincia::withCount('departamentos')->findOrFail($provincia)]);
+	//return view('provinfo',['provincia' => Provincia::withCount('departamentos')->findOrFail($provincia)]);
+	return view('provinfo',['provincia' => $provincia->loadCount('departamentos')]);
     }
 
     /**
