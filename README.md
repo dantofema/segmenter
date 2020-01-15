@@ -55,9 +55,16 @@ or
 php artisan serve --host=domainserver --port=9999
 ```
 
-- Para iniciar con una nueva base de datos debe crearse la base de datos y una vez configurada en .env
+- Para iniciar con una nueva base de datos debe crearse la base de datos una vez configurada en .env
 ```
 php artisan migrate
 ```
 
-From https://devmarketer.io/learn/setup-laravel-project-cloned-github-com/
+- Para configurar las tareas programadas de laravel agregamos al cron (vía crontab -e)
+```
+* * * * * cd /home/DCINDEC/mretamozo/segmenter_new && php artisan schedule:run >> /dev/null 2>&1
+```
+
+
+
+* From https://devmarketer.io/learn/setup-laravel-project-cloned-github-com/
