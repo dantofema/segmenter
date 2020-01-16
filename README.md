@@ -65,6 +65,11 @@ php artisan migrate
 * * * * * cd /home/DCINDEC/mretamozo/segmenter_new && php artisan schedule:run >> /dev/null 2>&1
 ```
 
-
+- Se agrego como submodule el proyecto de Segmentacion-CORE, para iniciarlo luego de clonar el repo principal debe ejecutar:
+```
+git submodule init
+git submodule update
+```
+alternativamente puede agregarse la opción ```--recursive````al hacer el clone principal.
 
 * From https://devmarketer.io/learn/setup-laravel-project-cloned-github-com/
