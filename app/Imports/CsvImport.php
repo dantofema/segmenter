@@ -20,6 +20,7 @@ class CsvImport implements ToModel,WithHeadingRow, WithBatchInserts, WithChunkRe
 {
     use Importable,RegistersEventListeners;
     private $rows = 0;
+    private $importedBy;
 
 
     public function __construct(User $importedBy = null)
@@ -37,8 +38,8 @@ class CsvImport implements ToModel,WithHeadingRow, WithBatchInserts, WithChunkRe
 	 ++$this->rows;
 //	die(var_dump($row));
         return new Domicilio([
-            //
 'prov' => $row['prov'],
+'listado_id' => $row['codaglo'] ?? '1',
 'nom_provin' => $row['nom_provin'] ?? $row['nom_provincia'],
 'dpto' => $row['dpto'],
 'nom_dpto' => $row['nom_dpto'],
@@ -64,25 +65,25 @@ class CsvImport implements ToModel,WithHeadingRow, WithBatchInserts, WithChunkRe
 'sector' => $row['sector'],
 'edificio' => $row['edificio'],
 'entrada' => $row['entrada'],
-'tipoviv' => $row['tipoviv'] ?? $row['piso'],
-'descrip' => $row['descrip'] ?? $row['piso'],
-'descripl' => $row['descripl'] ?? $row['piso'],
-'cpostal' => $row['cpostal'] ?? $row['piso'],
-'ordrecmza' => $row['ordrecmza'] ?? $row['piso'],
+'tipoviv' => $row['tipovivredef'] ?? $row['tipoviv'] ?? null,
+'descrip' => $row['descrip'] ?? null,
+'descripl' => $row['descripl'] ?? null,
+'cpostal' => $row['cpostal'] ?? null,
+'ordrecmza' => $row['ordrecmza'] ?? null,
 'fechrele' => $row['fechrele'] ?? null,
-'tiptarea' => $row['tiptarea']
+'tiptarea' => $row['tiptarea'] ?? null
         ]);
     }
 
 
     public function batchSize(): int
     {
-        return 600;
+        return 1000;
     }
 
     public function chunkSize(): int
     {
-        return 600;
+        return 1000;
     }
 
     public function getCsvSettings(): array
@@ -113,6 +114,20 @@ class CsvImport implements ToModel,WithHeadingRow, WithBatchInserts, WithChunkRe
 	echo 'Rows: '.$this->rows;
     }
 
+    /**
+     * Get the tags that should be assigned to the job.
+     *
+     * @return array
+     */
+    public function tags()
+    {	
+	if ($this->importedBy){
+	        return ['csv', 'user:'.$this->importedBy];
+	}
+	else{
+	        return ['csv', 'sin user'];
+	}
+    }
 
 }
 

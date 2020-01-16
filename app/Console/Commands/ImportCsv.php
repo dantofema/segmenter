@@ -12,7 +12,7 @@ class ImportCsv extends Command
      *
      * @var string
      */
-    protected $signature = 'import:excel';
+    protected $signature = 'import:excel CSV Domiciios';
 
     /**
      * The console command description.
