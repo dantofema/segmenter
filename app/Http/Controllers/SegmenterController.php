@@ -15,32 +15,35 @@ use Maatwebsite\Excel;
 
 class SegmenterController extends Controller
 {
+  private $epsgs=[];
 
     public function __construct()
     {
         $this->middleware('auth');
+        $this->epsgs['22182']='EPSG:22182';
+        $this->epsgs['22183']='EPSG:22183';
+        $this->epsgs['22184']='EPSG:22184';
+        $this->epsgs['22185']='EPSG:22185';
+        $this->epsgs['22186']='EPSG:22186';
+        $this->epsgs['22187']='EPSG:22187';
     }
 
     public function index()
     {
-  $epsgs['22182']='EPSG:22182';
-  $epsgs['22183']='EPSG:22183';
-  $epsgs['22184']='EPSG:22184';
-  $epsgs['22185']='EPSG:22185';
-  $epsgs['22186']='EPSG:22186';
-  $epsgs['22187']='EPSG:22187';
-	$data['whoami'] = exec('whoami');
-        return view('segmenter/index',['data' => $data,'epsgs'=> $epsgs]);
+	    $data['whoami'] = exec('whoami');
+        dd(auth()->user());
+        return view('segmenter/index',['data' => $data,'epsgs'=> $this->epsgs]);
     }
     public function store(Request $request)
     {
-  $epsgs['22182']='EPSG:22182';
+/*  $epsgs['22182']='EPSG:22182';
   $epsgs['22183']='EPSG:22183';
   $epsgs['22184']='EPSG:22184';
   $epsgs['22185']='EPSG:22185';
   $epsgs['22186']='EPSG:22186';
   $epsgs['22187']='EPSG:22187';
-
+*/      
+        dd($request->session()->all());
         $data = [];
         if ($request->hasFile('shp')) {
             if ($request->file('shp')->isValid()) {
