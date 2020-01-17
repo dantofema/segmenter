@@ -45,15 +45,26 @@ Route::get('search_provincia', 'AutoCompleteProvinciaController@index');
 Route::get('autocomplete_provincia', 'AutoCompleteProvinciaController@search');
 Route::get('provincia','ProvinciaController@index');
 
+// ---------- PROVINCIAS --------
 Route::get('provs-list', 'ProvinciaController@provsList'); 
 Route::get('provs','ProvinciaController@index');
 Route::get('prov/{provincia}','ProvinciaController@show');
 Route::post('prov/{provincia}','ProvinciaController@show_post');
 
+// ---------- DEPARTAMENTOS --------
+
 Route::get('prov/deptos/{provincia?}','DepartamentoController@index');
 Route::get('prov/list/{provincia}','DepartamentoController@list');
 Route::get('depto/{departamento}','DepartamentoController@show');
 Route::post('depto/{departamento}','DepartamentoController@show_post');
+
+// ---------- AGLOMERADOS --------
+Route::get('aglos-list', 'AglomeradoController@aglosList');
+Route::get('aglos','AglomeradoController@index');
+Route::get('aglo/{aglomerado}','AglomeradoController@show');
+Route::post('aglo/{aglomerado}','AglomeradoController@show_post');
+
+
 
 Route::get('mail', 'MailCsvController@index');
 
