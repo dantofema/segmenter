@@ -47,11 +47,15 @@ Route::get('provincia','ProvinciaController@index');
 
 Route::get('provs-list', 'ProvinciaController@provsList'); 
 Route::get('provs','ProvinciaController@index');
-Route::get('prov/{id}','ProvinciaController@show');
-Route::post('prov/{id}','ProvinciaController@show_post');
+Route::get('prov/{provincia}','ProvinciaController@show');
+Route::post('prov/{provincia}','ProvinciaController@show_post');
 
-Route::get('prov/{id}/deptos','DepartamentoController@list');
+Route::get('prov/deptos/{provincia?}','DepartamentoController@index');
+Route::get('prov/list/{provincia}','DepartamentoController@list');
+Route::get('depto/{departamento}','DepartamentoController@show');
+Route::post('depto/{departamento}','DepartamentoController@show_post');
 
+Route::get('mail', 'MailCsvController@index');
 
 /* Auto-generated admin routes */
 Route::middleware(['auth:' . config('admin-auth.defaults.guard'), 'admin'])->group(static function () {
