@@ -31,73 +31,74 @@ class SegmenterController extends Controller
     public function index()
     {
 	    $data['whoami'] = exec('whoami');
-        dd(auth()->user());
         return view('segmenter/index',['data' => $data,'epsgs'=> $this->epsgs]);
     }
     public function store(Request $request)
     {
-/*  $epsgs['22182']='EPSG:22182';
-  $epsgs['22183']='EPSG:22183';
-  $epsgs['22184']='EPSG:22184';
-  $epsgs['22185']='EPSG:22185';
-  $epsgs['22186']='EPSG:22186';
-  $epsgs['22187']='EPSG:22187';
-*/      
-        dd($request->session()->all());
+        $AppUser= Auth::user();
         $data = [];
+        $epsg_id = $request->input('epsg_id');
         if ($request->hasFile('shp')) {
             if ($request->file('shp')->isValid()) {
-		$data['file']['shp_msg'] = "Subió un shape ";
-	        $extension = $request->shp->extension();
-		$data['file']['shp_msg'] .= " con extenión: ".$extension;
-	        $original_name = $request->shp->getClientOriginalName();
-		$data['file']['shp_msg'] .= ". y nombre original: ".$original_name;
+        		$data['file']['shp_msg'] = "Subió un shape ";
+	            $extension = $request->shp->extension();
+        		$data['file']['shp_msg'] .= " con extensión: ".$extension;
+	            $original_name = $request->shp->getClientOriginalName();
+        		$data['file']['shp_msg'] .= ". y nombre original: ".$original_name;
                 $original_extension = $request->shp->getClientOriginalExtension();
-		$data['file']['shp_msg'] .= ". y extension  original: ".$original_extension;
-		$random=rand();
-		$data['file']['shp'] = $request->shp->storeAs('segmentador', $request->shp->hashName().'.'.$request->shp->getClientOriginalExtension());
-
-		$epsg_id = $request->input('epsg_id');
+    		    $data['file']['shp_msg'] .= ". y extension  original: ".$original_extension;
+                $original_name = $request->shp->getClientOriginalName();
 
 		if ($original_extension == 'shp'){
+    	    $random_name=$request->shp->hashName();
+   	    	$data['file']['shp'] = $request->shp->storeAs('segmentador', $random_name.'.'.$request->shp->getClientOriginalExtension());
+        	if ($request->hasFile('shx')) {
+                $data['file']['shx'] = $request->shx->storeAs('segmentador', $random_name.'.'.$request->shx->getClientOriginalExtension());
+            }
+            if ($request->hasFile('prj')) {
+                $data['file']['prj'] = $request->prj->storeAs('segmentador', $random_name.'.'.$request->prj->getClientOriginalExtension());
+            }
+            if ($request->hasFile('dbf')) {
+                $data['file']['dbf'] = $request->dbf->storeAs('segmentador', $random_name.'.'.$request->dbf->getClientOriginalExtension());
+            }
+
 			$process = Process::fromShellCommandline('echo "$name"  >> archivos.log');
-			$process->run(null, ['name' => "Archivo: ".$request->shp->getClientOriginalName()." subido como: ".$data['file']['shp']]);
-//	            exec("echo 'Archivo: ".$request->shp->getClientOriginalName()." subido como: ".$data['file']['shp']."' >> archivos.log");
+			$process->run(null, ['name' => "Archivo: ".$original_name." subido como: ".$data['file']['shp']]);
+			
+            $codaglo = substr($original_name,1,4);
+			MyDB::createSchema($codaglo);
+			
+            $processOGR2OGR = Process::fromShellCommandline('/usr/bin/ogr2ogr -f "PostgreSQL" PG:"dbname=$db host=$host user=$user active_schema=e$e00 password=$pass" --config PG_USE_COPY YES -lco OVERWRITE=YES --config OGR_TRUNCATE YES -dsco PRELUDE_STATEMENTS="SET client_encoding TO latin1;CREATE SCHEMA IF NOT EXISTS e$e00;" -dsco active_schema=e$e00 -lco PRECISION=NO -lco SCHEMA=e$e00 -s_srs epsg:$epsg -t_srs epsg:$epsg -nln arc -skipfailures -update -overwrite $file ');
+            $processOGR2OGR->setTimeout(3600);
+			$processOGR2OGR->run(null, ['epsg' => $epsg_id, 'file' => storage_path().'/app/'.$data['file']['shp'],'e00'=>$codaglo,'db'=>Config::get('database.connections.pgsql.database'),'host'=>Config::get('database.connections.pgsql.host'),'user'=>Config::get('database.connections.pgsql.username'),'pass'=>Config::get('database.connections.pgsql.password')]);
 
 		}elseif ($original_extension == 'e00'){
+    	    $random_name=$request->shp->hashName();
+   	    	$data['file']['shp'] = $request->shp->storeAs('segmentador', $random_name.'.'.$request->shp->getClientOriginalExtension());
+//            dd($request);
 			$process = Process::fromShellCommandline('echo "E00: $name"  >> archivos.log');
-			$process->run(null, ['name' => "Archivo: ".$request->shp->getClientOriginalName()." subido como: ".$data['file']['shp']]);
+			$process->run(null, ['name' => "Archivo: ".$original_name." subido como: ".$data['file']['shp']]);
 //			$processOGR = new Process(['/usr/bin/ogrinfo']);
 			$processOGR = Process::fromShellCommandline('/usr/bin/ogrinfo -so $file ARC');
 			$processOGR->run(null, ['file' => storage_path().'/app/'.$data['file']['shp']]);
 			$data['file']['e00_info'] = $processOGR->getOutput();
 
 			$codaglo = substr($original_name,1,4);
-//			$data['file']['schema'] = DB::statement('CREATE SCHEMA IF NOT EXISTS e'.$codaglo);			
-		
 			MyDB::createSchema($codaglo);
-			//Debugbar::info("Codaglo: ".$codaglo);
-
 			
-			$processOGR2OGR_lab = Process::fromShellCommandline('/usr/bin/ogr2ogr -f "PostgreSQL" PG:"dbname=$db host=$host user=$user active_schema=e$e00" --config PG_USE_COPY YES -lco OVERWRITE=YES --config OGR_TRUNCATE YES -dsco PRELUDE_STATEMENTS="SET client_encoding TO latin1;CREATE SCHEMA IF NOT EXISTS e$e00;" -dsco active_schema=e$e00 -lco PRECISION=NO -lco SCHEMA=e$e00 -s_srs epsg:$epsg -t_srs epsg:$epsg -skipfailures -update -append $file LAB');
-			$processOGR2OGR_lab->run(null, ['epsg' => $epsg_id, 'file' => storage_path().'/app/'.$data['file']['shp'],'e00'=>$codaglo,'db'=>Config::get('database.connections.pgsql.database'),'host'=>Config::get('database.connections.pgsql.host'),'user'=>Config::get('database.connections.pgsql.username')]);
+			$processOGR2OGR = Process::fromShellCommandline('/usr/bin/ogr2ogr -f "PostgreSQL" PG:"dbname=$db host=$host user=$user active_schema=e$e00 password=$pass" --config PG_USE_COPY YES -lco OVERWRITE=YES --config OGR_TRUNCATE YES -dsco PRELUDE_STATEMENTS="SET client_encoding TO latin1;CREATE SCHEMA IF NOT EXISTS e$e00;" -dsco active_schema=e$e00 -lco PRECISION=NO -lco SCHEMA=e$e00 -s_srs epsg:$epsg -t_srs epsg:$epsg -skipfailures -update -overwrite $file ARC');
+            $processOGR2OGR->setTimeout(3600);
+			$processOGR2OGR->run(null, ['epsg' => $epsg_id, 'file' => storage_path().'/app/'.$data['file']['shp'],'e00'=>$codaglo,'db'=>Config::get('database.connections.pgsql.database'),'host'=>Config::get('database.connections.pgsql.host'),'user'=>Config::get('database.connections.pgsql.username'),'pass'=>Config::get('database.connections.pgsql.password')]);
+			
+            $processOGR2OGR_lab = Process::fromShellCommandline('/usr/bin/ogr2ogr -f "PostgreSQL" PG:"dbname=$db host=$host user=$user active_schema=e$e00 password=$pass" --config PG_USE_COPY YES -lco OVERWRITE=YES --config OGR_TRUNCATE YES -dsco PRELUDE_STATEMENTS="SET client_encoding TO latin1;CREATE SCHEMA IF NOT EXISTS e$e00;" -dsco active_schema=e$e00 -lco PRECISION=NO -lco SCHEMA=e$e00 -s_srs epsg:$epsg -t_srs epsg:$epsg -skipfailures -update -overwrite $file LAB');
+            $processOGR2OGR_lab->setTimeout(3600);
+			$processOGR2OGR_lab->run(null, ['epsg' => $epsg_id, 'file' => storage_path().'/app/'.$data['file']['shp'],'e00'=>$codaglo,'db'=>Config::get('database.connections.pgsql.database'),'host'=>Config::get('database.connections.pgsql.host'),'user'=>Config::get('database.connections.pgsql.username'),'pass'=>Config::get('database.connections.pgsql.password')]);
 			$data['file']['ogr2ogr_lab'] = $processOGR2OGR_lab->getErrorOutput().'<br />'.$processOGR2OGR_lab->getOutput();
 
-			$processOGR2OGR = Process::fromShellCommandline('/usr/bin/ogr2ogr -f "PostgreSQL" PG:"dbname=$db host=$host user=$user active_schema=e$e00" --config PG_USE_COPY YES -lco OVERWRITE=YES --config OGR_TRUNCATE YES -dsco PRELUDE_STATEMENTS="SET client_encoding TO latin1;CREATE SCHEMA IF NOT EXISTS e$e00;" -dsco active_schema=e$e00 -lco PRECISION=NO -lco SCHEMA=e$e00 -s_srs epsg:$epsg -t_srs epsg:$epsg -skipfailures -update -append $file ARC');
-			$processOGR2OGR->run(null, ['epsg' => $epsg_id, 'file' => storage_path().'/app/'.$data['file']['shp'],'e00'=>$codaglo,'db'=>Config::get('database.connections.pgsql.database'),'host'=>Config::get('database.connections.pgsql.host'),'user'=>Config::get('database.connections.pgsql.username')]);
 			$data['file']['ogr2ogr'] = $processOGR2OGR->getErrorOutput().'<br />'.$processOGR2OGR->getOutput();
 
 		}
 	    }
-        }
-	if ($request->hasFile('shx')) {
-            $data['file']['shx'] = $request->shx->storeAs('segmentador', $request->shp->hashName().'.'.$request->shx->getClientOriginalExtension());
-        }
-        if ($request->hasFile('prj')) {
-            $data['file']['prj'] = $request->prj->store('segmentador', $request->shp->hashName().'.'.$request->prj->getClientOriginalExtension());
-        }
-        if ($request->hasFile('dbf')) {
-            $data['file']['dbf'] = $request->dbf->store('segmentador', $request->shp->hashName().'.'.$request->dbf->getClientOriginalExtension());
         }
         if ($request->hasFile('c1')) {
             $data['file']['c1'] = $request->c1->store('segmentador');
@@ -124,7 +125,7 @@ class SegmenterController extends Controller
         }
 
         if (Archivo::cargar($request, Auth::user())) {
-            return view('segmenter/index', ['data' => $data,'epsgs'=> $epsgs]);
+            return view('segmenter/index', ['data' => $data,'epsgs'=> $this->epsgs]);
         } else {
             echo "Error en el modelo cargar";
         }
