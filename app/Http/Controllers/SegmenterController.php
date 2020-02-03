@@ -50,7 +50,7 @@ class SegmenterController extends Controller
                 $original_name = $request->shp->getClientOriginalName();
 
 		if ($original_extension == 'shp'){
-    	    $random_name=$request->shp->hashName();
+    	    $random_name='t_'.$request->shp->hashName();
    	    	$data['file']['shp'] = $request->shp->storeAs('segmentador', $random_name.'.'.$request->shp->getClientOriginalExtension());
         	if ($request->hasFile('shx')) {
                 $data['file']['shx'] = $request->shx->storeAs('segmentador', $random_name.'.'.$request->shx->getClientOriginalExtension());
@@ -73,7 +73,7 @@ class SegmenterController extends Controller
 			$processOGR2OGR->run(null, ['epsg' => $epsg_id, 'file' => storage_path().'/app/'.$data['file']['shp'],'e00'=>$codaglo,'db'=>Config::get('database.connections.pgsql.database'),'host'=>Config::get('database.connections.pgsql.host'),'user'=>Config::get('database.connections.pgsql.username'),'pass'=>Config::get('database.connections.pgsql.password')]);
 
 		}elseif ($original_extension == 'e00'){
-    	    $random_name=$request->shp->hashName();
+    	    $random_name='t_'.$request->shp->hashName();
    	    	$data['file']['shp'] = $request->shp->storeAs('segmentador', $random_name.'.'.$request->shp->getClientOriginalExtension());
 //            dd($request);
 			$process = Process::fromShellCommandline('echo "E00: $name"  >> archivos.log');
@@ -101,13 +101,14 @@ class SegmenterController extends Controller
 	    }
         }
         if ($request->hasFile('c1')) {
-            $data['file']['c1'] = $request->c1->store('segmentador');
-	    $original_extension = $request->c1->getClientOriginalExtension();
-	    $original_name = $request->c1->getClientOriginalName();
-		if ($original_extension == 'csv'){
+          $random_name='t_'.$request->c1->hashName();
+          $data['file']['c1'] = $request->c1->storeAs('segmentador', $random_name); //.'.'.$request->c1->getClientOriginalExtension());
+	      $original_extension = $request->c1->getClientOriginalExtension();
+	      $original_name = $request->c1->getClientOriginalName();
+		  if ($original_extension == 'csv'){
 			$data['file']['csv_info'] = 'Se Cargo un csv.';
-			$process = Process::fromShellCommandline('echo "CSV: $original_name"  >> archivos.log');
-//			$process = Process::fromShellCommandline('
+            $process = Process::fromShellCommandline('echo "C1 CSV: $name"  >> archivos.log');
+   			$process->run(null, ['name' => "Archivo: ".$original_name." subido como: ".$data['file']['c1']]);
 /*
 			$data['file']['csv_detail'] = Listado::cargar_csv( storage_path().'/app/'.$data['file']['c1']);
 			 return view('listado/all', ['listado' => $data['file']['csv_detail'],'epsgs'=> $epsgs]);
@@ -117,11 +118,21 @@ class SegmenterController extends Controller
 		//	dd('Row count: ' . $import->getRowCount()); 
 			return view('listado/all', ['listado' => $data['file']['csv_detail'],'epsgs'=> $epsgs]);
 
-		}elseif ($original_extension == 'dbf'){
+		   }elseif ($original_extension == 'dbf'){
                         $data['file']['csv_info'] = 'Se Cargo un DBF.';
-                        $process = Process::fromShellCommandline('echo "DBF: $original_name"  >> archivos.log');
-//                      $process = Process::fromShellCommandline('
-                }else{$data['file']['csv_info'] = 'Se Cargo un archivo de formato no esperado!';}
+			            $processLog = Process::fromShellCommandline('echo "C1 DBF: $name"  >> archivos.log');
+            			$processLog->run(null, ['name' => "Archivo: ".$original_name." subido como: ".$data['file']['c1']]);
+            			$process = Process::fromShellCommandline('pgdbf -s latin1 $c1_dbf_file | psql -h $host -U $user laravel');
+            			$process->run(null, ['c1_dbf_file' => storage_path().'/app/'.$data['file']['c1'],'db'=>Config::get('database.connections.pgsql.database'),'host'=>Config::get('database.connections.pgsql.host'),'user'=>Config::get('database.connections.pgsql.username'),'PGPASSWORD'=>Config::get('database.connections.pgsql.password')]);
+                        // executes after the command finishes
+                        if (!$process->isSuccessful()) {
+                   //         throw new ProcessFailedException($process);
+                                dd($process);
+                        }else{
+                            MyDB::moverDBF(storage_path().'/app/'.$data['file']['c1'],$codaglo);
+                        }
+                    
+           }else{$data['file']['csv_info'] = 'Se Cargo un archivo de formato no esperado!';}
         }
 
         if (Archivo::cargar($request, Auth::user())) {
