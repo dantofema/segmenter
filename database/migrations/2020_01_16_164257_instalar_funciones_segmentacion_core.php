@@ -40,5 +40,7 @@ class InstalarFuncionesSegmentacionCore extends Migration
     public function down()
     {
         //
+        Eloquent::unguard();
+        DB::statement('DROP SCHEMA IF EXISTS indec CASCADE');
     }
 }
