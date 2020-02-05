@@ -37,7 +37,7 @@ class SegmenterController extends Controller
     {
         $AppUser= Auth::user();
         $data = [];
-        $epsg_id = $request->input('epsg_id');
+        $epsg_id = $request->input('epsg_id')?$request->input('epsg_id'):'22183';
         if ($request->hasFile('shp')) {
             if ($request->file('shp')->isValid()) {
         		$data['file']['shp_msg'] = "Subió un shape ";
@@ -106,6 +106,7 @@ class SegmenterController extends Controller
           $data['file']['c1'] = $request->c1->storeAs('segmentador', $random_name); //.'.'.$request->c1->getClientOriginalExtension());
 	      $original_extension = $request->c1->getClientOriginalExtension();
 	      $original_name = $request->c1->getClientOriginalName();
+          $codaglo=isset($codaglo)?$codaglo:substr($original_name,-8,4);
 		  if ($original_extension == 'csv'){
 			$data['file']['csv_info'] = 'Se Cargo un csv.';
             $process = Process::fromShellCommandline('echo "C1 CSV: $name"  >> archivos.log');
