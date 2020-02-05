@@ -97,6 +97,7 @@ class SegmenterController extends Controller
 
 			$data['file']['ogr2ogr'] = $processOGR2OGR->getErrorOutput().'<br />'.$processOGR2OGR->getOutput();
 
+			MyDB::agregarsegisegd($codaglo);
 		}
 	    }
         }

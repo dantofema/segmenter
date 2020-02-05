@@ -29,6 +29,11 @@ class MyDB extends Model
 	}
 
     
+	public static function agregarsegisegd($esquema)
+	{
+	 DB::statement('ALTER TABLE e'.$esquema.'.arc ADD COLUMN segi integer;');
+	 DB::statement('ALTER TABLE e'.$esquema.'.arc ADD COLUMN segd integer;');
+	}
 
 
 }
