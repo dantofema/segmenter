@@ -124,7 +124,7 @@ class SegmenterController extends Controller
                         $data['file']['csv_info'] = 'Se Cargo un DBF.';
 			            $processLog = Process::fromShellCommandline('echo "C1 DBF: $name"  >> archivos.log');
             			$processLog->run(null, ['name' => "Archivo: ".$original_name." subido como: ".$data['file']['c1']]);
-            			$process = Process::fromShellCommandline('pgdbf -s latin1 $c1_dbf_file | psql -h $host -U $user laravel');
+            			$process = Process::fromShellCommandline('pgdbf -s latin1 $c1_dbf_file | psql -h $host -U $user $db');
             			$process->run(null, ['c1_dbf_file' => storage_path().'/app/'.$data['file']['c1'],'db'=>Config::get('database.connections.pgsql.database'),'host'=>Config::get('database.connections.pgsql.host'),'user'=>Config::get('database.connections.pgsql.username'),'PGPASSWORD'=>Config::get('database.connections.pgsql.password')]);
                         // executes after the command finishes
                         if (!$process->isSuccessful()) {
