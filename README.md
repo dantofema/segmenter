@@ -46,14 +46,6 @@ cp .env.example .env
 php artisan key:generate
 ```
 
-- Run app in http://localhost:8000
-```
-php artisan serve
-```
-or
-```
-php artisan serve --host=domainserver --port=9999
-```
 
 - Para iniciar con una nueva base de datos debe crearse la base de datos una vez configurada en .env
 ```
@@ -71,5 +63,14 @@ git submodule init
 git submodule update
 ```
 alternativamente puede agregarse la opción ```--recursive````al hacer el clone principal.
+
+- Run app in http://localhost:8000
+```
+php artisan serve
+```
+or
+```
+php artisan serve --host=domainserver --port=9999
+```
 
 * From https://devmarketer.io/learn/setup-laravel-project-cloned-github-com/
