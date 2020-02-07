@@ -62,7 +62,7 @@ php artisan migrate
 git submodule init
 git submodule update
 ```
-alternativamente puede agregarse la opción ```--recursive````al hacer el clone principal.
+alternativamente puede agregarse la opción ```--recursive``` al hacer el clone principal.
 
 - Run app in http://localhost:8000
 ```
