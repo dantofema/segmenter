@@ -1,6 +1,19 @@
 <div class="container">
     Segmentación para el aglomerado ({{ $aglomerado->codigo }}) 
-<b>    {{ $aglomerado->nombre }} </b><br />
+    <b> {{ $aglomerado->nombre }} </b><br />
+     @if($carto)
+        La cartografía esta cargada.
+     @else
+        NO esta cargda la cartografía.
+     @endif 
+    <br />
+     @if($listado)
+        El Listado esta cargado.
+     @else
+        NO esta cargado el listado.
+     @endif 
+    <br />
+
     Seleccione el Radio a segmentar: <br />
     Departamento: <br />
     Fracción: <br />

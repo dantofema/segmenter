@@ -140,15 +140,23 @@
                   { searchable: false, visible: false, data: 'id', name: 'id' },
                   { data: 'codigo', name: 'codigo' },
                   { data: 'nombre', name: 'nombre' },
-                  { searchable: false , data: 'carto', name: 'carto' },
-                  { searchable: false , data: 'listado', name: 'listado' },
+                  { searchable: false , data: function ( row, type, val, meta ) {if (row.carto==1) { return '<img width=15 height=15 src=images/ok.png alt=OK>'}else{return '<img width=15 height=15 src=images/no.png alt=NO>'}}, name: 'carto' },
+                  { searchable: false , data: function ( row, type, val, meta ) {if (row.listado==1) { return '<img width=15 height=15 src=images/ok.png alt=OK>'}else{return '<img width=15 height=15 src=images/no.png alt=NO>'}}, name: 'listado' },
                   { searchable: false , data: function ( row, type, val, meta ) {
-                                if ((row.codigo == '0777') || (row.codigo == '0001')) {
-                                    var botones =  '<input type="button" class="segmentar btn btn-primary" value="Segmentar"/>';
-                                    botones = botones+ '<input type="button" disabled=true class="muestrear btn btn-primary" value="Muestrear"/>';
+                                var botones='';
+                                if ((row.carto==1) && (row.listado == 1)) {
+                                    botones =  '<input type="button" class="segmentar btn btn-primary" value="Segmentar"/> ';
+                                    botones = botones+ '<input type="button" disabled=true class="muestrear btn btn-primary" value="Muestrear"/> ';
                                     return botones;
-                                }else{return '';}
-                            }},
+                                }else{
+                                       if ((row.carto!=1)) {
+                                         botones = botones+ '<input type="button" disabled=true class="cargar btn btn-primary" value="Cargar Carto"/> ';
+                                        }
+                                       if ((row.listado!==1)) {
+                                         botones = botones+ '<input type="button" disabled=true class="cargar btn btn-primary" value="Cargar Listado"/> ';
+                                        }
+                                    return botones;
+                            }}},
                ],
       });
     table.on('click', '.segmentar', function () {

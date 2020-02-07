@@ -27,6 +27,11 @@ class AglomeradoController extends Controller
         }
 
         $aglos = $aglosQuery->select('*', \DB::raw('false carto,false listado'));
+        foreach ($aglos as $aglo) {
+            $aglo->carto=$aglomerado->Carto;
+            $aglo->listado=$aglomerado->Listado;
+        }
+
         return datatables()->of($aglos)
 /*            ->addColumn('actions', function ($data) {
                 return "<a class='btn btn-xs btn-success' href='/segmentar/$data->id'>Segmentar</a>";
@@ -78,7 +83,9 @@ class AglomeradoController extends Controller
     public function segmenta_post(Aglomerado $aglomerado)
     {
         //
-        return view('aglo.segmenta',['aglomerado' => $aglomerado]);
+        $carto=$aglomerado->Carto;
+        $listado=$aglomerado->Listado;
+        return view('aglo.segmenta',['aglomerado' => $aglomerado,'carto' => $carto,'listado'=>$listado]);
     }
 
     /**
