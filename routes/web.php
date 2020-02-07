@@ -60,6 +60,7 @@ Route::post('depto/{departamento}','DepartamentoController@show_post');
 
 // ---------- AGLOMERADOS --------
 Route::get('aglos-list', 'AglomeradoController@aglosList');
+Route::post('aglos-list', 'AglomeradoController@aglosList');
 Route::get('aglos','AglomeradoController@index');
 Route::get('aglo/{aglomerado}','AglomeradoController@show');
 Route::post('aglo/{aglomerado}','AglomeradoController@show_post');

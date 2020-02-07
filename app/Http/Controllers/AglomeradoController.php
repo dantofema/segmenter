@@ -21,9 +21,8 @@ class AglomeradoController extends Controller
     public function aglosList()
     {
         $aglosQuery = Aglomerado::query();
-        $codigo = (!empty($_GET["codigo"])) ? ($_GET["codigo"]) : ('');
+        $codigo = (!empty($_REQUEST["codigo"])) ? ($_REQUEST["codigo"]) : ('');
         if($codigo){
-
          $aglosQuery->where('codigo','=',$codigo);
         }
 

@@ -3,6 +3,7 @@
 namespace App\Model;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Schema;
 
 class Aglomerado extends Model
 {
@@ -18,8 +19,12 @@ class Aglomerado extends Model
     public function getCartoAttribute($value)
     {
         /// do your magic
-
-        return false;
+        if (Schema::hasTable('e'.$this->codigo.'.arc')) {
+            //
+            return true;
+        }else{
+            return false;
+        }
     }
 
     public function getListadoAttribute($value)
@@ -27,5 +32,15 @@ class Aglomerado extends Model
         /// do your magic
 
         return false;
+    }
+
+    public function setCartoAtribute()
+    {
+        if (Schema::hasTable('e'.$this->codigo.'.arc')) {
+            $this->attributes['carto'] = true;
+        }else{
+            $this->attributes['carto'] = false;
+        }
+
     }
 }
