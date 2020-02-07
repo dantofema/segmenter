@@ -3,5 +3,5 @@
 @section('title', 'Aglomerado {{ $aglomerado->nombre }}')
 
 @section('content')
-     @include('agloinfo')
+     @include('aglo.info')
 @stop

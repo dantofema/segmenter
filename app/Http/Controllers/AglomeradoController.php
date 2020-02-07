@@ -66,13 +66,19 @@ class AglomeradoController extends Controller
     public function show(Aglomerado $aglomerado)
     {
         //
-        return view('agloview',['aglomerado' => $aglomerado]);
+        return view('aglo.view',['aglomerado' => $aglomerado]);
     }
     
     public function show_post(Aglomerado $aglomerado)
     {
         //
-        return view('agloinfo',['aglomerado' => $aglomerado]);
+        return view('aglo.info',['aglomerado' => $aglomerado]);
+    }
+
+    public function segmenta_post(Aglomerado $aglomerado)
+    {
+        //
+        return view('aglo.segmenta',['aglomerado' => $aglomerado]);
     }
 
     /**

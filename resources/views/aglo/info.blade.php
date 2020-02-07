@@ -2,7 +2,7 @@
     i am the code {{ $aglomerado->codigo }} <br />
     I am the aglo {{ $aglomerado->nombre }} <br />
 <div/>
-@if($aglomerado->codigo =='30')         
+@if($aglomerado->codigo =='0125')         
 <div>
 <svg id="C30" class="mapa" xmlns="http://www.w3.org/2000/svg" height="500" width="450" viewBox="0 0 450 500">
    <path fill="#B698BE" clave_unica="18" tipo="Provincia" nombre="Corrientes" id="C30-18" class="provincia interactiva" codigo="18" d=" M 389 50 L 387 51 389 58 386 68 366 80 362 85 361 92 368 104 367 108 364 107 360 101 354 99 348 92 345 86 345 73 339 71 336 67 334 58 326 53 323 55 319 55 310 48 301 44 300 42 295 43 291 42 284 46 278 46 271 49 268 49 263 46 254 47 253 49 247 52 246 55 243 55 238 60 234 59 232 59 232 58 229 58 227 55 220 54 214 56 208 56 205 59 204 66 201 64 200 57 196 56 194 50 194 47 198 46 202 42 202 33 208 21 206 10 201 2 202 -0 450 -0 450 0 448 2 440 8 435 11 430 10 424 14 419 20 418 32 409 37 404 45 394 50 Z" stroke-width="1" style="z-index: 999;"></path>
