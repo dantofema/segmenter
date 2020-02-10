@@ -13,7 +13,7 @@ class DepartamentoController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Provincia $provincia = null)
+    public function index(Provincia $provincia = 8)
     {
         //
 	return view('deptos', ['provincia' => $provincia]);
