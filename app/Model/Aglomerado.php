@@ -17,6 +17,17 @@ class Aglomerado extends Model
     public $carto;
     public $listado;
 
+     /**
+      * Relación con Localidades, un Aglomerados tiene una o varias localidad.
+      *
+      */
+
+     public function localidades()
+     {
+         return $this->hasMany('App\Model\Localidad');
+     }
+
+
     public function getCartoAttribute($value)
     {
         //return true;

@@ -16,4 +16,14 @@ class Localidad extends Model
     {
         return $this->belongsToMany('App\Departamento','localidad_departamento');
     }
+
+    /**
+     * Relación con Aglomerados, una localidad pertenece a un aglomerado.
+     *
+     */
+
+    public function aglomerado()
+    {
+        return $this->belongsTo('App\Model\Aglomerado');
+    }
 }

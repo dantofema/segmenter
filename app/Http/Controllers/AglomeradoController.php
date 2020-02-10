@@ -25,13 +25,8 @@ class AglomeradoController extends Controller
         if($codigo){
          $aglosQuery->where('codigo','=',$codigo);
         }
-
-        $aglos = $aglosQuery->select('*', \DB::raw('false carto,false listado'));
-        foreach ($aglos as $aglo) {
-            $aglo->carto=$aglomerado->Carto;
-            $aglo->listado=$aglomerado->Listado;
-        }
-
+        $aglos = $aglosQuery->select('*', \DB::raw('false carto,false listado'))
+                            ->withCount(['localidades']);
         return datatables()->of($aglos)
 /*            ->addColumn('actions', function ($data) {
                 return "<a class='btn btn-xs btn-success' href='/segmentar/$data->id'>Segmentar</a>";

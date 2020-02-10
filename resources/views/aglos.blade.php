@@ -83,6 +83,7 @@
              <th>Id</th>
              <th>Codigo</th>
              <th>Nombre</th>
+             <th>Num. de localidades</th>
              <th>Cartografía</th>
              <th>Listado</th>
              <th></th>
@@ -140,6 +141,7 @@
                   { searchable: false, visible: false, data: 'id', name: 'id' },
                   { data: 'codigo', name: 'codigo' },
                   { data: 'nombre', name: 'nombre' },
+                  { data: 'localidades_count', name: 'localidades_count' },
                   { searchable: false , data: function ( row, type, val, meta ) {if (row.carto==1) { return '<img width=15 height=15 src=images/ok.png alt=OK>'}else{return '<img width=15 height=15 src=images/no.png alt=NO>'}}, name: 'carto' },
                   { searchable: false , data: function ( row, type, val, meta ) {if (row.listado==1) { return '<img width=15 height=15 src=images/ok.png alt=OK>'}else{return '<img width=15 height=15 src=images/no.png alt=NO>'}}, name: 'listado' },
                   { searchable: false , data: function ( row, type, val, meta ) {
