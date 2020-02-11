@@ -30,7 +30,8 @@ class SegmenterController extends Controller
 
     public function index()
     {
-	    $data['whoami'] = exec('whoami');
+//	    $data['whoami'] = exec('whoami');
+        $data=null;
         return view('segmenter/index',['data' => $data,'epsgs'=> $this->epsgs]);
     }
     public function store(Request $request)
