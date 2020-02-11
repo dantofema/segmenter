@@ -18,6 +18,14 @@
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+
+<!--link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+  <link  href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css" rel="stylesheet">
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.js"></script>
+  <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+  <link  href="https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css" rel="stylesheet    ">
+  <script src="https://cdn.datatables.net/buttons/1.6.1/js/dataTables.buttons.min.js"></script-->
+  
 </head>
 <body>
     <div id="app">
@@ -36,6 +44,9 @@
                     <ul class="navbar-nav mr-auto">
 			<li><a href="{{ url('/users') }}"> Users </a> </li>
 			<li><a href="{{ url('/listado') }}"> Listado </a> </li>
+			<li><a href="{{ url('/provs') }}"> Provincias </a> </li>
+			<li><a href="{{ url('/segmentador') }}"> Cargar </a> </li>
+			<li><a href="{{ url('/aglos') }}"> Aglomerados </a> </li>
                     </ul>
 
                     <!-- Right Side Of Navbar -->
@@ -79,8 +90,6 @@
         </main>
     </div>
 <!-- If using flash()->important() or flash()->overlay(), you'll need to pull in the JS for Twitter Bootstrap. -->
-<script src="//code.jquery.com/jquery.js"></script>
-<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 
 <script>
     $('#flash-overlay-modal').modal();
@@ -88,5 +97,6 @@
 <script>
 $('div.alert').not('.alert-important').delay(3000).fadeOut(350);
 </script>
+           @yield ('footer_scripts')
 </body>
 </html>

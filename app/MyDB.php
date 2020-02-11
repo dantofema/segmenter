@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class MyDB extends Model
 {
@@ -19,10 +20,18 @@ class MyDB extends Model
          $esquema = 'e'.$esquema;
              DB::beginTransaction();
              DB::unprepared('ALTER TABLE '.$tabla.' SET SCHEMA '.$esquema);
-             DB::unprepared('DROP TABLE IF EXISTS '.$esquema.'.listado');
+             DB::unprepared('DROP TABLE IF EXISTS '.$esquema.'.listado CASCADE');
              DB::unprepared('ALTER TABLE '.$esquema.'.'.$tabla.' RENAME TO listado');
              DB::unprepared('ALTER TABLE '.$esquema.'.listado ADD COLUMN id serial');
-             DB::unprepared('ALTER TABLE '.$esquema.'.listado RENAME cod_tipo_v TO tipoviv');
+             if (! Schema::hasColumn($esquema.'.listado' , 'tipoviv')){
+                 if (Schema::hasColumn($esquema.'.listado' , 'cod_tipo_v')){
+                     DB::unprepared('ALTER TABLE '.$esquema.'.listado RENAME cod_tipo_v TO tipoviv');
+                 }elseif (Schema::hasColumn($esquema.'.listado' , 'cod_viv')){
+                            DB::unprepared('ALTER TABLE '.$esquema.'.listado RENAME cod_viv TO tipoviv');
+                     }else{
+                         DB::statement('ALTER TABLE '.$esquema.'.listado ADD COLUMN tipoviv text;');
+                     }
+             }
              DB::unprepared("Select indec.cargar_conteos('".$esquema."')");
              DB::unprepared("Select indec.generar_adyacencias('".$esquema."')");
              DB::commit();

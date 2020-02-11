@@ -12,6 +12,7 @@ use App\MyDB;
 use App\Listado;
 use App\Imports\CsvImport;
 use Maatwebsite\Excel;
+use App\Model\Aglomerado;
 
 class SegmenterController extends Controller
 {
@@ -129,10 +130,12 @@ class SegmenterController extends Controller
             			$process->run(null, ['c1_dbf_file' => storage_path().'/app/'.$data['file']['c1'],'db'=>Config::get('database.connections.pgsql.database'),'host'=>Config::get('database.connections.pgsql.host'),'user'=>Config::get('database.connections.pgsql.username'),'PGPASSWORD'=>Config::get('database.connections.pgsql.password')]);
                         // executes after the command finishes
                         if (!$process->isSuccessful()) {
-                   //         throw new ProcessFailedException($process);
                                 dd($process);
                         }else{
                             MyDB::moverDBF(storage_path().'/app/'.$data['file']['c1'],$codaglo);
+                            $aglo= Aglomerado::where('codigo', $codaglo)
+                                ->first();
+                            $data['file']['radios']=$aglo->radios;
                         }
                     
            }else{$data['file']['csv_info'] = 'Se Cargo un archivo de formato no esperado!';}

@@ -35,7 +35,11 @@
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav mr-auto">
 			<li><a href="{{ url('/users') }}"> Users </a> </li>
+			<li><a href="{{ url('/provs') }}"> Provincias </a> </li>
+			<li><a href="{{ url('/segmentador') }}"> Cargar </a> </li>
+			<li><a href="{{ url('/aglos') }}"> Aglomerados </a> </li>
 			<li><a href="{{ url('/listado') }}"> Listado </a> </li>
+
                     </ul>
 
                     <!-- Right Side Of Navbar -->

@@ -74,9 +74,18 @@ class Aglomerado extends Model
     public function getRadiosAttribute()
     {
         $radios= null;
-        if ($this->Carto==1){
+        if ($this->Listado==1){
             $radios = DB::table('e'.$this->codigo.'.listado')
-                                ->select(DB::raw("prov||dpto||codloc||frac||radio as link,'('||dpto||') '||nom_dpto||': '||frac||' '||radio as nombre,count(*) as vivs"))
+                                ->select(DB::raw("prov||dpto||codloc||frac||radio as link,'('||dpto||') '||nom_dpto||': '||frac||' '||radio as nombre,
+             count(distinct mza) as cant_mzas,
+             count(*) as vivs,
+             count(CASE WHEN tipoviv='A' THEN 1 else null END) as vivs_a,
+             count(CASE WHEN (tipoviv='B1' or tipoviv='B2') THEN 1 else null END) as vivs_b,
+             count(CASE WHEN tipoviv='CA/CP' THEN 1 else null END) as vivs_c,
+             count(CASE WHEN tipoviv='CO' THEN 1 else null END) as vivs_co,
+             count(CASE WHEN (tipoviv='D'  or tipoviv='J'  or tipoviv='VE' )THEN 1 else null END) as vivs_djve,
+             count(CASE WHEN tipoviv='' THEN 1 else null END) as vivs_unclas
+    "))
                                 ->groupBy('prov','dpto','codloc','nom_dpto','frac','radio')
                                 ->get();
         }
