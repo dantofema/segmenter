@@ -5,6 +5,7 @@ namespace App\Model;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
 
 class Aglomerado extends Model
 {
@@ -69,4 +70,19 @@ class Aglomerado extends Model
         }
 
     }
+
+    public function getRadiosAttribute()
+    {
+        $radios= null;
+        if ($this->Carto==1){
+            $radios = DB::table('e'.$this->codigo.'.listado')
+                                ->select(DB::raw("prov||dpto||codloc||frac||radio as link,'('||dpto||') '||nom_dpto||': '||frac||' '||radio as nombre,count(*) as vivs"))
+                                ->groupBy('prov','dpto','codloc','nom_dpto','frac','radio')
+                                ->get();
+        }
+        return $radios;
+
+    }
+
+
 }
