@@ -80,7 +80,8 @@ class AglomeradoController extends Controller
         //
         $carto=$aglomerado->Carto;
         $listado=$aglomerado->Listado;
-        return view('aglo.segmenta',['aglomerado' => $aglomerado,'carto' => $carto,'listado'=>$listado]);
+        $radios=$aglomerado->Radios;
+        return view('aglo.segmenta',['aglomerado' => $aglomerado,'carto' => $carto,'listado'=>$listado,'radios'=>$radios]);
     }
 
     /**
