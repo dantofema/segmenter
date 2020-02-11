@@ -7,26 +7,20 @@
             @isset($data)
                 <div class="alert alert-primary" role="alert">
                     <ul>
-                        @foreach ($data as $index => $value)
-   @if ($loop->first)
-        This is the first iteration.
-    @endif
+      @foreach ($data as $index => $value)
 				@if (isset($data['file']))
-                    			<p>El usuario {{Auth::user()->name}} subió los siguientes archivos:</p>
-	                        	@foreach ($value as $index_file => $value_file)
-        	                    		<li>{{$index_file}} -> {{$value_file}}</li>
-					@endforeach
+                   	<p>El usuario {{Auth::user()->name}} subió los siguientes archivos:</p>
+                       	@foreach ($value as $index_file => $value_file)
+  	                    		<li>{{$index_file}} -> {{$value_file}}</li>
+           				@endforeach
 				@else 
-				
-		                    <p>Y estas otras cosas... :</p>
-                	            <li>{{$index}} -> {{$value}}</li>
+	                    <p>Y estas otras cosas... :</p>
+               	        <li>{{$index}} -> {{$value}}</li>
 				@endif
-
-    @if ($loop->last)
-        This is the last iteration.<br />
-	The current UNIX timestamp is {{ time() }}.
-    @endif
-                        @endforeach
+        @if ($loop->last)
+        	The current UNIX timestamp is {{ time() }}. {{ date('Y-m-d H:m:s') }} UTC.
+        @endif
+     @endforeach
                     </ul>
                 </div>
             @endisset
