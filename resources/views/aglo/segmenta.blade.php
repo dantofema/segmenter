@@ -16,8 +16,8 @@
 
 <div class="form-horizontal">
   <div class="form-group">
-    <label class="control-label col-sm-2" for="radio">Seleccione el Radio a segmentar:</label>
-    <div class="col-sm-4">
+    <label class="control-label" for="radio">Seleccione el Radio a segmentar:</label>
+    <div class="">
         <select name="radios" class="form-control" >
             @foreach($radios as $radio)
                 <option value="{{ $radio->link }}">{{ trim($radio->nombre) }} - Viviendas: {{ trim($radio->vivs) }}</option>
@@ -26,20 +26,20 @@
     </div>
   </div>
   <div class="form-group">
-    <div class="col-sm-10">
-    <label class="control-label col-sm-4" for="radio">Cant. Desada de viviendas:</label>
+    <div class="">
+    <label class="control-label " for="radio">Cant. Desada de viviendas:</label>
     <input id="vivis_deaseadas" type="integer" maxlength=3 size=3 name="vivs_deseadas" value="20"><br />
     </div>
-    <div class="col-sm-10">
-    <label class="control-label col-sm-4" for="radio">Cant. Maxima deseada:</label>
+    <div class="">
+    <label class="control-label " for="radio">Cant. Maxima deseada:</label>
     <input id="vivis_max" type="integer" maxlength=3 size=3 name="vivs_max" value="20"><br />
     </div>
-    <div class="col-sm-10">
-    <label class="control-label col-sm-4" for="radio">Cant. Mínima deseada:</label>
+    <div class="">
+    <label class="control-label " for="radio">Cant. Mínima deseada:</label>
     <input id="vivis_min" type="integer" maxlength=3 size=3 name="vivs_min" value="20"><br />
     </div>
-    <div class="col-sm-10">
-    <label class="control-label col-sm-4" for="radio">Mantener manzana indivisible para manznaas con menos de x viviendas:</label>
+    <div class="">
+    <label class="control-label " for="radio">Mantener manzana indivisible para manznaas con menos de x viviendas:</label>
     <input id="mzas_indivisibles" type="integer" maxlength=3 size=3 name="mzas_indivisibles" value="20">
     </div>
  </div>
