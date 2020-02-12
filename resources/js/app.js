@@ -30,3 +30,10 @@ Vue.component('example-component', require('./components/ExampleComponent.vue').
 const app = new Vue({
     el: '#app',
 });
+
+/**
+ * Add use jquery ?
+ *
+ */
+import $ from 'jquery';
+window.$ = window.jQuery = $;
