@@ -85,6 +85,6 @@ class Domicilio extends Migration
     public function down()
     {
         //
-	 Schema::drop('domicilios');
+	 Schema::dropIfExists('domicilios');
     }
 }

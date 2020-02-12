@@ -14,7 +14,7 @@ class AlterDomiciliosTable extends Migration
     public function up()
     {
         //
-	if (Schema::hasTable('domicilios')) {
+	if ( Schema::hasTable('domicilios')) {
     //
 Schema::table('domicilios', function (Blueprint $table) {
 	$table->dropColumn('piso'); 
@@ -69,5 +69,7 @@ Schema::table('domicilios', function (Blueprint $table) {
     public function down()
     {
         //
+         Schema::dropIfExists('domicilios');
+
     }
 }

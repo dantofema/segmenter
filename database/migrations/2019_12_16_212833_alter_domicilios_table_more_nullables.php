@@ -14,9 +14,11 @@ class AlterDomiciliosTableMoreNullables extends Migration
     public function up()
     {
         //
-        Schema::table('domicilios', function (Blueprint $table) {
-            $table->string('fechrele')->nullable()->change();;
-        });
+	    if ( Schema::hasTable('domicilios')) {
+            Schema::table('domicilios', function (Blueprint $table) {
+                $table->string('fechrele')->nullable()->change();;
+            });
+        }
     }
 
     /**
