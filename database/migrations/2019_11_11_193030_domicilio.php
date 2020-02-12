@@ -85,6 +85,7 @@ class Domicilio extends Migration
     public function down()
     {
         //
+     DB::unprepared('DROP SEQUENCE if exists domicilios_id_seq cascade;');
 	 Schema::dropIfExists('domicilios');
     }
 }
