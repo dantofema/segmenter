@@ -39,7 +39,7 @@
     <input id="vivis_min" type="integer" maxlength=3 size=3 name="vivs_min" value="20"><br />
     </div>
     <div class="">
-    <label class="control-label " for="radio">Mantener manzana indivisible para manznaas con menos de x viviendas:</label>
+    <label class="control-label " for="radio">Mantener manzana indivisible para manzanas con menos de x viviendas:</label>
     <input id="mzas_indivisibles" type="integer" maxlength=3 size=3 name="mzas_indivisibles" value="20">
     </div>
  </div>
