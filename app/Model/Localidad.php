@@ -19,11 +19,22 @@ class Localidad extends Model
 
     /**
      * Relación con Aglomerados, una localidad pertenece a un aglomerado.
-     *
      */
 
     public function aglomerado()
     {
         return $this->belongsTo('App\Model\Aglomerado');
     }
+
+    /**
+     * Relación con Radios, una localidad tiene muchos radios (que pueden estas en mas de una localidad?).
+     */
+
+    public function radios()
+    {
+        return $this->belongsToMany('App\Model\Radio', 'radio_localidad');
+    }
+
+
+
 }
