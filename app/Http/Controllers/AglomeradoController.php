@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Model\Aglomerado;
 use Illuminate\Http\Request;
+use App\MyDB;
 
 class AglomeradoController extends Controller
 {
@@ -14,7 +15,7 @@ class AglomeradoController extends Controller
      */
     public function index()
     {
-        //
+        // Listado de Aglomerados.
         return view('aglos');
     }
 
@@ -82,6 +83,18 @@ class AglomeradoController extends Controller
         $listado=$aglomerado->Listado;
         $radios=$aglomerado->Radios;
         return view('aglo.segmenta',['aglomerado' => $aglomerado,'carto' => $carto,'listado'=>$listado,'radios'=>$radios]);
+    }
+
+
+    public function run_segmentar_equilibrado(Request $request, Aglomerado $aglomerado)
+    {
+        if(MyDB::segmentar_equilibrado($aglomerado->codigo,$request['vivs_deseadas'])) {
+
+            $segmentacion=MyDB::segmentar_equilibrado_ver($aglomerado->codigo);
+            return datatables()->collection($segmentacion)->toJson();
+            //return view('segmentacion.info',['segmentacion'=>$segmentacion]);
+        };
+        
     }
 
     /**

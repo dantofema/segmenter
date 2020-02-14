@@ -66,6 +66,7 @@ Route::get('aglo/{aglomerado}','AglomeradoController@show');
 Route::post('aglo/{aglomerado}','AglomeradoController@show_post');
 Route::post('aglo-segmenta/{aglomerado}','AglomeradoController@segmenta_post');
 Route::get('aglo-segmenta/{aglomerado}','AglomeradoController@segmenta_post');
+Route::post('aglo-segmenta-run/{aglomerado}','AglomeradoController@run_segmentar_equilibrado');
 
 
 

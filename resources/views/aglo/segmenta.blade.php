@@ -15,6 +15,10 @@
     <br />
 
 <div class="form-horizontal">
+<h3>{{ $aglomerado->nombre }} </h3>
+<form action="/aglo-segmenta-run/{{ $aglomerado->id }}" method="POST" enctype="multipart/form-data">
+                @csrf
+
   <div class="form-group">
     <label class="control-label" for="radio">Seleccione el Radio a segmentar:</label>
     <div class="">
@@ -28,15 +32,15 @@
   <div class="form-group">
     <div class="">
     <label class="control-label " for="radio">Cant. Desada de viviendas:</label>
-    <input id="vivis_deaseadas" type="integer" maxlength=3 size=3 name="vivs_deseadas" value="20"><br />
+    <input id="vivs_deaseadas" type="integer" maxlength=3 size=3 name="vivs_deseadas" value="20"><br />
     </div>
     <div class="">
     <label class="control-label " for="radio">Cant. Maxima deseada:</label>
-    <input id="vivis_max" type="integer" maxlength=3 size=3 name="vivs_max" value="20"><br />
+    <input id="vivs_max" type="integer" maxlength=3 size=3 name="vivs_max" value="20"><br />
     </div>
     <div class="">
     <label class="control-label " for="radio">Cant. Mínima deseada:</label>
-    <input id="vivis_min" type="integer" maxlength=3 size=3 name="vivs_min" value="20"><br />
+    <input id="vivs_min" type="integer" maxlength=3 size=3 name="vivs_min" value="20"><br />
     </div>
     <div class="">
     <label class="control-label " for="radio">Mantener manzana indivisible para manzanas con menos de x viviendas:</label>
@@ -44,8 +48,9 @@
     </div>
  </div>
  <div class="mx-auto">
- <input type="button" class="segmentar btn btn-primary" value="Segmentar">
+ <input type="submit" class="segmentar btn btn-primary" value="Segmentar">
  </div>
+</form>
 </div>
 
 

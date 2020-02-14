@@ -44,5 +44,25 @@ class MyDB extends Model
 	 DB::statement('ALTER TABLE e'.$esquema.'.arc ADD COLUMN segd integer;');
 	}
 
+	public static function segmentar_equilibrado($esquema,$deseado = 10)
+	{
+    	return DB::statement("SELECT indec.segmentar_equilibrado('e".$esquema."',".$deseado.");");
+
+     // SQL retrun: Select segmento_id,count(*) FROM e0777.segmentacion GROUP BY segmento_id;
+	}
+	
+    public static function segmentar_equilibrado_ver($esquema)
+	{
+        $esquema = 'e'.$esquema;
+    	return DB::select('
+                        SELECT segmento_id,count(*) vivs,count(distinct mza) as mzas,array_agg(distinct prov||dpto||codloc||frac||radio||mza||lado),count(distinct lado) as lados FROM 
+                        '.$esquema.'.
+                        segmentacion s JOIN 
+                        '.$esquema.'.
+                        listado l ON s.listado_id=l.id 
+                        GROUP BY segmento_id 
+                        ORDER BY array_agg(mza),count(*), segmento_id ;');
+     // SQL retrun: 
+        }
 
 }
