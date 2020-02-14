@@ -28,4 +28,12 @@ class Departamento extends Model
         return $this->belongsToMany('App\Model\Localidad','localidad_departamento');
     }
 
+    /**
+     * Relación con Fracciones, un departamentos puede tener muchas fracciones.
+     */
+    public function fracciones()
+    {
+        return $this->hasMany('App\Model\Fraccion');
+    }
+
 }
