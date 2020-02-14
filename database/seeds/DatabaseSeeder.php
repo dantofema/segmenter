@@ -12,14 +12,17 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         $this->call([
-		UsersTableSeeder::class,
+    		UsersTableSeeder::class,
 	        // Bunch of seeders using Eloquent
 	        SqlSeeder::class,
-                SqlDeptoSeeder::class,
-                SqlLocSeeder::class,
-                SqlLocDeptoSeeder::class,
-                SqlAgloSeeder::class,
-                SqlGobLocSeeder::class
+            SqlDeptoSeeder::class,
+            SqlLocSeeder::class,
+            SqlLocDeptoSeeder::class,
+            SqlAgloSeeder::class,
+            SqlGobLocSeeder::class,
+            SqlFraccionSeeder::class,
+            SqlRadioSeeder::class,
+            SqlRadioLocSeeder::class
 ]);
 
 
