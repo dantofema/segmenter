@@ -17,6 +17,28 @@ Route::get('/', function () {
 
 Auth::routes();
 
+/**
+* Estructura mas ordenada de aplicacion, layout...
+*/
+Route::get('/home', function()
+{
+    return View::make('pages.home');
+});
+Route::get('/about', function()
+{
+    return View::make('pages.about');
+});
+Route::get('projects', function()
+{
+    return View::make('pages.projects');
+});
+Route::get('/contact', function()
+{
+    return View::make('pages.contact');
+});
+
+
+
 Route::get('/inicio', 'HomeController@index')->name('inicio');
 Route::resource('/listado', 'ListadoController',['only' => [
    'index', 'show', 'save'
