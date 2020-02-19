@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Model\Aglomerado;
+use App\Model\Radio;
 use Illuminate\Http\Request;
 use App\MyDB;
 
@@ -28,6 +29,8 @@ class AglomeradoController extends Controller
         }
         $aglos = $aglosQuery->select('*', \DB::raw('false carto,false listado'))
                             ->withCount(['localidades']);
+//        $carto=$aglos->Carto;
+//        $listado=$aglos->Listado;
         return datatables()->of($aglos)
 /*            ->addColumn('actions', function ($data) {
                 return "<a class='btn btn-xs btn-success' href='/segmentar/$data->id'>Segmentar</a>";
@@ -91,9 +94,23 @@ class AglomeradoController extends Controller
         if(MyDB::segmentar_equilibrado($aglomerado->codigo,$request['vivs_deseadas'])) {
 
             $segmentacion=MyDB::segmentar_equilibrado_ver($aglomerado->codigo);
-            return datatables()->collection($segmentacion)->toJson();
-            //return view('segmentacion.info',['segmentacion'=>$segmentacion]);
+            $segmenta_data = json_encode ($segmentacion);
+            return view('segmentacion.info',['segmentacion'=>$segmenta_data]);
         };
+        
+    }
+
+    public function run_segmentar_x_lado(Request $request, Aglomerado $aglomerado)
+    {
+        if($request->radio){
+           $radio= Radio::where('codigo',$request->radio)->firstOrFail();
+           $radio->segmentar($request['vivs_deseadas'],$request['vivs_max'],$request['vivs_min'],$request['mzas_indivisibles']);
+        
+        }else{
+           flash('No selecciono ningún radio valido!'); 
+        }
+            //return view('segmentacion.info',['segmentacion'=>$segmentacion]);
+//        };
         
     }
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Model\Radio;
 use Illuminate\Http\Request;
+use App\Segmentador;
 
 class RadioController extends Controller
 {
@@ -82,4 +83,18 @@ class RadioController extends Controller
     {
         //
     }
+
+    /**
+     * Segmentar radio a lados completos
+     * 
+     */
+    public function segmentar(Radio $radio,$deseadas,$max,$min,$indivisible)
+    {
+        //
+        $aglo=$radio->aglomerado->codigo();
+        $segmenta = new Segmentador();
+        $segmenta->segmentar_a_lado_completo($radio,$deseadas,$max,$min,$indivisible);
+        return $segmenta->ver_segmentacion($radio);
+    }
+
 }

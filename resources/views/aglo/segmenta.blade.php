@@ -30,12 +30,19 @@
     </div>
   </div>
   <div class="form-group">
+    <label class="control-label" for="radio">Metodo de segmentación:</label><br />
+    <label class="radio-inline"><input type="radio" name="optradio" checked>Manzanas independientes</label>
+    <label class="radio-inline"><input type="radio" name="optradio">Lados Completos</label>
+    <label class="radio-inline"><input type="radio" name="optradio" disabled>IA - Magic</label>
+  </div>
+  <div class="form-group">
+    <label class="control-label" for="radio">Paramentros:</label><br />
     <div class="">
-    <label class="control-label " for="radio">Cant. Desada de viviendas:</label>
+    <label class="control-label " for="radio">Cant. Deseada de viviendas:</label>
     <input id="vivs_deaseadas" type="integer" maxlength=3 size=3 name="vivs_deseadas" value="20"><br />
     </div>
     <div class="">
-    <label class="control-label " for="radio">Cant. Maxima deseada:</label>
+    <label class="control-label " for="radio">Cant. Máxima deseada:</label>
     <input id="vivs_max" type="integer" maxlength=3 size=3 name="vivs_max" value="20"><br />
     </div>
     <div class="">
