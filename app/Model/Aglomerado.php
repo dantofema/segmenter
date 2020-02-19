@@ -93,5 +93,56 @@ class Aglomerado extends Model
 
     }
 
+    public function getSVG()
+    {
+        // return SVG Carto? Listado? Segmentación?
+        // WITH shapes (geom, attribute) AS (a
+        if ($this->carto){
+            $svg=DB::statment("
+WITH shapes (geom, attribute) AS (
+  VALUES(
+    (SELECT ST_MakeLine(ST_MakePoint(0,0), ST_MakePoint(10,10))), 2),
+    ((SELECT ST_Envelope(ST_MakeBox2d(ST_MakePoint(0,0), st_makepoint(10,10)))), 3)
+  ),
+  paths (svg) as (
+     SELECT concat(
+         '<path d= \"', 
+         ST_AsSVG(geom,1), '\" ', 
+         CASE WHEN attribute = 0 THEN 'stroke=\"red\" stroke-width=\"3\" fill=\"none\"' 
+         ELSE 'stroke=\"black\" stroke-width=\"2\" fill=\"green\"' END,
+          ' />') 
+     FROM shapes
+ )
+ SELECT concat(
+         '<svg height=\"400\" width=\"450\">',
+         array_to_string(array_agg(svg),''),
+         '</svg>')
+ FROM paths;
+");
+        dd($svg);
+        }else{ return "No geodata"; }
+                           
+        
+/*
+  VALUES(
+    (SELECT ST_MakeLine(ST_MakePoint(0,0), ST_MakePoint(10,10))), 2),
+    ((SELECT ST_Envelope(ST_MakeBox2d(ST_MakePoint(0,0), st_makepoint(10,10)))), 3)
+  ),
+  paths (svg) as (
+     SELECT concat(
+         '<path d= "', 
+         ST_AsSVG(geom,1), '" ', 
+         CASE WHEN attribute = 0 THEN 'stroke="red" stroke-width="3" fill="none"' 
+         ELSE 'stroke="black" stroke-width="2" fill="green"' END,
+          ' />') 
+     FROM shapes
+ )
+ SELECT concat(
+         '<svg height="400" width="450">',
+         array_to_string(array_agg(svg),''),
+         '</svg>')
+ FROM paths;
+**/
+    }
 
 }

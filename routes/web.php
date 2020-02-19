@@ -90,6 +90,8 @@ Route::post('aglo-segmenta/{aglomerado}','AglomeradoController@segmenta_post');
 Route::get('aglo-segmenta/{aglomerado}','AglomeradoController@segmenta_post');
 Route::post('aglo-segmenta-run/{aglomerado}','AglomeradoController@run_segmentar_equilibrado');
 
+// --------- SEGMENTACION X AGLOMERADO --------- 
+Route::get('ver-segmentacion/{aglomerado}','AglomeradoController@ver_segmentacion')->name('ver-segmentacion');
 
 
 Route::get('mail', 'MailCsvController@index');

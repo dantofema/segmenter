@@ -92,12 +92,17 @@ class AglomeradoController extends Controller
     public function run_segmentar_equilibrado(Request $request, Aglomerado $aglomerado)
     {
         if(MyDB::segmentar_equilibrado($aglomerado->codigo,$request['vivs_deseadas'])) {
+            return redirect()->route('ver-segmentacion', [$aglomerado]); //$this->ver_segmentacion($aglomerado);
+        };
+        
+    }
 
+    public function ver_segmentacion(Aglomerado $aglomerado)
+    {
             $segmentacion=MyDB::segmentar_equilibrado_ver($aglomerado->codigo);
             $segmenta_data = json_encode ($segmentacion);
             return view('segmentacion.info',['segmentacion'=>$segmenta_data]);
-        };
-        
+
     }
 
     public function run_segmentar_x_lado(Request $request, Aglomerado $aglomerado)
