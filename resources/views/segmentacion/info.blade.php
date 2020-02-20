@@ -107,7 +107,7 @@
                   { data: 'vivs', name: 'vivs' },
                   { data: 'lados', name: 'lados' },
                   { data: 'mzas', name: 'mzas' },
-                  { data: 'array_agg', name: 'mzas_list' },
+                  { visible: false, data: 'array_agg', name: 'mzas_list' },
 //                  { searchable: false , data: 'departamentos_count', name: 'departamentos_count' }
                ]
       });

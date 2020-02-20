@@ -88,11 +88,24 @@ class AglomeradoController extends Controller
         return view('aglo.segmenta',['aglomerado' => $aglomerado,'carto' => $carto,'listado'=>$listado,'radios'=>$radios]);
     }
 
+    public function run_segmentar(Request $request, Aglomerado $aglomerado)
+    {
+        if($request->optalgoritmo=='listado'){
+            // Segmentacion x listado
+            return $this->run_segmentar_equilibrado($request,$aglomerado); 
+        }elseif($request->optalgoritmo=='lados'){
+            // Segmentacion x lado completo. Esto se realiza x radio o puedo hacerse para los radios del request.
+            return $this->run_segmentar_x_lado($request,$aglomerado); 
+            }else{
+             return 'Not today!';
+            }
 
+    }
     public function run_segmentar_equilibrado(Request $request, Aglomerado $aglomerado)
     {
         if(MyDB::segmentar_equilibrado($aglomerado->codigo,$request['vivs_deseadas'])) {
-            return redirect()->route('ver-segmentacion', [$aglomerado]); //$this->ver_segmentacion($aglomerado);
+           flash('Segmentado ('.$aglomerado->codigo.') '.$aglomerado->nombre.'!'); 
+           return redirect()->route('ver-segmentacion', [$aglomerado]); //$this->ver_segmentacion($aglomerado);
         };
         
     }
@@ -107,12 +120,13 @@ class AglomeradoController extends Controller
 
     public function run_segmentar_x_lado(Request $request, Aglomerado $aglomerado)
     {
-        if($request->radio){
-           $radio= Radio::where('codigo',$request->radio)->firstOrFail();
-           $radio->segmentar($request['vivs_deseadas'],$request['vivs_max'],$request['vivs_min'],$request['mzas_indivisibles']);
+        if($request->radios){
+           $radio= Radio::where('codigo',$request->radios)->first();
+           $radio->segmentar($aglomerado->codigo,$request['vivs_deseadas'],$request['vivs_max'],$request['vivs_min'],$request['mzas_indivisibles']);
         
         }else{
            flash('No selecciono ningún radio valido!'); 
+           dd($request);
         }
             //return view('segmentacion.info',['segmentacion'=>$segmentacion]);
 //        };
