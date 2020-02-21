@@ -51,8 +51,9 @@ a:focus {
  *     ----------------------------------------------------- */
 
 .wrapper {
-//  display: flex;
+    display: flex;
     width: 100%;
+    align-items: stretch;
 }
 
 #sidebar {
@@ -150,7 +151,7 @@ a.article:hover {
 
 #content {
     width: calc(100% - 250px);
-    padding: 40px;
+    padding: 0px 20px 40px 40px;
     min-height: 100vh;
     transition: all 0.3s;
     position: absolute;
