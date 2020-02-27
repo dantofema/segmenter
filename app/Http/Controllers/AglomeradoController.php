@@ -27,7 +27,7 @@ class AglomeradoController extends Controller
         if($codigo){
          $aglosQuery->where('codigo','=',$codigo);
         }
-        $aglos = $aglosQuery->select('*', \DB::raw('false carto,false listado'))
+        $aglos = $aglosQuery->select('*', \DB::raw('false carto,false listado,false segmentadolistado,false segmentadolados'))
                             ->withCount(['localidades']);
 //        $carto=$aglos->Carto;
 //        $listado=$aglos->Listado;
@@ -114,8 +114,14 @@ class AglomeradoController extends Controller
     {
             $segmentacion=MyDB::segmentar_equilibrado_ver($aglomerado->codigo);
             $segmenta_data = json_encode ($segmentacion);
-            return view('segmentacion.info',['segmentacion'=>$segmenta_data]);
+            return view('segmentacion.info',['segmentacion'=>$segmenta_data,'aglomerado'=>$aglomerado]);
+    }
 
+    public function ver_segmentacion_lados(Aglomerado $aglomerado)
+    {
+            $segmentacion=MyDB::segmentar_lados_ver($aglomerado->codigo);
+            $segmenta_data = json_encode ($segmentacion);
+            return view('segmentacion.lados_info',['segmentacion'=>$segmenta_data,'aglomerado'=>$aglomerado]);
     }
 
     public function run_segmentar_x_lado(Request $request, Aglomerado $aglomerado)

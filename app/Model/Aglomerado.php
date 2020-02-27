@@ -17,6 +17,7 @@ class Aglomerado extends Model
     ];
     public $carto;
     public $listado;
+    public $segmentadolistado;
 
      /**
       * Relación con Localidades, un Aglomerados tiene una o varias localidad.
@@ -31,16 +32,7 @@ class Aglomerado extends Model
 
     public function getCartoAttribute($value)
     {
-        //return true;
-        /// do your magic
-        /*
-        $schemas=Config::get('database.connections.pgsql.schema');
-        array_push($schemas,'e'.$this->codigo);
-//        dd($schemas);
-        config(['database.connections.pgsql.schema'=>$schemas]); 
-        //dd(Config::get('database.connections.pgsql.schema'));
-*/
-//select * from information_schema.tables where table_schema = 'e0777' and table_name = 'arc' and table_type = 'BASE TABLE'
+    //select * from information_schema.tables where table_schema = 'e0777' and table_name = 'arc' and table_type = 'BASE TABLE'
         if (Schema::hasTable('e'.$this->codigo.'.arc')) {
             //
             return true;
@@ -58,7 +50,35 @@ class Aglomerado extends Model
         }else{
             return false;
         }
-        return false;
+    }
+
+    public function getSegmentadolistadoAttribute($value)
+    {
+        /// do your magic
+        if (Schema::hasTable('e'.$this->codigo.'.segmentacion')) {
+            //SELECT (count( distinct segmento_id)) segmentos,count(*) domicilios,round( (1.0*count(*))/(count( distinct segmento_id)) ,1) promedio  FROM e0777.segmentacion;
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    public function getSegmentadoladosAttribute($value)
+    {
+        /// do your magic
+        if (Schema::hasTable('e'.$this->codigo.'.arc')) {
+            $radios = DB::table('e'.$this->codigo.'.arc')
+                         ->select(DB::raw("distinct substr(mzai,1,12) link"))
+                         ->whereNotNull('segi')
+                         ->orwhereNotNull('segd');
+            if ($radios->count()>0){       
+                return true;
+            }else{
+                return false;
+            }
+        }else{
+            return false;
+        }
     }
 
     public function setCartoAtribute()

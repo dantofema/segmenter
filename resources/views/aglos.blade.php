@@ -78,7 +78,7 @@
              <th>Num. de localidades</th>
              <th>Cartografía</th>
              <th>Listado</th>
-             <th></th>
+             <th>Acciones</th>
           </tr>
        </thead>
     </table>
@@ -139,25 +139,33 @@
                   { searchable: false , data: function ( row, type, val, meta ) {
                                 var botones='';
                                 if ((row.carto==1) && (row.listado == 1)) {
-                                    botones =  '<input type="button" class="segmentar btn btn-primary" value="Segmentar"/> ';
-                                    botones = botones+ '<input type="button" disabled=true class="muestrear btn btn-primary" value="Muestrear"/> ';
-                                    return botones;
+                                    botones =  '<button type="button" class="segmentar btn-sm btn-primary" value="Segmentar"/>Segmentar</button>';
+                                    botones = botones+ '<button type="button" disabled= class="muestrear btn-sm btn-primary" value="Muestrear"/>Muestrear</button> ';
                                 }else{
                                        if ((row.carto!=1)) {
-                                         botones = botones+ '<input type="button" disabled=true class="cargar btn btn-primary" value="Cargar Carto"/> ';
+                                         botones = botones+ '<button type="button" class="cargar btn-sm btn-primary" value="Cargar"/>Cargar geo</button>';
                                         }
                                        if ((row.listado!==1)) {
-                                         botones = botones+ '<input type="button" disabled=true class="cargar btn btn-primary" value="Cargar Listado"/> ';
+                                         botones = botones+ '<button type="button" class="cargar btn-sm btn-primary" value="CargarC1"/>Cargar C1</button>';
                                         }
-                                    return botones;
-                            }}},
+                                }
+                                if ((row.segmentadolistado==1)) {
+                                       botones = botones+ '<input type="button" class="ver_segmenta_listado  btn-sm btn-primary" value="Ver Segmentación Listado"/> ';
+                                }
+                                if ((row.segmentadolados==1)) {
+                                       botones = botones+ '<input type="button" class="ver_segmenta_lados btn-sm btn-primary" value="Ver Segmentación x lados"/> ';
+                                }
+                                return botones;
+                            }
+                  },
                ],
       });
+
+// Función de botón segmentar.
     table.on('click', '.segmentar', function () {
       var row = $(this).closest('tr');
       var data = table.row( row ).data();
       console.log('Segmentar: '+data.codigo);
-//      verSegmentarAglomerado(data);
         if (typeof data !== 'undefined') {
         // AJAX request
            $.ajax({
@@ -167,7 +175,6 @@
             success: function(response){ 
               // Add response in Modal body
               $('#modal-body-segmenta').html(response);
-
               // Display Modal
               $('#segmentaAgloModal').modal('show'); 
             }
@@ -175,15 +182,49 @@
         }
     });
   
+// Función de botón ver segmentación x listado.
+    table.on('click', '.ver_segmenta_listado', function () {
+      var row = $(this).closest('tr');
+      var data = table.row( row ).data();
+      console.log('Ver Segmentación a listado: '+data.codigo);
+        if (typeof data !== 'undefined') {
+            url= "{{ url('ver-segmentacion') }}"+"/"+data.id;
+            $(location).attr('href',url);
+           };
+    });
+  
+// Función de botón ver segmentación x lados.
+    table.on('click', '.ver_segmenta_lados', function () {
+      var row = $(this).closest('tr');
+      var data = table.row( row ).data();
+      console.log('Ver Segmentación x lados: '+data.codigo);
+        if (typeof data !== 'undefined') {
+            url= "{{ url('ver-segmentacion-lados') }}"+"/"+data.id;
+            $(location).attr('href',url);
+           };
+    });
   
     table.on('click', '.muestrear', function () {
       var row = $(this).closest('tr');
       var data = table.row( row ).data().codigo;
       console.log('Muestrear: '+data);
     });
+  
+    table.on('click', '.cargar', function () {
+      var row = $(this).closest('tr');
+      var data = table.row( row ).data();
+      console.log('Cargar: '+data.codigo);
+        if (typeof data !== 'undefined') {
+            url= "{{ url('segmentador') }}" //+"/"+data.id;
+            $(location).attr('href',url);
+           };
+    });
 
     table.on( 'click', 'tr', function (e) {
-      if ((e.target.value != 'Segmentar') && (e.target.value != 'Muestrear')){
+      if ((e.target.value != 'Segmentar') && (e.target.value != 'Muestrear')
+         && (e.target.value != 'Ver Segmentación Listado') && (e.target.value != 'Ver Segmentación x lados')
+         && (e.target.value != 'Cargar') && (e.target.value != 'CargarC1')
+    ){
 
         var data = table.row( this ).data();
         if (typeof data !== 'undefined') {

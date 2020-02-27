@@ -32,14 +32,17 @@
     </div>
    </div>
 
-   <h2>Listado de Segmentos</h2>
+   <h3 class="text-center">
+({{ $aglomerado->codigo }} )
+{{ $aglomerado->nombre }} 
+</h3>
+   <h4 class="text-center">Listado de Segmentos</h4>
    <br>
    <div class="row">
     <div class="form-group col-md-6">
     <div class="text-left" style="
     margin-left: 15px;
     ">
-    <button type="text" id="btnFiterSubmitSearch" class="btn btn-info">Submit</button>
     </div>
     </div>
     <br>

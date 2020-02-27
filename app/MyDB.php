@@ -65,6 +65,15 @@ class MyDB extends Model
      // SQL retrun: 
     }
 
+    public static function segmentar_lados_ver($esquema)
+	{
+        $esquema = 'e'.$esquema;
+    	return DB::select('
+                        SELECT substr(mza,1,12) radio, seg,count(*) lados,count(distinct mza) as mzas_count,array_agg(distinct substr(mza,13,3)) mzas FROM 
+                        (SELECT segi seg,mzai mza,ladoi lado FROM '.$esquema.'.arc UNION SELECT segd,mzad,ladod FROM '.$esquema.'.arc ) lados
+                        GROUP BY  substr(mza,1,12), seg');
+     // SQL retrun: 
+    }
     public static function georeferenciar_segmentacion($esquema)
     {
 
