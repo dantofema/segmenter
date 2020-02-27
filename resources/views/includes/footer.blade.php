@@ -1,1 +1,1 @@
-<div id="copyright text-right">© Copyright 2020 INDEC - Geoestadística</div>
+<div id="copyright" class="text-center justify-content-center" style="display:block"><hr />© Copyright 2020 INDEC - Geoestadística</div>

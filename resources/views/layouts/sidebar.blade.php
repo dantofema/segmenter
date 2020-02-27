@@ -12,16 +12,16 @@
   </nav>
    <div id=content >
      
-     <header class="row">
+     <header >
          @include('includes.header_sidebar')
      </header >
-     <div class="row">
+     <div >
        <div id="main" class="justify-content-center">
          <!-- main content -->
              @yield('content')
        </div>
      </div>
-     <footer class="row justify-content-center">
+     <footer class="justify-content-center">
          @include('includes.footer')
      </footer>
    </div>
