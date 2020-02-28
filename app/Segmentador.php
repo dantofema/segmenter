@@ -30,13 +30,10 @@ class Segmentador extends Model
         // Ejemplo: python3 app/developer_docs/segmentacion-core/lados_completos/lados_completos.py e0777.arc 50 084 1 4 20 30 10 1 
         $process = Process::fromShellCommandline('/usr/bin/python3 ../app/developer_docs/segmentacion-core/lados_completos/lados_completos.py $tabla $prov $dpto $frac $rad $deseada $max $min $indivisible'); 
         $process->setTimeout(3600);
-//        $process->disableOutput();
-//        dd($process);
-        
+       
         $process->run(null, ['tabla' => $esquema.".arc",'prov'=>$prov,'dpto'=>$dpto,'frac'=>$frac,'rad'=>$radio,
                              'deseada'=>$vivs_deseada,'max'=>$vivs_max,'min'=>$vivs_min,'indivisible'=>$mza_indivisible]);
                         // executes after the command finishes
-        //dd($process->getErrorOutput());
                         if (!$process->isSuccessful()) {
                                 dd($process->getErrorOutput());
                         }else{  
@@ -49,6 +46,6 @@ class Segmentador extends Model
     {
        if (isset($this->resultado)){
             return $this->resultado;
-        }else{ return "No hay segmentacion para este radio.";}
+        }else{ return "No hay segmentacion realizada.";}
     }
 }
