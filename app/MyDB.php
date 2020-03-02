@@ -46,7 +46,10 @@ class MyDB extends Model
 
 	public static function segmentar_equilibrado($esquema,$deseado = 10)
 	{
-    	return DB::statement("SELECT indec.segmentar_equilibrado('e".$esquema."',".$deseado.");");
+    	if ( DB::statement("SELECT indec.segmentar_equilibrado('e".$esquema."',".$deseado.");") ){
+            MyDB::georeferenciar_segmentacion($esquema);
+            return true;
+        }else{ return false; }
 
      // SQL retrun: Select segmento_id,count(*) FROM e0777.segmentacion GROUP BY segmento_id;
 	}
@@ -79,13 +82,13 @@ class MyDB extends Model
 
 //   --ALTER TABLE ' ".$esquema." '.arc alter column wkb_geometry type geometry('LineString',22182) USING (st_setsrid(wkb_geometry,22182));
         $esquema = 'e'.$esquema;
-    	DB::statment("DROP TABLE IF EXISTS ".$esquema.".listado_geo;");
-        $result= DB::select("
+    	DB::statement("DROP TABLE IF EXISTS ".$esquema.".listado_geo;");
+        $resultado= DB::select("
         WITH listado as (
     SELECT  
     id, l.prov, nom_provin, ups, nro_area, l.dpto, nom_dpto, l.codaglo, l.codloc, nom_loc, codent, nom_ent, l.frac, l.radio, l.mza, l.lado, s.segmento_id as segmento_id,
-    nro_inicia, nro_final, orden_reco, nro_listad, ccalle, ncalle, nro_catast, i
-    CASE WHEN nrocatastr='' or nrocatastr='S/N' THEN null ELSE nrocatastr END nrocatastr, piso, pisoredef, casa, dpto_habit, sector, edificio, entrada, tipoviv, i
+    nro_inicia, nro_final, orden_reco, nro_listad, ccalle, ncalle, nro_catast, 
+    CASE WHEN nrocatastr='' or nrocatastr='S/N' THEN null ELSE nrocatastr END nrocatastr, piso, pisoredef, casa, dpto_habit, sector, edificio, entrada, tipoviv, 
     cod_tipo_2, cod_subt_v, cod_subt_2, descripcio, descripci2
     , row_number() over(partition by l.frac, l.radio, l.mza, l.lado order by orden_reco asc) nro_en_lado, conteo
     FROM
@@ -123,7 +126,7 @@ and
          e.mza like 
          '%'||btrim(to_char(l.frac::integer, '09'::text))::character varying(3)||btrim(to_char(l.radio::integer, '09'::text))::character varying(3)||btrim(to_char(l.mza::integer, '099'::text))::character varying(3) 
        );");
-       DB::statment("ALTER TABLE  ".$esquema.".listado_geo OWNER TO laravel;");
+       DB::statement("ALTER TABLE  ".$esquema.".listado_geo OWNER TO laravel;");
         return $resultado;
     }
 }

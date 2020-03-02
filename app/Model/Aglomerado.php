@@ -117,52 +117,68 @@ class Aglomerado extends Model
     {
         // return SVG Carto? Listado? Segmentación?
         // WITH shapes (geom, attribute) AS (a
-        if ($this->carto){
-            $svg=DB::statment("
+//
+//  VALUES
+//    ((SELECT ST_MakeLine(ST_MakePoint(0,0), ST_MakePoint(50,50))), 2),
+//    ((SELECT ST_Envelope(ST_MakeBox2d(ST_MakePoint(0,0), st_makepoint(10,10)))), 3)
+
+        if ($this->Carto){
+$height=400;
+$width=450;
+$escalar=false;
+            $extent=DB::select("SELECT box2d(st_collect(wkb_geometry)) box FROM  e".$this->codigo.".arc");
+            $extent=$extent[0]->box;
+            list($x0,$y0,$x1,$y1) = sscanf($extent,'BOX(%f %f,%f %f)');
+
+             $Dx=$x1-$x0; $Dy=$y1-$y0;
+            if (!$height and $width) $height=round($width*$Dy/$Dx);
+            if ($height and !$width) $width=round($height*$Dx/$Dy);
+            if (!$height and !$width) {$width=round($perimeter*$Dx/2/($Dx+$Dy)); $height=round($width*$Dy/$Dx);}
+            $dx=$Dx/$width; $dy=$Dy/$height; $epsilon=min($dx,$dy)/15; // mínima reolución, acho y alto de lo que representa un pixel
+            if ($escalar) {$viewBox="0 0 $width $height"; $stroke=2;}
+            else { $viewBox=$this->viewBox($extent,$epsilon,$height,$width); $stroke=2*$epsilon;
+        }
+
+
+//            dd($x0);
+            $svg=DB::select("
 WITH shapes (geom, attribute) AS (
-  VALUES(
-    (SELECT ST_MakeLine(ST_MakePoint(0,0), ST_MakePoint(10,10))), 2),
-    ((SELECT ST_Envelope(ST_MakeBox2d(ST_MakePoint(0,0), st_makepoint(10,10)))), 3)
+    SELECT wkb_geometry,2 FROM e".$this->codigo.".arc 
   ),
   paths (svg) as (
      SELECT concat(
          '<path d= \"', 
-         ST_AsSVG(geom,1), '\" ', 
+         ST_AsSVG(geom,0), '\" ', 
          CASE WHEN attribute = 0 THEN 'stroke=\"red\" stroke-width=\"3\" fill=\"none\"' 
-         ELSE 'stroke=\"black\" stroke-width=\"2\" fill=\"green\"' END,
+         ELSE 'stroke=\"black\" stroke-width=\"".$stroke."\" fill=\"green\"' END,
           ' />') 
      FROM shapes
  )
  SELECT concat(
-         '<svg height=\"400\" width=\"450\">',
+         '<svg id=\"aglo_".$this->codigo."\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"".$x0." -".$y0." ".$x1." ".$y1."\" height=\"400\" width=\"450\">',
          array_to_string(array_agg(svg),''),
          '</svg>')
  FROM paths;
 ");
-        dd($svg);
+        return $svg[0];
         }else{ return "No geodata"; }
-                           
         
-/*
-  VALUES(
-    (SELECT ST_MakeLine(ST_MakePoint(0,0), ST_MakePoint(10,10))), 2),
-    ((SELECT ST_Envelope(ST_MakeBox2d(ST_MakePoint(0,0), st_makepoint(10,10)))), 3)
-  ),
-  paths (svg) as (
-     SELECT concat(
-         '<path d= "', 
-         ST_AsSVG(geom,1), '" ', 
-         CASE WHEN attribute = 0 THEN 'stroke="red" stroke-width="3" fill="none"' 
-         ELSE 'stroke="black" stroke-width="2" fill="green"' END,
-          ' />') 
-     FROM shapes
- )
- SELECT concat(
-         '<svg height="400" width="450">',
-         array_to_string(array_agg(svg),''),
-         '</svg>')
- FROM paths;
-**/
+    }
+
+    private function viewBox($extent,$epsilon,$height,$width){
+        list ( $x0, $y0, $x1, $y1 ) = sscanf ( $extent, 'BOX(%f %f,%f %f)' );
+        $Dx = $x1 - $x0;
+        $Dy = $y1 - $y0;
+         $m_izq=.9*$Dx; $m_der=.9*$Dx; $m_arr=0.9*$Dy; $m_aba=.0*$Dy;
+        $viewBox = ($x0 - $m_izq) . " " . (- $y1 - $m_arr) . " " . ($Dx + $m_izq + $m_der) . " " . ($Dy + $m_arr + $m_aba);
+        if (! $height and ! $width)
+            $height = 600;
+        if (! $height)
+            $height = $width * $Dy / $Dx;
+        if (! $width)
+           $width = $height * $Dx / $Dy;
+        $epsilon = min ( $Dx / $width, $Dy / $height );
+        return $viewBox;
     }
 
 }
