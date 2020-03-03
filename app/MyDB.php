@@ -64,7 +64,21 @@ class MyDB extends Model
                         '.$esquema.'.
                         listado l ON s.listado_id=l.id 
                         GROUP BY segmento_id 
-                        ORDER BY array_agg(mza),count(*), segmento_id ;');
+                        ORDER BY count(*) asc, array_agg(mza), segmento_id ;');
+     // SQL retrun: 
+    }
+
+    public static function segmentar_equilibrado_ver_resumen($esquema)
+	{
+        $esquema = 'e'.$esquema;
+    	return DB::select('SELECT vivs,count(*) cant_segmentos FROM (
+                        SELECT segmento_id,count(*) vivs,count(distinct mza) as mzas,array_agg(distinct prov||dpto||codloc||frac||radio||mza||lado),count(distinct lado) as lados FROM 
+                        '.$esquema.'.
+                        segmentacion s JOIN 
+                        '.$esquema.'.
+                        listado l ON s.listado_id=l.id 
+                        GROUP BY segmento_id 
+                        ORDER BY count(*) asc, array_agg(mza), segmento_id) foo GROUP BY vivs order by vivs asc;');
      // SQL retrun: 
     }
 
@@ -77,9 +91,24 @@ class MyDB extends Model
                         GROUP BY  substr(mza,1,12), seg');
      // SQL retrun: 
     }
+
+    public static function segmentar_lados_ver_resumen($esquema)
+	{
+        $esquema = 'e'.$esquema;
+    	return DB::select('SELECT vivs,count(seg) cant_segmentos FROM (
+                        SELECT substr(lados.mza,1,12) radio, seg,count(*) lados,count(distinct lados.mza) as mzas_count,array_agg(distinct substr(lados.mza,13,3)) mzas, sum(c.conteo) vivs FROM 
+                        (SELECT segi seg,mzai mza,ladoi lado FROM '.$esquema.'.arc UNION SELECT segd,mzad,ladod FROM '.$esquema.'.arc ) lados
+                        JOIN '.$esquema.'.conteos c ON (c.prov,c.dpto,c.codloc,c.frac,c.radio,c.mza,c.lado)=(
+                                                         substr(lados.mza,1,2)::integer,substr(lados.mza,3,3)::integer,substr(lados.mza,6,3)::integer,substr(lados.mza,9,2)::integer,substr(lados.mza,11,2)::integer,substr(lados.mza,13,3)::integer,lados.lado::integer)
+                        WHERE lados.mza != \'\'
+                        GROUP BY  substr(lados.mza,1,12), seg ) foo
+                        GROUP BY vivs order by vivs asc;');
+     // SQL retrun: 
+    }
+
     public static function georeferenciar_segmentacion($esquema)
     {
-
+        return true;
 //   --ALTER TABLE ' ".$esquema." '.arc alter column wkb_geometry type geometry('LineString',22182) USING (st_setsrid(wkb_geometry,22182));
         $esquema = 'e'.$esquema;
     	DB::statement("DROP TABLE IF EXISTS ".$esquema.".listado_geo;");
