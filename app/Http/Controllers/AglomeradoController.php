@@ -85,7 +85,8 @@ class AglomeradoController extends Controller
         $carto=$aglomerado->Carto;
         $listado=$aglomerado->Listado;
         $radios=$aglomerado->Radios;
-        return view('aglo.segmenta',['aglomerado' => $aglomerado,'carto' => $carto,'listado'=>$listado,'radios'=>$radios]);
+        $svg=$aglomerado->getSVG();
+        return view('aglo.segmenta',['aglomerado' => $aglomerado,'carto' => $carto,'listado'=>$listado,'radios'=>$radios,'svg'=>$svg]);
     }
 
     public function run_segmentar(Request $request, Aglomerado $aglomerado)
@@ -122,6 +123,39 @@ class AglomeradoController extends Controller
             $segmentacion=MyDB::segmentar_lados_ver($aglomerado->codigo);
             $segmenta_data = json_encode ($segmentacion);
             return view('segmentacion.lados_info',['segmentacion'=>$segmenta_data,'aglomerado'=>$aglomerado]);
+    }
+
+    public function ver_segmentacion_grafico(Request $request, Aglomerado $aglomerado)
+    {
+            $segmentacion=MyDB::segmentar_equilibrado_ver($aglomerado->codigo);
+            $segmenta_data = json_encode ($segmentacion);
+            if ($request->isMethod('post')) {
+                return response()->json($segmentacion);
+            }else{
+                return view('segmentacion.grafico',['segmentacion'=>$segmenta_data,'aglomerado'=>$aglomerado]);
+            }
+    }
+
+    public function ver_segmentacion_grafico_resumen(Request $request, Aglomerado $aglomerado)
+    {
+            $segmentacion=MyDB::segmentar_equilibrado_ver_resumen($aglomerado->codigo);
+            $segmenta_data = json_encode ($segmentacion);
+            if ($request->isMethod('post')) {
+                return response()->json($segmentacion);
+            }else{
+                return view('segmentacion.grafico2',['segmentacion'=>$segmenta_data,'aglomerado'=>$aglomerado]);
+            }
+    }
+
+    public function ver_segmentacion_lados_grafico_resumen(Request $request, Aglomerado $aglomerado)
+    {
+            $segmentacion=MyDB::segmentar_lados_ver_resumen($aglomerado->codigo);
+            $segmenta_data = json_encode ($segmentacion);
+            if ($request->isMethod('post')) {
+                return response()->json($segmentacion);
+            }else{
+                return view('segmentacion.grafico2_lados',['segmentacion'=>$segmenta_data,'aglomerado'=>$aglomerado]);
+            }
     }
 
     public function run_segmentar_x_lado(Request $request, Aglomerado $aglomerado)
