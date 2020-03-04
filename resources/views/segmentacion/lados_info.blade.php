@@ -51,6 +51,7 @@
           <tr>
              <th>Radio</th>
              <th>Segmento</th>
+             <th>Viviendas</th>
              <th>Cant. Lados</th>
              <th>Cant. Manzanas</th>
              <th>Manznanas</th>
@@ -108,6 +109,7 @@
          columns: [
                   { data: 'radio', name: 'radio' },
                   { data: 'seg', name: 'seg' },
+                  { data: 'vivs', name: 'vivs' },
                   { data: 'lados', name: 'lados' },
                   { data: 'mzas_count', name: 'mzas_count' },
                   { data: 'mzas', name: 'mzas' },

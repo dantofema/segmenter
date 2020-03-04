@@ -86,9 +86,14 @@ class MyDB extends Model
 	{
         $esquema = 'e'.$esquema;
     	return DB::select('
-                        SELECT substr(mza,1,12) radio, seg,count(*) lados,count(distinct mza) as mzas_count,array_agg(distinct substr(mza,13,3)) mzas FROM 
+                        SELECT substr(lados.mza,1,12) radio, seg,count(*) lados,count(distinct lados.mza) as mzas_count,array_agg(distinct substr(lados.mza,13,3)) mzas,sum(conteo) as vivs FROM 
                         (SELECT segi seg,mzai mza,ladoi lado FROM '.$esquema.'.arc UNION SELECT segd,mzad,ladod FROM '.$esquema.'.arc ) lados
-                        GROUP BY  substr(mza,1,12), seg');
+                       JOIN  '.$esquema.'.conteos c ON (c.prov,c.dpto,c.codloc,c.frac,c.radio,c.mza,c.lado)=(
+                                                        substr(lados.mza,1,2)::integer,substr(lados.mza,3,3)::integer,substr(lados.mza,6,3)::integer,
+                                                        substr(lados.mza,9,2)::integer,substr(lados.mza,11,2)::integer,substr(lados.mza,13,3)::integer,lados.lado::integer)
+
+                        WHERE substr(lados.mza,1,12)!=\'\'
+                        GROUP BY  substr(lados.mza,1,12), seg');
      // SQL retrun: 
     }
 
@@ -99,7 +104,8 @@ class MyDB extends Model
                         SELECT substr(lados.mza,1,12) radio, seg,count(*) lados,count(distinct lados.mza) as mzas_count,array_agg(distinct substr(lados.mza,13,3)) mzas, sum(c.conteo) vivs FROM 
                         (SELECT segi seg,mzai mza,ladoi lado FROM '.$esquema.'.arc UNION SELECT segd,mzad,ladod FROM '.$esquema.'.arc ) lados
                         JOIN '.$esquema.'.conteos c ON (c.prov,c.dpto,c.codloc,c.frac,c.radio,c.mza,c.lado)=(
-                                                         substr(lados.mza,1,2)::integer,substr(lados.mza,3,3)::integer,substr(lados.mza,6,3)::integer,substr(lados.mza,9,2)::integer,substr(lados.mza,11,2)::integer,substr(lados.mza,13,3)::integer,lados.lado::integer)
+                                                         substr(lados.mza,1,2)::integer,substr(lados.mza,3,3)::integer,substr(lados.mza,6,3)::integer,
+                                                         substr(lados.mza,9,2)::integer,substr(lados.mza,11,2)::integer,substr(lados.mza,13,3)::integer,lados.lado::integer)
                         WHERE lados.mza != \'\'
                         GROUP BY  substr(lados.mza,1,12), seg ) foo
                         GROUP BY vivs order by vivs asc;');
