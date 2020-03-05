@@ -17,11 +17,12 @@
         $(document).ready(function(){
           $.post(url, {"_token": "{{ csrf_token() }}"},function(response){
             var sum = 0;
-            var n_segs= response.length;
+            var n_segs= 0;
             response.forEach(function(data){
                 SegmentosCantidad.push(data.cant_segmentos);
                 Viviendas.push(data.vivs);
-                sum += Number(data.vivs);
+                sum += Number(data.vivs)*Number(data.cant_segmentos);
+                n_segs += Number(data.cant_segmentos);
             });
             var mensaje = n_segs+' segmentos para '+sum+' viviendas, con un promedio de '+sum/n_segs+' viviendas x segmento';
             document.getElementById("resumen").innerHTML=mensaje;
