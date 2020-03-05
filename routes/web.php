@@ -103,7 +103,7 @@ Route::get('ver-segmentacion-lados/grafico-resumen/{aglomerado}','AglomeradoCont
 Route::post('ver-segmentacion-lados-grafico-resumen/{aglomerado}','AglomeradoController@ver_segmentacion_lados_grafico_resumen')->name('ver-segmentacion-lados-grafico-resumen');
 
 
-Route::get('mail', 'MailCsvController@index');
+//Route::get('mail', 'MailCsvController@index');
 
 /* Auto-generated admin routes */
 Route::middleware(['auth:' . config('admin-auth.defaults.guard'), 'admin'])->group(static function () {
