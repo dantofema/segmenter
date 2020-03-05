@@ -151,9 +151,11 @@
                                 }
                                 if ((row.segmentadolistado==1)) {
                                        botones = botones+ '<input type="button" class="ver_segmenta_listado  btn-sm btn-primary" value="Ver Segmentación Listado"/> ';
+                                       botones = botones+ '<input type="button" class="ver_segmenta_listado_grafico  btn-sm btn-primary" value="Ver Griáfico de Segmentación Listado"/> ';
                                 }
                                 if ((row.segmentadolados==1)) {
                                        botones = botones+ '<input type="button" class="ver_segmenta_lados btn-sm btn-primary" value="Ver Segmentación x lados"/> ';
+                                       botones = botones+ '<input type="button" class="ver_segmenta_lados_grafico btn-sm btn-primary" value="Ver Gráfico de Segmentación x lados"/> ';
                                 }
                                 return botones;
                             }
@@ -204,6 +206,26 @@
            };
     });
   
+// Función de botón ver grafico d esegmentación x listado.
+    table.on('click', '.ver_segmenta_listado_grafico', function () {
+      var row = $(this).closest('tr');
+      var data = table.row( row ).data();
+        if (typeof data !== 'undefined') {
+            url= "{{ url('ver-segmentacion/grafico-resumen') }}"+"/"+data.id;
+            $(location).attr('href',url);
+           };
+    });
+  
+// Función de botón ver gráfico de segmentación x lados.
+    table.on('click', '.ver_segmenta_lados_grafico', function () {
+      var row = $(this).closest('tr');
+      var data = table.row( row ).data();
+        if (typeof data !== 'undefined') {
+            url= "{{ url('ver-segmentacion-lados/grafico-resumen') }}"+"/"+data.id;
+            $(location).attr('href',url);
+           };
+    });
+  
     table.on('click', '.muestrear', function () {
       var row = $(this).closest('tr');
       var data = table.row( row ).data().codigo;
@@ -223,6 +245,7 @@
     table.on( 'click', 'tr', function (e) {
       if ((e.target.value != 'Segmentar') && (e.target.value != 'Muestrear')
          && (e.target.value != 'Ver Segmentación Listado') && (e.target.value != 'Ver Segmentación x lados')
+         && (e.target.value != 'Ver Gráfico de Segmentación Listado') && (e.target.value != 'Ver Gráfico de Segmentación x lados')
          && (e.target.value != 'Cargar') && (e.target.value != 'CargarC1')
     ){
 
