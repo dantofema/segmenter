@@ -70,7 +70,11 @@ class AglomeradoController extends Controller
     public function show(Aglomerado $aglomerado)
     {
         //
-        return view('aglo.view',['aglomerado' => $aglomerado]);
+        $carto=$aglomerado->Carto;
+        $listado=$aglomerado->Listado;
+        $radios=$aglomerado->Radios;
+        $svg=$aglomerado->getSVG();
+        return view('aglo.segmenta_view',['aglomerado' => $aglomerado,'carto' => $carto,'listado'=>$listado,'radios'=>$radios,'svg'=>$svg]);
     }
     
     public function show_post(Aglomerado $aglomerado)

@@ -76,7 +76,7 @@
              <th>Codigo</th>
              <th>Nombre</th>
              <th>Num. de localidades</th>
-             <th>Cartografía</th>
+             <th>Geografía</th>
              <th>Listado</th>
              <th>Acciones</th>
           </tr>

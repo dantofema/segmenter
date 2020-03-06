@@ -36,7 +36,7 @@
     <label class="radio-inline"><input type="radio" name="optalgoritmo" value=magic disabled>IA - Magic</label>
   </div>
   <div class="form-group">
-    <label class="control-label" for="radio">Paramentros:</label><br />
+    <label class="control-label" for="radio">Parametros:</label><br />
     <div class="">
     <label class="control-label " for="radio">Cant. Deseada de viviendas:</label>
     <input id="vivs_deaseadas" type="integer" maxlength=3 size=3 name="vivs_deseadas" value="20"><br />

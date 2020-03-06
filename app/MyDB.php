@@ -124,11 +124,12 @@ class MyDB extends Model
     s.segmento_id as segmento_id, nro_inicia, nro_final, orden_reco, nro_listad, ccalle, ncalle, nro_catast, 
     CASE WHEN nrocatastr='' or nrocatastr='S/N' THEN null ELSE nrocatastr END nrocatastr, 
     piso, pisoredef, casa, dpto_habit, sector, edificio, entrada, tipoviv, cod_tipo_2, cod_subt_v, cod_subt_2, descripcio, descripci2 , 
-    row_number() over(partition by l.frac, l.radio, l.mza, l.lado order by orden_reco asc) nro_en_lado, conteo, accion
+    row_number() over(partition by l.frac, l.radio, l.mza, l.lado order by l.lado, orden_reco asc) nro_en_lado, conteo, accion
     FROM
     ".$esquema.".listado l
     JOIN ".$esquema.".segmentacion s ON s.listado_id=l.id
-    LEFT JOIN ".$esquema.".conteos c ON (c.prov,c.dpto,c.codloc,c.frac,c.radio,c.mza,c.lado)=(l.prov::integer,l.dpto::integer,l.codloc::integer,l.frac::integer,l.radio::integer,l.mza::integer,l.lado::integer)
+    LEFT JOIN ".$esquema.".conteos c ON 
+    (c.prov,c.dpto,c.codloc,c.frac,c.radio,c.mza,c.lado)=(l.prov::integer,l.dpto::integer,l.codloc::integer,l.frac::integer,l.radio::integer,l.mza::integer,l.lado::integer)
 ), 
 arcos as (
     SELECT min(ogc_fid) ogc_fid, st_LineMerge(st_union(wkb_geometry)) wkb_geometry,nomencla,codigo20,array_agg(distinct codigo10) codigo10, tipo, nombre,lado,min(desde) desde,
@@ -167,7 +168,7 @@ and
          e.mza like 
          '%'||btrim(to_char(l.frac::integer, '09'::text))::character varying(3)||btrim(to_char(l.radio::integer, '09'::text))::character varying(3)||btrim(to_char(l.mza::integer, '099'::text))::character varying(3) 
        );");
-       DB::statement("ALTER TABLE  ".$esquema.".listado_geo OWNER TO laravel;");
+       DB::statement("GRANT SELECT ON TABLE  ".$esquema.".listado_geo TO sig");
         return $resultado;
     }
 }
