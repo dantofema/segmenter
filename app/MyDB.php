@@ -24,13 +24,15 @@ class MyDB extends Model
              DB::unprepared('ALTER TABLE '.$esquema.'.'.$tabla.' RENAME TO listado');
              DB::unprepared('ALTER TABLE '.$esquema.'.listado ADD COLUMN id serial');
              if (! Schema::hasColumn($esquema.'.listado' , 'tipoviv')){
-                 if (Schema::hasColumn($esquema.'.listado' , 'cod_tipo_v')){
-                     DB::unprepared('ALTER TABLE '.$esquema.'.listado RENAME cod_tipo_v TO tipoviv');
-                 }elseif (Schema::hasColumn($esquema.'.listado' , 'cod_viv')){
-                            DB::unprepared('ALTER TABLE '.$esquema.'.listado RENAME cod_viv TO tipoviv');
-                     }else{
-                         DB::statement('ALTER TABLE '.$esquema.'.listado ADD COLUMN tipoviv text;');
-                     }
+                 if (Schema::hasColumn($esquema.'.listado' , 'cod_tipo_2')){
+                     DB::unprepared('ALTER TABLE '.$esquema.'.listado RENAME cod_tipo_2 TO tipoviv');
+                 }elseif (Schema::hasColumn($esquema.'.listado' , 'cod_tipo_v')){
+                         DB::unprepared('ALTER TABLE '.$esquema.'.listado RENAME cod_tipo_v TO tipoviv');
+                   }elseif (Schema::hasColumn($esquema.'.listado' , 'cod_viv')){
+                           DB::unprepared('ALTER TABLE '.$esquema.'.listado RENAME cod_viv TO tipoviv');
+                       }else{
+                           DB::statement('ALTER TABLE '.$esquema.'.listado ADD COLUMN tipoviv text;');
+                       }
              }
              DB::unprepared("Select indec.cargar_conteos('".$esquema."')");
              DB::unprepared("Select indec.generar_adyacencias('".$esquema."')");
