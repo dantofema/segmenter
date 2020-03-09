@@ -28,7 +28,7 @@ class Segmentador extends Model
         $esquema = 'e'.$aglo;
 
         // Ejemplo: python3 app/developer_docs/segmentacion-core/lados_completos/lados_completos.py e0777.arc 50 084 1 4 20 30 10 1 
-        $process = Process::fromShellCommandline('/usr/bin/python3 ../app/developer_docs/segmentacion-core/lados_completos/lados_completos.py $tabla $prov $dpto $frac $rad $deseada $max $min $indivisible'); 
+        $process = Process::fromShellCommandline('/usr/bin/python3 ../app/developer_docs/segmentacion-core/lados_completos/lados_completos.py $tabla $prov $dpto $frac $rad $deseada $max $min $indivisible',null,['PYTHONIOENCODING' => 'utf8']); 
         $process->setTimeout(3600);
        
         $process->run(null, ['tabla' => $esquema.".arc",'prov'=>$prov,'dpto'=>$dpto,'frac'=>$frac,'rad'=>$radio,
