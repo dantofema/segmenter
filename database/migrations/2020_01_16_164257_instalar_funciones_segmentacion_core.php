@@ -31,7 +31,10 @@ class InstalarFuncionesSegmentacionCore extends Migration
         //$this->command->info('- Instalando funcion costo_adyacencias ...');
         $path = 'app/developer_docs/segmentacion-core/manzanas_independientes/segmentar_equilibrado.sql';
         DB::unprepared(file_get_contents($path));
-        //$this->command->info('Segmantación de manzanas independientes instalado!');
+        //$this->command->info('Segmentación de manzanas independientes instalado!');
+        $path = 'app/developer_docs/segmentacion-core/manzanas_independientes/crear_tabla_corrida.sql';
+        DB::unprepared(file_get_contents($path));
+        //$this->command->info('Tabla de info corridas creada!');
         echo 'segmentacion-core instalado';
 
     }
