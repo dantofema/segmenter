@@ -4,7 +4,7 @@
 
 - Clone GitHub repo
 ```
-git clone https://github.com/dantofema/segmenter.git
+git clone https://github.com/manureta/segmenter.git --recurse-submodules 
 ```
 - cd into your project
 ```
@@ -54,17 +54,22 @@ php artisan migrate
 
 - Para configurar las tareas programadas de laravel agregamos al cron (vía crontab -e)
 ```
-* * * * * cd /home/DCINDEC/mretamozo/segmenter_new && php artisan schedule:run >> /dev/null 2>&1
+* * * * * cd segmenter && php artisan schedule:run >> /dev/null 2>&1
 ```
 
-- Se agrego como submodule el proyecto de Segmentacion-CORE, para iniciarlo luego de clonar el repo principal debe ejecutar:
+
+- En caso que no haya iniciado el submodule con ```--recursive``` al hacer el clone principal.
+
+Debera agrega como submodule el proyecto de Segmentacion-CORE, para iniciarlo luego de clonar el repo principal debe ejecutar:
 ```
 git submodule init
 git submodule update
 ```
-alternativamente puede agregarse la opción ```--recursive``` al hacer el clone principal.
 
-- Run app in http://localhost:8000
+
+- Para correr la aplicación en desarrollo: 
+
+Run app in http://localhost:8000
 ```
 php artisan serve
 ```
