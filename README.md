@@ -1,4 +1,5 @@
-# indec
+# Proyecto Mandarina
+## INDEC
 
 ## Para instalar el entorno de desarrollo se debe:
 
