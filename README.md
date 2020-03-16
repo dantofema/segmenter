@@ -26,6 +26,14 @@ npm-debug.log
 yarn-error.log" > .gitignore
 ```
 
+- probables requerimientos previos a la instalación de las siguientes dependencias
+```
+sudo apt-get install php-mbstring
+sudo apt-get install php-dom
+sudo apt-get install php-zip
+sudo apt-get install php-gd
+sudo apt-get install php-pdo-pgsql
+```
 
 - Install Composer Dependencies
 ```
@@ -37,9 +45,25 @@ composer install
 npm install
 ```
 - Create a copy of your .env file & configure app
+para setear el entorno de ejecución de la app
 ```
 cp .env.example .env
 ```
+
+editarlo para que los servicios apunten donde corresponden
+en el siguiente: en el .env del ejemplo hay que cambiar 
+```
+APP_URL=url_del_servidor_donde_corre_la_aplicacion_laravel
+
+DB_CONNECTION=pgsql
+DB_HOST=url_del_servidor_de_DB_postgresql
+DB_PORT=5432
+DB_DATABASE=base_de_datos
+DB_USERNAME=usuario_del_segmentador
+DB_PASSWORD=clave_del_usuario_del_segmentador
+
+```
+
 
 - Generate an app encryption key
 ```
@@ -68,9 +92,10 @@ alternativamente puede agregarse la opción ```--recursive``` al hacer el clone 
 ```
 php artisan serve
 ```
-or
+usar el parámetro APP_URL definido en el .dev
+y elegir un puerto libre para que la app laravel esté escuchando
 ```
-php artisan serve --host=domainserver --port=9999
+php artisan serve --host=url_del_servidor_donde_corre_la_aplicacion_laravel --port=9999
 ```
 
 * From https://devmarketer.io/learn/setup-laravel-project-cloned-github-com/
