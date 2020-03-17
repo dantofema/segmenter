@@ -1,5 +1,5 @@
 # Proyecto Mandarina
-## INDEC
+## ![Logo INDEC][logo] INDEC
 
 ## Para instalar el entorno de desarrollo se debe:
 
@@ -79,4 +79,6 @@ or
 php artisan serve --host=domainserver --port=9999
 ```
 
-* From https://devmarketer.io/learn/setup-laravel-project-cloned-github-com/
+[1]: From https://devmarketer.io/learn/setup-laravel-project-cloned-github-com/
+[logo]:https://www.indec.gob.ar/Images_WEBINDEC/Logo/Logo_Indec.png
+
