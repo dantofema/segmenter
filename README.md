@@ -1,6 +1,12 @@
 # Proyecto Mandarina
 ![Logo INDEC][logo] INDEC
 
+
+## Prerequisitos
+* PHP 7 (gd,pdo-psql,mbstring)
+* gdal (ogr2ogr)
+* pgdbf
+
 ## Para instalar el entorno de desarrollo se debe, según extracto de [guia][1]:
 
 - Clone GitHub repo
