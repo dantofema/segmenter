@@ -1,18 +1,18 @@
 # Proyecto Mandarina
 ![Logo INDEC][logo] INDEC
 
-## Para instalar el entorno de desarrollo se debe[1]:
+## Para instalar el entorno de desarrollo se debe, según extracto de [guia][1]:
 
 - Clone GitHub repo
-```
+```git
 git clone https://github.com/manureta/segmenter.git --recurse-submodules 
 ```
 - cd into your project
-```
+```bash
 cd segmenter
 ```
 - create .gitignore
-```
+```bash
 echo "/node_modules
 /public/hot
 /public/storage
@@ -29,27 +29,27 @@ yarn-error.log" > .gitignore
 
 
 - Install Composer Dependencies
-```
+```bash
 composer install
 ```
 
 - Install NPM Dependencies
-```
+```bash
 npm install
 ```
 - Create a copy of your .env file & configure app
-```
+```bash
 cp .env.example .env
 ```
 
 - Generate an app encryption key
-```
+```bash
 php artisan key:generate
 ```
 
 
 - Para iniciar con una nueva base de datos debe crearse la base de datos una vez configurada en .env
-```
+```bash
 php artisan migrate
 ```
 
@@ -62,7 +62,7 @@ php artisan migrate
 - En caso que no haya iniciado el submodule con ```--recursive``` al hacer el clone principal.
 
 Debera agrega como submodule el proyecto de Segmentacion-CORE, para iniciarlo luego de clonar el repo principal debe ejecutar:
-```
+```bash
 git submodule init
 git submodule update
 ```
