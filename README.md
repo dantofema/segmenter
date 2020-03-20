@@ -3,7 +3,14 @@
 
 
 ## Prerequisitos
-* PHP 7 (gd,pdo-psql,mbstring)
+* PHP 7 
+```
+php-mbstring
+php-dom
+php-zip
+php-gd
+php-pdo-pgsql
+```
 * gdal (ogr2ogr)
 * pgdbf
 
@@ -33,7 +40,6 @@ npm-debug.log
 yarn-error.log" > .gitignore
 ```
 
-
 - Install Composer Dependencies
 ```bash
 composer install
@@ -44,9 +50,25 @@ composer install
 npm install
 ```
 - Create a copy of your .env file & configure app
+
+para setear el entorno de ejecución de la app
 ```bash
 cp .env.example .env
 ```
+
+Luego editar el archivo .env para que direccione donde corresponde,
+en el siguiente ejemplo hay que cambiar 
+```
+APP_URL=url_del_servidor_donde_corre_la_aplicacion_laravel
+
+DB_HOST=url_del_servidor_de_DB_postgresql
+
+DB_DATABASE=base_de_datos
+DB_USERNAME=usuario_del_segmentador
+DB_PASSWORD=clave_del_usuario_del_segmentador
+
+```
+
 
 - Generate an app encryption key
 ```bash
@@ -80,11 +102,11 @@ Run app in http://localhost:8000
 ```
 php artisan serve
 ```
-or
+usar el parámetro APP_URL definido en el .dev
+y elegir un puerto libre para que la app laravel esté escuchando
 ```
-php artisan serve --host=domainserver --port=9999
+php artisan serve --host=url_del_servidor_donde_corre_la_aplicacion_laravel --port=9999
 ```
 
 [1]: https://devmarketer.io/learn/setup-laravel-project-cloned-github-com/
 [logo]: https://www.indec.gob.ar/Images_WEBINDEC/Logo/Logo_Indec.png
-
