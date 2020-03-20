@@ -14,17 +14,17 @@ php-pdo-pgsql
 * gdal (ogr2ogr)
 * pgdbf
 
-## Para instalar el entorno de desarrollo se debe, según extracto de [guia][1]:
+## Para instalar el entorno de desarrollo se debe, (según extracto de [guia][1]):
 
-- Clone GitHub repo
+- Clonar repositorio GitHub
 ```git
 git clone https://github.com/manureta/segmenter.git --recurse-submodules 
 ```
-- cd into your project
+- cambiar directorio a su proyecto
 ```bash
 cd segmenter
 ```
-- create .gitignore
+- crear archivo .gitignore
 ```bash
 echo "/node_modules
 /public/hot
@@ -40,17 +40,16 @@ npm-debug.log
 yarn-error.log" > .gitignore
 ```
 
-- Install Composer Dependencies
+- Instalar Composer Dependencias
 ```bash
 composer install
 ```
 
-- Install NPM Dependencies
+- Instalar NPM Dependencias
 ```bash
 npm install
 ```
-- Create a copy of your .env file & configure app
-
+- Cree su propia copia del archivo .env & configure su app,
 para setear el entorno de ejecución de la app
 ```bash
 cp .env.example .env
@@ -70,7 +69,7 @@ DB_PASSWORD=clave_del_usuario_del_segmentador
 ```
 
 
-- Generate an app encryption key
+- Generar una app encryption key
 ```bash
 php artisan key:generate
 ```
@@ -79,6 +78,12 @@ php artisan key:generate
 - Para iniciar con una nueva base de datos debe crearse la base de datos una vez configurada en .env
 ```bash
 php artisan migrate
+```
+
+
+- Una vez creada la estructura de base de datos con migrate, se carga con datos:
+```bash
+php artisan db:seed
 ```
 
 - Para configurar las tareas programadas de laravel agregamos al cron (vía crontab -e)
