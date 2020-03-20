@@ -89,7 +89,8 @@ class MyDB extends Model
         $esquema = 'e'.$esquema;
     	return DB::select('
                         SELECT substr(lados.mza,1,12) radio, seg,count(*) lados,count(distinct lados.mza) as mzas_count,array_agg(distinct substr(lados.mza,13,3)) mzas,sum(conteo) as vivs FROM 
-                        (SELECT segi seg,mzai mza,ladoi lado FROM '.$esquema.'.arc UNION SELECT segd,mzad,ladod FROM '.$esquema.'.arc ) lados
+			(SELECT segi seg,mzai mza,ladoi lado FROM '.$esquema.'.arc WHERE segi is not null 
+			UNION SELECT segd,mzad,ladod FROM '.$esquema.'.arc WHERE segd is not null) lados
                        JOIN  '.$esquema.'.conteos c ON (c.prov,c.dpto,c.codloc,c.frac,c.radio,c.mza,c.lado)=(
                                                         substr(lados.mza,1,2)::integer,substr(lados.mza,3,3)::integer,substr(lados.mza,6,3)::integer,
                                                         substr(lados.mza,9,2)::integer,substr(lados.mza,11,2)::integer,substr(lados.mza,13,3)::integer,lados.lado::integer)
@@ -103,8 +104,9 @@ class MyDB extends Model
 	{
         $esquema = 'e'.$esquema;
     	return DB::select('SELECT vivs,count(seg) cant_segmentos FROM (
-                        SELECT substr(lados.mza,1,12) radio, seg,count(*) lados,count(distinct lados.mza) as mzas_count,array_agg(distinct substr(lados.mza,13,3)) mzas, sum(c.conteo) vivs FROM 
-                        (SELECT segi seg,mzai mza,ladoi lado FROM '.$esquema.'.arc UNION SELECT segd,mzad,ladod FROM '.$esquema.'.arc ) lados
+			SELECT substr(lados.mza,1,12) radio, seg,count(*) lados,count(distinct lados.mza) as mzas_count,array_agg(distinct substr(lados.mza,13,3)) mzas, sum(c.conteo) vivs FROM
+			(SELECT segi seg,mzai mza,ladoi lado FROM '.$esquema.'.arc WHERE segi is not null 
+			UNION SELECT segd,mzad,ladod FROM '.$esquema.'.arc WHERE segd is not null) lados
                         JOIN '.$esquema.'.conteos c ON (c.prov,c.dpto,c.codloc,c.frac,c.radio,c.mza,c.lado)=(
                                                          substr(lados.mza,1,2)::integer,substr(lados.mza,3,3)::integer,substr(lados.mza,6,3)::integer,
                                                          substr(lados.mza,9,2)::integer,substr(lados.mza,11,2)::integer,substr(lados.mza,13,3)::integer,lados.lado::integer)
