@@ -11,7 +11,7 @@ class MyDB extends Model
     //a
 	public static function createSchema($esquema)
 	{
-	 DB::statement('CREATE SCHEMA IF NOT EXISTS e'.$esquema);
+		DB::statement('CREATE SCHEMA IF NOT EXISTS e'.$esquema);
 	}
 
 	public static function moverDBF($file_name,$esquema)
@@ -49,7 +49,7 @@ class MyDB extends Model
 	public static function segmentar_equilibrado($esquema,$deseado = 10)
 	{
     	if ( DB::statement("SELECT indec.segmentar_equilibrado('e".$esquema."',".$deseado.");") ){
-            MyDB::georeferenciar_segmentacion($esquema);
+        //    MyDB::georeferenciar_segmentacion($esquema);
             return true;
         }else{ return false; }
 
@@ -125,7 +125,7 @@ class MyDB extends Model
     SELECT id, l.prov, nom_provin, ups, nro_area, l.dpto, nom_dpto, l.codaglo, l.codloc, nom_loc, codent, nom_ent, l.frac, l.radio, l.mza, l.lado, 
     nro_inicia, nro_final, orden_reco, nro_listad, ccalle, ncalle, nro_catast, 
     CASE WHEN nrocatastr='' or nrocatastr='S/N' THEN null ELSE nrocatastr END nrocatastr, 
-    piso, pisoredef, casa, dpto_habit, sector, edificio, entrada, tipoviv, cod_tipo_2, cod_subt_v, cod_subt_2, descripcio, descripci2 , 
+    piso, pisoredef, casa, dpto_habit, sector, edificio, entrada, tipoviv, cod_subt_v, cod_subt_2, descripcio, descripci2 , 
     row_number() over(partition by l.frac, l.radio, l.mza, l.lado order by l.lado, orden_reco asc) nro_en_lado, conteo, accion
     FROM
     ".$esquema.".listado l
@@ -151,7 +151,7 @@ arcos as (
   else
    CASE WHEN ( 
       e.mza like '%'||btrim(to_char(l.frac::integer, '09'::text))::character varying(3)||btrim(to_char(l.radio::integer, '09'::text))::character varying(3)||btrim(to_char(l.mza::integer, '099'::text))::character varying(3)) 
-            and l.lado::integer=e.lado and l.cod_tipo_2='LSV' 
+            and l.lado::integer=e.lado and l.tipoviv='LSV' 
             THEN ST_LineInterpolatePoint(st_reverse(st_offsetcurve(ST_LineSubstring(st_LineMerge(wkb_geometry),0.07,0.93),-8)),0.5) 
        WHEN ( e.mza like '%'||btrim(to_char(l.frac::integer, '09'::text))::character varying(3)||btrim(to_char(l.radio::integer, '09'::text))::character varying(3)||btrim(to_char(l.mza::integer, '099'::text))::character varying(3)) 
             and l.lado::integer=e.lado 
@@ -160,7 +160,7 @@ arcos as (
         END as wkb_geometry, e.ogc_fid||'-'||l.id id ,e.ogc_fid id_lin,l.id id_list, wkb_geometry wkb_geometry_lado,
             codigo10, nomencla, codigo20, 
             tipo, nombre, e.lado ladoe, desde, hasta,e.mza mzae, codloc20,
-            frac, radio, l.mza, l.lado, ccalle, ncalle, nrocatastr, pisoredef piso,casa,dpto_habit,sector,edificio,entrada,tipoviv,cod_tipo_2, 
+            frac, radio, l.mza, l.lado, ccalle, ncalle, nrocatastr, pisoredef piso,casa,dpto_habit,sector,edificio,entrada,tipoviv, 
             descripcio,descripci2 , accion
 INTO ".$esquema.".listado_geo
 FROM arcos e JOIN listado l ON l.ccalle::integer=e.codigo20 
@@ -184,7 +184,7 @@ and
     SELECT id, l.prov, nom_provin, ups, nro_area, l.dpto, nom_dpto, l.codaglo, l.codloc, nom_loc, codent, nom_ent, l.frac, l.radio, l.mza, l.lado, 
     s.segmento_id as segmento_id, nro_inicia, nro_final, orden_reco, nro_listad, ccalle, ncalle, nro_catast, 
     CASE WHEN nrocatastr='' or nrocatastr='S/N' THEN null ELSE nrocatastr END nrocatastr, 
-    piso, pisoredef, casa, dpto_habit, sector, edificio, entrada, tipoviv, cod_tipo_2, cod_subt_v, cod_subt_2, descripcio, descripci2 , 
+    piso, pisoredef, casa, dpto_habit, sector, edificio, entrada, tipoviv, cod_subt_v, cod_subt_2, descripcio, descripci2 , 
     row_number() over(partition by l.frac, l.radio, l.mza, l.lado order by l.lado, orden_reco asc) nro_en_lado, conteo, accion
     FROM
     ".$esquema.".listado l
@@ -211,7 +211,7 @@ UNION
   else
    CASE WHEN ( 
       e.mza like '%'||btrim(to_char(l.frac::integer, '09'::text))::character varying(3)||btrim(to_char(l.radio::integer, '09'::text))::character varying(3)||btrim(to_char(l.mza::integer, '099'::text))::character varying(3)) 
-            and l.lado::integer=e.lado and l.cod_tipo_2='LSV' 
+            and l.lado::integer=e.lado and l.tipoviv='LSV' 
             THEN ST_LineInterpolatePoint(st_reverse(st_offsetcurve(ST_LineSubstring(st_LineMerge(wkb_geometry),0.07,0.93),-8)),0.5) 
        WHEN ( e.mza like '%'||btrim(to_char(l.frac::integer, '09'::text))::character varying(3)||btrim(to_char(l.radio::integer, '09'::text))::character varying(3)||btrim(to_char(l.mza::integer, '099'::text))::character varying(3)) 
             and l.lado::integer=e.lado 
@@ -220,7 +220,7 @@ UNION
         END as wkb_geometry, e.ogc_fid||'-'||l.id id ,e.ogc_fid id_lin,l.id id_list, wkb_geometry wkb_geometry_lado,
             codigo10, nomencla, codigo20, 
             tipo, nombre, e.lado ladoe, desde, hasta,e.mza mzae, codloc20,
-            frac, radio, l.mza, l.lado, ccalle, ncalle, nrocatastr, pisoredef piso,casa,dpto_habit,sector,edificio,entrada,tipoviv,cod_tipo_2, 
+            frac, radio, l.mza, l.lado, ccalle, ncalle, nrocatastr, pisoredef piso,casa,dpto_habit,sector,edificio,entrada,tipoviv, 
             descripcio,descripci2 , accion
 INTO ".$esquema.".listado_segmentado_geo
 FROM arcos e JOIN listado l ON l.ccalle::integer=e.codigo20 
