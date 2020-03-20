@@ -114,12 +114,71 @@ class MyDB extends Model
      // SQL retrun: 
     }
 
-    public static function georeferenciar_segmentacion($esquema)
+    public static function georeferenciar_listado($esquema)
     {
         //return true;
 //   --ALTER TABLE ' ".$esquema." '.arc alter column wkb_geometry type geometry('LineString',22182) USING (st_setsrid(wkb_geometry,22182));
         $esquema = 'e'.$esquema;
     	DB::statement("DROP TABLE IF EXISTS ".$esquema.".listado_geo;");
+        $resultado= DB::select("
+        WITH listado as (
+    SELECT id, l.prov, nom_provin, ups, nro_area, l.dpto, nom_dpto, l.codaglo, l.codloc, nom_loc, codent, nom_ent, l.frac, l.radio, l.mza, l.lado, 
+    nro_inicia, nro_final, orden_reco, nro_listad, ccalle, ncalle, nro_catast, 
+    CASE WHEN nrocatastr='' or nrocatastr='S/N' THEN null ELSE nrocatastr END nrocatastr, 
+    piso, pisoredef, casa, dpto_habit, sector, edificio, entrada, tipoviv, cod_tipo_2, cod_subt_v, cod_subt_2, descripcio, descripci2 , 
+    row_number() over(partition by l.frac, l.radio, l.mza, l.lado order by l.lado, orden_reco asc) nro_en_lado, conteo, accion
+    FROM
+    ".$esquema.".listado l
+    LEFT JOIN ".$esquema.".conteos c ON 
+    (c.prov,c.dpto,c.codloc,c.frac,c.radio,c.mza,c.lado)=(l.prov::integer,l.dpto::integer,l.codloc::integer,l.frac::integer,l.radio::integer,l.mza::integer,l.lado::integer)
+), 
+arcos as (
+    SELECT min(ogc_fid) ogc_fid, st_LineMerge(st_union(wkb_geometry)) wkb_geometry,nomencla,codigo20,array_agg(distinct codigo10) codigo10, tipo, nombre,lado,min(desde) desde,
+    max(hasta) hasta,mza,codloc20 
+    FROM 
+    (SELECT ogc_fid,st_reverse(wkb_geometry) wkb_geometry,nomencla,codigo20,codigo10,tipo, nombre, ancho, anchomed, ladoi lado,desdei desde,
+     hastai hasta,mzai mza, codloc20, nomencla10,nomenclai nomenclax, codinomb, segi seg 
+    FROM ".$esquema.".arc
+    UNION
+     SELECT ogc_fid,wkb_geometry,nomencla,codigo20,codigo10,tipo, nombre, ancho, anchomed, ladod lado,desded desde,
+     hastad hasta,mzad mza, codloc20, nomencla10,nomenclad nomenclax, codinomb, segd seg 
+    FROM ".$esquema.".arc) arcos_juntados
+    GROUP BY nomencla,codigo20,tipo, nombre,lado,mza,codloc20
+)
+  SELECT nro_en_lado, conteo,1.0*nro_en_lado/(conteo+1) interpolacion, l.orden_reco,
+  case when nro_en_lado/(conteo+1)>1 
+  then ST_LineInterpolatePoint(st_reverse(st_offsetcurve(ST_LineSubstring(st_LineMerge(wkb_geometry),0.07,0.93),-8-nro_en_lado)),0.5) 
+  else
+   CASE WHEN ( 
+      e.mza like '%'||btrim(to_char(l.frac::integer, '09'::text))::character varying(3)||btrim(to_char(l.radio::integer, '09'::text))::character varying(3)||btrim(to_char(l.mza::integer, '099'::text))::character varying(3)) 
+            and l.lado::integer=e.lado and l.cod_tipo_2='LSV' 
+            THEN ST_LineInterpolatePoint(st_reverse(st_offsetcurve(ST_LineSubstring(st_LineMerge(wkb_geometry),0.07,0.93),-8)),0.5) 
+       WHEN ( e.mza like '%'||btrim(to_char(l.frac::integer, '09'::text))::character varying(3)||btrim(to_char(l.radio::integer, '09'::text))::character varying(3)||btrim(to_char(l.mza::integer, '099'::text))::character varying(3)) 
+            and l.lado::integer=e.lado 
+            THEN ST_LineInterpolatePoint(st_reverse(st_offsetcurve(ST_LineSubstring(st_LineMerge(wkb_geometry),0.07,0.93),-8)),1.0*nro_en_lado/(conteo+1)) 
+        end
+        END as wkb_geometry, e.ogc_fid||'-'||l.id id ,e.ogc_fid id_lin,l.id id_list, wkb_geometry wkb_geometry_lado,
+            codigo10, nomencla, codigo20, 
+            tipo, nombre, e.lado ladoe, desde, hasta,e.mza mzae, codloc20,
+            frac, radio, l.mza, l.lado, ccalle, ncalle, nrocatastr, pisoredef piso,casa,dpto_habit,sector,edificio,entrada,tipoviv,cod_tipo_2, 
+            descripcio,descripci2 , accion
+INTO ".$esquema.".listado_geo
+FROM arcos e JOIN listado l ON l.ccalle::integer=e.codigo20 
+and
+     (l.lado::integer=e.lado and 
+         e.mza like 
+         '%'||btrim(to_char(l.frac::integer, '09'::text))::character varying(3)||btrim(to_char(l.radio::integer, '09'::text))::character varying(3)||btrim(to_char(l.mza::integer, '099'::text))::character varying(3) 
+       );");
+       DB::statement("GRANT SELECT ON TABLE  ".$esquema.".listado_geo TO sig");
+        return $resultado;
+    }
+
+    public static function georeferenciar_segmentacion($esquema)
+    {
+        //return true;
+//   --ALTER TABLE ' ".$esquema." '.arc alter column wkb_geometry type geometry('LineString',22182) USING (st_setsrid(wkb_geometry,22182));
+        $esquema = 'e'.$esquema;
+    	DB::statement("DROP TABLE IF EXISTS ".$esquema.".listado_segmentado_geo;");
         $resultado= DB::select("
         WITH listado as (
     SELECT id, l.prov, nom_provin, ups, nro_area, l.dpto, nom_dpto, l.codaglo, l.codloc, nom_loc, codent, nom_ent, l.frac, l.radio, l.mza, l.lado, 
@@ -163,14 +222,16 @@ UNION
             tipo, nombre, e.lado ladoe, desde, hasta,e.mza mzae, codloc20,
             frac, radio, l.mza, l.lado, ccalle, ncalle, nrocatastr, pisoredef piso,casa,dpto_habit,sector,edificio,entrada,tipoviv,cod_tipo_2, 
             descripcio,descripci2 , accion
-INTO ".$esquema.".listado_geo
+INTO ".$esquema.".listado_segmentado_geo
 FROM arcos e JOIN listado l ON l.ccalle::integer=e.codigo20 
 and
      (l.lado::integer=e.lado and 
          e.mza like 
          '%'||btrim(to_char(l.frac::integer, '09'::text))::character varying(3)||btrim(to_char(l.radio::integer, '09'::text))::character varying(3)||btrim(to_char(l.mza::integer, '099'::text))::character varying(3) 
        );");
-       DB::statement("GRANT SELECT ON TABLE  ".$esquema.".listado_geo TO sig");
+       DB::statement("GRANT SELECT ON TABLE  ".$esquema.".listado_segmentado_geo TO sig");
         return $resultado;
     }
+
+
 }
