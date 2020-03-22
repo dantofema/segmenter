@@ -21,8 +21,6 @@ SET row_security = off;
 CREATE SCHEMA IF NOT EXISTS segmentacion;
 
 
-ALTER SCHEMA segmentacion OWNER TO laravel;
-
 SET default_tablespace = '';
 
 SET default_with_oids = false;
@@ -31,7 +29,7 @@ SET default_with_oids = false;
 -- Name: adyacencias; Type: TABLE; Schema: segmentacion; Owner: laravel
 --
 
-CREATE TABLE segmentacion.adyacencias (
+CREATE TABLE IF NOT EXISTS segmentacion.adyacencias (
     shape text,
     prov integer,
     dpto integer,
@@ -46,13 +44,11 @@ CREATE TABLE segmentacion.adyacencias (
 );
 
 
-ALTER TABLE segmentacion.adyacencias OWNER TO laravel;
-
 --
 -- Name: conteos; Type: TABLE; Schema: segmentacion; Owner: laravel
 --
 
-CREATE TABLE segmentacion.conteos (
+CREATE TABLE IF NOT EXISTS segmentacion.conteos (
     tabla text,
     prov integer,
     dpto integer,
@@ -66,9 +62,6 @@ CREATE TABLE segmentacion.conteos (
 );
 
 
-ALTER TABLE segmentacion.conteos OWNER TO laravel;
-
 --
 -- PostgreSQL database dump complete
 --
-
