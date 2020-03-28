@@ -235,5 +235,35 @@ and
         return $resultado;
     }
 
+    public static function getNodos($esquema)
+    {
+        return DB::select('SELECT distinct *, substr(mza_i,13,3)||\':\'||lado_i as label FROM (
+                                            SELECT mza_i,lado_i from e'.$esquema.'.lados_adyacentes UNION 
+                                            SELECT mza_j,lado_j from e'.$esquema.'.lados_adyacentes) foo
+                           WHERE mza_i like :radio;',['radio'=>'460140100101%']);
+    }
+
+    public static function getAdyacencias($esquema)
+    {
+                return DB::select('SELECT * from e'.$esquema.'.lados_adyacentes
+                           WHERE mza_i like :radio;',['radio'=>'460140100101%']);
+    }
+    
+    public static function getSegmentos($esquema)
+    {
+                return DB::select('SELECT array_agg(mza||\'-\'||lado) segmento 
+FROM
+(SELECT 
+mzai mza,ladoi lado, segi seg
+FROM e'.$esquema.'.arc
+UNION
+ SELECT
+mzad mza,ladod lado, segd seg
+FROM e'.$esquema.'.arc
+) segs
+WHERE mza like :radio
+GROUP BY seg
+;',['radio'=>'460140100101%']);
+    }
 
 }

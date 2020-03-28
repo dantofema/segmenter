@@ -103,6 +103,9 @@ Route::get('ver-segmentacion-lados/grafico-resumen/{aglomerado}','AglomeradoCont
 Route::post('ver-segmentacion-lados-grafico-resumen/{aglomerado}','AglomeradoController@ver_segmentacion_lados_grafico_resumen')->name('ver-segmentacion-lados-grafico-resumen');
 
 
+// ---------- GRAFOS AGLOMERADOS --------
+Route::get('grafo/{aglomerado}','SegmentacionController@index');
+
 //Route::get('mail', 'MailCsvController@index');
 
 /* Auto-generated admin routes */
