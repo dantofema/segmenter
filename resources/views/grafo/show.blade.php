@@ -18,8 +18,8 @@
 </body>
 	<script>
     let arrayOfClusterArrays = @json($segmentacion) ;  
-    let clusterColors = ['#756D76', '#3ac4e1', '#ad277e', '#4139dd', '#d57dba', '#8ab23c', '#8dcaa4'
-                        ,'#AAA','#BBB','#CCC','#A00','#0A0','#00A','#F00','#0F0','#00F'];
+    let clusterColors = ['#FFFF00', '#00FFFF', '#FF00FF', '#4139dd', '#d57dba', '#8dcaa4'
+                        ,'#555','#CCC','#A00','#0A0','#00A','#F00','#0F0','#00F'];
 		var cy = cytoscape({
 
   container: document.getElementById('cy'), // container to render in
@@ -42,14 +42,14 @@
 						if (arrayOfClusterArrays[i].includes(ele.data('id')))
 							return clusterColors[i];
 
-					return '#756D76';
+					return '#000000';
 				},
         'label': 'data(label)'
       }
     },
 
     {
-      selector: 'edge',
+      selector: 'edges',
       style: {
         'width': 2,
         'line-color': '#ccc',
