@@ -15,6 +15,16 @@ class Radio extends Model
     ];
 
      /**
+      * Fix datos..
+      *
+      */
+     public function getCodigoAttribute($value)
+     {
+        return trim($value);
+     }
+
+
+     /**
       * Relación con Fraccion , un Radio pertenece a Una fracción. 
       *
       */
@@ -45,6 +55,16 @@ class Radio extends Model
         // return $this->belongsTo('App\Model\RadioLocalidad','radio_localidad','radio_id','localidad_id');
      }
 
+     /**
+      * Relación con Aglomerado, un Radio puede pertenecer a varios aglomerado? Espero que solo este en 1. 
+      *
+      */
+
+     public function aglomerado()
+     {  
+        //TODO
+        return $this->belongsToMany('App\Model\Localidad', 'radio_localidad');
+     }
     /**
      * Segmentar radio a lados completos
      * 
