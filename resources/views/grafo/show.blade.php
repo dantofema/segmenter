@@ -49,11 +49,11 @@
     },
 
     {
-      selector: 'edges',
+      selector: 'edge',
       style: {
         'width': 2,
         'line-color': '#ccc',
-        'target-arrow-color': '#ccc',
+        'target-arrow-color': '#aae',
         'target-arrow-shape': 'triangle'
       }
     }
