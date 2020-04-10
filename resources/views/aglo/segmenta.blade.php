@@ -2,13 +2,13 @@
     Segmentación para el aglomerado ({{ $aglomerado->codigo }}) 
     <b> {{ $aglomerado->nombre }} </b><br />
      @if($carto)
-        La cartografía esta cargada.
+        La cartografía está cargada.
      @else
-        NO esta cargda la cartografía.
+        NO esta cargada la cartografía.
      @endif 
     <br />
      @if($listado)
-        El Listado esta cargado.
+        El Listado está cargado.
      @else
         NO esta cargado el listado.
      @endif 
@@ -30,28 +30,28 @@
     </div>
   </div>
   <div class="form-group">
-    <label class="control-label" for="radio">Metodo de segmentación:</label><br />
-    <label class="radio-inline"><input type="radio" name="optalgoritmo" value=listado checked>Manzanas independientes</label>
-    <label class="radio-inline"><input type="radio" name="optalgoritmo" value=lados >Lados Completos</label>
-    <label class="radio-inline"><input type="radio" name="optalgoritmo" value=magic disabled>IA - Magic</label>
+    <label class="control-label" for="radio">Método de segmentación:</label><br />
+    <label class="radio-inline"><input type="radio" name="optalgoritmo" value=listado checked>Manzanas independientes</label><br />
+    <label class="radio-inline"><input type="radio" name="optalgoritmo" value=lados checked="checked">Lados Completos</label><br />
+    <label class="radio-inline"><input type="radio" name="optalgoritmo" value=magic disabled>IA - Magic</label><br />
   </div>
   <div class="form-group">
     <label class="control-label" for="radio">Parametros:</label><br />
     <div class="">
-    <label class="control-label " for="radio">Cant. Deseada de viviendas:</label>
+    <label class="control-label " for="radio">Cantidad deseada de viviendas:</label>
     <input id="vivs_deaseadas" type="integer" maxlength=3 size=3 name="vivs_deseadas" value="20"><br />
     </div>
     <div class="">
-    <label class="control-label " for="radio">Cant. Máxima deseada:</label>
+    <label class="control-label " for="radio">Cantidad máxima deseada:</label>
     <input id="vivs_max" type="integer" maxlength=3 size=3 name="vivs_max" value="20"><br />
     </div>
     <div class="">
-    <label class="control-label " for="radio">Cant. Mínima deseada:</label>
+    <label class="control-label " for="radio">Cantidad Mínima deseada:</label>
     <input id="vivs_min" type="integer" maxlength=3 size=3 name="vivs_min" value="20"><br />
     </div>
     <div class="">
-    <label class="control-label " for="radio">Mantener manzana indivisible para manzanas con menos de x viviendas:</label>
-    <input id="mzas_indivisibles" type="integer" maxlength=3 size=3 name="mzas_indivisibles" value="20">
+    <label class="control-label " for="radio">Mantener manzana indivisible para manzanas con menos de:</label>
+    <input id="mzas_indivisibles" type="integer" maxlength=3 size=3 name="mzas_indivisibles" value="20"> viviendas
     </div>
  </div>
  <div class="mx-auto">
@@ -69,7 +69,7 @@
 <div>
 
 <svg id="C30" class="mapa" xmlns="http://www.w3.org/2000/svg" height="500" width="450" viewBox="0 0 450 500">
-   <path fill="#B698BE" clave_unica="18" tipo="Provincia" nombre="Corrientes" id="C30-18" class="provincia interactiva" codigo="18" d=" M 389 50 L 387 51 389 58 386 68 366 80 362 85 361 92 368 104 367 108 364 107 360 101 354 99 348 92 345 86 345 73 339 71 336 67 334 58 326 53 323 55 319 55 310 48 301 44 300 42 295 43 291 42 284 46 278 46 271 49 268 49 263 46 254 47 253 49 247 52 246 55 243 55 238 60 234 59 232 59 232 58 229 58 227 55 220 54 214 56 208 56 205 59 204 66 201 64 200 57 196 56 194 50 194 47 198 46 202 42 202 33 208 21 206 10 201 2 202 -0 450 -0 450 0 448 2 440 8 435 11 430 10 424 14 419 20 418 32 409 37 404 45 394 50 Z" stroke-width="1" style="z-index: 999;"></path>
+   <path fill="#B698BE" clave_unica="18" tipo="Provincia" nombre="Corrientes" id=checked="checked""C30-18" class="provincia interactiva" codigo="18" d=" M 389 50 L 387 51 389 58 386 68 366 80 362 85 361 92 368 104 367 108 364 107 360 101 354 99 348 92 345 86 345 73 339 71 336 67 334 58 326 53 323 55 319 55 310 48 301 44 300 42 295 43 291 42 284 46 278 46 271 49 268 49 263 46 254 47 253 49 247 52 246 55 243 55 238 60 234 59 232 59 232 58 229 58 227 55 220 54 214 56 208 56 205 59 204 66 201 64 200 57 196 56 194 50 194 47 198 46 202 42 202 33 208 21 206 10 201 2 202 -0 450 -0 450 0 448 2 440 8 435 11 430 10 424 14 419 20 418 32 409 37 404 45 394 50 Z" stroke-width="1" style="z-index: 999;"></path>
    <path fill="#B698BE" clave_unica="06" tipo="Provincia" nombre="Buenos Aires" id="C30-06" class="provincia interactiva" codigo="06" d=" M 0 468 L 62 405 64 398 68 394 74 393 77 397 85 398 91 403 96 406 105 405 106 399 110 395 111 387 118 382 119 375 123 371 125 368 124 366 126 367 126 366 131 370 133 376 144 384 146 388 154 390 157 394 163 397 165 404 177 407 181 415 190 409 193 411 194 417 196 420 214 421 215 423 212 428 214 430 220 430 223 435 230 433 233 435 235 435 237 438 243 440 248 447 256 448 265 458 281 455 290 456 291 461 290 461 290 469 288 473 290 477 287 477 287 480 285 480 286 482 285 482 284 484 276 484 277 485 275 487 280 497 278 495 278 497 277 496 275 500 0 500 Z M 280 492 L 280 492 280 491 280 492 Z M 280 491 L 280 491 280 491 280 491 Z M 281 491 L 281 491 281 491 281 491 Z M 281 491 L 281 491 281 491 281 491 Z M 281 491 L 281 491 281 491 281 491 Z M 279 492 L 281 495 280 497 277 490 279 490 Z M 278 487 L 278 487 279 487 278 487 Z M 275 487 L 278 487 278 489 277 489 Z M 279 486 L 278 486 278 486 279 486 Z M 276 486 L 277 486 277 486 277 487 Z M 285 483 L 286 483 285 483 285 483 Z M 292 481 L 292 481 292 482 292 482 Z M 297 481 L 298 481 298 482 297 481 Z M 293 480 L 293 480 293 480 293 480 Z M 293 479 L 293 479 293 480 293 480 Z M 292 479 L 292 479 293 479 292 479 Z M 291 480 L 291 481 291 481 290 479 Z M 292 479 L 293 480 294 481 293 481 292 481 Z M 292 479 L 292 479 292 479 292 479 Z M 299 479 L 299 480 299 480 298 479 Z M 292 479 L 292 479 292 479 292 479 Z M 289 477 L 289 477 288 477 288 477 Z M 289 477 L 289 477 289 477 289 477 Z M 290 477 L 290 478 289 478 289 477 Z M 294 476 L 296 478 295 481 295 479 292 478 Z M 298 476 L 299 475 300 475 299 477 Z M 293 474 L 293 476 292 477 292 475 Z M 291 472 L 292 473 292 474 292 473 Z M 292 471 L 292 472 291 472 292 471 Z M 291 467 L 291 466 291 464 291 467 Z" stroke-width="1" style="z-index: 999;"></path>
    <path fill="#C6CEE1" clave_unica="82" tipo="Provincia" nombre="Santa Fe" id="C30-82" class="provincia interactiva" codigo="82" d=" M 45 423 L 0 468 0 -0 202 -0 201 2 206 10 208 21 202 33 202 42 198 46 193 48 196 56 194 66 197 70 198 80 196 86 199 93 198 96 192 101 189 110 171 133 164 138 161 149 153 155 152 162 147 171 137 174 136 180 129 181 129 187 116 196 111 197 107 196 100 201 99 206 96 209 97 212 97 219 91 225 91 228 94 230 96 236 91 245 94 253 93 262 88 264 89 270 88 277 83 283 85 289 84 295 88 303 86 309 89 320 91 326 95 331 97 338 105 351 112 353 116 356 121 357 123 360 122 363 126 367 125 366 124 366 125 368 119 375 118 382 111 387 110 395 106 399 105 405 96 406 91 403 85 398 77 397 74 393 69 394 64 398 62 405 Z" stroke-width="1" style="z-index: 999;"></path>
    <path fill="#BED3A8" clave_unica="30008" tipo="Departamento" nombre="Colón" id="C30-30008" class="departamento poligono" codigo="008" d=" M 338 215 L 334 223 325 226 322 228 323 233 325 235 327 243 326 249 322 259 328 270 326 279 319 283 318 280 316 281 311 277 307 270 299 267 300 261 290 260 287 266 286 262 279 259 279 248 275 242 276 237 273 235 274 223 277 224 275 227 285 229 283 227 286 223 290 225 292 223 291 220 294 217 299 221 303 220 302 212 307 213 307 211 315 206 320 213 327 215 329 213 334 213 Z" stroke-width="1" style="z-index: 999;"></path>
@@ -100,7 +100,7 @@
    <g clave_unica="30091100" tipo="Localidad cabecera de departamento/partido" nombre="ROSARIO DEL TALA" id="C30-30091100" class="localidad interactiva" codigo="100" style="display: none;"><circle r="3" cx="233" cy="268" fill="white" stroke="black" stroke-width="0.75"></circle> 
 	<circle r="1.5" cx="233" cy="268" fill="white" stroke="black" stroke-width="0.75"></circle> </g>
    <g clave_unica="30042010" tipo="Localidad cabecera de departamento/partido" nombre="SAN JOSE DE FELICIANO" id="C30-30042010" class="localidad interactiva" codigo="010" style="display: none;"><circle r="3" cx="282" cy="65" fill="white" stroke="black" stroke-width="0.75"></circle> 
-	<circle r="1.5" cx="282" cy="65" fill="white" stroke="black" stroke-width="0.75"></circle> </g>
+	<circle r="1.5" cx="282" cy="65" fill="white" stroke="black" stroke-width="0.checked="checked"75"></circle> </g>
    <g clave_unica="30084160" tipo="Localidad capital de provincia" nombre="PARANA" id="C30-30084160" class="localidad interactiva" codigo="160" style="display: none;"><circle r="3.5" cx="110" cy="201" fill="white" stroke="black" stroke-width="1"></circle> 
 	<circle r="1.5" cx="110" cy="201" fill="black"></circle> </g>
    <g clave_unica="30077070" tipo="Localidad cabecera de departamento/partido" nombre="NOGOYA" id="C30-30077070" class="localidad interactiva" codigo="070" style="display: none;"><circle r="3" cx="174" cy="275" fill="white" stroke="black" stroke-width="0.75"></circle> 
