@@ -75,7 +75,7 @@
              <th>Id</th>
              <th>Código</th>
              <th>Nombre</th>
-             <th>Número<br> de localidades</th>
+             <th>Número de localidades</th>
              <th>Geografía</th>
              <th>Listado</th>
              <th>Acciones</th>
