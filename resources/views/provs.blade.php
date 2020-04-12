@@ -58,7 +58,7 @@
              <th>Id</th>
              <th>Código</th>
              <th>Nombre</th>
-             <th>Cantidad de </br>Departamentos</th>
+             <th>Cantidad de Departamentos</th>
           </tr>
        </thead>
     </table>
