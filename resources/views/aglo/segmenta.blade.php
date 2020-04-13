@@ -2,20 +2,19 @@
     Segmentación para el aglomerado ({{ $aglomerado->codigo }}) 
     <b> {{ $aglomerado->nombre }} </b><br />
      @if($carto)
-        La cartografía esta cargada.
+        La base geográfica está cargada.
      @else
-        NO esta cargda la cartografía.
+        NO está cargada la base geográfica.
      @endif 
     <br />
      @if($listado)
-        El Listado esta cargado.
+        El Listado de viviendas esta cargado.
      @else
-        NO esta cargado el listado.
+        NO está cargado el listado de viviendas.
      @endif 
     <br />
 
 <div class="form-horizontal">
-<h3>{{ $aglomerado->nombre }} </h3>
 <form action="/aglo-segmenta-run/{{ $aglomerado->id }}" method="POST" enctype="multipart/form-data">
                 @csrf
 
@@ -43,15 +42,15 @@
     </div>
     <div class="">
     <label class="control-label " for="radio">Cant. Máxima deseada:</label>
-    <input id="vivs_max" type="integer" maxlength=3 size=3 name="vivs_max" value="20"><br />
+    <input id="vivs_max" type="integer" maxlength=3 size=3 name="vivs_max" value="22"><br />
     </div>
     <div class="">
     <label class="control-label " for="radio">Cant. Mínima deseada:</label>
-    <input id="vivs_min" type="integer" maxlength=3 size=3 name="vivs_min" value="20"><br />
+    <input id="vivs_min" type="integer" maxlength=3 size=3 name="vivs_min" value="16"><br />
     </div>
     <div class="">
     <label class="control-label " for="radio">Mantener manzana indivisible para manzanas con menos de x viviendas:</label>
-    <input id="mzas_indivisibles" type="integer" maxlength=3 size=3 name="mzas_indivisibles" value="20">
+    <input id="mzas_indivisibles" type="integer" maxlength=3 size=3 name="mzas_indivisibles" value="10">
     </div>
  </div>
  <div class="mx-auto">
