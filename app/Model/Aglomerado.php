@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
+use App\Model\Radio;
 
 class Aglomerado extends Model
 {
@@ -96,7 +97,8 @@ class Aglomerado extends Model
         $radios= null;
         if ($this->Listado==1){
             $radios = DB::table('e'.$this->codigo.'.listado')
-                                ->select(DB::raw("prov||dpto||frac||radio as link,codloc,'('||dpto||') '||nom_dpto||': '||frac||' '||radio as nombre,
+                                ->select(DB::raw("prov||dpto||frac||radio as link,codloc,
+             '('||dpto||') '||max(nom_dpto)||': '||frac||' '||radio as nombre,
              count(distinct mza) as cant_mzas,
              count(*) as vivs,
              count(CASE WHEN tipoviv='A' THEN 1 else null END) as vivs_a,
@@ -106,9 +108,17 @@ class Aglomerado extends Model
              count(CASE WHEN (tipoviv='D'  or tipoviv='J'  or tipoviv='VE' )THEN 1 else null END) as vivs_djve,
              count(CASE WHEN tipoviv='' THEN 1 else null END) as vivs_unclas
     "))
-                                ->groupBy('prov','dpto','codloc','nom_dpto','frac','radio')
+                                ->groupBy('prov','dpto','codloc','frac','radio')
+                                ->orderBy('prov','asc')
+                                ->orderBy('dpto','asc')
+                                ->orderBy('codloc','asc')
+                                ->orderBy('frac','asc')
+                                ->orderBy('radio','asc') 
                                 ->get();
         }
+        foreach($radios as $radio){$links[]=$radio->link; };
+   //     $objRadios=Radio::whereIn('codigo',$links)->get();
+   //     dd($objRadios);
         return $radios;
 
     }
@@ -120,7 +130,7 @@ class Aglomerado extends Model
 //
 //  VALUES
 //    ((SELECT ST_MakeLine(ST_MakePoint(0,0), ST_MakePoint(50,50))), 2),
-//    ((SELECT ST_Envelope(ST_MakeBox2d(ST_MakePoint(0,0), st_makepoint(10,10)))), 3)
+        //    ((SELECT ST_Envelope(ST_MakeBox2d(ST_MakePoint(0,0), st_makepoint(10,10)))), 3)
 
         if ($this->Carto){
 $height=400;
