@@ -88,7 +88,7 @@ class AglomeradoController extends Controller
         //
         $carto=$aglomerado->Carto;
         $listado=$aglomerado->Listado;
-        $radios=$aglomerado->Radios;
+        $radios=$aglomerado->ComboRadios;
         $svg=$aglomerado->getSVG();
         return view('aglo.segmenta',['aglomerado' => $aglomerado,'carto' => $carto,'listado'=>$listado,'radios'=>$radios,'svg'=>$svg]);
     }

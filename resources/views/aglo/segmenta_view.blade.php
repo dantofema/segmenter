@@ -3,5 +3,5 @@
 @section('title', 'Aglomerado {{ $aglomerado->nombre }}')
 
 @section('content')
-     @include('aglo.segmenta')
+     @include('aglo.radio')
 @stop

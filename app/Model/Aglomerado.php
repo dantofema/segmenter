@@ -117,10 +117,38 @@ class Aglomerado extends Model
                                 ->get();
         }
         foreach($radios as $radio){$links[]=$radio->link; };
-   //     $objRadios=Radio::whereIn('codigo',$links)->get();
+        $objRadios=Radio::whereIn('codigo',$links)->get();
    //     dd($objRadios);
-        return $radios;
+        return $objRadios;
 
+    }
+
+
+    public function getComboRadiosAttribute()
+    {
+        $radios= null;
+        if ($this->Listado==1){
+            $radios = DB::table('e'.$this->codigo.'.listado')
+                                ->select(DB::raw("prov||dpto||frac||radio as link,codloc,
+             '('||dpto||') '||max(nom_dpto)||': '||frac||' '||radio as nombre,
+             count(distinct mza) as cant_mzas,
+             count(*) as vivs,
+             count(CASE WHEN tipoviv='A' THEN 1 else null END) as vivs_a,
+             count(CASE WHEN (tipoviv='B1' or tipoviv='B2') THEN 1 else null END) as vivs_b,
+             count(CASE WHEN tipoviv='CA/CP' THEN 1 else null END) as vivs_c,
+             count(CASE WHEN tipoviv='CO' THEN 1 else null END) as vivs_co,
+             count(CASE WHEN (tipoviv='D'  or tipoviv='J'  or tipoviv='VE' )THEN 1 else null END) as vivs_djve,
+             count(CASE WHEN tipoviv='' THEN 1 else null END) as vivs_unclas
+    "))
+                                ->groupBy('prov','dpto','codloc','frac','radio')
+                                ->orderBy('prov','asc')
+                                ->orderBy('dpto','asc')
+                                ->orderBy('codloc','asc')
+                                ->orderBy('frac','asc')
+                                ->orderBy('radio','asc') 
+                                ->get();
+        }
+        return $radios;
     }
 
     public function getSVG()

@@ -1,5 +1,5 @@
 <div class="container">
-    Segmentación para el aglomerado ({{ $aglomerado->codigo }}) 
+    Información del aglomerado ({{ $aglomerado->codigo }}) 
     <b> {{ $aglomerado->nombre }} </b><br />
      @if($carto)
         La base geográfica está cargada.
