@@ -38,7 +38,7 @@
 
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <!-- Left Side Of Navbar -->
-                    <ul class="navbar-nav mr-auto">
+                    <ul class="navbar-nav mr-auto btn">
 			<li><a href="{{ url('/users') }}"> Users </a> </li>
 			<li><a href="{{ url('/listado') }}"> Listado </a> </li>
 			<li><a href="{{ url('/provs') }}"> Provincias </a> </li>
