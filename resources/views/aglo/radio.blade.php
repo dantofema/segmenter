@@ -25,7 +25,8 @@
     <div class="">
 <ul class="nav">
             @foreach($radios as $radio)
-    <li class="btn sm-btn" ><a href="{{ url('/grafo/'.$aglomerado->id.'/'.$radio->id) }}">{{ trim($radio->codigo) }}: {{ trim($radio->nombre) }} - Viviendas: {{ trim($radio->vivs) }}</a></li>
+    <li class="btn @if($radio->isSegmentado) segmentado @endif " >
+    <a href="{{ url('/grafo/'.$aglomerado->id.'/'.$radio->id) }}">{{ trim($radio->codigo) }}: {{ trim($radio->nombre) }} - {{ trim($radio->CantMzas) }}</a></li>
             @endforeach
 </ul>
     </div>
