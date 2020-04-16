@@ -4,6 +4,7 @@ namespace App\Model;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Segmentador;
+use App\MyDB;
 
 class Radio extends Model
 {
@@ -63,7 +64,8 @@ class Radio extends Model
      public function aglomerado()
      {  
         //TODO
-        return $this->belongsToMany('App\Model\Localidad', 'radio_localidad');
+//        return $this->belongsToMany('App\Model\Localidad', 'radio_localidad');
+        return $this->localidades->first()->aglomerado()->get();
      }
     /**
      * Segmentar radio a lados completos
@@ -90,5 +92,31 @@ class Radio extends Model
         dd($segmenta);
         return $segmenta->ver_segmentacion();
     }
+
+     /**
+      * Fix Cantidad de manzanas en cartografia..
+      *
+      */
+     public function getCantMzasAttribute($value)
+     {
+        $cant_mzas = MyDB::getCantMzas($this->codigo,'e'.$this->aglomerado()->first()->codigo);
+        $cant_mzas = $cant_mzas[0]->cant_mzas;
+        return $cant_mzas;
+     }
+
+     /**
+      * Fix Cantidad de manzanas en cartografia..
+      *
+      */
+     public function getisSegmentadoAttribute($value)
+     {
+        $result = MyDB::isSegmentado($this->codigo,'e'.$this->aglomerado()->first()->codigo);
+//        $cant_mzas = $cant_mzas[0]->cant_mzas;
+          if ($result):
+                return true;
+            else:
+                return false;
+          endif;
+     }
 
 }

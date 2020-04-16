@@ -266,4 +266,29 @@ GROUP BY seg
 ;',['radio'=>$radio.'%']);
     }
 
+    public static function getCantMzas($radio,$esquema){
+
+        return DB::select("
+WITH 
+arcos as (
+    SELECT min(ogc_fid) ogc_fid, st_LineMerge(st_union(wkb_geometry)) wkb_geometry,nomencla,codigo20,array_agg(distinct codigo10) codigo10, tipo, nombre,lado,min(desde) desde,
+    max(hasta) hasta,mza,codloc20 
+    FROM 
+    (SELECT ogc_fid,st_reverse(wkb_geometry) wkb_geometry,nomencla,codigo20,codigo10,tipo, nombre, ancho, anchomed, ladoi lado,desdei desde,
+     hastai hasta,mzai mza, codloc20, nomencla10,nomenclai nomenclax, codinomb, segi seg 
+    FROM ".$esquema.".arc
+UNION
+     SELECT ogc_fid,wkb_geometry,nomencla,codigo20,codigo10,tipo, nombre, ancho, anchomed, ladod lado,desded desde,
+     hastad hasta,mzad mza, codloc20, nomencla10,nomenclad nomenclax, codinomb, segd seg 
+    FROM ".$esquema.".arc) arcos_juntados
+    GROUP BY nomencla,codigo20,tipo, nombre,lado,mza,codloc20
+)
+SELECT count(*)  cant_mzas FROM arcos WHERE substr(mza,1,5)||substr(mza,9,4)='".$radio."' ;");
+    }
+
+    public static function isSegmentado($radio,$esquema){
+        return DB::select("SELECT true FROM ".$esquema.".arc WHERE (substr(mzad,1,5)||substr(mzad,9,4)='".$radio."' and segd is not null and segd>0) 
+                            or (substr(mzai,1,5)||substr(mzai,9,4)='".$radio."' and segi is not null and segi>0)
+        limit 1;");
+    }
 }
