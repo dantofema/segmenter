@@ -18,7 +18,8 @@ class Aglomerado extends Model
     ];
     public $carto;
     public $listado;
-    public $segmentadolistado;
+    public $segmentadoListado;
+    public $segmentadoLados;
 
      /**
       * Relación con Localidades, un Aglomerados tiene una o varias localidad.
@@ -45,50 +46,63 @@ class Aglomerado extends Model
     public function getListadoAttribute($value)
     {
         /// do your magic
-        if (Schema::hasTable('e'.$this->codigo.'.listado')) {
-            //
-            return true;
-        }else{
-            return false;
+        if (! $this->listado) { 
+        
+            if (Schema::hasTable('e'.$this->codigo.'.listado')) {
+                //
+                $this->listado= true;
+            }else{
+                $this->listado= false;
+            }
         }
+        return $this->listado;
     }
 
     public function getSegmentadolistadoAttribute($value)
     {
         /// do your magic
-        if (Schema::hasTable('e'.$this->codigo.'.segmentacion')) {
+        if (! $this->segmentadoListado) { 
+          if (Schema::hasTable('e'.$this->codigo.'.segmentacion')) {
             //SELECT (count( distinct segmento_id)) segmentos,count(*) domicilios,round( (1.0*count(*))/(count( distinct segmento_id)) ,1) promedio  FROM e0777.segmentacion;
-            return true;
-        }else{
-            return false;
+              return $this->segmentadoListado = true;
+          }else{
+              return $this->segmentadoListado = false;
+          }
         }
+        return $this->segmentadoListado;
     }
 
     public function getSegmentadoladosAttribute($value)
     {
         /// do your magic
-        if (Schema::hasTable('e'.$this->codigo.'.arc')) {
-            $radios = DB::table('e'.$this->codigo.'.arc')
-                         ->select(DB::raw("distinct substr(mzai,1,12) link"))
-                         ->whereNotNull('segi')
-                         ->orwhereNotNull('segd');
-            if ($radios->count()>0){       
-                return true;
-            }else{
-                return false;
-            }
-        }else{
-            return false;
+        if (! $this->segmentadoLados) {
+          if (Schema::hasTable('e'.$this->codigo.'.arc')) {
+              $radios = DB::table('e'.$this->codigo.'.arc')
+                           ->select(DB::raw("distinct substr(mzai,1,12) link"))
+                           ->whereNotNull('segi')
+                           ->orwhereNotNull('segd');
+              if ($radios->count()>0){       
+                  return $this->segmentadoLados = true;
+              }else{
+                  return $this->segmentadoLados = false;
+              }
+          }else{
+              return $this->segmentadoLados = false;
+          }
         }
+        return $this->segmentadoLados;
     }
 
     public function setCartoAtribute()
-    {   return true;
-        if (Schema::hasTable('e'.$this->codigo.'.arc')) {
-            return $this->attributes['carto'] = true;
-        }else{
-            return $this->attributes['carto'] = false;
+    {   
+        if (! $this->carto) {
+          if (Schema::hasTable('e'.$this->codigo.'.arc')) {
+              return $this->carto = true;
+          }else{
+              return $this->carto = false;
+          }
         }
+        return $this->carto;
 
     }
 
