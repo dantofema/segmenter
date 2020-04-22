@@ -15,6 +15,8 @@ class Radio extends Model
         'id','codigo','nombre'
     ];
 
+    private $_isSegmentado;
+
      /**
       * Fix datos..
       *
@@ -110,13 +112,17 @@ class Radio extends Model
       */
      public function getisSegmentadoAttribute($value)
      {
-        $result = MyDB::isSegmentado($this->codigo,'e'.$this->aglomerado()->first()->codigo);
+        if (! isset($this->_isSegmentado)){
+          $result = MyDB::isSegmentado($this->codigo,'e'.$this->aglomerado()->first()->codigo);
 //        $cant_mzas = $cant_mzas[0]->cant_mzas;
-          if ($result):
-                return true;
+            if ($result):
+                return $this->_isSegmentado = true;
             else:
-                return false;
+                return $this->_isSegmentado = false;
           endif;
+        }else{
+            return $this->_isSegmentado;
+        }
      }
 
 }

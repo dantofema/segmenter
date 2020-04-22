@@ -26,14 +26,17 @@
 <ul class="nav">
             @foreach($radios as $radio)
     <li class="btn @if($radio->isSegmentado) segmentado @endif " >
-    <a href="{{ url('/grafo/'.$aglomerado->id.'/'.$radio->id) }}">{{ trim($radio->codigo) }}: {{ trim($radio->nombre) }} - {{ trim($radio->CantMzas) }}</a></li>
+    @if($radio->isSegmentado)<a href="{{ url('/grafo/'.$aglomerado->id.'/'.$radio->id) }}"> @endif
+        {{ trim($radio->codigo) }}: {{ trim($radio->nombre) }} <br />Mzas: {{ trim($radio->CantMzas) }}
+    @if($radio->isSegmentado)</a> @endif
+    </li>
             @endforeach
 </ul>
     </div>
   </div>
   <div class="form-group">
     <label class="control-label" for="radio">Metodo de segmentación:</label><br />
-    <label class="radio-inline"><input type="radio" name="optalgoritmo" value=op1>dOp. 1</label>
+    <label class="radio-inline"><input type="radio" name="optalgoritmo" value=op1>Op. 1</label>
     <label class="radio-inline"><input type="radio" name="optalgoritmo" value=op2>Op. 2</label>
     <label class="radio-inline"><input type="radio" name="optalgoritmo" value=op3 disabled>Magic</label>
   </div>
