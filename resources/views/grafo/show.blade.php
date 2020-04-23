@@ -1,5 +1,7 @@
-<script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.14.0/cytoscape.min.js"></script>
+@extends('layouts.app')
+@section('header_scripts')
 <script src="https://unpkg.com/numeric/numeric-1.2.6.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.14.0/cytoscape.min.js"></script>
 <script src="https://unpkg.com/layout-base/layout-base.js"></script>
 <script src="https://unpkg.com/cose-base/cose-base.js"></script>
 <script src="/js/cytoscape-fcose.js"></script>
@@ -12,10 +14,14 @@
   display: block;
 }
 </style>
-<body>
+@endsection
+@section('content_main')
 	<button onClick="ordenar();"value="Ordenar">ReOrdenar</button>
-	<div id=cy></div>
-</body>
+	<div width= 1200px;
+  height= 600px;
+id=cy></div>
+@endsection
+@section('footer_scripts')
 	<script>
     let arrayOfClusterArrays = @json($segmentacion) ;  
     let clusterColors = ['#FFFF00', '#00FFFF', '#FF00FF', '#4139dd', '#d57dba', '#8dcaa4'
@@ -26,10 +32,10 @@
 
   elements: [ // list of graph elements to start with
     @foreach ($nodos as $nodo)
-        { data: { group: 'nodes',mza: '{{ $nodo->mza_i }}',label: '{{ $nodo->label }}', id: '{{ $nodo->mza_i }}-{{ $nodo->lado_i }}'  } },
+        { data: { group: 'nodes',mza: '{{ $nodo->mza_i }}',label: '{{ $nodo->label }}', conteo: '{{ $nodo->conteo }}', id: '{{ $nodo->mza_i }}-{{ $nodo->lado_i }}'  } },
     @endforeach    
     @foreach ($relaciones as $nodo)
-        { data: { group: 'edges',id: '{{ $nodo->mza_i }}-{{ $nodo->lado_i }}->{{ $nodo->mza_j }}-{{ $nodo->lado_j }}', source:'{{ $nodo->mza_i }}-{{ $nodo->lado_i }}', target:'{{ $nodo->mza_j }}-{{ $nodo->lado_j }}'} },
+        { data: { group: 'edges',tipo: '{{ $nodo->tipo }}', id: '{{ $nodo->mza_i }}-{{ $nodo->lado_i }}->{{ $nodo->mza_j }}-{{ $nodo->lado_j }}', source:'{{ $nodo->mza_i }}-{{ $nodo->lado_i }}', target:'{{ $nodo->mza_j }}-{{ $nodo->lado_j }}'} },
     @endforeach    
   ],
 
@@ -40,21 +46,26 @@
         'background-color': function (ele) {
 					for (let i = 0; i < arrayOfClusterArrays.length; i++)
 						if (arrayOfClusterArrays[i].includes(ele.data('id')))
-							return clusterColors[i];
+                           if (i>clusterColors.length) {n=i-clusterColors.length;
+                                                        if (n<0) n=-n;}
+                                                        
+                            else n=i;
+							return clusterColors[n];
 
 					return '#000000';
 				},
-        'label': 'data(label)'
+        'label': 'data(conteo)'
       }
     },
 
     {
       selector: 'edge',
       style: {
-        'width': 2,
-        'line-color': '#ccc',
+        'width': 3,
+        'line-color': function (ele) { if (ele.data('tipo')=='dobla') return '#555'; else return '#ccc'; },
         'target-arrow-color': '#aae',
-        'target-arrow-shape': 'triangle'
+        'target-arrow-shape': 'triangle',
+        'label': function (ele) { return ''; if (ele.data('tipo')=='dobla') return 'd'; else if (ele.data('tipo')=='enfrente') return 'e'; }
       }
     }
   ],
@@ -64,7 +75,7 @@
     rows: 25
   }
 
-});
+        });
 var layout = cy.layout({ name: 'random'});
 layout.run();
 function ordenar(){
@@ -72,3 +83,4 @@ var layout = cy.layout({ name: 'cose'});
 layout.run();
 }
 	</script>
+@endsection
