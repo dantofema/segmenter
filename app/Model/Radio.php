@@ -70,7 +70,7 @@ class Radio extends Model
         if ($localidad=$this->localidades->first())
             return $localidad->aglomerado()->get();
         else
-            return null;
+            return null; //new Aglomerado();
      }
     /**
      * Segmentar radio a lados completos
@@ -104,7 +104,7 @@ class Radio extends Model
       */
      public function getCantMzasAttribute($value)
      {
-        if ($this->aglomerado()){
+        if ($this->aglomerado() != null){
           $cant_mzas = MyDB::getCantMzas($this->codigo,'e'.$this->aglomerado()->first()->codigo);
           $cant_mzas = $cant_mzas[0]->cant_mzas;
           return $cant_mzas;
@@ -121,13 +121,18 @@ class Radio extends Model
      public function getisSegmentadoAttribute($value)
      {
         if (! isset($this->_isSegmentado)){
-          $result = MyDB::isSegmentado($this->codigo,'e'.$this->aglomerado()->first()->codigo);
+          if ($this->aglomerado() != null){
+            $result = MyDB::isSegmentado($this->codigo,'e'.$this->aglomerado()->first()->codigo);
 //        $cant_mzas = $cant_mzas[0]->cant_mzas;
-            if ($result):
-                return $this->_isSegmentado = true;
-            else:
-                return $this->_isSegmentado = false;
-          endif;
+              if ($result):
+                  return $this->_isSegmentado = true;
+              else:
+                  return $this->_isSegmentado = false;
+              endif;
+           }
+          else{
+             return false;
+          }
         }else{
             return $this->_isSegmentado;
         }
