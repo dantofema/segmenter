@@ -67,7 +67,10 @@ class Radio extends Model
      {  
         //TODO
 //        return $this->belongsToMany('App\Model\Localidad', 'radio_localidad');
-        return $this->localidades->first()->aglomerado()->get();
+        if ($localidad=$this->localidades->first())
+            return $localidad->aglomerado()->get();
+        else
+            return null;
      }
     /**
      * Segmentar radio a lados completos
@@ -101,9 +104,14 @@ class Radio extends Model
       */
      public function getCantMzasAttribute($value)
      {
-        $cant_mzas = MyDB::getCantMzas($this->codigo,'e'.$this->aglomerado()->first()->codigo);
-        $cant_mzas = $cant_mzas[0]->cant_mzas;
-        return $cant_mzas;
+        if ($this->aglomerado()){
+          $cant_mzas = MyDB::getCantMzas($this->codigo,'e'.$this->aglomerado()->first()->codigo);
+          $cant_mzas = $cant_mzas[0]->cant_mzas;
+          return $cant_mzas;
+        }
+        else{
+          return -1;
+        }
      }
 
      /**
