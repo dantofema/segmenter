@@ -67,7 +67,7 @@ class Radio extends Model
      {  
         //TODO
 //        return $this->belongsToMany('App\Model\Localidad', 'radio_localidad');
-        if ($localidad=$this->localidades->first())
+        if ($localidad=$this->localidades()->with('aglomerado')->first())
             return $localidad->aglomerado()->get();
         else
             return null; //new Aglomerado();
