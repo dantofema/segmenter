@@ -1,4 +1,8 @@
 @extends('layouts.app')
+@section('content')
+<div>Grafo de segmentación ({{ $aglomerado->codigo}}) {{ $aglomerado->nombre}}</div>
+<div>Radio: {{ $radio->codigo}}</div>
+@endsection
 @section('header_scripts')
 <script src="https://unpkg.com/numeric/numeric-1.2.6.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.14.0/cytoscape.min.js"></script>
@@ -18,8 +22,9 @@
 @section('content_main')
 	<button onClick="ordenar();"value="Ordenar">ReOrdenar</button>
 	<div width= 1200px;
-  height= 600px;
-id=cy></div>
+         height= 600px
+         id=cy>
+    </div>
 @endsection
 @section('footer_scripts')
 	<script>
