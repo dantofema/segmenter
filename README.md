@@ -58,30 +58,40 @@ cp .env.example .env
 Luego editar el archivo .env para que direccione donde corresponde,
 en el siguiente ejemplo hay que cambiar 
 ```
-APP_URL=url_del_servidor_donde_corre_la_aplicacion_laravel
+APP_URL=<url_del_servidor_donde_corre_la_aplicacion_laravel>:<puerto_del_servivio_de_la_aplicación>
 
-DB_HOST=url_del_servidor_de_DB_postgresql
+DB_HOST=<url_del_servidor_de_DB_postgresql>
 
-DB_DATABASE=base_de_datos
-DB_USERNAME=usuario_del_segmentador
-DB_PASSWORD=clave_del_usuario_del_segmentador
-
+DB_DATABASE=<base_de_datos>
+DB_USERNAME=<usuario_del_segmentador>
+DB_PASSWORD=<clave_del_usuario_del_segmentador>
 ```
 
 
 - Generar una app encryption key
-```bash
+```
 php artisan key:generate
 ```
 
+- Crear la base de datos mencionada en .env, conectarse, cargar postgis y crear el usuario del segmentador
+```bash
+createdb <base_de_datos>
+psql <base_de_datos>
+```
 
-- Para iniciar con una nueva base de datos debe crearse la base de datos una vez configurada en .env
+```sql
+create language postgis;
+create <usuario_del_segmentador> encrypted password <clave_del_usuario_del_segmentador>
+\q
+```
+
+- Crear la estructura de la base de datos usando migrate
 ```bash
 php artisan migrate
 ```
 
 
-- Una vez creada la estructura de base de datos con migrate, se carga con datos:
+- Cargar los datos usando db:seed
 ```bash
 php artisan db:seed
 ```
@@ -104,13 +114,13 @@ git submodule update
 - Para correr la aplicación en desarrollo: 
 
 Run app in http://localhost:8000
-```
+```bash
 php artisan serve
 ```
-usar el parámetro APP_URL definido en el .dev
+usar el parámetro APP_URL definido en el .env
 y elegir un puerto libre para que la app laravel esté escuchando
-```
-php artisan serve --host=url_del_servidor_donde_corre_la_aplicacion_laravel --port=9999
+```bash
+php artisan serve --host=<url_del_servidor_donde_corre_la_aplicacion_laravel> --port=<puerto_del_servivio_de_la_aplicación>
 ```
 
 [1]: https://devmarketer.io/learn/setup-laravel-project-cloned-github-com/
