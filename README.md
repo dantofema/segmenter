@@ -75,15 +75,10 @@ php artisan key:generate
 
 - Crear la base de datos mencionada en .env, conectarse, cargar postgis y crear el usuario del segmentador
 ```bash
-createdb <base_de_datos>
-psql <base_de_datos>
+createdb <base_de_datos> -h <url_del_servidor_de_DB_postgresql> -U <algun_db_admin>
+psql <base_de_datos> -h <url_del_servidor_de_DB_postgresql> -U <algun_db_admin> -c 'create extension postgis;' 
 ```
 
-```sql
-create language postgis;
-create <usuario_del_segmentador> encrypted password <clave_del_usuario_del_segmentador>
-\q
-```
 
 - Crear la estructura de la base de datos usando migrate
 ```bash
