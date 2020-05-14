@@ -38,4 +38,10 @@ class SegmentacionController extends Controller
                 }
         return view('grafo.show',['nodos'=>$nodos,'relaciones'=>$edges,'segmentacion'=>$segmentacion,'aglomerado'=>$aglomerado,'radio'=>$radio]);
     }
+
+    public function ver_grafico(Aglomerado $aglomerado,Radio $radio) {
+
+                $segmentacion=MyDB::segmentar_lados_ver_resumen($aglomerado->codigo);
+                return view('segmentacion.grafico2_lados',['segmentacion'=>$segmenta_data,'aglomerado'=>$aglomerado]);
+    }
 }

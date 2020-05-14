@@ -2,6 +2,9 @@
 @section('content')
 <div>Grafo de segmentación ({{ $aglomerado->codigo}}) {{ $aglomerado->nombre}}</div>
 <div>Radio: {{ $radio->codigo}}</div>
+<pre style="line-height: initial;font-size: 75%;">
+{{ $radio->Resultado ?? 'No hay resultado de segmenta' }}
+</pre>
 @endsection
 @section('header_scripts')
 <script src="https://unpkg.com/numeric/numeric-1.2.6.js"></script>
@@ -29,8 +32,8 @@
 @section('footer_scripts')
 	<script>
     let arrayOfClusterArrays = @json($segmentacion) ;  
-    let clusterColors = ['#FFFF00', '#00FFFF', '#FF00FF', '#4139dd', '#d57dba', '#8dcaa4'
-                        ,'#555','#CCC','#A00','#0A0','#00A','#F00','#0F0','#00F'];
+    let clusterColors = ['#FF0', '#0FF', '#F0F', '#4139dd', '#d57dba', '#8dcaa4'
+                        ,'#555','#CCC','#A00','#0A0','#00A','#F00','#0F0','#00F','#008','#800','#080'];
 		var cy = cytoscape({
 
   container: document.getElementById('cy'), // container to render in
@@ -43,7 +46,6 @@
         { data: { group: 'edges',tipo: '{{ $nodo->tipo }}', id: '{{ $nodo->mza_i }}-{{ $nodo->lado_i }}->{{ $nodo->mza_j }}-{{ $nodo->lado_j }}', source:'{{ $nodo->mza_i }}-{{ $nodo->lado_i }}', target:'{{ $nodo->mza_j }}-{{ $nodo->lado_j }}'} },
     @endforeach    
   ],
-
   style: [ // the stylesheet for the graph
     {
       selector: 'node',
@@ -53,16 +55,15 @@
 						if (arrayOfClusterArrays[i].includes(ele.data('id')))
                            if (i>clusterColors.length) {n=i-clusterColors.length;
                                                         if (n<0) n=-n;}
-                                                        
                             else n=i;
-							return clusterColors[n];
-
+						if (clusterColors[n]!=null) return clusterColors[n];
 					return '#000000';
 				},
-        'label': 'data(conteo)'
+        'label': 'data(conteo)',
+        'width': function(ele){ return (ele.data('conteo')/2)+10; },
+        'height': function(ele){ return (ele.data('conteo')/2)+10; },
       }
     },
-
     {
       selector: 'edge',
       style: {
@@ -73,19 +74,17 @@
         'label': function (ele) { return ''; if (ele.data('tipo')=='dobla') return 'd'; else if (ele.data('tipo')=='enfrente') return 'e'; }
       }
     }
-  ],
-
-  layout: {
-    name: 'grid',
-    rows: 25
-  }
-
-        });
-var layout = cy.layout({ name: 'random'});
-layout.run();
-function ordenar(){
-var layout = cy.layout({ name: 'cose'});
-layout.run();
-}
-	</script>
+      ],
+    layout: {
+        name: 'grid',
+        rows: 25
+    }
+    });
+    var layout = cy.layout({ name: 'random'});
+    layout.run();
+    function ordenar(){
+        var layout = cy.layout({ name: 'cose'});
+        layout.run();
+    }
+    </script>
 @endsection

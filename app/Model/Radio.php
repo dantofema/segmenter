@@ -16,6 +16,7 @@ class Radio extends Model
     ];
 
     private $_isSegmentado;
+    private $_resultado;
 
      /**
       * Fix datos..
@@ -94,8 +95,8 @@ class Radio extends Model
 
         $segmenta = new Segmentador();
         $segmenta->segmentar_a_lado_completo($aglo,$prov,$dpto,$frac,$radio,$deseadas,$max,$min,$indivisible);
-        dd($segmenta);
-        return $segmenta->ver_segmentacion();
+//        dd($segmenta);
+        return $this->_resultado = $segmenta->ver_segmentacion();
     }
 
      /**
@@ -137,5 +138,11 @@ class Radio extends Model
             return $this->_isSegmentado;
         }
      }
+
+    public function getResultadoAttribute($value)
+    {
+        return $this->_resultado;
+    }
+
 
 }
