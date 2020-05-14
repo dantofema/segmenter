@@ -10,7 +10,7 @@
 							<tr>	
 								<th>id</th>
 								<th>Prov</th>
-								<th>Depto</th>
+								<th>Dpto</th>
 								<th>Aglo</th>
 								<th>Localidad</th>
 								<th>Frac</th>

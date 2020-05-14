@@ -60,7 +60,7 @@
    <br>
    <div class="row">
     <div class="form-group col-md-6">
-    <h5>Codigo<span class="text-danger"></span></h5>
+    <h5>Código<span class="text-danger"></span></h5>
     <div class="controls">
         <input type="numeric" name="codigo" id="codigo" class="form-control " placeholder="Por favor introduzca un código"> <div class="help-block"></div></div>
     </div>
@@ -73,9 +73,9 @@
        <thead>
           <tr>
              <th>Id</th>
-             <th>Codigo</th>
+             <th>Código</th>
              <th>Nombre</th>
-             <th>Num. de localidades</th>
+             <th>Número de localidades</th>
              <th>Geografía</th>
              <th>Listado</th>
              <th>Acciones</th>
