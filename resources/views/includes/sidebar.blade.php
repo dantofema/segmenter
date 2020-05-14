@@ -9,13 +9,13 @@
                 <a href="#homeSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">Inicio</a>
                 <ul class="collapse list-unstyled" id="homeSubmenu">
                     <li>
-                        <a href="/provs"> Provincias </a>
+                        <a href="/provs">Provincias</a>
                     </li>
                     <li>
-                        <a href="/aglos"> Aglomerados </a>
+                        <a href="/aglos">Aglomerados</a>
                     </li>
                     <li>
-                        <a href="/segmentador"> Cargar </a>
+                        <a href="/segmentador">Cargar</a>
                     </li>
                 </ul>
             </li>
