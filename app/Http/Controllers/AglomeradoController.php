@@ -88,7 +88,7 @@ class AglomeradoController extends Controller
         //
         $carto=$aglomerado->Carto;
         $listado=$aglomerado->Listado;
-        $radios=$aglomerado->Radios;
+        $radios=$aglomerado->ComboRadios;
         $svg=$aglomerado->getSVG();
         return view('aglo.segmenta',['aglomerado' => $aglomerado,'carto' => $carto,'listado'=>$listado,'radios'=>$radios,'svg'=>$svg]);
     }
@@ -166,8 +166,13 @@ class AglomeradoController extends Controller
     {
         if($request->radios){
            $radio= Radio::where('codigo',$request->radios)->first();
-           $radio->segmentar($aglomerado->codigo,$request['vivs_deseadas'],$request['vivs_max'],$request['vivs_min'],$request['mzas_indivisibles']);
-        
+           $resultado = $radio->segmentar($aglomerado->codigo,
+                                          $request['vivs_deseadas'],
+                                          $request['vivs_max'],
+                                          $request['vivs_min'],
+                                          $request['mzas_indivisibles']);
+              return  app('App\Http\Controllers\SegmentacionController')->ver_grafo($aglomerado,$radio);        
+//            return view('grafo.show', ['aglomerado'=>$aglomerado,'radio'=>$radio]); //$this->ver_segmentacion($aglomerado);
         }else{
            flash('No selecciono ningún radio valido!'); 
            dd($request);

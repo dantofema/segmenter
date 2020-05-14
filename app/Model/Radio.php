@@ -4,6 +4,7 @@ namespace App\Model;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Segmentador;
+use App\MyDB;
 
 class Radio extends Model
 {
@@ -13,6 +14,9 @@ class Radio extends Model
     protected $fillable = [
         'id','codigo','nombre'
     ];
+
+    private $_isSegmentado;
+    private $_resultado;
 
      /**
       * Fix datos..
@@ -63,7 +67,11 @@ class Radio extends Model
      public function aglomerado()
      {  
         //TODO
-        return $this->belongsToMany('App\Model\Localidad', 'radio_localidad');
+//        return $this->belongsToMany('App\Model\Localidad', 'radio_localidad');
+        if ($localidad=$this->localidades()->with('aglomerado')->first())
+            return $localidad->aglomerado()->get();
+        else
+            return null; //new Aglomerado();
      }
     /**
      * Segmentar radio a lados completos
@@ -87,8 +95,54 @@ class Radio extends Model
 
         $segmenta = new Segmentador();
         $segmenta->segmentar_a_lado_completo($aglo,$prov,$dpto,$frac,$radio,$deseadas,$max,$min,$indivisible);
-        dd($segmenta);
-        return $segmenta->ver_segmentacion();
+//        dd($segmenta);
+        return $this->_resultado = $segmenta->ver_segmentacion();
     }
+
+     /**
+      * Fix Cantidad de manzanas en cartografia..
+      *
+      */
+     public function getCantMzasAttribute($value)
+     {
+        if ($this->aglomerado() != null){
+          $cant_mzas = MyDB::getCantMzas($this->codigo,'e'.$this->aglomerado()->first()->codigo);
+          $cant_mzas = $cant_mzas[0]->cant_mzas;
+          return $cant_mzas;
+        }
+        else{
+          return -1;
+        }
+     }
+
+     /**
+      * Fix Cantidad de manzanas en cartografia..
+      *
+      */
+     public function getisSegmentadoAttribute($value)
+     {
+        if (! isset($this->_isSegmentado)){
+          if ($this->aglomerado() != null){
+            $result = MyDB::isSegmentado($this->codigo,'e'.$this->aglomerado()->first()->codigo);
+//        $cant_mzas = $cant_mzas[0]->cant_mzas;
+              if ($result):
+                  return $this->_isSegmentado = true;
+              else:
+                  return $this->_isSegmentado = false;
+              endif;
+           }
+          else{
+             return false;
+          }
+        }else{
+            return $this->_isSegmentado;
+        }
+     }
+
+    public function getResultadoAttribute($value)
+    {
+        return $this->_resultado;
+    }
+
 
 }
