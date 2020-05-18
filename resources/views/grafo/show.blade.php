@@ -86,5 +86,6 @@
         var layout = cy.layout({ name: 'cose'});
         layout.run();
     }
+    ordenar();
     </script>
 @endsection
