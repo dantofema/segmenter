@@ -1,6 +1,7 @@
 <div class="container">
     i am the code {{ $aglomerado->codigo }} <br />
     I am the aglo {{ $aglomerado->nombre }} <br />
+<a href="{{ url('/aglo/'.$aglomerado->id) }}">Ver Radios</a>
 <div/>
 @if($aglomerado->codigo =='0125')         
 <div>

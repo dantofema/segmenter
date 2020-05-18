@@ -49,19 +49,15 @@ composer install
 ```bash
 npm install
 ```
-- Cree su propia copia del archivo .env & configure su app,
-para setear el entorno de ejecución de la app
-```bash
-cp .env.example .env
+- Definir el entorno creando usando `.env` como template,   
+`cp .env.example .env`   
+editarlo para configurar la aplicación a que direccione a la BD   
+
 ```
 
-Luego editar el archivo .env para que direccione donde corresponde,
-en el siguiente ejemplo hay que cambiar 
-```
 APP_URL=url_del_servidor_donde_corre_la_aplicacion_laravel
 
 DB_HOST=url_del_servidor_de_DB_postgresql
-
 DB_DATABASE=base_de_datos
 DB_USERNAME=usuario_del_segmentador
 DB_PASSWORD=clave_del_usuario_del_segmentador
