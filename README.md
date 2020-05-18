@@ -55,7 +55,7 @@ editarlo para configurar la aplicación a que direccione a la BD
 
 ```
 
-APP_URL=<url_del_servidor_donde_corre_la_aplicacion_laravel>:<puerto_del_servivio_de_la_aplicación>
+APP_URL=<url_del_servidor_donde_corre_la_aplicacion_laravel>:<puerto_del_servicio_de_la_aplicación>
 
 DB_HOST=<url_del_servidor_de_DB_postgresql>
 DB_DATABASE=<base_de_datos>
@@ -111,7 +111,7 @@ php artisan serve
 usar el parámetro APP_URL definido en el .env
 y elegir un puerto libre para que la app laravel esté escuchando
 ```bash
-php artisan serve --host=<url_del_servidor_donde_corre_la_aplicacion_laravel> --port=<puerto_del_servivio_de_la_aplicación>
+php artisan serve --host=<url_del_servidor_donde_corre_la_aplicacion_laravel> --port=<puerto_del_servicio_de_la_aplicación>
 ```
 
 [1]: https://devmarketer.io/learn/setup-laravel-project-cloned-github-com/
