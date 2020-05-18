@@ -42,8 +42,8 @@ class MyDB extends Model
     
 	public static function agregarsegisegd($esquema)
 	{
-	 DB::statement('ALTER TABLE e'.$esquema.'.arc ADD COLUMN segi integer;');
-	 DB::statement('ALTER TABLE e'.$esquema.'.arc ADD COLUMN segd integer;');
+	 DB::statement('ALTER TABLE e'.$esquema.'.arc ADD COLUMN IF NOT EXISTS segi integer;');
+	 DB::statement('ALTER TABLE e'.$esquema.'.arc ADD COLUMN IF NOT EXISTS segd integer;');
 	}
 
 	public static function segmentar_equilibrado($esquema,$deseado = 10)
