@@ -8,7 +8,7 @@
      @endif 
     <br />
      @if($listado)
-        El listado de viviendas esta cargado.
+        El listado de viviendas está cargado.
      @else
         NO está cargado el listado de viviendas.
      @endif 
@@ -30,8 +30,13 @@
   </div>
   <div class="form-group">
     <label class="control-label" for="radio">Método de segmentación:</label><br />
+<<<<<<< HEAD
     <label class="radio-inline"><input type="radio" name="optalgoritmo" value=listado>Manzanas independientes</label><br />
     <label class="radio-inline"><input type="radio" name="optalgoritmo" value=lados checked>Lados Completos</label><br />
+=======
+    <label class="radio-inline"><input type="radio" name="optalgoritmo" value=listado checked>Manzanas independientes</label><br />
+    <label class="radio-inline"><input type="radio" name="optalgoritmo" value=lados checked="checked">Lados Completos</label><br />
+>>>>>>> 86b156d64d892fb2b156a4937af14a75ddf3343d
     <label class="radio-inline"><input type="radio" name="optalgoritmo" value=magic disabled>IA - Magic</label><br />
   </div>
   <div class="form-group">
@@ -42,6 +47,7 @@
     </div>
     <div class="">
     <label class="control-label " for="radio">Cantidad máxima deseada:</label>
+<<<<<<< HEAD
     <input id="vivs_max" type="integer" maxlength=3 size=3 name="vivs_max" value="22"><br />
     </div>
     <div class="">
@@ -51,6 +57,17 @@
     <div class="">
     <label class="control-label " for="radio">Mantener manzana indivisible para manzanas con menos de:</label>
     <input id="mzas_indivisibles" type="integer" maxlength=3 size=3 name="mzas_indivisibles" value="10"> viviendas
+=======
+    <input id="vivs_max" type="integer" maxlength=3 size=3 name="vivs_max" value="20"><br />
+    </div>
+    <div class="">
+    <label class="control-label " for="radio">Cantidad Mínima deseada:</label>
+    <input id="vivs_min" type="integer" maxlength=3 size=3 name="vivs_min" value="20"><br />
+    </div>
+    <div class="">
+    <label class="control-label " for="radio">Mantener manzana indivisible para manzanas con menos de:</label>
+    <input id="mzas_indivisibles" type="integer" maxlength=3 size=3 name="mzas_indivisibles" value="20"> viviendas
+>>>>>>> 86b156d64d892fb2b156a4937af14a75ddf3343d
     </div>
  </div>
  <div class="mx-auto">
@@ -99,7 +116,7 @@
    <g clave_unica="30091100" tipo="Localidad cabecera de departamento/partido" nombre="ROSARIO DEL TALA" id="C30-30091100" class="localidad interactiva" codigo="100" style="display: none;"><circle r="3" cx="233" cy="268" fill="white" stroke="black" stroke-width="0.75"></circle> 
 	<circle r="1.5" cx="233" cy="268" fill="white" stroke="black" stroke-width="0.75"></circle> </g>
    <g clave_unica="30042010" tipo="Localidad cabecera de departamento/partido" nombre="SAN JOSE DE FELICIANO" id="C30-30042010" class="localidad interactiva" codigo="010" style="display: none;"><circle r="3" cx="282" cy="65" fill="white" stroke="black" stroke-width="0.75"></circle> 
-	<circle r="1.5" cx="282" cy="65" fill="white" stroke="black" stroke-width="0.75"></circle> </g>
+	<circle r="1.5" cx="282" cy="65" fill="white" stroke="black" stroke-width="0.checked="checked"75"></circle> </g>
    <g clave_unica="30084160" tipo="Localidad capital de provincia" nombre="PARANA" id="C30-30084160" class="localidad interactiva" codigo="160" style="display: none;"><circle r="3.5" cx="110" cy="201" fill="white" stroke="black" stroke-width="1"></circle> 
 	<circle r="1.5" cx="110" cy="201" fill="black"></circle> </g>
    <g clave_unica="30077070" tipo="Localidad cabecera de departamento/partido" nombre="NOGOYA" id="C30-30077070" class="localidad interactiva" codigo="070" style="display: none;"><circle r="3" cx="174" cy="275" fill="white" stroke="black" stroke-width="0.75"></circle> 
