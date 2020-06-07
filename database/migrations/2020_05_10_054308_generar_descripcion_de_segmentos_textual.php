@@ -19,7 +19,6 @@ class GenerarDescripcionDeSegmentosTextual extends Migration
         //$this->command->info('- Instalando función para generar descripción de segmentos textual...');
         $path = 'app/developer_docs/segmentacion-core/descripcion_segmentos/descripcion_segmentos.sql';
         DB::unprepared(file_get_contents($path));
-        $path = 'app/developer_docs/segmentacion-core/lados_completos/generar_adyacencias.sql';
         //$this->command->info('instalada!');
     }
 
