@@ -30,13 +30,8 @@
   </div>
   <div class="form-group">
     <label class="control-label" for="radio">Método de segmentación:</label><br />
-<<<<<<< HEAD
     <label class="radio-inline"><input type="radio" name="optalgoritmo" value=listado>Manzanas independientes</label><br />
     <label class="radio-inline"><input type="radio" name="optalgoritmo" value=lados checked>Lados Completos</label><br />
-=======
-    <label class="radio-inline"><input type="radio" name="optalgoritmo" value=listado checked>Manzanas independientes</label><br />
-    <label class="radio-inline"><input type="radio" name="optalgoritmo" value=lados checked="checked">Lados Completos</label><br />
->>>>>>> 86b156d64d892fb2b156a4937af14a75ddf3343d
     <label class="radio-inline"><input type="radio" name="optalgoritmo" value=magic disabled>IA - Magic</label><br />
   </div>
   <div class="form-group">
@@ -47,7 +42,6 @@
     </div>
     <div class="">
     <label class="control-label " for="radio">Cantidad máxima deseada:</label>
-<<<<<<< HEAD
     <input id="vivs_max" type="integer" maxlength=3 size=3 name="vivs_max" value="22"><br />
     </div>
     <div class="">
@@ -57,17 +51,6 @@
     <div class="">
     <label class="control-label " for="radio">Mantener manzana indivisible para manzanas con menos de:</label>
     <input id="mzas_indivisibles" type="integer" maxlength=3 size=3 name="mzas_indivisibles" value="10"> viviendas
-=======
-    <input id="vivs_max" type="integer" maxlength=3 size=3 name="vivs_max" value="20"><br />
-    </div>
-    <div class="">
-    <label class="control-label " for="radio">Cantidad Mínima deseada:</label>
-    <input id="vivs_min" type="integer" maxlength=3 size=3 name="vivs_min" value="20"><br />
-    </div>
-    <div class="">
-    <label class="control-label " for="radio">Mantener manzana indivisible para manzanas con menos de:</label>
-    <input id="mzas_indivisibles" type="integer" maxlength=3 size=3 name="mzas_indivisibles" value="20"> viviendas
->>>>>>> 86b156d64d892fb2b156a4937af14a75ddf3343d
     </div>
  </div>
  <div class="mx-auto">
