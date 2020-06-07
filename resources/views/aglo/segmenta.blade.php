@@ -99,7 +99,7 @@
    <g clave_unica="30091100" tipo="Localidad cabecera de departamento/partido" nombre="ROSARIO DEL TALA" id="C30-30091100" class="localidad interactiva" codigo="100" style="display: none;"><circle r="3" cx="233" cy="268" fill="white" stroke="black" stroke-width="0.75"></circle> 
 	<circle r="1.5" cx="233" cy="268" fill="white" stroke="black" stroke-width="0.75"></circle> </g>
    <g clave_unica="30042010" tipo="Localidad cabecera de departamento/partido" nombre="SAN JOSE DE FELICIANO" id="C30-30042010" class="localidad interactiva" codigo="010" style="display: none;"><circle r="3" cx="282" cy="65" fill="white" stroke="black" stroke-width="0.75"></circle> 
-	<circle r="1.5" cx="282" cy="65" fill="white" stroke="black" stroke-width="0.checked="checked"75"></circle> </g>
+	<circle r="1.5" cx="282" cy="65" fill="white" stroke="black" stroke-width="0.75"></circle> </g>
    <g clave_unica="30084160" tipo="Localidad capital de provincia" nombre="PARANA" id="C30-30084160" class="localidad interactiva" codigo="160" style="display: none;"><circle r="3.5" cx="110" cy="201" fill="white" stroke="black" stroke-width="1"></circle> 
 	<circle r="1.5" cx="110" cy="201" fill="black"></circle> </g>
    <g clave_unica="30077070" tipo="Localidad cabecera de departamento/partido" nombre="NOGOYA" id="C30-30077070" class="localidad interactiva" codigo="070" style="display: none;"><circle r="3" cx="174" cy="275" fill="white" stroke="black" stroke-width="0.75"></circle> 
