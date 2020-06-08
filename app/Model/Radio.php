@@ -29,16 +29,6 @@ class Radio extends Model
 
 
      /**
-      * Fix datos..
-      *
-      */
-     public function getCodigoAttribute($value)
-     {
-        return trim($value);
-     }
-
-
-     /**
       * Relación con Fraccion , un Radio pertenece a Una fracción. 
       *
       */
