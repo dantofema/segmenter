@@ -8,7 +8,7 @@
      @endif 
     <br />
      @if($listado)
-        El listado de viviendas esta cargado.
+        El listado de viviendas está cargado.
      @else
         NO está cargado el listado de viviendas.
      @endif 

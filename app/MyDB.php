@@ -36,6 +36,7 @@ class MyDB extends Model
              }
              DB::unprepared("Select indec.cargar_conteos('".$esquema."')");
              DB::unprepared("Select indec.generar_adyacencias('".$esquema."')");
+             DB::unprepared("Select indec.descripcion_segmentos('".$esquema."')");
              DB::commit();
 	}
 

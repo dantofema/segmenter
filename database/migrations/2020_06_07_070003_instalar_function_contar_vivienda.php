@@ -5,19 +5,20 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
 
-class GenerarDescripcionDeSegmentosTextual extends Migration
+class InstalarFunctionContarVivienda extends Migration
 {
     /**
      * Run the migrations.
-     * https://github.com/manureta/segmenter/issues/13
+     * https://github.com/hernan-alperin/Segmentacion-CORE/issues/7
+     * https://github.com/manureta/segmenter/issues/27
      * @return void
      */
     public function up()
     {
         //
         Eloquent::unguard();
-        //$this->command->info('- Instalando función para generar descripción de segmentos textual...');
-        $path = 'app/developer_docs/segmentacion-core/descripcion_segmentos/descripcion_segmentos.sql';
+        //$this->command->info('- Instalando función para discernir qué vivienda contar...');
+        $path = 'app/developer_docs/segmentacion-core/contar_vivienda.sql';
         DB::unprepared(file_get_contents($path));
         //$this->command->info('instalada!');
     }
@@ -31,7 +32,8 @@ class GenerarDescripcionDeSegmentosTextual extends Migration
     {
         //
         Eloquent::unguard();
-        DB::statement('drop function if exists indec.descripcion_segmentos(aglomerado text)');
+        DB::statement('drop function if exists indec.contar_vivienda(aglomerado text)');
     }
 }
+
 
