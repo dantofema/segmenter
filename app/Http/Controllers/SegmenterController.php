@@ -35,20 +35,22 @@ class SegmenterController extends Controller
     $data=null;
     return view('segmenter/index',['data' => $data,'epsgs'=> $this->epsgs]);
   }
+
   public function store(Request $request)
   {
     $AppUser= Auth::user();
     $data = [];
     $epsg_id = $request->input('epsg_id')?$request->input('epsg_id'):'22183';
+    $data['epsg']['id']=$epsg_id;
     if ($request->hasFile('shp')) {
 	    if ($request->file('shp')->isValid() or true) {
-    		$data['file']['shp_msg'] = "Subió un shape ";
+    		$data['file']['shp_msg'] = "Subió una base geográfica ";
 	      $extension = $request->shp->extension();
-    		$data['file']['shp_msg'] .= " con extensión: ".$extension;
+    		$data['file']['shp_msg'] .= " salvado con extensión: ".$extension;
 	      $original_name = $request->shp->getClientOriginalName();
-    		$data['file']['shp_msg'] .= ". y nombre original: ".$original_name;
+    		$data['file']['shp_msg'] .= " y nombre original: ".$original_name;
         $original_extension = $request->shp->getClientOriginalExtension();
-  		  $data['file']['shp_msg'] .= ". y extension original: ".$original_extension;
+  		  $data['file']['shp_msg'] .= ". Extension original: ".$original_extension;
         $original_name = $request->shp->getClientOriginalName();
 
 		if ($original_extension == 'shp'){
@@ -70,7 +72,7 @@ class SegmenterController extends Controller
 		    $codaglo = substr($original_name,1,4);
 			MyDB::createSchema($codaglo);
 			
-      $processOGR2OGR = Process::fromShellCommandline('/usr/bin/ogr2ogr -f "PostgreSQL" PG:"dbname=$db host=$host user=$user active_schema=e$e00 password=$pass" --config PG_USE_COPY YES -lco OVERWRITE=YES --config OGR_TRUNCATE YES -dsco PRELUDE_STATEMENTS="SET client_encoding TO latin1;CREATE SCHEMA IF NOT EXISTS e$e00;" -dsco active_schema=e$e00 -lco PRECISION=NO -lco SCHEMA=e$e00 -s_srs epsg:$epsg -t_srs epsg:$epsg -nln arc -skipfailures -update -overwrite $file ');
+      $processOGR2OGR = Process::fromShellCommandline('/usr/bin/ogr2ogr -f "PostgreSQL" PG:"dbname=$db host=$host user=$user active_schema=e$e00 password=$pass" --config PG_USE_COPY YES -lco OVERWRITE=YES --config OGR_TRUNCATE YES -dsco PRELUDE_STATEMENTS="SET client_encoding TO latin1;CREATE SCHEMA IF NOT EXISTS e$e00;" -dsco active_schema=e$e00 -lco PRECISION=NO -lco SCHEMA=e$e00 -s_srs epsg:$epsg -t_srs epsg:$epsg -nln arc -skipfailures -overwrite $file ');
       $processOGR2OGR->setTimeout(3600);
 			$processOGR2OGR->run(null, ['epsg' => $epsg_id, 'file' => storage_path().'/app/'.$data['file']['shp'],'e00'=>$codaglo,'db'=>Config::get('database.connections.pgsql.database'),'host'=>Config::get('database.connections.pgsql.host'),'user'=>Config::get('database.connections.pgsql.username'),'pass'=>Config::get('database.connections.pgsql.password')]);
 
@@ -86,13 +88,14 @@ class SegmenterController extends Controller
 			$codaglo = substr($original_name,1,4);
 			MyDB::createSchema($codaglo);
 			
-			$processOGR2OGR = Process::fromShellCommandline('/usr/bin/ogr2ogr -f "PostgreSQL" PG:"dbname=$db host=$host user=$user active_schema=e$e00 password=$pass" --config PG_USE_COPY YES -lco OVERWRITE=YES --config OGR_TRUNCATE YES -dsco PRELUDE_STATEMENTS="SET client_encoding TO latin1;CREATE SCHEMA IF NOT EXISTS e$e00;" -dsco active_schema=e$e00 -lco PRECISION=NO -lco SCHEMA=e$e00 -s_srs epsg:$epsg -t_srs epsg:$epsg -skipfailures -update -overwrite $file ARC');
+			$processOGR2OGR = Process::fromShellCommandline('/usr/bin/ogr2ogr -f "PostgreSQL" PG:"dbname=$db host=$host user=$user active_schema=e$e00 password=$pass" --config PG_USE_COPY YES -lco OVERWRITE=YES --config OGR_TRUNCATE YES -dsco PRELUDE_STATEMENTS="SET client_encoding TO latin1;CREATE SCHEMA IF NOT EXISTS e$e00;" -dsco active_schema=e$e00 -lco PRECISION=NO -lco SCHEMA=e$e00 -s_srs epsg:$epsg -t_srs epsg:$epsg -skipfailures -addfields -overwrite $file ARC');
       $processOGR2OGR->setTimeout(3600);
 			$processOGR2OGR->run(null, ['epsg' => $epsg_id, 'file' => storage_path().'/app/'.$data['file']['shp'],'e00'=>$codaglo,'db'=>Config::get('database.connections.pgsql.database'),'host'=>Config::get('database.connections.pgsql.host'),'user'=>Config::get('database.connections.pgsql.username'),'pass'=>Config::get('database.connections.pgsql.password')]);
-			
-      $processOGR2OGR_lab = Process::fromShellCommandline('/usr/bin/ogr2ogr -f "PostgreSQL" PG:"dbname=$db host=$host user=$user active_schema=e$e00 password=$pass" --config PG_USE_COPY YES -lco OVERWRITE=YES --config OGR_TRUNCATE YES -dsco PRELUDE_STATEMENTS="SET client_encoding TO latin1;CREATE SCHEMA IF NOT EXISTS e$e00;" -dsco active_schema=e$e00 -lco PRECISION=NO -lco SCHEMA=e$e00 -s_srs epsg:$epsg -t_srs epsg:$epsg -skipfailures -update -overwrite $file LAB');
+//		dd($processOGR2OGR);	
+      $processOGR2OGR_lab = Process::fromShellCommandline('/usr/bin/ogr2ogr -f "PostgreSQL" PG:"dbname=$db host=$host user=$user active_schema=e$e00 password=$pass" --config PG_USE_COPY YES -lco OVERWRITE=YES --config OGR_TRUNCATE YES -dsco PRELUDE_STATEMENTS="SET client_encoding TO latin1;CREATE SCHEMA IF NOT EXISTS e$e00;" -dsco active_schema=e$e00 -lco PRECISION=NO -lco SCHEMA=e$e00 -s_srs epsg:$epsg -t_srs epsg:$epsg -skipfailures -addfields -overwrite $file LAB');
       $processOGR2OGR_lab->setTimeout(3600);
 			$processOGR2OGR_lab->run(null, ['epsg' => $epsg_id, 'file' => storage_path().'/app/'.$data['file']['shp'],'e00'=>$codaglo,'db'=>Config::get('database.connections.pgsql.database'),'host'=>Config::get('database.connections.pgsql.host'),'user'=>Config::get('database.connections.pgsql.username'),'pass'=>Config::get('database.connections.pgsql.password')]);
+            //dd($processOGR2OGR_lab->getErrorOutput());
 			$data['file']['ogr2ogr_lab'] = $processOGR2OGR_lab->getErrorOutput().'<br />'.$processOGR2OGR_lab->getOutput();
 			$data['file']['ogr2ogr'] = $processOGR2OGR->getErrorOutput().'<br />'.$processOGR2OGR->getOutput();
 			MyDB::agregarsegisegd($codaglo);
@@ -123,16 +126,18 @@ class SegmenterController extends Controller
             $data['file']['csv_info'] = 'Se Cargo un DBF.';
 			      $processLog = Process::fromShellCommandline('echo "C1 DBF: $name" >> archivos.log');
       			$processLog->run(null, ['name' => "Archivo: ".$original_name." subido como: ".$data['file']['c1']]);
-      			$process = Process::fromShellCommandline('pgdbf -s latin1 $c1_dbf_file | psql -h $host -U $user $db');
-      			$process->run(null, ['c1_dbf_file' => storage_path().'/app/'.$data['file']['c1'],'db'=>Config::get('database.connections.pgsql.database'),'host'=>Config::get('database.connections.pgsql.host'),'user'=>Config::get('database.connections.pgsql.username'),'PGPASSWORD'=>Config::get('database.connections.pgsql.password')]);
+      			$process = Process::fromShellCommandline('pgdbf -s latin1 $c1_dbf_file | psql -h $host -p $port -U $user $db');
+      			$process->run(null, ['c1_dbf_file' => storage_path().'/app/'.$data['file']['c1'],'db'=>Config::get('database.connections.pgsql.database'),'host'=>Config::get('database.connections.pgsql.host'),'user'=>Config::get('database.connections.pgsql.username'),'port'=>Config::get('database.connections.pgsql.port'),'PGPASSWORD'=>Config::get('database.connections.pgsql.password')]);
             // executes after the command finishes
             if (!$process->isSuccessful()) {
-                dd($process);
+            //        dd($process->getErrorOutput());
+            $data['file']['error']=$process->getErrorOutput();
             }else{
               MyDB::moverDBF(storage_path().'/app/'.$data['file']['c1'],$codaglo);
               $aglo= Aglomerado::where('codigo', $codaglo)
                 ->first();
-              $data['file']['radios']=$aglo->radios;
+              $data['file']['aglomerado']=$aglo;
+//              $data['file']['radios']=$aglo->radios;
             }
           
       }else{$data['file']['csv_info'] = 'Se Cargo un archivo de formato no esperado!';}
