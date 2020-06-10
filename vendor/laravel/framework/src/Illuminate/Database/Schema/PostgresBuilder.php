@@ -163,11 +163,7 @@ class PostgresBuilder extends Builder
     protected function parseSchemaAndTable($table)
     {
         $table = explode('.', $table);
-        if (count($table)==2){
-            return [$table[0],$table[1]];       
-        }else{
-            return ['public',$table[0]];
-        };
+
         if (is_array($schema = $this->connection->getConfig('schema'))) {
             if (in_array($table[0], $schema)) {
                 return [array_shift($table), implode('.', $table)];
@@ -175,7 +171,7 @@ class PostgresBuilder extends Builder
 
             $schema = head($schema);
         }
-      
+
         return [$schema ?: 'public', implode('.', $table)];
     }
 }
