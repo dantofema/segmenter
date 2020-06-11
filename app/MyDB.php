@@ -36,14 +36,15 @@ class MyDB extends Model
              }
              DB::unprepared("Select indec.cargar_conteos('".$esquema."')");
              DB::unprepared("Select indec.generar_adyacencias('".$esquema."')");
+             DB::unprepared("Select indec.descripcion_segmentos('".$esquema."')");
              DB::commit();
 	}
 
     
 	public static function agregarsegisegd($esquema)
 	{
-	 DB::statement('ALTER TABLE e'.$esquema.'.arc ADD COLUMN segi integer;');
-	 DB::statement('ALTER TABLE e'.$esquema.'.arc ADD COLUMN segd integer;');
+	 DB::statement('ALTER TABLE e'.$esquema.'.arc ADD COLUMN IF NOT EXISTS segi integer;');
+	 DB::statement('ALTER TABLE e'.$esquema.'.arc ADD COLUMN IF NOT EXISTS segd integer;');
 	}
 
 	public static function segmentar_equilibrado($esquema,$deseado = 10)
@@ -235,5 +236,61 @@ and
         return $resultado;
     }
 
+    public static function getNodos($esquema,$radio = '%01103')
+    {
+        return DB::select('SELECT distinct *, substr(mza_i,13,3)||\':\'||lado_i as label,c.conteo FROM (
+                                            SELECT mza_i,lado_i from e'.$esquema.'.lados_adyacentes WHERE mza_i like :radio UNION 
+                                            SELECT mza_j,lado_j from e'.$esquema.'.lados_adyacentes WHERE mza_j like :radio) foo
+LEFT JOIN 
+    e'.$esquema.'.conteos c
+    ON (c.prov,c.dpto,c.codloc,c.frac,c.radio,c.mza,c.lado)=
+        (substr(mza_i,1,2)::integer,
+         substr(mza_i,3,3)::integer,
+         substr(mza_i,6,3)::integer,
+         substr(mza_i,9,2)::integer,
+         substr(mza_i,11,2)::integer,
+         substr(mza_i,13,3)::integer,
+         lado_i)
 
+                           ',['radio'=>$radio.'%']);
+    }
+
+    public static function getAdyacencias($esquema,$radio = '%01103')
+    {
+                return DB::select('SELECT * from e'.$esquema.'.lados_adyacentes
+         WHERE mza_i like :radio and mza_j like :radio;',['radio'=>$radio.'%']);
+    }
+    
+    public static function getSegmentos($esquema,$radio = '%01103')
+    {
+                return DB::select('SELECT array_agg(mza||\'-\'||lado) segmento 
+FROM
+(SELECT 
+mzai mza,ladoi lado, segi seg
+FROM e'.$esquema.'.arc
+UNION
+ SELECT
+mzad mza,ladod lado, segd seg
+FROM e'.$esquema.'.arc
+) segs
+WHERE mza like :radio
+GROUP BY seg
+;',['radio'=>$radio.'%']);
+    }
+
+    public static function getCantMzas($radio,$esquema){
+        $prov=substr($radio,0,2);
+        $dpto=substr($radio,2,3);
+        $frac=substr($radio,5,2);
+        $radio=substr($radio,7,2);
+        return DB::select("
+SELECT count( distinct mza)  cant_mzas 
+FROM ".$esquema.".conteos WHERE prov=".$prov." and dpto = ".$dpto." and frac=".$frac." and radio=".$radio." ;");
+    }
+
+    public static function isSegmentado($radio,$esquema){
+        return DB::select("SELECT true FROM ".$esquema.".arc WHERE (substr(mzad,1,5)||substr(mzad,9,4)='".$radio."' and segd is not null and segd>0) 
+                            or (substr(mzai,1,5)||substr(mzai,9,4)='".$radio."' and segi is not null and segi>0)
+        limit 1;");
+    }
 }

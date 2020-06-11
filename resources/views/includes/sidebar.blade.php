@@ -19,7 +19,7 @@
                     </li>
                 </ul>
             </li>
-            <li><a href="/about">Acerca de...</a></li>
+            <li><a href="/about">Acerca de ...</a></li>
             <li><a href="/contact#">Contacto</a></li>
             <li><a href="https://github.com/manureta/segmenter" target=blank >Source Code</a></li>
         </ul>

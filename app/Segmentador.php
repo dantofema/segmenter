@@ -36,7 +36,7 @@ class Segmentador extends Model
 		'MANDARINA_HOST' => Config::get('database.connections.pgsql.host'),
 		'MANDARINA_PORT' => Config::get('database.connections.pgsql.port')
 	]);
-        $process->setTimeout(3600);
+        $process->setTimeout(5 * 60 * 60);
        
         $process->run(null, ['tabla' => $esquema.".arc",'prov'=>$prov,'dpto'=>$dpto,'frac'=>$frac,'rad'=>$radio,
                              'deseada'=>$vivs_deseada,'max'=>$vivs_max,'min'=>$vivs_min,'indivisible'=>$mza_indivisible]);

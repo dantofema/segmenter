@@ -1,7 +1,7 @@
 <div class="container">
-    i am the code {{ $provincia->codigo }} <br />
-    I am the province {{ $provincia->nombre }} <br />
-    I have {{ $provincia->departamentos_count }} divisions.
+    código {{ $provincia->codigo }} <br />
+    provincia {{ $provincia->nombre }} <br />
+    con {{ $provincia->departamentos_count }} divisiones de segundo orden (comunas/partidos/departamentos)
 <div/>
 @if($provincia->codigo =='30')         
 <div>

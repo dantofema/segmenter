@@ -1,21 +1,20 @@
 <div class="container">
-    Segmentación para el aglomerado ({{ $aglomerado->codigo }}) 
+    Información del aglomerado ({{ $aglomerado->codigo }}) 
     <b> {{ $aglomerado->nombre }} </b><br />
      @if($carto)
-        La cartografía esta cargada.
+        La base geográfica está cargada.
      @else
-        NO esta cargda la cartografía.
+        NO está cargada la base geográfica.
      @endif 
     <br />
      @if($listado)
-        El Listado esta cargado.
+        El listado de viviendas está cargado.
      @else
-        NO esta cargado el listado.
+        NO está cargado el listado de viviendas.
      @endif 
     <br />
 
 <div class="form-horizontal">
-<h3>{{ $aglomerado->nombre }} </h3>
 <form action="/aglo-segmenta-run/{{ $aglomerado->id }}" method="POST" enctype="multipart/form-data">
                 @csrf
 
@@ -30,28 +29,28 @@
     </div>
   </div>
   <div class="form-group">
-    <label class="control-label" for="radio">Metodo de segmentación:</label><br />
-    <label class="radio-inline"><input type="radio" name="optalgoritmo" value=listado checked>Manzanas independientes</label>
-    <label class="radio-inline"><input type="radio" name="optalgoritmo" value=lados >Lados Completos</label>
-    <label class="radio-inline"><input type="radio" name="optalgoritmo" value=magic disabled>IA - Magic</label>
+    <label class="control-label" for="radio">Método de segmentación:</label><br />
+    <label class="radio-inline"><input type="radio" name="optalgoritmo" value=listado>Manzanas independientes</label><br />
+    <label class="radio-inline"><input type="radio" name="optalgoritmo" value=lados checked>Lados Completos</label><br />
+    <label class="radio-inline"><input type="radio" name="optalgoritmo" value=magic disabled>IA - Magic</label><br />
   </div>
   <div class="form-group">
     <label class="control-label" for="radio">Parametros:</label><br />
     <div class="">
-    <label class="control-label " for="radio">Cant. Deseada de viviendas:</label>
+    <label class="control-label " for="radio">Cantidad deseada de viviendas:</label>
     <input id="vivs_deaseadas" type="integer" maxlength=3 size=3 name="vivs_deseadas" value="20"><br />
     </div>
     <div class="">
-    <label class="control-label " for="radio">Cant. Máxima deseada:</label>
-    <input id="vivs_max" type="integer" maxlength=3 size=3 name="vivs_max" value="20"><br />
+    <label class="control-label " for="radio">Cantidad máxima deseada:</label>
+    <input id="vivs_max" type="integer" maxlength=3 size=3 name="vivs_max" value="22"><br />
     </div>
     <div class="">
-    <label class="control-label " for="radio">Cant. Mínima deseada:</label>
-    <input id="vivs_min" type="integer" maxlength=3 size=3 name="vivs_min" value="20"><br />
+    <label class="control-label " for="radio">Cantidad Mínima deseada:</label>
+    <input id="vivs_min" type="integer" maxlength=3 size=3 name="vivs_min" value="16"><br />
     </div>
     <div class="">
-    <label class="control-label " for="radio">Mantener manzana indivisible para manzanas con menos de x viviendas:</label>
-    <input id="mzas_indivisibles" type="integer" maxlength=3 size=3 name="mzas_indivisibles" value="20">
+    <label class="control-label " for="radio">Mantener manzana indivisible para manzanas con menos de:</label>
+    <input id="mzas_indivisibles" type="integer" maxlength=3 size=3 name="mzas_indivisibles" value="10"> viviendas
     </div>
  </div>
  <div class="mx-auto">

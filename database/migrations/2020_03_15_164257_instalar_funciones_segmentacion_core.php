@@ -35,7 +35,6 @@ class InstalarFuncionesSegmentacionCore extends Migration
         $path = 'app/developer_docs/segmentacion-core/lados_completos/crear_tabla_corrida.sql';
         DB::unprepared(file_get_contents($path));
         //$this->command->info('Tabla de info corridas creada!');
-        echo 'segmentacion-core instalado';
 
     }
 
