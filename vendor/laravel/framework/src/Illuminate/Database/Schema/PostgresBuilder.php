@@ -175,7 +175,7 @@ class PostgresBuilder extends Builder
 
             $schema = head($schema);
         }
-      
+
         return [$schema ?: 'public', implode('.', $table)];
     }
 }

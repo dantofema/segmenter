@@ -2,17 +2,31 @@
 ![Logo INDEC][logo] INDEC
 
 
-## Prerequisitos
-* PHP 7 
+## Prerequisitos (las instrucciones asumen que se está usando Ubuntu)
+* PHP 7: php-mbstring php-dom php-zip php-gd php-pdo-pgsql 
 ```
-php-mbstring
-php-dom
-php-zip
-php-gd
-php-pdo-pgsql
+sudo apt install php-mbstring php-dom php-zip php-gd php-pdo-pgsql
 ```
 * gdal (ogr2ogr)
-* pgdbf
+```
+sudo apt-get install python3.6-dev
+sudo add-apt-repository ppa:ubuntugis/ppa && sudo apt-get update
+sudo apt-get update
+sudo apt-get install gdal-bin
+sudo apt-get install libgdal-dev
+export CPLUS_INCLUDE_PATH=/usr/include/gdal
+export C_INCLUDE_PATH=/usr/include/gdal
+pip install GDAL
+```
+* pgdbf postgis
+```
+sudo apt install pgdbf postgis
+```
+* python3 pip psycopg2
+```
+sudo apt install python3-dev python3-pip
+pip install psycopg2
+```
 
 ## Para instalar el entorno de desarrollo se debe, (según extracto de [guia][1]):
 
