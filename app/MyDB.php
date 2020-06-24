@@ -40,7 +40,11 @@ class MyDB extends Model
              if (Schema::hasTable($esquema.'.arc') and Schema::hasTable($esquema.'.listado')){
                 if (! Schema::hasColumn($esquema.'.arc' , 'nomencla10')){
                             DB::statement('ALTER TABLE '.$esquema.'.arc ADD COLUMN IF NOT EXISTS nomencla10 text;');
+                }
+                if (! Schema::hasColumn($esquema.'.arc' , 'segi')){
     	                    DB::statement('ALTER TABLE '.$esquema.'.arc ADD COLUMN IF NOT EXISTS segi integer;');
+                }
+                if (! Schema::hasColumn($esquema.'.arc' , 'segd')){
                             DB::statement('ALTER TABLE '.$esquema.'.arc ADD COLUMN IF NOT EXISTS segd integer;');
                 }
                  DB::unprepared("Select indec.cargar_conteos('".$esquema."')");
