@@ -72,7 +72,7 @@ FROM
     
 	public static function agregarsegisegd($esquema)
 	{
-        if (Schema::hasTable($esquema.'.arc')) {
+        if (Schema::hasTable('e'.$esquema.'.arc')) {
     	 DB::statement('ALTER TABLE e'.$esquema.'.arc ADD COLUMN IF NOT EXISTS segi integer;');
     	 DB::statement('ALTER TABLE e'.$esquema.'.arc ADD COLUMN IF NOT EXISTS segd integer;');
          return true;
