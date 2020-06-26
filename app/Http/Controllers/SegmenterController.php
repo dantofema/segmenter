@@ -134,6 +134,7 @@ class SegmenterController extends Controller
             //        dd($process->getErrorOutput());
             $data['file']['error']=$process->getErrorOutput();
             }else{
+             $data['file']['info_dbf']=MyDB::infoDBF(storage_path().'/app/'.$data['file']['c1'],$codaglo);
               MyDB::moverDBF(storage_path().'/app/'.$data['file']['c1'],$codaglo);
               $aglo= Aglomerado::where('codigo', $codaglo)
                 ->first();
