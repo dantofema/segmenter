@@ -130,10 +130,25 @@ class Aglomerado extends Model
                                 ->orderBy('radio','asc') 
                                 ->get();
         }
-        foreach($radios as $radio){$links[]=$radio->link; };
-        $objRadios=Radio::whereIn('codigo',$links)->get();
-   //     dd($objRadios);
-        return $objRadios;
+            $links=[];
+            $new_radios=[];
+            $objRadios= Collect (new Radio);
+            $nuevos_radios=0;
+        foreach($radios as $radio){
+            if (Radio::where('codigo',$radio->link)->exists()){
+                           $links[]=$radio->link;
+            }else{
+                $new_radios[]=new Radio (['codigo'=>$radio->link,'nombre'=>'Nuevo: '.$radio->link]);
+                $nuevos_radios++;
+            }
+//            $links[]=$radio->link; };
+            }
+        if (count($links)>0){
+            $objRadios=Radio::whereIn('codigo',$links)->get();
+        }
+            //dd($new_radios,$nuevos_radios);
+            $objs=$objRadios->union(Collect ($new_radios));
+        return $objs;
 
     }
 

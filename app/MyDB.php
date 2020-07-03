@@ -14,6 +14,21 @@ class MyDB extends Model
 		DB::statement('CREATE SCHEMA IF NOT EXISTS e'.$esquema);
 	}
 
+    public static function infoDBF($file_name,$esquema)
+    {
+         $tabla = strtolower( substr($file_name,strrpos($file_name,'/')+1,-4) );
+    	return json_encode(DB::select('
+                        SELECT prov,dpto,nom_loc,codaglo, codloc, nom_loc, codent,nom_ent,count(*) registros, 
+                        count(distinct frac||radio) as radios,
+                        count(indec.contar_vivienda(cod_tipo_v)) as vivendas 
+                        --,count(*) vivs
+                        ,count(distinct prov||dpto||codloc||frac||radio||mza) as mzas
+                        --,array_agg(distinct prov||dpto||codloc||frac||radio||mza||lado),count(distinct lado) as lados 
+FROM 
+                        '.$tabla.'
+                        GROUP BY 1,2,3,4,5,6,7,8;')); 
+          
+    }
 	public static function moverDBF($file_name,$esquema)
 	{
          $tabla = strtolower( substr($file_name,strrpos($file_name,'/')+1,-4) );
@@ -57,7 +72,7 @@ class MyDB extends Model
     
 	public static function agregarsegisegd($esquema)
 	{
-        if (Schema::hasTable($esquema.'.arc')) {
+        if (Schema::hasTable('e'.$esquema.'.arc')) {
     	 DB::statement('ALTER TABLE e'.$esquema.'.arc ADD COLUMN IF NOT EXISTS segi integer;');
     	 DB::statement('ALTER TABLE e'.$esquema.'.arc ADD COLUMN IF NOT EXISTS segd integer;');
          return true;

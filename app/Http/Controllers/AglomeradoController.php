@@ -166,6 +166,10 @@ class AglomeradoController extends Controller
     {
         if($request->radios){
            $radio= Radio::where('codigo',$request->radios)->first();
+            if ($radio==null){
+                $radio = new Radio(['id'=>null,'codigo'=>$request->radios,'nombre'=>'Nuevo: '.$request->radios]);
+//            dd($radio);//'No se encontró el radio:'+$request->radios);
+            }
            $resultado = $radio->segmentar($aglomerado->codigo,
                                           $request['vivs_deseadas'],
                                           $request['vivs_max'],
