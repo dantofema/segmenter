@@ -86,6 +86,11 @@ FROM
 	{
     	if ( DB::statement("SELECT indec.segmentar_equilibrado('e".$esquema."',".$deseado.");") ){
         //    MyDB::georeferenciar_segmentacion($esquema);
+        // llamar generar r3 como tabla resultado de function indec.r3(agl)
+        // unir con aglo.descripcion_segmentos usando una estructura para ambas
+            return true;
+        }else{ return false; }
+        if( DB::statement("SELECT indec.r3('e".$esquema."');") )            
             return true;
         }else{ return false; }
 
