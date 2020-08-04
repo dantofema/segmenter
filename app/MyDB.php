@@ -89,6 +89,7 @@ FROM
         // llamar generar r3 como tabla resultado de function indec.r3(agl)
         // unir con aglo.descripcion_segmentos usando una estructura para ambas
 //        if( DB::statement("SELECT indec.funcion_que_genera_la_descripcion('e".$esquema."');") )            
+          if( DB::statement("SELECT indec.descripcion_segmentos('e".$esquema."');") ) 
             return true;
         }else{ return false; }
 
