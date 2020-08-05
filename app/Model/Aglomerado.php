@@ -190,9 +190,9 @@ class Aglomerado extends Model
         //    ((SELECT ST_Envelope(ST_MakeBox2d(ST_MakePoint(0,0), st_makepoint(10,10)))), 3)
 
         if ($this->Carto){
-$height=400;
-$width=450;
-$escalar=false;
+        $height=400;
+        $width=450;
+        $escalar=true;//false;
             $extent=DB::select("SELECT box2d(st_collect(wkb_geometry)) box FROM  e".$this->codigo.".arc");
             $extent=$extent[0]->box;
             list($x0,$y0,$x1,$y1) = sscanf($extent,'BOX(%f %f,%f %f)');
@@ -222,7 +222,7 @@ WITH shapes (geom, attribute) AS (
      FROM shapes
  )
  SELECT concat(
-         '<svg id=\"aglo_".$this->codigo."\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"".$x0." -".$y0." ".$x1." ".$y1."\" height=\"400\" width=\"450\">',
+         '<svg id=\"aglo_".$this->codigo."\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"".$x0." -".$y0." ".$x1." -".$y1."\" height=\"400\" width=\"450\">',
          array_to_string(array_agg(svg),''),
          '</svg>')
  FROM paths;
