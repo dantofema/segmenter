@@ -52,6 +52,10 @@ FROM
              if (! Schema::hasColumn($esquema.'.listado' , 'piso')){
                      DB::unprepared('ALTER TABLE '.$esquema.'.listado RENAME pisoredef TO piso');
              }
+             if (! Schema::hasColumn($esquema.'.listado' , 'nro_catast')){
+                     DB::unprepared('ALTER TABLE '.$esquema.'.listado RENAME
+                     nrocatastr TO nro_catast');
+             }
              if (Schema::hasTable($esquema.'.arc') and Schema::hasTable($esquema.'.listado')){
                 if (! Schema::hasColumn($esquema.'.arc' , 'nomencla10')){
                             DB::statement('ALTER TABLE '.$esquema.'.arc ADD COLUMN IF NOT EXISTS nomencla10 text;');
