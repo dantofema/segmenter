@@ -2,6 +2,7 @@
 
 @section('content')
 <div class="container">
+   <h4 class="center"> Carga de base geógrafica y listado de viviendas.</h4>
     <div class="row justify-content-center">
         <div class="col-md-12">
             @isset($data)
@@ -27,7 +28,7 @@
             <form action="/segmentador/guardar" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="form-group row">
-                    <label for="shp" class="col-sm-2 col-form-label ">SHP</label>
+                    <label for="shp" class="col-sm-2 col-form-label ">Base geográfica (e00/SHP)</label>
                     <div class="col-sm-10">
                         <input type="file" class="form-control-file" id="shp" name="shp">
                     </div>

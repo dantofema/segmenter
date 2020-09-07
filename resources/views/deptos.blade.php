@@ -58,7 +58,7 @@
              <th>Id</th>
              <th>Código</th>
              <th>Nombre</th>
-             <th>Cantidád de Localidades</th>
+             <th>Cantidad de Localidades</th>
           </tr>
        </thead>
     </table>

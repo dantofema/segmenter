@@ -163,7 +163,6 @@ class PostgresBuilder extends Builder
     protected function parseSchemaAndTable($table)
     {
         $table = explode('.', $table);
-
         if (count($table)==2){
             return [$table[0],$table[1]];       
         }else{
