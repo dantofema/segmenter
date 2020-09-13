@@ -87,10 +87,11 @@ FROM
     	if ( DB::statement("SELECT indec.segmentar_equilibrado('e".$esquema."',".$deseado.");") ){
         //    MyDB::georeferenciar_segmentacion($esquema);
         // llamar generar r3 como tabla resultado de function indec.r3(agl)
+            if( DB::statement("SELECT indec.r3('e".$esquema."');") ) {
         // unir con aglo.descripcion_segmentos usando una estructura para ambas
 //        if( DB::statement("SELECT indec.funcion_que_genera_la_descripcion('e".$esquema."');") )            
           if( DB::statement("SELECT indec.descripcion_segmentos('e".$esquema."');") ) 
-            return true;
+            return true;}
         }else{ return false; }
 
      // SQL retrun: Select segmento_id,count(*) FROM e0777.segmentacion GROUP BY segmento_id;
