@@ -16,7 +16,7 @@ class InstalarFunctionR3 extends Migration
     {
         //
         Eloquent::unguard();
-        $path = 'app/developer_docs/segmentacion-core/descripcion_segmentos/R3.sql';
+        $path = 'app/developer_docs/Segmentacion-CORE/descripcion_segmentos/R3.sql';
         DB::unprepared(file_get_contents($path));
     }
 
