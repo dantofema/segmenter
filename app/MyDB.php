@@ -52,9 +52,9 @@ FROM
              if (! Schema::hasColumn($esquema.'.listado' , 'piso')){
                      DB::unprepared('ALTER TABLE '.$esquema.'.listado RENAME pisoredef TO piso');
              }
-             if (! Schema::hasColumn($esquema.'.listado' , 'nro_catast')){
+             if (! Schema::hasColumn($esquema.'.listado' , 'nrocatastr')){
                      DB::unprepared('ALTER TABLE '.$esquema.'.listado RENAME
-                     nrocatastr TO nro_catast');
+                     nro_catast TO nrocatastr');
              }
              if (Schema::hasTable($esquema.'.arc') and Schema::hasTable($esquema.'.listado')){
                 if (! Schema::hasColumn($esquema.'.arc' , 'nomencla10')){
