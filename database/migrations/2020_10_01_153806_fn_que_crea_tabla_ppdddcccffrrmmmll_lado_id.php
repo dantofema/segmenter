@@ -14,13 +14,13 @@ class FnQueCreaTablaPpdddcccffrrmmmllLadoId extends Migration
     public function up()
     {
         //
-        $path = 'app/developer_docs/Segmentacion-CORE/lados_completos/cargar_conteos.sql';
+        $path = 'app/developer_docs/segmentacion-core/lados_completos/cargar_conteos.sql';
         DB::unprepared(file_get_contents($path));
         // fix bug diferente nombres de campos
-        $path = 'app/developer_docs/Segmentacion-CORE/lados_completos/cargar_lados.sql';
+        $path = 'app/developer_docs/segmentacion-core/lados_completos/cargar_lados.sql';
         DB::unprepared(file_get_contents($path));
         // crea tabla con ids integer de lados ppdddcccffrrmmmll
-        $path = 'app/developer_docs/Segmentacion-CORE/lados_completos/segmentos_lados_desde_hasta.sql';
+        $path = 'app/developer_docs/segmentacion-core/lados_completos/segmentos_lados_desde_hasta.sql';
         DB::unprepared(file_get_contents($path));
         // crea tabla para seguir un segemto desde hasta y por los lados que pasa
 
