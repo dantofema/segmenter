@@ -14,7 +14,7 @@ class RecreacionSegmentarEquilibrado extends Migration
     public function up()
     {
         //
-        $path = 'app/developer_docs/Segmentacion-CORE/manzanas_independientes/segmentar_equilibrado.sql';
+        $path = 'app/developer_docs/segmentacion-core/manzanas_independientes/segmentar_equilibrado.sql';
         DB::unprepared(file_get_contents($path));
     }
 

@@ -9,7 +9,7 @@ class InstalarFunctionR3 extends Migration
 {
     /**
      * Run the migrations.
-     * https://github.com/hernan-alperin/Segmentacion-CORE/issues/11
+     * https://github.com/hernan-alperin/segmentacion-core/issues/11
      * @return void
      */
     public function up()
