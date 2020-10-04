@@ -9,7 +9,7 @@ class InstalarFunctionContarVivienda extends Migration
 {
     /**
      * Run the migrations.
-     * https://github.com/hernan-alperin/Segmentacion-CORE/issues/7
+     * https://github.com/hernan-alperin/segmentacion-core/issues/7
      * https://github.com/manureta/segmenter/issues/27
      * @return void
      */
