@@ -20,7 +20,7 @@ class FnQueCreaTablaPpdddcccffrrmmmllLadoId extends Migration
         $path = 'app/developer_docs/segmentacion-core/lados_completos/cargar_lados.sql';
         DB::unprepared(file_get_contents($path));
         // crea tabla con ids integer de lados ppdddcccffrrmmmll
-        $path = 'app/developer_docs/segmentacion-core/lados_completos/segmentos_lados_desde_hasta.sql';
+        $path = 'app/developer_docs/segmentacion-core/segmentos_lados_desde_hasta.sql';
         DB::unprepared(file_get_contents($path));
         // crea tabla para seguir un segemto desde hasta y por los lados que pasa
 
