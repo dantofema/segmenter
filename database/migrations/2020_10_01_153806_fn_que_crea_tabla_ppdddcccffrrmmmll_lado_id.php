@@ -14,8 +14,6 @@ class FnQueCreaTablaPpdddcccffrrmmmllLadoId extends Migration
     public function up()
     {
         //
-        $path = 'app/developer_docs/segmentacion-core/lados_completos/cargar_conteos.sql';
-        DB::unprepared(file_get_contents($path));
         // fix bug diferente nombres de campos
         $path = 'app/developer_docs/segmentacion-core/lados_completos/cargar_lados.sql';
         DB::unprepared(file_get_contents($path));
