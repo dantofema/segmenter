@@ -91,8 +91,21 @@ FROM
 	{
         if (Schema::hasTable('e'.$esquema.'.listado')) {
           DB::statement('create TABLE if not exists e'.$esquema.'.segmentacion as
-            select id as listado_id, Null as segmento_id
+            select id as listado_id, Null::integer as segmento_id
             from e'.$esquema.'.listado 
+            ;');
+         return true;
+        }
+        else{
+         return false;
+        }
+	}
+
+	public static function generarSegmentacionVacia($esquema)
+	{
+        if (Schema::hasTable('e'.$esquema.'.listado')) {
+          DB::statement('create TABLE if not exists 
+            e'.$esquema.'.segmentacion (listado_id integer, segmento_id integer)
             ;');
          return true;
         }
