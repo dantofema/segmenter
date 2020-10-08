@@ -86,6 +86,22 @@ FROM
         }
 	}
 
+    	 
+	public static function generarSegmentacionNula($esquema)
+	{
+        if (Schema::hasTable('e'.$esquema.'.listado')) {
+          DB::statement('create TABLE if not exists e'.$esquema.'.segmentacion as
+            select id as listado_id, Null as segmento_id
+            from e'.$esquema.'.listado 
+            ;');
+         return true;
+        }
+        else{
+         return false;
+        }
+	}
+
+
 	public static function segmentar_equilibrado($esquema,$deseado = 10)
 	{
     	if ( DB::statement("SELECT indec.segmentar_equilibrado('e".$esquema."',".$deseado.");") ){
