@@ -14,21 +14,28 @@ class MyDB extends Model
 		DB::statement('CREATE SCHEMA IF NOT EXISTS e'.$esquema);
 	}
 
-    public static function infoDBF($file_name,$esquema)
+    public static function infoDBF($tabla,$esquema)
     {
-         $tabla = strtolower( substr($file_name,strrpos($file_name,'/')+1,-4) );
     	return json_encode(DB::select('
                         SELECT prov,dpto,nom_loc,codaglo, codloc, nom_loc, codent,nom_ent,count(*) registros, 
                         count(distinct frac||radio) as radios,
-                        count(indec.contar_vivienda(cod_tipo_v)) as vivendas 
+                        count(indec.contar_vivienda(tipoviv)) as viviendas 
                         --,count(*) vivs
                         ,count(distinct prov||dpto||codloc||frac||radio||mza) as mzas
                         --,array_agg(distinct prov||dpto||codloc||frac||radio||mza||lado),count(distinct lado) as lados 
 FROM 
-                        '.$tabla.'
+                        e'.$esquema.'.'.$tabla.'
                         GROUP BY 1,2,3,4,5,6,7,8;')); 
-          
     }
+
+    public static function getAglo($file_name,$esquema)
+    {
+        $tabla = strtolower( substr($file_name,strrpos($file_name,'/')+1,-4) );
+        return (DB::select('SELECT distinct codaglo FROM
+        '.$esquema.'.'.$tabla.';')[0]->codaglo);
+    }
+
+//         $tabla = strtolower( substr($file_name,strrpos($file_name,'/')+1,-4) );
 	public static function moverDBF($file_name,$esquema)
 	{
          $tabla = strtolower( substr($file_name,strrpos($file_name,'/')+1,-4) );
@@ -49,13 +56,21 @@ FROM
                            DB::statement('ALTER TABLE '.$esquema.'.listado ADD COLUMN tipoviv text;');
                        }
              }
+             if (! Schema::hasColumn($esquema.'.listado' , 'codent')){
+                           DB::statement('ALTER TABLE '.$esquema.'.listado ADD
+                           COLUMN codent text;');
+             }
+             if (! Schema::hasColumn($esquema.'.listado' , 'nom_ent')){
+                           DB::statement('ALTER TABLE '.$esquema.'.listado ADD
+                           COLUMN nom_ent text;');
+             }
              if (! Schema::hasColumn($esquema.'.listado' , 'piso')){
                      DB::unprepared('ALTER TABLE '.$esquema.'.listado RENAME pisoredef TO piso');
              }
-             if (! Schema::hasColumn($esquema.'.listado' , 'nro_catast')){
-                     DB::unprepared('ALTER TABLE '.$esquema.'.listado RENAME
-                     nrocatastr TO nro_catast');
-             }
+//             if (! Schema::hasColumn($esquema.'.listado' , 'nro_catast')){
+//                     DB::unprepared('ALTER TABLE '.$esquema.'.listado RENAME
+//                     nrocatastr TO nro_catast');
+//             }
              if (Schema::hasTable($esquema.'.arc') and Schema::hasTable($esquema.'.listado')){
                 if (! Schema::hasColumn($esquema.'.arc' , 'nomencla10')){
                             DB::statement('ALTER TABLE '.$esquema.'.arc ADD COLUMN IF NOT EXISTS nomencla10 text;');
@@ -302,6 +317,7 @@ LEFT JOIN
     
     public static function getSegmentos($esquema,$radio = '%01103')
     {
+        if (Schema::hasTable('e'.$esquema.'.arc')) {
                 return DB::select('SELECT array_agg(mza||\'-\'||lado) segmento 
 FROM
 (SELECT 
@@ -315,6 +331,9 @@ FROM e'.$esquema.'.arc
 WHERE mza like :radio
 GROUP BY seg
 ;',['radio'=>$radio.'%']);
+        }else{
+            return null;
+        }
     }
 
     public static function getCantMzas($radio,$esquema){
@@ -322,14 +341,24 @@ GROUP BY seg
         $dpto=substr($radio,2,3);
         $frac=substr($radio,5,2);
         $radio=substr($radio,7,2);
-        return DB::select("
+        if (Schema::hasTable('e'.$esquema.'.arc')) {
+            return DB::select("
 SELECT count( distinct mza)  cant_mzas 
 FROM ".$esquema.".conteos WHERE prov=".$prov." and dpto = ".$dpto." and frac=".$frac." and radio=".$radio." ;");
+        }else{
+            return 0;
+        }
     }
 
     public static function isSegmentado($radio,$esquema){
-        return DB::select("SELECT true FROM ".$esquema.".arc WHERE (substr(mzad,1,5)||substr(mzad,9,4)='".$radio."' and segd is not null and segd>0) 
+        if (Schema::hasTable('e'.$esquema.'.arc')) {
+            try {
+                return DB::select("SELECT true FROM ".$esquema.".arc WHERE (substr(mzad,1,5)||substr(mzad,9,4)='".$radio."' and segd is not null and segd>0) 
                             or (substr(mzai,1,5)||substr(mzai,9,4)='".$radio."' and segi is not null and segi>0)
         limit 1;");
+                } catch (Exception $e)  { return null;}
+        }else{
+            return null;
+        }
     }
 }
