@@ -151,7 +151,7 @@
                                 }
                                 if ((row.segmentadolistado==1)) {
                                        botones = botones+ '<input type="button" class="ver_segmenta_listado  btn-sm btn-primary" value="Ver Segmentación Listado"/> ';
-                                       botones = botones+ '<input type="button" class="ver_segmenta_listado_grafico  btn-sm btn-primary" value="Ver Griáfico de Segmentación Listado"/> ';
+                                       botones = botones+ '<input type="button" class="ver_segmenta_listado_grafico  btn-sm btn-primary" value="Ver Gráfico de Segmentación Listado"/> ';
                                 }
                                 if ((row.segmentadolados==1)) {
                                        botones = botones+ '<input type="button" class="ver_segmenta_lados btn-sm btn-primary" value="Ver Segmentación x lados"/> ';
