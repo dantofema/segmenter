@@ -66,10 +66,15 @@ FROM
                 if (! Schema::hasColumn($esquema.'.arc' , 'segd')){
                             DB::statement('ALTER TABLE '.$esquema.'.arc ADD COLUMN IF NOT EXISTS segd integer;');
                 }
+                 DB::unprepared("Select indec.cargar_lados('".$esquema."')");
                  DB::unprepared("Select indec.cargar_conteos('".$esquema."')");
                  DB::unprepared("Select indec.generar_adyacencias('".$esquema."')");
                  DB::unprepared("Select indec.descripcion_segmentos('".$esquema."')");
-             }
+                
+             } 
+             DB::unprepared('DROP sequence IF EXISTS '.$esquema.'.segmentos_seq CASCADE');
+             DB::unprepared('create sequence '.$esquema.'.segmentos_seq CASCADE');
+             DB::unprepared('DROP TABLE IF EXISTS '.$esquema.'.segmentos CASCADE');
              DB::commit();
 	}
 
