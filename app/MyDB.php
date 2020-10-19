@@ -73,7 +73,7 @@ FROM
                 
              } 
              DB::unprepared('DROP sequence IF EXISTS '.$esquema.'.segmentos_seq CASCADE');
-             DB::unprepared('create sequence '.$esquema.'.segmentos_seq CASCADE');
+             DB::unprepared('create sequence '.$esquema.'.segmentos_seq');
              DB::unprepared('DROP TABLE IF EXISTS '.$esquema.'.segmentos CASCADE');
              DB::commit();
 	}
