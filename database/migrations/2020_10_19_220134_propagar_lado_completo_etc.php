@@ -17,8 +17,11 @@ class PropagarLadoCompleto extends Migration
         // crea vista con los segi, segd de segmentacion de lado completo
         $path = 'app/developer_docs/segmentacion-core/lados_completos/v_segmentos_lados_completos.sql';
         DB::unprepared(file_get_contents($path));
-        // crea fn para propagar segmentado por lad completo a tabla segmentaciones 
+        // crea fns para propagar segmentado por lad completo a tabla segmentaciones 
         $path = 'app/developer_docs/segmentacion-core/lados_completos/lados_completos_a_tabla_segmentacion.sql';
+        DB::unprepared(file_get_contents($path));
+        // crea fn para segmentar listado 
+        $path = 'app/developer_docs/segmentacion-core/manzanas_independientes/segmentar_listado_equilibrado.sql';
         DB::unprepared(file_get_contents($path));
     }
 
