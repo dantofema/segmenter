@@ -143,15 +143,23 @@ FROM
 	{
         $esquema = 'e'.$esquema;
     	return DB::select('
-                        SELECT substr(lados.mza,1,12) radio, seg,count(*) lados,count(distinct lados.mza) as mzas_count,array_agg(distinct substr(lados.mza,13,3)) mzas,sum(conteo) as vivs FROM 
+                        SELECT substr(lados.mza,1,12) radio, lados.seg,count(*)
+                        lados,count(distinct lados.mza) as
+                        mzas_count,array_agg(distinct substr(lados.mza,13,3))
+                        mzas,sum(conteo) as vivs, d.descripcion FROM 
 			(SELECT segi seg,mzai mza,ladoi lado FROM '.$esquema.'.arc WHERE segi is not null 
 			UNION SELECT segd,mzad,ladod FROM '.$esquema.'.arc WHERE segd is not null) lados
                        JOIN  '.$esquema.'.conteos c ON (c.prov,c.dpto,c.codloc,c.frac,c.radio,c.mza,c.lado)=(
                                                         substr(lados.mza,1,2)::integer,substr(lados.mza,3,3)::integer,substr(lados.mza,6,3)::integer,
                                                         substr(lados.mza,9,2)::integer,substr(lados.mza,11,2)::integer,substr(lados.mza,13,3)::integer,lados.lado::integer)
 
+                       JOIN  '.$esquema.'.descripcion_segmentos d ON
+                       (d.prov::integer,d.depto::integer,d.codloc::integer,d.frac::integer,d.radio::integer,d.seg)=(
+                                                        substr(lados.mza,1,2)::integer,substr(lados.mza,3,3)::integer,substr(lados.mza,6,3)::integer,
+                                                        substr(lados.mza,9,2)::integer,substr(lados.mza,11,2)::integer,lados.seg::integer)
+
                         WHERE substr(lados.mza,1,12)!=\'\'
-                        GROUP BY  substr(lados.mza,1,12), seg');
+                        GROUP BY  substr(lados.mza,1,12), lados.seg,descripcion');
      // SQL retrun: 
     }
 
@@ -341,7 +349,7 @@ GROUP BY seg
         $dpto=substr($radio,2,3);
         $frac=substr($radio,5,2);
         $radio=substr($radio,7,2);
-        if (Schema::hasTable('e'.$esquema.'.arc')) {
+        if (Schema::hasTable($esquema.'.arc')) {
             return DB::select("
 SELECT count( distinct mza)  cant_mzas 
 FROM ".$esquema.".conteos WHERE prov=".$prov." and dpto = ".$dpto." and frac=".$frac." and radio=".$radio." ;");
@@ -351,7 +359,7 @@ FROM ".$esquema.".conteos WHERE prov=".$prov." and dpto = ".$dpto." and frac=".$
     }
 
     public static function isSegmentado($radio,$esquema){
-        if (Schema::hasTable('e'.$esquema.'.arc')) {
+        if (Schema::hasTable($esquema.'.arc')) {
             try {
                 return DB::select("SELECT true FROM ".$esquema.".arc WHERE (substr(mzad,1,5)||substr(mzad,9,4)='".$radio."' and segd is not null and segd>0) 
                             or (substr(mzai,1,5)||substr(mzai,9,4)='".$radio."' and segi is not null and segi>0)
