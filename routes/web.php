@@ -63,7 +63,7 @@ Route::get('/segmentador', 'SegmenterController@index')->name('segmentador');
 Route::post('/segmentador/guardar', 'SegmenterController@store');
 
 Route::get('/', function () {
-    flash(' Bienvenide!')->success();
+    flash(' Bienvenides !')->success();
     return view('welcome');
 });
 
