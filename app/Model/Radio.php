@@ -68,7 +68,7 @@ class Radio extends Model
      {  
         //TODO
 //        return $this->belongsToMany('App\Model\Localidad', 'radio_localidad');
-        if ($localidad=$this->localidades()->with('aglomerado')->first())
+        if ($localidad=$this->localidades()->first())
             return $localidad->aglomerado()->get();
         else
             return null; //new Aglomerado();
@@ -107,7 +107,9 @@ class Radio extends Model
      {
         if ($this->aglomerado() != null){
           $cant_mzas = MyDB::getCantMzas($this->codigo,'e'.$this->aglomerado()->first()->codigo);
-          $cant_mzas = $cant_mzas[0]->cant_mzas;
+          if ($cant_mzas!=0)
+              $cant_mzas = $cant_mzas[0]->cant_mzas;
+
           return $cant_mzas;
         }
         else{
@@ -116,14 +118,15 @@ class Radio extends Model
      }
 
      /**
-      * Fix Cantidad de manzanas en cartografia..
+      * Fix existe una segmentacion..
       *
       */
      public function getisSegmentadoAttribute($value)
      {
         if (! isset($this->_isSegmentado)){
           if ($this->aglomerado() != null){
-            $result = MyDB::isSegmentado($this->codigo,'e'.$this->aglomerado()->first()->codigo);
+                $result = MyDB::isSegmentado($this->codigo,'e'.$this->aglomerado()->first()->codigo);
+
 //        $cant_mzas = $cant_mzas[0]->cant_mzas;
               if ($result):
                   return $this->_isSegmentado = true;

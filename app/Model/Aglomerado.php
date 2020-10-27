@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
-use App\Model\Radio;
+//use App\Model\Radio;
 
 class Aglomerado extends Model
 {
@@ -114,14 +114,15 @@ class Aglomerado extends Model
                                 ->select(DB::raw("prov||dpto||frac||radio as link,codloc,
              '('||dpto||') '||max(nom_dpto)||': '||frac||' '||radio as nombre,
              count(distinct mza) as cant_mzas,
-             count(*) as vivs,
+             count(*) as registros,
+             count(indec.contar_vivienda(tipoviv)) as vivs,
              count(CASE WHEN tipoviv='A' THEN 1 else null END) as vivs_a,
              count(CASE WHEN (tipoviv='B1' or tipoviv='B2') THEN 1 else null END) as vivs_b,
              count(CASE WHEN tipoviv='CA/CP' THEN 1 else null END) as vivs_c,
              count(CASE WHEN tipoviv='CO' THEN 1 else null END) as vivs_co,
              count(CASE WHEN (tipoviv='D'  or tipoviv='J'  or tipoviv='VE' )THEN 1 else null END) as vivs_djve,
              count(CASE WHEN tipoviv='' THEN 1 else null END) as vivs_unclas
-    "))
+            "))
                                 ->groupBy('prov','dpto','codloc','frac','radio')
                                 ->orderBy('prov','asc')
                                 ->orderBy('dpto','asc')
@@ -161,7 +162,8 @@ class Aglomerado extends Model
                                 ->select(DB::raw("prov||dpto||frac||radio as link,codloc,
              '('||dpto||') '||max(nom_dpto)||': '||frac||' '||radio as nombre,
              count(distinct mza) as cant_mzas,
-             count(*) as vivs,
+             count(*) as registros,
+             count(indec.contar_vivienda(tipoviv)) as vivs,
              count(CASE WHEN tipoviv='A' THEN 1 else null END) as vivs_a,
              count(CASE WHEN (tipoviv='B1' or tipoviv='B2') THEN 1 else null END) as vivs_b,
              count(CASE WHEN tipoviv='CA/CP' THEN 1 else null END) as vivs_c,
@@ -190,9 +192,9 @@ class Aglomerado extends Model
         //    ((SELECT ST_Envelope(ST_MakeBox2d(ST_MakePoint(0,0), st_makepoint(10,10)))), 3)
 
         if ($this->Carto){
-        $height=400;
-        $width=450;
-        $escalar=true;//false;
+        $height=800;
+        $width=900;
+        $escalar=false;
             $extent=DB::select("SELECT box2d(st_collect(wkb_geometry)) box FROM  e".$this->codigo.".arc");
             $extent=$extent[0]->box;
             list($x0,$y0,$x1,$y1) = sscanf($extent,'BOX(%f %f,%f %f)');
@@ -207,22 +209,24 @@ class Aglomerado extends Model
         }
 
 
-//            dd($x0);
+            //dd($viewBox.'/n'.$this->viewBox($extent,$epsilon,$height,$width).'/n'.$x0." -".$y0." ".$x1." -".$y1);
             $svg=DB::select("
 WITH shapes (geom, attribute) AS (
-    SELECT wkb_geometry,2 FROM e".$this->codigo.".arc 
+    SELECT st_buffer(wkb_geometry,2) wkb_geometry, CASE WHEN (segi is not null
+    or segd is not null) THEN 0 else 1 END FROM e".$this->codigo.".arc 
   ),
   paths (svg) as (
      SELECT concat(
          '<path d= \"', 
-         ST_AsSVG(geom,0), '\" ', 
+         ST_AsSVG(st_buffer(geom,5),0), '\" ',
          CASE WHEN attribute = 0 THEN 'stroke=\"red\" stroke-width=\"3\" fill=\"none\"' 
          ELSE 'stroke=\"black\" stroke-width=\"".$stroke."\" fill=\"green\"' END,
           ' />') 
      FROM shapes
  )
  SELECT concat(
-         '<svg id=\"aglo_".$this->codigo."\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"".$x0." -".$y0." ".$x1." -".$y1."\" height=\"400\" width=\"450\">',
+         '<svg id=\"aglo_".$this->codigo."\"xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"".$viewBox.
+         "\" height=\"".$height."\" width=\"".$width."\">',
          array_to_string(array_agg(svg),''),
          '</svg>')
  FROM paths;
