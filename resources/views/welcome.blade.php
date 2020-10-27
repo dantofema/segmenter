@@ -4,10 +4,9 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>Laravel</title>
+        <title>Mandarina</title>
 
         <!-- Fonts -->
-        <link href="https://fonts.googleapis.com/css?family=Nunito:200,600" rel="stylesheet">
         <link href="{{ asset('css/app.css') }}" rel="stylesheet"/>
         <!-- Styles -->
         <style>
@@ -16,12 +15,12 @@
                 color: #636b6f;
                 font-family: 'Nunito', sans-serif;
                 font-weight: 200;
-                height: 100vh;
+                height: 80vh;
                 margin: 0;
             }
 
             .full-height {
-                height: 100vh;
+                height: 80vh;
             }
 
             .flex-center {
@@ -87,6 +86,9 @@
                     INDEC
                 </div>
             </div>
+        </div>
+        <div id="copyright" class="text-center justify-content-center"
+        style="display:block"><hr />© Copyright 2020 INDEC - Geoestadística - {{ Git::version() }}</div>
         </div>
     </body>
 </html>

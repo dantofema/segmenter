@@ -51,7 +51,7 @@ Route::get('/segmentador', 'SegmenterController@index')->name('segmentador');
 Route::post('/segmentador/guardar', 'SegmenterController@store');
 
 Route::get('/', function () {
-    flash('Laravel 6 Flash Message')->success();
+    flash(' Bienvenido!')->success();
     return view('welcome');
 });
 

@@ -14,7 +14,7 @@ class Localidad extends Model
      */
     public function departamentos()
     {
-        return $this->belongsToMany('App\Departamento','localidad_departamento');
+        return $this->belongsToMany('App\Model\Departamento','localidad_departamento');
     }
 
     /**

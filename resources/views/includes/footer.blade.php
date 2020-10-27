@@ -1,1 +1,3 @@
-<div id="copyright" class="text-center justify-content-center" style="display:block"><hr />© Copyright 2020 INDEC - Geoestadística</div>
+<div id="copyright" class="text-center justify-content-center"
+style="display:block"><hr />© Copyright 2020 INDEC - Geoestadística - Versión:
+<?php echo Git::version(); ?></div>
