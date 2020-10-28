@@ -5,22 +5,19 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
 
-class InstalarFunctionContarVivienda extends Migration
+class InstalarFunctionSegmentosDesdeHasta extends Migration
 {
     /**
      * Run the migrations.
-     * https://github.com/hernan-alperin/segmentacion-core/issues/7
-     * https://github.com/manureta/segmenter/issues/27
+     * https://github.com/hernan-alperin/segmentacion-core/issues/11
      * @return void
      */
     public function up()
     {
         //
         Eloquent::unguard();
-        //$this->command->info('- Instalando función para discernir qué vivienda contar...');
-        $path = 'app/developer_docs/segmentacion-core/contar_vivienda.sql';
+        $path = 'app/developer_docs/segmentacion-core/descripcion_segmentos/segmentos_desde_hasta.sql';
         DB::unprepared(file_get_contents($path));
-        //$this->command->info('instalada!');
     }
 
     /**
@@ -32,7 +29,7 @@ class InstalarFunctionContarVivienda extends Migration
     {
         //
         Eloquent::unguard();
-        DB::statement('drop function if exists indec.contar_vivienda(aglomerado text)');
+        DB::statement('drop function if exists indec.segmentos_desde_hasta(d record)');
     }
 }
 
