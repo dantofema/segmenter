@@ -171,7 +171,6 @@ class PostgresBuilder extends Builder
         if (is_array($schema = $this->connection->getConfig('schema'))) {
             if (in_array($table[0], $schema)) {
                 return [array_shift($table), implode('.', $table)];
-
             }
 
             $schema = head($schema);
