@@ -12,6 +12,7 @@
         "brackets/craftable": "^5.0",
         "doctrine/dbal": "^2.10",
         "fideloper/proxy": "^4.0",
+        "hnhdigital-os/laravel-git-info": "^1.0",
         "laracasts/flash": "^3.0",
         "laravel/framework": "^6.0",
         "laravel/horizon": "^3.4",

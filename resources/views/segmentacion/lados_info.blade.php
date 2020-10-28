@@ -55,6 +55,7 @@
              <th>Cant. Lados</th>
              <th>Cant. Manzanas</th>
              <th>Manznanas</th>
+             <th>Descripción</th>
           </tr>
        </thead>
     </table>
@@ -113,6 +114,7 @@
                   { data: 'lados', name: 'lados' },
                   { data: 'mzas_count', name: 'mzas_count' },
                   { data: 'mzas', name: 'mzas' },
+                  { data: 'descripcion', name: 'descripcion' },
 //                  { searchable: false , data: 'departamentos_count', name: 'departamentos_count' }
                ]
       });

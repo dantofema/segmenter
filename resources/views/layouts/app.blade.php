@@ -40,11 +40,13 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav mr-auto btn">
-			<li class="nav-item"><a class="nav-link" href="{{ url('/users') }}"> Users </a> </li>
-			<li class="nav-item"><a class="nav-link" href="{{ url('/listado') }}"> Listado </a> </li>
-			<li class="nav-item"><a class="nav-link" href="{{ url('/provs') }}"> Provincias </a> </li>
-			<li class="nav-item"><a class="nav-link" href="{{ url('/segmentador') }}"> Cargar </a> </li>
-			<li class="nav-item"><a class="nav-link" href="{{ url('/aglos') }}"> Aglomerados </a> </li>
+                    @auth
+                        <li class="nav-item"><a class="nav-link" href="{{ url('/users') }}"> Users </a> </li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url('/listado') }}"> Listado </a> </li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url('/provs') }}"> Provincias </a> </li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url('/segmentador') }}"> Cargar </a> </li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url('/aglos') }}"> Aglomerados </a> </li>
+                    @endauth
                     </ul>
 
                     <!-- Right Side Of Navbar -->
@@ -86,8 +88,10 @@
         <main class="py-4">
             @yield('content')
         </main>
-    </div>
+        </div>
             @yield('content_main')
+        <div id="copyright" class="text-center justify-content-center"
+        style="display:block"><hr />© Copyright 2020 INDEC - Geoestadística - {{ Git::version() }}</div>
 <!-- If using flash()->important() or flash()->overlay(), you'll need to pull in the JS for Twitter Bootstrap. -->
 <script src="//code.jquery.com/jquery.js"></script>
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>

@@ -15,6 +15,18 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/tetete', function () {
+    return view('test3');
+});
+
+Route::get('/tete', function () {
+    return view('test2');
+});
+
+Route::get('/testeando', function () {
+    return view('test');
+});
+
 Auth::routes();
 
 /**
@@ -51,7 +63,7 @@ Route::get('/segmentador', 'SegmenterController@index')->name('segmentador');
 Route::post('/segmentador/guardar', 'SegmenterController@store');
 
 Route::get('/', function () {
-    flash('Laravel 6 Flash Message')->success();
+    flash(' Bienvenide!')->success();
     return view('welcome');
 });
 
@@ -79,6 +91,11 @@ Route::get('prov/deptos/{provincia?}','DepartamentoController@index');
 Route::get('prov/list/{provincia}','DepartamentoController@list');
 Route::get('depto/{departamento}','DepartamentoController@show');
 Route::post('depto/{departamento}','DepartamentoController@show_post');
+
+// ---------- LOCALIDADES --------
+Route::get('localidades','LocalidadController@index');
+Route::get('localidad/{localidad}','LocalidadController@show');
+//Route::post('localidad/{localidad}','LocalidadController@show_post');
 
 // ---------- AGLOMERADOS --------
 Route::get('aglos-list', 'AglomeradoController@aglosList');
