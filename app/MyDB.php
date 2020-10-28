@@ -67,10 +67,10 @@ FROM
              if (! Schema::hasColumn($esquema.'.listado' , 'piso')){
                      DB::unprepared('ALTER TABLE '.$esquema.'.listado RENAME pisoredef TO piso');
              }
-//             if (! Schema::hasColumn($esquema.'.listado' , 'nro_catast')){
-//                     DB::unprepared('ALTER TABLE '.$esquema.'.listado RENAME
-//                     nrocatastr TO nro_catast');
-//             }
+             if (! Schema::hasColumn($esquema.'.listado' , 'nrocatastr')){
+                     DB::unprepared('ALTER TABLE '.$esquema.'.listado RENAME
+                     nro_catast TO nrocatastr');
+             }
              if (Schema::hasTable($esquema.'.arc') and Schema::hasTable($esquema.'.listado')){
                 if (! Schema::hasColumn($esquema.'.arc' , 'nomencla10')){
                             DB::statement('ALTER TABLE '.$esquema.'.arc ADD COLUMN IF NOT EXISTS nomencla10 text;');
@@ -81,10 +81,20 @@ FROM
                 if (! Schema::hasColumn($esquema.'.arc' , 'segd')){
                             DB::statement('ALTER TABLE '.$esquema.'.arc ADD COLUMN IF NOT EXISTS segd integer;');
                 }
+                 DB::unprepared("Select indec.cargar_lados('".$esquema."')");
                  DB::unprepared("Select indec.cargar_conteos('".$esquema."')");
                  DB::unprepared("Select indec.generar_adyacencias('".$esquema."')");
                  DB::unprepared("Select indec.descripcion_segmentos('".$esquema."')");
-             }
+                
+             } 
+             DB::unprepared('DROP sequence IF EXISTS '.$esquema.'.segmentos_seq CASCADE');
+             DB::unprepared('create sequence '.$esquema.'.segmentos_seq');
+             DB::unprepared('DROP TABLE IF EXISTS '.$esquema.'.segmentos CASCADE');
+             DB::unprepared('create TABLE if not exists e'.$esquema.'.segmentacion as
+                select id as listado_id, Null::integer as segmento_id
+                from e'.$esquema.'.listado
+                ;');
+
              DB::commit();
 	}
 
@@ -101,11 +111,47 @@ FROM
         }
 	}
 
+    	 
+	public static function generarSegmentacionNula($esquema)
+	{
+        if (Schema::hasTable('e'.$esquema.'.listado')) {
+          DB::statement('create TABLE if not exists e'.$esquema.'.segmentacion as
+            select id as listado_id, Null::integer as segmento_id
+            from e'.$esquema.'.listado 
+            ;');
+         return true;
+        }
+        else{
+         return false;
+        }
+	}
+
+	public static function generarSegmentacionVacia($esquema)
+	{
+        if (Schema::hasTable('e'.$esquema.'.listado')) {
+          DB::statement('create TABLE if not exists 
+            e'.$esquema.'.segmentacion (listado_id integer, segmento_id integer)
+            ;');
+         return true;
+        }
+        else{
+         return false;
+        }
+	}
+
+
 	public static function segmentar_equilibrado($esquema,$deseado = 10)
 	{
     	if ( DB::statement("SELECT indec.segmentar_equilibrado('e".$esquema."',".$deseado.");") ){
         //    MyDB::georeferenciar_segmentacion($esquema);
-            return true;
+        // llamar generar r3 como tabla resultado de function indec.r3(agl)
+          ( DB::statement("SELECT indec.r3('e".$esquema."');") );
+          ( DB::statement("SELECT indec.descripcion_segmentos('e".$esquema."');") );
+          ( DB::statement("SELECT indec.segmentos_desde_hasta('e".$esquema."');") );
+      // (?) crear 3 public static function distintas y correrlas desde arribo 
+      // como segmentar_equilibrado
+
+               return true;
         }else{ return false; }
 
      // SQL retrun: Select segmento_id,count(*) FROM e0777.segmentacion GROUP BY segmento_id;

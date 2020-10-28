@@ -5,7 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
 
-class InstalarFunctionR3 extends Migration
+class InstalarFunctionSegmentosDesdeHasta extends Migration
 {
     /**
      * Run the migrations.
@@ -16,7 +16,7 @@ class InstalarFunctionR3 extends Migration
     {
         //
         Eloquent::unguard();
-        $path = 'app/developer_docs/segmentacion-core/descripcion_segmentos/R3.sql';
+        $path = 'app/developer_docs/segmentacion-core/descripcion_segmentos/segmentos_desde_hasta.sql';
         DB::unprepared(file_get_contents($path));
     }
 
@@ -29,7 +29,7 @@ class InstalarFunctionR3 extends Migration
     {
         //
         Eloquent::unguard();
-        DB::statement('drop function if exists indec.r3(aglomerado text)');
+        DB::statement('drop function if exists indec.segmentos_desde_hasta(d record)');
     }
 }
 

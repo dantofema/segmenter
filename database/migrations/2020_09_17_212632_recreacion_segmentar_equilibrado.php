@@ -3,20 +3,18 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\DB;
 
-class InstalarFunctionR3 extends Migration
+class RecreacionSegmentarEquilibrado extends Migration
 {
     /**
      * Run the migrations.
-     * https://github.com/hernan-alperin/segmentacion-core/issues/11
+     *
      * @return void
      */
     public function up()
     {
         //
-        Eloquent::unguard();
-        $path = 'app/developer_docs/segmentacion-core/descripcion_segmentos/R3.sql';
+        $path = 'app/developer_docs/segmentacion-core/manzanas_independientes/segmentar_equilibrado.sql';
         DB::unprepared(file_get_contents($path));
     }
 
@@ -28,9 +26,6 @@ class InstalarFunctionR3 extends Migration
     public function down()
     {
         //
-        Eloquent::unguard();
-        DB::statement('drop function if exists indec.r3(aglomerado text)');
+
     }
 }
-
-
