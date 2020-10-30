@@ -90,9 +90,9 @@ FROM
              DB::unprepared('DROP sequence IF EXISTS '.$esquema.'.segmentos_seq CASCADE');
              DB::unprepared('create sequence '.$esquema.'.segmentos_seq');
              DB::unprepared('DROP TABLE IF EXISTS '.$esquema.'.segmentos CASCADE');
-             DB::unprepared('create TABLE if not exists e'.$esquema.'.segmentacion as
+             DB::unprepared('create TABLE if not exists '.$esquema.'.segmentacion as
                 select id as listado_id, Null::integer as segmento_id
-                from e'.$esquema.'.listado
+                from '.$esquema.'.listado
                 ;');
 
              DB::commit();
