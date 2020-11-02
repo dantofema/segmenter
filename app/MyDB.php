@@ -5,6 +5,7 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Log;
 
 class MyDB extends Model
 {
@@ -38,6 +39,7 @@ FROM
 //         $tabla = strtolower( substr($file_name,strrpos($file_name,'/')+1,-4) );
 	public static function moverDBF($file_name,$esquema)
 	{
+         Log::debug('Cargando dbf en esquema-> '.$esquema);
          $tabla = strtolower( substr($file_name,strrpos($file_name,'/')+1,-4) );
          $esquema = 'e'.$esquema;
              DB::beginTransaction();
@@ -64,22 +66,23 @@ FROM
                            DB::statement('ALTER TABLE '.$esquema.'.listado ADD
                            COLUMN nom_ent text;');
              }
-             if (   (! Schema::hasColumn($esquema.'.listado' , 'piso')) and 
-                    (  Schema::hasColumn($esquema.'.listado' , 'pisoredef'))){
+             if (! Schema::hasColumn($esquema.'.listado' , 'piso')){
+                    if (  Schema::hasColumn($esquema.'.listado' , 'pisoredef')){
                          DB::unprepared('ALTER TABLE '.$esquema.'.listado RENAME pisoredef TO piso');
-             }else{
-                    DB::statement('ALTER TABLE '.$esquema.'.listado ADD
-                           COLUMN piso text;');
+                     }else{
+                        DB::statement('ALTER TABLE '.$esquema.'.listado ADD
+                               COLUMN piso text;');
+                    }
              }
-             if (   (! Schema::hasColumn($esquema.'.listado' , 'nrocatastr')) and    
-                    (Schema::hasColumn($esquema.'.listado' , 'nro_catast'))){
+             if (! Schema::hasColumn($esquema.'.listado' , 'nrocatastr')){
+                    if (Schema::hasColumn($esquema.'.listado' , 'nro_catast')){
                      DB::unprepared('ALTER TABLE '.$esquema.'.listado RENAME
                      nro_catast TO nrocatastr');
-             }else{
+                    }else{
                      DB::statement('ALTER TABLE '.$esquema.'.listado ADD
                            COLUMN nrocatastr text;');
+                    }
              }
-             if (Schema::hasTable($esquema.'.arc') and Schema::hasTable($esquema.'.listado')){
                 if (! Schema::hasColumn($esquema.'.arc' , 'nomencla10')){
                             DB::statement('ALTER TABLE '.$esquema.'.arc ADD COLUMN IF NOT EXISTS nomencla10 text;');
                 }
@@ -89,12 +92,27 @@ FROM
                 if (! Schema::hasColumn($esquema.'.arc' , 'segd')){
                             DB::statement('ALTER TABLE '.$esquema.'.arc ADD COLUMN IF NOT EXISTS segd integer;');
                 }
-                 DB::unprepared("Select indec.cargar_lados('".$esquema."')");
+             DB::commit();
+             if (Schema::hasTable($esquema.'.arc') and Schema::hasTable($esquema.'.listado')){
+            // Comienzan posprocesos de carga
+             DB::beginTransaction();
+                 try {
+                     DB::unprepared("Select indec.cargar_lados('".$esquema."')");
+                 }catch (\Illuminate\Database\QueryException $exception) {
+                        Log::error($exception);
+                     DB::Rollback();
+                 };
                  DB::unprepared("Select indec.cargar_conteos('".$esquema."')");
                  DB::unprepared("Select indec.generar_adyacencias('".$esquema."')");
-                 DB::unprepared("Select indec.descripcion_segmentos('".$esquema."')");
-                
-             } 
+             DB::commit();
+            // Comienzan posprocesos de carga
+             DB::beginTransaction();
+                 try {
+                     DB::unprepared("Select indec.descripcion_segmentos('".$esquema."')");
+                 }catch (\Illuminate\Database\QueryException $exception) {
+                     Log::error($exception);
+                     DB::Rollback();
+                 } 
              DB::unprepared('DROP sequence IF EXISTS '.$esquema.'.segmentos_seq CASCADE');
              DB::unprepared('create sequence '.$esquema.'.segmentos_seq');
              DB::unprepared('DROP TABLE IF EXISTS '.$esquema.'.segmentos CASCADE');
@@ -104,7 +122,8 @@ FROM
                 ;');
 
              DB::commit();
-	}
+	         }
+             }
 
     
 	public static function agregarsegisegd($esquema)
