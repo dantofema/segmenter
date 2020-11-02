@@ -99,7 +99,7 @@ FROM
                  try {
                      DB::unprepared("Select indec.cargar_lados('".$esquema."')");
                  }catch (\Illuminate\Database\QueryException $exception) {
-                        Log::error($exception);
+                        Log::error('No se pudieron cargar lados '.$exception);
                      DB::Rollback();
                  };
                  DB::unprepared("Select indec.cargar_conteos('".$esquema."')");
@@ -110,7 +110,7 @@ FROM
                  try {
                      DB::unprepared("Select indec.descripcion_segmentos('".$esquema."')");
                  }catch (\Illuminate\Database\QueryException $exception) {
-                     Log::error($exception);
+                     Log::error('No se pudo crear la descripcion de los segmentos: '.$exception);
                      DB::Rollback();
                  } 
              DB::unprepared('DROP sequence IF EXISTS '.$esquema.'.segmentos_seq CASCADE');
