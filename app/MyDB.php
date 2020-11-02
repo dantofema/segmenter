@@ -64,12 +64,20 @@ FROM
                            DB::statement('ALTER TABLE '.$esquema.'.listado ADD
                            COLUMN nom_ent text;');
              }
-             if (! Schema::hasColumn($esquema.'.listado' , 'piso')){
-                     DB::unprepared('ALTER TABLE '.$esquema.'.listado RENAME pisoredef TO piso');
+             if (   (! Schema::hasColumn($esquema.'.listado' , 'piso')) and 
+                    (  Schema::hasColumn($esquema.'.listado' , 'pisoredef'))){
+                         DB::unprepared('ALTER TABLE '.$esquema.'.listado RENAME pisoredef TO piso');
+             }else{
+                    DB::statement('ALTER TABLE '.$esquema.'.listado ADD
+                           COLUMN piso text;');
              }
-             if (! Schema::hasColumn($esquema.'.listado' , 'nrocatastr')){
+             if (   (! Schema::hasColumn($esquema.'.listado' , 'nrocatastr')) and    
+                    (Schema::hasColumn($esquema.'.listado' , 'nro_catast'))){
                      DB::unprepared('ALTER TABLE '.$esquema.'.listado RENAME
                      nro_catast TO nrocatastr');
+             }else{
+                     DB::statement('ALTER TABLE '.$esquema.'.listado ADD
+                           COLUMN nrocatastr text;');
              }
              if (Schema::hasTable($esquema.'.arc') and Schema::hasTable($esquema.'.listado')){
                 if (! Schema::hasColumn($esquema.'.arc' , 'nomencla10')){
