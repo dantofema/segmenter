@@ -38,19 +38,23 @@
     <label class="control-label" for="radio">Parametros:</label><br />
     <div class="">
     <label class="control-label " for="radio">Cantidad deseada de viviendas:</label>
-    <input id="vivs_deaseadas" type="integer" maxlength=3 size=3 name="vivs_deseadas" value="20"><br />
+    <input id="vivs_deaseadas" type="integer" maxlength=3 size=3
+    name="vivs_deseadas" value="36"><br />
     </div>
     <div class="">
     <label class="control-label " for="radio">Cantidad máxima deseada:</label>
-    <input id="vivs_max" type="integer" maxlength=3 size=3 name="vivs_max" value="22"><br />
+    <input id="vivs_max" type="integer" maxlength=3 size=3 name="vivs_max"
+    value="40"><br />
     </div>
     <div class="">
     <label class="control-label " for="radio">Cantidad Mínima deseada:</label>
-    <input id="vivs_min" type="integer" maxlength=3 size=3 name="vivs_min" value="16"><br />
+    <input id="vivs_min" type="integer" maxlength=3 size=3 name="vivs_min"
+    value="32"><br />
     </div>
     <div class="">
     <label class="control-label " for="radio">Mantener manzana indivisible para manzanas con menos de:</label>
-    <input id="mzas_indivisibles" type="integer" maxlength=3 size=3 name="mzas_indivisibles" value="10"> viviendas
+    <input id="mzas_indivisibles" type="integer" maxlength=3 size=3
+    name="mzas_indivisibles" value="9"> viviendas
     </div>
  </div>
  <div class="mx-auto">
