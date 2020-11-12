@@ -36,6 +36,13 @@ FROM
         '.$esquema.'.'.$tabla.';')[0]->codaglo);
     }
 
+    public static function getAgloLoc($tabla,$esquema)
+    {
+//        $tabla = strtolower( substr($file_name,strrpos($file_name,'/')+1,-4) );
+        return (DB::select('SELECT codaglo||codloc as link FROM
+        '.$esquema.'.'.$tabla.' Limit 1;')[0]->link);
+    }
+
 //         $tabla = strtolower( substr($file_name,strrpos($file_name,'/')+1,-4) );
 	public static function moverDBF($file_name,$esquema)
 	{
@@ -83,7 +90,9 @@ FROM
                            COLUMN nrocatastr text;');
                     }
              }
-             if (! Schema::hasColumn($esquema.'.listado' , 'descripcio2')){
+
+
+            if (! Schema::hasColumn($esquema.'.listado' , 'descripcio2')){
 //                    if (  Schema::hasColumn($esquema.'.listado' , 'descripcion')){
 //                         DB::unprepared('ALTER TABLE '.$esquema.'.listado
 //                         RENAME descripcion TO descripcio2');
@@ -105,8 +114,27 @@ FROM
     	                    DB::statement('ALTER TABLE '.$esquema.'.arc ADD COLUMN IF NOT EXISTS segi integer;');
                 }
                 if (! Schema::hasColumn($esquema.'.arc' , 'segd')){
-                            DB::statement('ALTER TABLE '.$esquema.'.arc ADD COLUMN IF NOT EXISTS segd integer;');
+                         DB::statement('ALTER TABLE '.$esquema.'.arc ADD COLUMN IF NOT EXISTS segd integer;');
                 }
+
+            // Tomo nro_listado en lugar de orden reco para CABA
+                if (MyDB::getAgloLoc('listado',$esquema)=='0002010'){
+                    Log::debug('Se detecto CABA');
+                    if ( Schema::hasColumn($esquema.'.listado' , 'nro_listad')){
+                        Log::debug('campo nro_listad');
+                        if ( Schema::hasColumn($esquema.'.listado' , 'orden_reco')){
+                             DB::statement('ALTER TABLE '.$esquema.'.listado 
+                            RENAME COLUMN orden_reco TO orden_reco_bak;');
+                            Log::debug('Se backupea orden_reco original');
+                        }
+                             DB::statement('ALTER TABLE '.$esquema.'.listado 
+                              RENAME COLUMN nro_listad TO orden_reco;');
+                            DB::statement('ALTER TABLE '.$esquema.'.listado ADD
+                                   COLUMN nro_listad integer;');
+                            Log::debug('Se cambia orden_reco x nro_listado');
+                    }
+            }
+                
              DB::commit();
              if (Schema::hasTable($esquema.'.arc') and Schema::hasTable($esquema.'.listado')){
             // Comienzan posprocesos de carga
