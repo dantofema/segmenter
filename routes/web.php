@@ -49,7 +49,7 @@ Route::get('/contact', function()
     return View::make('pages.contact');
 });
 
-
+Route::get('/setup', 'SetupController@index')->name('setup');
 
 Route::get('/inicio', 'HomeController@index')->name('inicio');
 Route::resource('/listado', 'ListadoController',['only' => [

@@ -410,7 +410,8 @@ and
          e.mza like 
          '%'||btrim(to_char(l.frac::integer, '09'::text))::character varying(3)||btrim(to_char(l.radio::integer, '09'::text))::character varying(3)||btrim(to_char(l.mza::integer, '099'::text))::character varying(3) 
        );");
-       DB::statement("GRANT SELECT ON TABLE  ".$esquema.".listado_segmentado_geo TO sig");
+       DB::statement("GRANT SELECT ON TABLE
+       ".$esquema.".listado_segmentado_geo TO geoestadistica");
         return $resultado;
     }
 
@@ -485,4 +486,32 @@ FROM ".$esquema.".conteos WHERE prov=".$prov." and dpto = ".$dpto." and frac=".$
             return null;
         }
     }
+
+    public static function darPermisos($esquema,$grupo='geoestadistica'){
+            try {
+//                return DB::select("GRANT USAGE ON ".$esquema." TO ".$grupo.";");
+               DB::statement("GRANT SELECT ALL TABLES IN SCHEMA  ".$esquema." TO ".$grupo);
+               DB::statement("ALTER DEFAULT PRIVILEGES IN SCHEMA  ".$esquema." GRANT
+       SELECT TO ".$grupo);
+        //GRANT geoestadistica TO manuel;
+                
+                } catch (Exception $e)  { 
+                    Log::Error('No se pudieron asignar permisos');
+                    return null;}
+            Log::Debug('Se establecieron permisos para geoestadistica');
+            return null;
+    }
+
+    public static function addUser($usuario,$grupo='geoestadistica'){
+            try {
+//                return DB::select("GRANT USAGE ON ".$esquema." TO ".$grupo.";");
+               DB::unprepared("GRANT ".$grupo." TO ".$usuario.";");
+                
+                } catch (Exception $e)  { 
+                    Log::Debug('No se pudo agregar al grupo '.$grupo.' al '.$usuario);
+                    return null;}
+            Log::Debug('Se pudo agregar al grupo '.$grupo.' al '.$usuario);
+            return null;
+    }
 }
+
