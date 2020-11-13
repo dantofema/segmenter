@@ -490,9 +490,9 @@ FROM ".$esquema.".conteos WHERE prov=".$prov." and dpto = ".$dpto." and frac=".$
     public static function darPermisos($esquema,$grupo='geoestadistica'){
             try {
 //                return DB::select("GRANT USAGE ON ".$esquema." TO ".$grupo.";");
-               DB::statement("GRANT SELECT ALL TABLES IN SCHEMA  ".$esquema." TO ".$grupo);
+               DB::statement("GRANT SELECT ON ALL TABLES IN SCHEMA  ".$esquema." TO ".$grupo);
                DB::statement("ALTER DEFAULT PRIVILEGES IN SCHEMA  ".$esquema." GRANT
-       SELECT TO ".$grupo);
+       SELECT ON TABLES TO ".$grupo);
         //GRANT geoestadistica TO manuel;
                 
                 } catch (Exception $e)  { 
