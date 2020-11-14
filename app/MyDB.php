@@ -13,6 +13,7 @@ class MyDB extends Model
 	public static function createSchema($esquema)
 	{
 		DB::statement('CREATE SCHEMA IF NOT EXISTS e'.$esquema);
+        self::darPermisos('e'.$esquema);
 	}
 
     public static function infoDBF($tabla,$esquema)
