@@ -13,6 +13,7 @@ class MyDB extends Model
 	public static function createSchema($esquema)
 	{
 		DB::statement('CREATE SCHEMA IF NOT EXISTS e'.$esquema);
+        self::darPermisos('e'.$esquema);
 	}
 
     public static function infoDBF($tabla,$esquema)
@@ -34,6 +35,13 @@ FROM
         $tabla = strtolower( substr($file_name,strrpos($file_name,'/')+1,-4) );
         return (DB::select('SELECT distinct codaglo FROM
         '.$esquema.'.'.$tabla.';')[0]->codaglo);
+    }
+
+    public static function getAgloLoc($tabla,$esquema)
+    {
+//        $tabla = strtolower( substr($file_name,strrpos($file_name,'/')+1,-4) );
+        return (DB::select('SELECT codaglo||codloc as link FROM
+        '.$esquema.'.'.$tabla.' Limit 1;')[0]->link);
     }
 
 //         $tabla = strtolower( substr($file_name,strrpos($file_name,'/')+1,-4) );
@@ -83,7 +91,9 @@ FROM
                            COLUMN nrocatastr text;');
                     }
              }
-             if (! Schema::hasColumn($esquema.'.listado' , 'descripcio2')){
+
+
+            if (! Schema::hasColumn($esquema.'.listado' , 'descripcio2')){
 //                    if (  Schema::hasColumn($esquema.'.listado' , 'descripcion')){
 //                         DB::unprepared('ALTER TABLE '.$esquema.'.listado
 //                         RENAME descripcion TO descripcio2');
@@ -105,8 +115,27 @@ FROM
     	                    DB::statement('ALTER TABLE '.$esquema.'.arc ADD COLUMN IF NOT EXISTS segi integer;');
                 }
                 if (! Schema::hasColumn($esquema.'.arc' , 'segd')){
-                            DB::statement('ALTER TABLE '.$esquema.'.arc ADD COLUMN IF NOT EXISTS segd integer;');
+                         DB::statement('ALTER TABLE '.$esquema.'.arc ADD COLUMN IF NOT EXISTS segd integer;');
                 }
+
+            // Tomo nro_listado en lugar de orden reco para CABA
+                if (MyDB::getAgloLoc('listado',$esquema)=='0002010'){
+                    Log::debug('Se detecto CABA');
+                    if ( Schema::hasColumn($esquema.'.listado' , 'nro_listad')){
+                        Log::debug('campo nro_listad');
+                        if ( Schema::hasColumn($esquema.'.listado' , 'orden_reco')){
+                             DB::statement('ALTER TABLE '.$esquema.'.listado 
+                            RENAME COLUMN orden_reco TO orden_reco_bak;');
+                            Log::debug('Se backupea orden_reco original');
+                        }
+                             DB::statement('ALTER TABLE '.$esquema.'.listado 
+                              RENAME COLUMN nro_listad TO orden_reco;');
+                            DB::statement('ALTER TABLE '.$esquema.'.listado ADD
+                                   COLUMN nro_listad integer;');
+                            Log::debug('Se cambia orden_reco x nro_listado');
+                    }
+            }
+                
              DB::commit();
              if (Schema::hasTable($esquema.'.arc') and Schema::hasTable($esquema.'.listado')){
             // Comienzan posprocesos de carga
@@ -382,7 +411,8 @@ and
          e.mza like 
          '%'||btrim(to_char(l.frac::integer, '09'::text))::character varying(3)||btrim(to_char(l.radio::integer, '09'::text))::character varying(3)||btrim(to_char(l.mza::integer, '099'::text))::character varying(3) 
        );");
-       DB::statement("GRANT SELECT ON TABLE  ".$esquema.".listado_segmentado_geo TO sig");
+       DB::statement("GRANT SELECT ON TABLE
+       ".$esquema.".listado_segmentado_geo TO geoestadistica");
         return $resultado;
     }
 
@@ -457,4 +487,32 @@ FROM ".$esquema.".conteos WHERE prov=".$prov." and dpto = ".$dpto." and frac=".$
             return null;
         }
     }
+
+    public static function darPermisos($esquema,$grupo='geoestadistica'){
+            try {
+               DB::statement("GRANT USAGE ON SCHEMA ".$esquema." TO ".$grupo.";");
+               DB::statement("GRANT SELECT ON ALL TABLES IN SCHEMA  ".$esquema." TO ".$grupo);
+               DB::statement("ALTER DEFAULT PRIVILEGES IN SCHEMA  ".$esquema." GRANT
+       SELECT ON TABLES TO ".$grupo);
+        //GRANT geoestadistica TO manuel;
+                
+                } catch (Exception $e)  { 
+                    Log::Error('No se pudieron asignar permisos');
+                    return null;}
+            Log::Debug('Se establecieron permisos para geoestadistica');
+            return null;
+    }
+
+    public static function addUser($usuario,$grupo='geoestadistica'){
+            try {
+//                return DB::select("GRANT USAGE ON ".$esquema." TO ".$grupo.";");
+               DB::unprepared("GRANT ".$grupo." TO ".$usuario.";");
+                
+                } catch (Exception $e)  { 
+                    Log::Debug('No se pudo agregar al grupo '.$grupo.' al '.$usuario);
+                    return null;}
+            Log::Debug('Se pudo agregar al grupo '.$grupo.' al '.$usuario);
+            return null;
+    }
 }
+
