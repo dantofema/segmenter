@@ -14,6 +14,8 @@ class SegmentarExcedidos extends Migration
     public function up()
     {
         //
+        $path = 'app/developer_docs/segmentacion-core/manzanas_independientes/segmentar_listado_equilibrado.sql';
+        DB::unprepared(file_get_contents($path));
         $path = 'app/developer_docs/segmentacion-core/segmentos_excedidos.sql';
         DB::unprepared(file_get_contents($path));
     }
