@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Symfony\Component\Process\Process;
 use Illuminate\Support\Facades\Config;
+use Auth;
 
 class Segmentador extends Model
 {
@@ -14,6 +15,7 @@ class Segmentador extends Model
     
     public function segmentar_a_lado_completo($aglo,$prov,$dpto,$frac,$radio,$vivs_deseada,$vivs_max,$vivs_min,$mza_indivisible)
 	{
+        $AppUser= Auth::user();
         // Set the limit to 500 MB.
         // Varios intentos para aumentar la memoria.
         /*
@@ -23,8 +25,11 @@ class Segmentador extends Model
         rewind($fp);
         ini_set('memory_limit','512M');
         */
-        $processLog = Process::fromShellCommandline('echo "Se va a segmentar: $info_segmenta"  >> segmentaciones.log');
-        $processLog->run(null, ['info_segmenta' => " Aglomerado: ".$aglo ." Radio ".$radio]);
+        $processLog = Process::fromShellCommandline('echo "$tiempo: $usuario_name ($usuario_id) -> va a segmentar: $info_segmenta"  >> segmentaciones.log');
+        $processLog->run(null, ['info_segmenta' => " Aglomerado: ".$aglo ." Radio ".$radio,
+                                'usuario_id' => $AppUser->id,
+                                'usuario_name' => $AppUser->name,
+                                'tiempo' => date('Y-m-d H:i:s')]);
 
         $esquema = 'e'.$aglo;
 
