@@ -50,6 +50,7 @@ Route::get('/contact', function()
 });
 
 Route::get('/setup', 'SetupController@index')->name('setup');
+Route::get('/setup/{esquema}', 'SetupController@permisos')->name('setup.permisos');
 
 Route::get('/inicio', 'HomeController@index')->name('inicio');
 Route::resource('/listado', 'ListadoController',['only' => [

@@ -33,4 +33,17 @@ class SetupController extends Controller
 
         return view('home');
     }
+
+
+    /**
+     * Show the application dashboard.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function permisos($schema )
+    {
+
+        MyDB::darPermisos($schema);
+        return view('home');
+    }
 }
