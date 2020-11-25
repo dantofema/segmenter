@@ -67,9 +67,12 @@ class SegmenterController extends Controller
                 $data['file']['dbf'] = $request->dbf->storeAs('segmentador', $random_name.'.'.$request->dbf->getClientOriginalExtension());
             }
 
-            $process = Process::fromShellCommandline('echo "$name" >> archivos.log');
-            $process->run(null, ['name' => "Archivo: ".$original_name." subido como: ".$data['file']['shp']]);
-            
+            $process = Process::fromShellCommandline('echo "$tiempo: $usuario_name ($usuario_id) -> $log" >> archivos.log');
+            $process->run(null, ['log' => "Archivo: ".$original_name." subido como: ".$data['file']['shp'],
+                                 'usuario_id' => $AppUser->id,
+                                 'usuario_name' => $AppUser->name,
+                                 'tiempo' => date('Y-m-d H:i:s')]);
+                        
             $codaglo = substr($original_name,1,4);
             MyDB::createSchema($codaglo);
 
