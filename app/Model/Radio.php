@@ -73,28 +73,44 @@ class Radio extends Model
         else
             return null; //new Aglomerado();
      }
+
     /**
      * Segmentar radio a lados completos
      * 
      */
     public function segmentar($aglo,$deseadas,$max,$min,$indivisible)
     {
-        //
-//        dd($this);
-//        $aglo= $this->localidades()->first()->aglomerado()->first()->codigo;    
-//       dd( $prov= substr(trim($this->departamento()->first()->provincia->first()->codigo), -2, 2));
-/*
-        $dpto= substr(trim($this->departamento()->first()->codigo), -3, 3);
-        $frac= substr(trim($this->fraccion()->first()->codigo), -2, 2);
-        $radio= substr(trim($this->codigo), -2, 2);
-*/
-        $prov=substr(trim($this->codigo), 0, 2);
+        $prov= substr(trim($this->codigo), 0, 2);
         $dpto= substr(trim($this->codigo), 2, 3);
         $frac= substr(trim($this->codigo), 5, 2);
         $radio= substr(trim($this->codigo), 7, 2);
 
         $segmenta = new Segmentador();
         $segmenta->segmentar_a_lado_completo($aglo,$prov,$dpto,$frac,$radio,$deseadas,$max,$min,$indivisible);
+
+        $segmenta->vista_segmentos_lados_completos($aglo);
+        $segmenta->lados_completos_a_tabla_segmentacion_ffrr($aglo,$frac,$radio);
+        return $this->_resultado = $segmenta->ver_segmentacion();
+    }
+
+    /**
+     * Segmentar radio con metodo magico.
+     * 
+     */
+    public function segmentarLucky($aglo,$deseadas,$max,$min,$indivisible)
+    {
+        $prov= substr(trim($this->codigo), 0, 2);
+        $dpto= substr(trim($this->codigo), 2, 3);
+        $frac= substr(trim($this->codigo), 5, 2);
+        $radio= substr(trim($this->codigo), 7, 2);
+
+        $segmenta = new Segmentador();
+        $segmenta->segmentar_a_lado_completo($aglo,$prov,$dpto,$frac,$radio,$deseadas,$max,$min,$indivisible);
+
+        $segmenta->vista_segmentos_lados_completos($aglo);
+        $segmenta->lados_completos_a_tabla_segmentacion_ffrr($aglo,$frac,$radio);
+        $segmenta->segmentar_excedidos_ffrr($aglo,$frac,$radio,$max,$deseadas);
+
 //        dd($segmenta);
         return $this->_resultado = $segmenta->ver_segmentacion();
     }
@@ -145,6 +161,11 @@ class Radio extends Model
     public function getResultadoAttribute($value)
     {
         return $this->_resultado;
+    }
+
+    public function setResultadoAttribute($value)
+    {
+        return $this->_resultado=$value;
     }
 
 

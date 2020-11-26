@@ -21,7 +21,8 @@ class SegmentacionController extends Controller
         foreach ($segmentacion_data as $data){ 
                 $segmentacion[]=explode(',',str_replace('}','',str_replace('{','',$data->segmento)));
                 }
-        return view('grafo.show',['nodos'=>$nodos,'relaciones'=>$edges,'segmentacion'=>$segmentacion]);
+        return
+        view('segmentacion.grafico2',['nodos'=>$nodos,'relaciones'=>$edges,'segmentacion'=>$segmentacion,'aglomerado'=>$aglomerado]);
     }
     
     public function ver_grafo(Aglomerado $aglomerado,Radio $radio)

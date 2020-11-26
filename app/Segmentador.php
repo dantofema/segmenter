@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Schema;
 use Symfony\Component\Process\Process;
 use Illuminate\Support\Facades\Config;
 use Auth;
+use App\MyDB;
 
 class Segmentador extends Model
 {
@@ -60,4 +61,24 @@ class Segmentador extends Model
             return $this->resultado;
         }else{ return "No hay segmentacion realizada.";}
     }
+
+    public function vista_segmentos_lados_completos($esquema)
+    {
+        MyDB::recrea_vista_segmentos_lados_completos($esquema);
+    }
+
+    public function
+    lados_completos_a_tabla_segmentacion_ffrr($esquema,$frac,$radio)
+    {
+       MyDB::lados_completos_a_tabla_segmentacion_ffrr($esquema,$frac,$radio);
+        
+    }
+
+    public function
+    segmentar_excedidos_ffrr($esquema,$frac,$radio,$umbral,$desado)
+    {
+        MyDB::segmentar_excedidos_ffrr($esquema,$frac,$radio,$umbral,$desado);
+        
+    }
+
 }

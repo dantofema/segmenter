@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "e98853b50bc1d25a53beffc807ad8454",
+    "content-hash": "95d43e0e4fd95984700feccc23f625ea",
     "packages": [
         {
             "name": "brackets/admin-auth",
@@ -6451,6 +6451,7 @@
                 "faker",
                 "fixtures"
             ],
+            "abandoned": true,
             "time": "2019-12-12T13:22:17+00:00"
         },
         {

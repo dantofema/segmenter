@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('content')
 <div class="text-center">
-<h2 class="text-center">Segmentación a manzanas independientes</h2>
+<h2 class="text-center">Segmentación </h2>
 <h3 class="text-center">Aglomerado ({{ $aglomerado->codigo }}) {{ $aglomerado->nombre }}</h3>
 <div id ="resumen"></div>
 <canvas id="canvas" style="padding: 20px 50px 20px 50px; max-height: 600px; " height="280" width="600"></canvas>
@@ -24,7 +24,7 @@
                 sum += Number(data.vivs)*Number(data.cant_segmentos);
                 n_segs += Number(data.cant_segmentos);
             });
-            var mensaje = n_segs+' segmentos para '+sum+' viviendas, con un promedio de '+sum/n_segs+' viviendas x segmento';
+            var mensaje = n_segs+' segmentos para '+sum+' viviendas, con un promedio de '+Math.round (100*sum/n_segs)/100+' viviendas x segmento';
             document.getElementById("resumen").innerHTML=mensaje;
             var ctx = document.getElementById("canvas").getContext('2d');
                 var myChart = new Chart(ctx, {
@@ -33,7 +33,7 @@
                       labels:Viviendas,
                       datasets: [{
                           label: 'Número de Segmentos',
-                          data: SegmentosCantidad,
+                          data: SegmentosCantidad ,
                           borderWidth: 1,
                           backgroundColor: 'rgb(36, 125, 173)',
                           borderColor: 'rgb(66, 155, 213)'
@@ -44,6 +44,7 @@
                       scales: {
                           yAxes: [{
                               gridLines: {
+                                  title: 'Cantidad de segmentos',
                                   drawBorder: true,
                                   color: ['pink', 'red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'purple']
                         }     ,

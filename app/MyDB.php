@@ -6,16 +6,79 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Log;
+use App\Model\Radio;
 
 class MyDB extends Model
 {
-    //a
+    // Segmenta a listado lso lados excedidos segun umbral
+    // 
+	public static function 
+    segmentar_excedidos_ffrr($esquema,$frac,$radio,$umbral=20,$deseado=20)
+	{
+        try{
+    		DB::statement(" SELECT indec.segmentar_excedidos_ffrr(
+            'e".$esquema."',".$frac.",".$radio.",".$umbral.",".$deseado.");");
+        }catch(Exception $e){
+         Log::error('No se pudo segmentar segmentos excedidos');
+        }
+         Log::debug('Se resegmentaron los segmentos excedidos!');
+    }
+
+    // Propaga la segmentacion a partir de lados completos hacia la tabla de
+    // segmentacion.
+	public static function 
+    lados_completos_a_tabla_segmentacion_ffrr($esquema,$frac,$radio)
+	{
+        try{
+    		DB::statement("SELECT
+            indec.lados_completos_a_tabla_segmentacion_ffrr('e".$esquema."',".$frac.",".$radio.");");
+        }catch(Exception $e){
+             DB::unprepared('create sequence '.$esquema.'.segmentos_seq');
+             Log::debug('Create sequence xq no exisitia...');
+    		DB::statement("SELECT
+            indec.lados_completos_a_tabla_segmentacion_ffrr('e".$esquema."',".$frac.",".$radio.");");
+        
+        }
+         Log::debug('Propagando segmentacion lados completos de tabla arc a
+         tabla segmentacion -> '.$esquema);
+	}
+
+    // crea o reemplaza la vista de segmentos generados por lados completos. 
+	public static function recrea_vista_segmentos_lados_completos($esquema)
+	{
+		DB::statement("SELECT
+        indec.v_segmentos_lados_completos('e".$esquema."');");
+         Log::debug('Creando vista manzana lado numero segmento en radio, cant
+         viviendas -> '.$esquema);
+	}
+
+    // Obtengo segmentos excedidos. 
+	public static function segmentos_excedidos($esquema,$vivs,Radio $radio=null)
+	{
+            if ($radio){
+                Log::debug('Filtro excedidos del radio: '.$radio->codigo.'
+                aplicando ppddcccffrr like 
+                '.substr($radio->codigo,0,5).'___'.substr($radio->codigo,-4));
+		        $result = DB::select("SELECT * FROM e".$esquema.".v_segmentos_lados_completos
+                WHERE vivs > ".$vivs." and ppdddcccffrr like
+                '".substr($radio->codigo,0,5)."___".substr($radio->codigo,-4)."';");
+                }
+            else{
+		        $result = DB::select("SELECT * FROM e".$esquema.".v_segmentos_lados_completos
+                WHERE vivs > ".$vivs.";");
+                }
+         return $result;
+	}
+
+    //Crea el esquema si no existe y asigna los permisos.
 	public static function createSchema($esquema)
 	{
 		DB::statement('CREATE SCHEMA IF NOT EXISTS e'.$esquema);
+        Log::debug('Creando esquema-> '.$esquema);
         self::darPermisos('e'.$esquema);
 	}
 
+    //Develve data del DBF subido.
     public static function infoDBF($tabla,$esquema)
     {
     	return json_encode(DB::select('
@@ -232,12 +295,14 @@ FROM
 	{
         $esquema = 'e'.$esquema;
     	return DB::select('
-                        SELECT segmento_id,count(*) vivs,count(distinct mza) as mzas,array_agg(distinct prov||dpto||codloc||frac||radio||mza||lado),count(distinct lado) as lados FROM 
+                        SELECT segmento_id,l.frac,l.radio,count(*)
+                        vivs,count(distinct mza) as mzas,array_agg(distinct
+                        prov||dpto||codloc||frac||radio||mza||lado) detalle,count(distinct lado) as lados FROM 
                         '.$esquema.'.
                         segmentacion s JOIN 
                         '.$esquema.'.
                         listado l ON s.listado_id=l.id 
-                        GROUP BY segmento_id 
+                        GROUP BY segmento_id,frac,radio
                         ORDER BY count(*) asc, array_agg(mza), segmento_id ;');
      // SQL retrun: 
     }
