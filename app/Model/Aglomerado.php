@@ -231,7 +231,7 @@ WITH shapes (geom, attribute) AS (
          '</svg>')
  FROM paths;
 ");
-        return $svg[0];
+            return $svg[0]->concat;
         }else{ return "No geodata"; }
         
     }

@@ -35,7 +35,7 @@
   </div>
 </form>
 @if($carto)
-   {!! $svg->concat !!}
+   {!! $svg !!}
 @endif
 </div>
 @if($aglomerado->codigo =='0125')         

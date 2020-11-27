@@ -2,10 +2,10 @@
     Código de Aglomerado: {{ $aglomerado->codigo }} <br />
     Nombre: {{ $aglomerado->nombre }} <br />
 <a href="{{ url('/aglo/'.$aglomerado->id) }}">Ver Radios</a>
-<div/>
-@if($carto)
-    {!! $svg->concat !!}
-@endif
+<div align=center>
+{!! $aglomerado->getSVG() !!}
+</div>
+</div>
 @if($aglomerado->codigo =='0125')         
 <div>
 <svg id="C30" class="mapa" xmlns="http://www.w3.org/2000/svg" height="500" width="450" viewBox="0 0 450 500">
