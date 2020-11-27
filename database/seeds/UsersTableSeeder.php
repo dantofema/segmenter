@@ -21,5 +21,10 @@ class UsersTableSeeder extends Seeder
             'email' => 'manuel@retamozo.com.ar',
             'password' => bcrypt('adminadmin'),
         ]);
+        DB::table('users')->insert([
+            'name' => 'Admin',
+            'email' => 'admin@geoinquietos.org.ar',
+            'password' => bcrypt('adminadmin'),
+        ]);
     }
 }
