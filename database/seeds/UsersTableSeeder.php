@@ -23,7 +23,7 @@ class UsersTableSeeder extends Seeder
         ]);
         DB::table('users')->insert([
             'name' => 'Admin',
-            'email' => 'admin@geoinquietos.org.ar',
+            'email' => 'admin@geoinquietos',
             'password' => bcrypt('adminadmin'),
         ]);
     }
