@@ -94,14 +94,10 @@ FROM
 
 
             if (! Schema::hasColumn($esquema.'.listado' , 'descripcio2')){
-//                    if (  Schema::hasColumn($esquema.'.listado' , 'descripcion')){
-//                         DB::unprepared('ALTER TABLE '.$esquema.'.listado
-//                         RENAME descripcion TO descripcio2');
-//                     }else{
                         DB::statement('ALTER TABLE '.$esquema.'.listado ADD
                                COLUMN descripcio2 text;');
-//                    }
              }
+
              if (Schema::hasColumn($esquema.'.listado' , 'mza')){
                            $resultado = DB::statement('UPDATE '.$esquema.'.listado SET
                            mza=right(mza,3);');
