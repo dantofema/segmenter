@@ -42,8 +42,13 @@ class SetupController extends Controller
      */
     public function permisos($schema )
     {
-
         MyDB::darPermisos($schema);
+        return view('home');
+    }
+
+    public function cargarTopologia($schema )
+    {
+        MyDB::cargarTopologia($schema);
         return view('home');
     }
 }
