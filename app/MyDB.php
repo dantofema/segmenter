@@ -579,5 +579,19 @@ FROM ".$esquema.".conteos WHERE prov=".$prov." and dpto = ".$dpto." and frac=".$
             Log::Debug('Se pudo agregar al grupo '.$grupo.' al '.$usuario);
             return null;
     }
+
+    // Carga geometria en topologia y genera manzanas, fracciones y radios.
+    // Necesita arc y lab.
+	public static function cargarTopologia($esquema)
+	{
+        try{
+    		DB::statement(" SELECT indec.cargarTopologia(
+            'e".$esquema."','arc');");
+        }catch(Exception $e){
+         Log::error('No se pudo cargar la topologia');
+        }
+         Log::debug('Se genraron fracciones, radios y manzanas ');
+    }
+
 }
 
