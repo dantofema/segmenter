@@ -240,7 +240,7 @@ WITH shapes (geom, attribute) AS (
         list ( $x0, $y0, $x1, $y1 ) = sscanf ( $extent, 'BOX(%f %f,%f %f)' );
         $Dx = $x1 - $x0;
         $Dy = $y1 - $y0;
-         $m_izq=.9*$Dx; $m_der=.9*$Dx; $m_arr=0.9*$Dy; $m_aba=.0*$Dy;
+            $m_izq=.1*$Dx; $m_der=.1*$Dx; $m_arr=.1*$Dy; $m_aba=.1*$Dy;
         $viewBox = ($x0 - $m_izq) . " " . (- $y1 - $m_arr) . " " . ($Dx + $m_izq + $m_der) . " " . ($Dy + $m_arr + $m_aba);
         if (! $height and ! $width)
             $height = 600;
