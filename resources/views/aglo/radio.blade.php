@@ -19,11 +19,10 @@
 <div class="form-horizontal">
 <form action="/grafo/{{ $aglomerado->id }}" method="GET" enctype="multipart/form-data">
                 @csrf
-
   <div class="form-group">
     <label class="control-label" for="radio">Seleccione un Radio para ver grafo de segmentación:</label>
     <div class="">
-<ul class="nav">
+    <ul class="nav">
             @foreach($radios as $radio)
     <li class="btn @if($radio->isSegmentado) segmentado @endif " >
     @if($radio->isSegmentado)<a href="{{ url('/grafo/'.$aglomerado->id.'/'.$radio->id) }}"> @endif
@@ -31,26 +30,14 @@
     @if($radio->isSegmentado)</a> @endif
     </li>
             @endforeach
-</ul>
+    </ul>
     </div>
   </div>
-  <div class="form-group">
-    <label class="control-label" for="radio">Metodo de segmentación:</label><br />
-    <label class="radio-inline"><input type="radio" name="optalgoritmo" value=op1>Op. 1</label>
-    <label class="radio-inline"><input type="radio" name="optalgoritmo" value=op2>Op. 2</label>
-    <label class="radio-inline"><input type="radio" name="optalgoritmo" value=op3 disabled>Magic</label>
-  </div>
- <div class="mx-auto">
- <input type="submit" class="segmentar btn btn-primary" value="Ver Grafo">
- </div>
 </form>
+@if($carto)
+   {!! $svg->concat !!}
+@endif
 </div>
-
-
-</div>
-     @if($carto)
-        {!! $svg->concat !!}
-     @endif
 @if($aglomerado->codigo =='0125')         
 <div>
 
@@ -119,4 +106,3 @@
 </svg>
 </div>
 @endif
-
