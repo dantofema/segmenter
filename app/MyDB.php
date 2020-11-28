@@ -308,17 +308,33 @@ FROM
     public static function segmentar_equilibrado_ver($esquema)
 	{
         $esquema = 'e'.$esquema;
-    	return DB::select('
+        if (Schema::hasTable($esquema.'.segmentos_desde_hasta')){
+        	return DB::select("SELECT segmento_id, frac, radio, mza , lado , 
+                        CASE  WHEN completo THEN 'Lado Completo'
+                        ELSE 'Desde ' ||
+                        indec.descripcion_domicilio('".$esquema."',seg_lado_desde) || '
+                            hasta ' ||
+                            indec.descripcion_domicilio('".$esquema."',seg_lado_hasta)
+                        END detalle,
+                        null vivs, null ts
+                    	FROM ".$esquema.".segmentos_desde_hasta
+                        order by frac,radio,segmento_id,mza,lado;");
+            
+        }else{
+        	return DB::select('
                         SELECT segmento_id,l.frac,l.radio,count(*)
-                        vivs,count(distinct mza) as mzas,array_agg(distinct
-                        prov||dpto||codloc||frac||radio||mza||lado) detalle,count(distinct lado) as lados FROM 
+                        vivs,count(distinct mza) as mza,array_agg(distinct
+                        prov||dpto||codloc||frac||radio||mza||lado)
+                        detalle,count(distinct lado) as lado, 
+                        null ts
+                        FROM 
                         '.$esquema.'.
                         segmentacion s JOIN 
                         '.$esquema.'.
                         listado l ON s.listado_id=l.id 
                         GROUP BY segmento_id,frac,radio
                         ORDER BY count(*) asc, array_agg(mza), segmento_id ;');
-     // SQL retrun: 
+        }
     }
 
     public static function segmentar_equilibrado_ver_resumen($esquema)

@@ -50,10 +50,12 @@
        <thead>
           <tr>
              <th>Id</th>
-             <th>Cant. Viviendas</th>
-             <th>Cant. Lados</th>
-             <th>Cant. Manzanas</th>
-             <th>Manznanas</th>
+             <th>Frac</th>
+             <th>Radio</th>
+             <th>Manzana</th>
+             <th>Lado</th>
+             <th>Detalle</th>
+             <th>Vivs</th>
           </tr>
        </thead>
     </table>
@@ -107,10 +109,13 @@
          ,
          columns: [
                   { data: 'segmento_id', name: 'id' },
+                  { data: 'frac', name: 'frac' },
+                  { data: 'radio', name: 'radio' },
+                  { data: 'mza', name: 'mza' },
+                  { data: 'lado', name: 'lado' },
+                  { data: 'detalle', name: 'detalle' },
                   { data: 'vivs', name: 'vivs' },
-                  { data: 'lados', name: 'lados' },
-                  { data: 'mzas', name: 'mzas' },
-                  { visible: false, data: 'array_agg', name: 'mzas_list' },
+                  { visible: false, data: 'ts', name: 'text_search' },
 //                  { searchable: false , data: 'departamentos_count', name: 'departamentos_count' }
                ]
       });
