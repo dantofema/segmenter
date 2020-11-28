@@ -157,29 +157,16 @@ FROM
 
 
             if (! Schema::hasColumn($esquema.'.listado' , 'descripcio2')){
-//                    if (  Schema::hasColumn($esquema.'.listado' , 'descripcion')){
-//                         DB::unprepared('ALTER TABLE '.$esquema.'.listado
-//                         RENAME descripcion TO descripcio2');
-//                     }else{
                         DB::statement('ALTER TABLE '.$esquema.'.listado ADD
                                COLUMN descripcio2 text;');
-//                    }
              }
+
              if (Schema::hasColumn($esquema.'.listado' , 'mza')){
                            $resultado = DB::statement('UPDATE '.$esquema.'.listado SET
                            mza=right(mza,3);');
                            Log::debug('Se adaptaron lados tomando 3 ultimos caractares ignorando primera letra -> '.$resultado);
 
              }
-                if (! Schema::hasColumn($esquema.'.arc' , 'nomencla10')){
-                            DB::statement('ALTER TABLE '.$esquema.'.arc ADD COLUMN IF NOT EXISTS nomencla10 text;');
-                }
-                if (! Schema::hasColumn($esquema.'.arc' , 'segi')){
-    	                    DB::statement('ALTER TABLE '.$esquema.'.arc ADD COLUMN IF NOT EXISTS segi integer;');
-                }
-                if (! Schema::hasColumn($esquema.'.arc' , 'segd')){
-                         DB::statement('ALTER TABLE '.$esquema.'.arc ADD COLUMN IF NOT EXISTS segd integer;');
-                }
 
             // Tomo nro_listado en lugar de orden reco para CABA
                 if (MyDB::getAgloLoc('listado',$esquema)=='0002010'){
@@ -204,10 +191,26 @@ FROM
             // Comienzan posprocesos de carga
              DB::beginTransaction();
                  try {
+                    if (! Schema::hasColumn($esquema.'.arc' , 'nomencla10')){
+                                DB::statement('ALTER TABLE '.$esquema.'.arc ADD COLUMN IF NOT EXISTS nomencla10 text;');
+                    }
+                    if (! Schema::hasColumn($esquema.'.arc' , 'segi')){
+        	                    DB::statement('ALTER TABLE '.$esquema.'.arc ADD COLUMN IF NOT EXISTS segi integer;');
+                    }
+                    if (! Schema::hasColumn($esquema.'.arc' , 'segd')){
+                             DB::statement('ALTER TABLE '.$esquema.'.arc ADD COLUMN IF NOT EXISTS segd integer;');
+                    }
+                 }catch (\Illuminate\Database\QueryException $exception) {
+                        Log::error('No se pudieron cargar lados '.$exception);
+                        DB::Rollback();
+                 };
+             DB::commit();
+             DB::beginTransaction();
+                 try {
                      DB::unprepared("Select indec.cargar_lados('".$esquema."')");
                  }catch (\Illuminate\Database\QueryException $exception) {
                         Log::error('No se pudieron cargar lados '.$exception);
-                     DB::Rollback();
+                        DB::Rollback();
                  };
                  DB::unprepared("Select indec.cargar_conteos('".$esquema."')");
                  DB::unprepared("Select indec.generar_adyacencias('".$esquema."')");
