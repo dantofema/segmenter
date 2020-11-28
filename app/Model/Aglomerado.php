@@ -135,15 +135,17 @@ class Aglomerado extends Model
             $new_radios=[];
             $objRadios= Collect (new Radio);
             $nuevos_radios=0;
-        foreach($radios as $radio){
-            if (Radio::where('codigo',$radio->link)->exists()){
-                           $links[]=$radio->link;
-            }else{
-                $new_radios[]=new Radio (['codigo'=>$radio->link,'nombre'=>'Nuevo: '.$radio->link]);
-                $nuevos_radios++;
-            }
+        if($radios){
+            foreach($radios as $radio){
+                if (Radio::where('codigo',$radio->link)->exists()){
+                               $links[]=$radio->link;
+                }else{
+                    $new_radios[]=new Radio (['codigo'=>$radio->link,'nombre'=>'Nuevo: '.$radio->link]);
+                    $nuevos_radios++;
+                }
 //            $links[]=$radio->link; };
             }
+        }
         if (count($links)>0){
             $objRadios=Radio::whereIn('codigo',$links)->get();
         }
