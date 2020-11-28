@@ -16,10 +16,21 @@ class MyDB extends Model
     segmentar_excedidos_ffrr($esquema,$frac,$radio,$umbral=20,$deseado=20)
 	{
         try{
+            Log::debug('Resegmentando segmentos excedidos de fraccion
+            '.$frac.', radio '.$radio);
+            self::cambiarSegmentarBigInt($esquema);
     		DB::statement(" SELECT indec.segmentar_excedidos_ffrr(
             'e".$esquema."',".$frac.",".$radio.",".$umbral.",".$deseado.");");
-        }catch(Exception $e){
-         Log::error('No se pudo segmentar segmentos excedidos');
+        }catch(Illuminate\Database\QueryException $e){
+            Log::debug('No se pudo segmentar segmentos excedidos, reintentando');
+            $self::cambiarSegmentarBigInt($esquema);
+
+            try{
+    		    DB::statement(" SELECT indec.segmentar_excedidos_ffrr(
+                'e".$esquema."',".$frac.",".$radio.",".$umbral.",".$deseado.");");
+            }catch(Exception $e){
+                 Log::error('No se pudo segmentar segmentos excedidos');
+            }
         }
          Log::debug('Se resegmentaron los segmentos excedidos!');
     }
@@ -596,5 +607,16 @@ FROM ".$esquema.".conteos WHERE prov=".$prov." and dpto = ".$dpto." and frac=".$
          Log::debug('Se genraron fracciones, radios y manzanas ');
     }
 
+    // Cambio a bigint id segmentacion.
+	public static function cambiarSegmentarBigInt($esquema)
+	{
+        try{
+    		DB::statement("ALTER TABLE \"e".$esquema."\".segmentacion ALTER
+            COLUMN segmento_id SET DATA TYPE bigint ;");
+        }catch(Exception $e){
+         Log::error('No se pudo cargar la topologia');
+        }
+         Log::debug('Se genraron fracciones, radios y manzanas ');
+    }
 }
 
