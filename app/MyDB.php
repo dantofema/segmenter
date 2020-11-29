@@ -254,11 +254,9 @@ FROM
                         detalle,count(distinct lado) as lado, 
                         null ts
                         FROM 
-                        '.$esquema.'.
-                        segmentacion s JOIN 
-                        '.$esquema.'.
-                        listado l ON s.listado_id=l.id 
-                        GROUP BY segmento_id 
+                        '.$esquema.'.segmentacion s JOIN 
+                        '.$esquema.'.listado l ON s.listado_id=l.id 
+                        GROUP BY segmento_id,l.frac,l.radio 
                         ORDER BY count(*) asc, array_agg(mza), segmento_id ;');
         }
     }
