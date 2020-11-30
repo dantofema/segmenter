@@ -161,10 +161,7 @@ FROM
                      DB::Rollback();
                  }
              self::addSequenceSegmentos($esquema);
-             DB::unprepared('create TABLE if not exists '.$esquema.'.segmentacion as
-                select id as listado_id, Null::integer as segmento_id
-                from '.$esquema.'.listado
-                ;');
+             self::generarSegmentacionNula($esquema);
 
              DB::commit();
 	         }
@@ -186,10 +183,10 @@ FROM
     	 
 	public static function generarSegmentacionNula($esquema)
 	{
-        if (Schema::hasTable('e'.$esquema.'.listado')) {
-          DB::statement('create TABLE if not exists e'.$esquema.'.segmentacion as
+        if (Schema::hasTable($esquema.'.listado')) {
+          DB::statement('create TABLE if not exists '.$esquema.'.segmentacion as
             select id as listado_id, Null::integer as segmento_id
-            from e'.$esquema.'.listado 
+            from '.$esquema.'.listado
             ;');
          return true;
         }
@@ -216,6 +213,7 @@ FROM
 	{
         try{
             self::addSequenceSegmentos('e'.$esquema,false);
+            self::generarSegmentacionNula('e'.$esquema);
         	if ( DB::statement("SELECT indec.segmentar_equilibrado('e".$esquema."',".$deseado.");") ){
             //    MyDB::georeferenciar_segmentacion($esquema);
             // llamar generar r3 como tabla resultado de function indec.r3(agl)
