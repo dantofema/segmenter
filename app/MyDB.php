@@ -249,7 +249,8 @@ FROM
                         END detalle,
                         null vivs, null ts
                     	FROM ".$esquema.".segmentos_desde_hasta
-                        order by frac,radio,segmento_id,mza,lado;");
+                        order by frac,radio,segmento_id,mza,lado
+                        LIMIT 1000;");
             
         }else{
         	return DB::select('
@@ -262,7 +263,8 @@ FROM
                         '.$esquema.'.segmentacion s JOIN 
                         '.$esquema.'.listado l ON s.listado_id=l.id 
                         GROUP BY segmento_id,l.frac,l.radio 
-                        ORDER BY count(*) asc, array_agg(mza), segmento_id ;');
+                        ORDER BY count(*) asc, array_agg(mza), segmento_id 
+                        LIMIT 1000;');
         }
     }
 
