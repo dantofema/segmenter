@@ -214,17 +214,23 @@ FROM
 
 	public static function segmentar_equilibrado($esquema,$deseado = 10)
 	{
-    	if ( DB::statement("SELECT indec.segmentar_equilibrado('e".$esquema."',".$deseado.");") ){
-        //    MyDB::georeferenciar_segmentacion($esquema);
-        // llamar generar r3 como tabla resultado de function indec.r3(agl)
-          ( DB::statement("SELECT indec.r3('e".$esquema."');") );
-          ( DB::statement("SELECT indec.descripcion_segmentos('e".$esquema."');") );
-          ( DB::statement("SELECT indec.segmentos_desde_hasta('e".$esquema."');") );
-      // (?) crear 3 public static function distintas y correrlas desde arribo 
-      // como segmentar_equilibrado
+        try{
+        	if ( DB::statement("SELECT indec.segmentar_equilibrado('e".$esquema."',".$deseado.");") ){
+            //    MyDB::georeferenciar_segmentacion($esquema);
+            // llamar generar r3 como tabla resultado de function indec.r3(agl)
+              ( DB::statement("SELECT indec.r3('e".$esquema."');") );
+              ( DB::statement("SELECT indec.descripcion_segmentos('e".$esquema."');") );
+              ( DB::statement("SELECT indec.segmentos_desde_hasta('e".$esquema."');") );
+          // (?) crear 3 public static function distintas y correrlas desde arribo 
+          // como segmentar_equilibrado
 
-               return true;
-        }else{ return false; }
+                   return true;
+            }else{ 
+                   return false; }
+        }catch (Exception $e){
+            dd($e);
+        }
+
 
      // SQL retrun: Select segmento_id,count(*) FROM e0777.segmentacion GROUP BY segmento_id;
 	}
