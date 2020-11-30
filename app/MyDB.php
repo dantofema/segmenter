@@ -215,6 +215,7 @@ FROM
 	public static function segmentar_equilibrado($esquema,$deseado = 10)
 	{
         try{
+            self::addSequenceSegmentos('e'.$esquema,false);
         	if ( DB::statement("SELECT indec.segmentar_equilibrado('e".$esquema."',".$deseado.");") ){
             //    MyDB::georeferenciar_segmentacion($esquema);
             // llamar generar r3 como tabla resultado de function indec.r3(agl)
@@ -553,11 +554,13 @@ FROM ".$esquema.".conteos WHERE prov=".$prov." and dpto = ".$dpto." and frac=".$
 
     // Crea secuencia para id de segmentos.
     //
-	public static function addSequenceSegmentos($esquema)
+	public static function addSequenceSegmentos($esquema,$reset = true)
 	{
         try{
-             DB::unprepared('DROP sequence IF EXISTS '.$esquema.'.segmentos_seq CASCADE');
-             DB::unprepared('create sequence '.$esquema.'.segmentos_seq');
+            if($reset){
+                DB::unprepared('DROP sequence IF EXISTS '.$esquema.'.segmentos_seq CASCADE');
+                }
+             DB::unprepared('create sequence IF NOT EXISTS '.$esquema.'.segmentos_seq');
         }catch(Exception $e){
          Log::error('No se pudo recrear la secuencia');
         }
