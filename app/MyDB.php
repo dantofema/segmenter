@@ -159,10 +159,8 @@ FROM
                  }catch (\Illuminate\Database\QueryException $exception) {
                      Log::error('No se pudo crear la descripcion de los segmentos: '.$exception);
                      DB::Rollback();
-                 } 
-             DB::unprepared('DROP sequence IF EXISTS '.$esquema.'.segmentos_seq CASCADE');
-             DB::unprepared('create sequence '.$esquema.'.segmentos_seq');
-             DB::unprepared('DROP TABLE IF EXISTS '.$esquema.'.segmentos CASCADE');
+                 }
+             self::addSequenceSegmentos($esquema);
              DB::unprepared('create TABLE if not exists '.$esquema.'.segmentacion as
                 select id as listado_id, Null::integer as segmento_id
                 from '.$esquema.'.listado
@@ -546,6 +544,21 @@ FROM ".$esquema.".conteos WHERE prov=".$prov." and dpto = ".$dpto." and frac=".$
         }
          Log::debug('Se genraron fracciones, radios y manzanas ');
     }
+
+    // Crea secuencia para id de segmentos.
+    //
+	public static function addSequenceSegmentos($esquema)
+	{
+        try{
+             DB::unprepared('DROP sequence IF EXISTS '.$esquema.'.segmentos_seq CASCADE');
+             DB::unprepared('create sequence '.$esquema.'.segmentos_seq');
+        }catch(Exception $e){
+         Log::error('No se pudo recrear la secuencia');
+        }
+         Log::debug('Se genero una nueva secuencia de segmentos.');
+    }
+
+
 
 }
 
