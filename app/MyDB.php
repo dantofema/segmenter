@@ -626,7 +626,6 @@ FROM ".$esquema.".conteos WHERE prov=".$prov." and dpto = ".$dpto." and frac=".$
          Log::debug('Se genraron fracciones, radios y manzanas ');
     }
 
-<<<<<<< HEAD
     // Crea secuencia para id de segmentos.
     //
 	public static function addSequenceSegmentos($esquema,$reset = true)
@@ -643,8 +642,6 @@ FROM ".$esquema.".conteos WHERE prov=".$prov." and dpto = ".$dpto." and frac=".$
     }
 
 
-
-=======
     // Cambio a bigint id segmentacion.
 	public static function cambiarSegmentarBigInt($esquema)
 	{
@@ -652,10 +649,9 @@ FROM ".$esquema.".conteos WHERE prov=".$prov." and dpto = ".$dpto." and frac=".$
     		DB::statement("ALTER TABLE \"e".$esquema."\".segmentacion ALTER
             COLUMN segmento_id SET DATA TYPE bigint ;");
         }catch(Exception $e){
-         Log::error('No se pudo cargar la topologia');
+         Log::error('NO Se pudo realizar el cambio del tipo segmento_id a bigint');
         }
-         Log::debug('Se genraron fracciones, radios y manzanas ');
+         Log::debug('Se cambio el tipo segmento_id a bigint');
     }
->>>>>>> 92749bcb521a7ec6dd044e6d022b20b7d1953f5d
 }
 
