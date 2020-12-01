@@ -279,6 +279,11 @@
 
 } );
 
+// Funcin para cargar todos los radios en lugar del selector de radios.
+function changeAllRadios(_this, id) {
+    var status = $(_this).prop('checked') == true ? 1 : 0;
+    
+}
 </script>
 </body>
 </html>

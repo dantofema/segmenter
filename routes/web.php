@@ -124,7 +124,7 @@ Route::post('ver-segmentacion-lados-grafico-resumen/{aglomerado}','AglomeradoCon
 
 
 // ---------- GRAFOS AGLOMERADOS --------
-Route::get('grafo/{aglomerado}','SegmentacionController@index');
+Route::get('grafo/{aglomerado}','SegmentacionController@index')->name('index');
 Route::get('grafo/{aglomerado}/{radio}/','SegmentacionController@ver_grafo')->name('ver-grafo');
 
 //Route::get('mail', 'MailCsvController@index');

@@ -6,16 +6,90 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Log;
+use App\Model\Radio;
 
 class MyDB extends Model
 {
-    //a
+    // Segmenta a listado lso lados excedidos segun umbral
+    // 
+	public static function 
+    segmentar_excedidos_ffrr($esquema,$frac,$radio,$umbral=20,$deseado=20)
+	{
+        try{
+            Log::debug('Resegmentando segmentos excedidos de fraccion
+            '.$frac.', radio '.$radio);
+            self::cambiarSegmentarBigInt($esquema);
+    		DB::statement(" SELECT indec.segmentar_excedidos_ffrr(
+            'e".$esquema."',".$frac.",".$radio.",".$umbral.",".$deseado.");");
+        }catch(Illuminate\Database\QueryException $e){
+            Log::debug('No se pudo segmentar segmentos excedidos, reintentando');
+            $self::cambiarSegmentarBigInt($esquema);
+
+            try{
+    		    DB::statement(" SELECT indec.segmentar_excedidos_ffrr(
+                'e".$esquema."',".$frac.",".$radio.",".$umbral.",".$deseado.");");
+            }catch(Exception $e){
+                 Log::error('No se pudo segmentar segmentos excedidos');
+            }
+        }
+         Log::debug('Se resegmentaron los segmentos excedidos!');
+    }
+
+    // Propaga la segmentacion a partir de lados completos hacia la tabla de
+    // segmentacion.
+	public static function 
+    lados_completos_a_tabla_segmentacion_ffrr($esquema,$frac,$radio)
+	{
+        try{
+    		DB::statement("SELECT
+            indec.lados_completos_a_tabla_segmentacion_ffrr('e".$esquema."',".$frac.",".$radio.");");
+        }catch(Exception $e){
+             DB::unprepared('create sequence '.$esquema.'.segmentos_seq');
+             Log::debug('Create sequence xq no exisitia...');
+    		DB::statement("SELECT
+            indec.lados_completos_a_tabla_segmentacion_ffrr('e".$esquema."',".$frac.",".$radio.");");
+        
+        }
+         Log::debug('Propagando segmentacion lados completos de tabla arc a
+         tabla segmentacion -> '.$esquema);
+	}
+
+    // crea o reemplaza la vista de segmentos generados por lados completos. 
+	public static function recrea_vista_segmentos_lados_completos($esquema)
+	{
+		DB::statement("SELECT
+        indec.v_segmentos_lados_completos('e".$esquema."');");
+         Log::debug('Creando vista manzana lado numero segmento en radio, cant
+         viviendas -> '.$esquema);
+	}
+
+    // Obtengo segmentos excedidos. 
+	public static function segmentos_excedidos($esquema,$vivs,Radio $radio=null)
+	{
+            if ($radio){
+                Log::debug('Filtro excedidos del radio: '.$radio->codigo.'
+                aplicando ppddcccffrr like 
+                '.substr($radio->codigo,0,5).'___'.substr($radio->codigo,-4));
+		        $result = DB::select("SELECT * FROM e".$esquema.".v_segmentos_lados_completos
+                WHERE vivs > ".$vivs." and ppdddcccffrr like
+                '".substr($radio->codigo,0,5)."___".substr($radio->codigo,-4)."';");
+                }
+            else{
+		        $result = DB::select("SELECT * FROM e".$esquema.".v_segmentos_lados_completos
+                WHERE vivs > ".$vivs.";");
+                }
+         return $result;
+	}
+
+    //Crea el esquema si no existe y asigna los permisos.
 	public static function createSchema($esquema)
 	{
 		DB::statement('CREATE SCHEMA IF NOT EXISTS e'.$esquema);
+        Log::debug('Creando esquema-> '.$esquema);
         self::darPermisos('e'.$esquema);
 	}
 
+    //Develve data del DBF subido.
     public static function infoDBF($tabla,$esquema)
     {
     	return json_encode(DB::select('
@@ -552,6 +626,7 @@ FROM ".$esquema.".conteos WHERE prov=".$prov." and dpto = ".$dpto." and frac=".$
          Log::debug('Se genraron fracciones, radios y manzanas ');
     }
 
+<<<<<<< HEAD
     // Crea secuencia para id de segmentos.
     //
 	public static function addSequenceSegmentos($esquema,$reset = true)
@@ -569,5 +644,18 @@ FROM ".$esquema.".conteos WHERE prov=".$prov." and dpto = ".$dpto." and frac=".$
 
 
 
+=======
+    // Cambio a bigint id segmentacion.
+	public static function cambiarSegmentarBigInt($esquema)
+	{
+        try{
+    		DB::statement("ALTER TABLE \"e".$esquema."\".segmentacion ALTER
+            COLUMN segmento_id SET DATA TYPE bigint ;");
+        }catch(Exception $e){
+         Log::error('No se pudo cargar la topologia');
+        }
+         Log::debug('Se genraron fracciones, radios y manzanas ');
+    }
+>>>>>>> 92749bcb521a7ec6dd044e6d022b20b7d1953f5d
 }
 

@@ -28,11 +28,20 @@
         </select>
     </div>
   </div>
+    <div class="form-group" style="display:hidden"> 
+    <label class="form-check-label">
+      <input name=checkallradios type="checkbox" class="form-check-input"
+      value=allradios>
+          Todos los radios
+    </label>
+  </div>  
   <div class="form-group">
     <label class="control-label" for="radio">Método de segmentación:</label><br />
     <label class="radio-inline"><input type="radio" name="optalgoritmo" value=listado>Manzanas independientes</label><br />
-    <label class="radio-inline"><input type="radio" name="optalgoritmo" value=lados checked>Lados Completos</label><br />
-    <label class="radio-inline"><input type="radio" name="optalgoritmo" value=magic disabled>IA - Magic</label><br />
+    <label class="radio-inline"><input type="radio" name="optalgoritmo" value=lados>Lados Completos</label><br />
+    <label class="radio-inline" alt="Primero segmenta a lados completos y los
+    lados excedidos son segmentados a lado independiente."><input type="radio" name="optalgoritmo"
+    value=magic checked>Mixto</label><br />
   </div>
   <div class="form-group">
     <label class="control-label" for="radio">Parametros:</label><br />
@@ -62,7 +71,5 @@
  </div>
 </form>
 </div>
-
-
 </div>
 <div>

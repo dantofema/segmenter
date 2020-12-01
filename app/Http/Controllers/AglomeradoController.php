@@ -1,108 +1,145 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Model\Aglomerado;
 use App\Model\Radio;
 use Illuminate\Http\Request;
 use App\MyDB;
+use Illuminate\Support\Facades\Log;
 
-class AglomeradoController extends Controller
-{
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
+    class AglomeradoController extends Controller
     {
-        // Listado de Aglomerados.
-        return view('aglos');
-    }
-
-    public function aglosList()
-    {
-        $aglosQuery = Aglomerado::query();
-        $codigo = (!empty($_REQUEST["codigo"])) ? ($_REQUEST["codigo"]) : ('');
-        if($codigo){
-         $aglosQuery->where('codigo','=',$codigo);
+        /**
+        * Display a listing of the resource.
+        *
+        * @return \Illuminate\Http\Response
+        */
+        public function index()
+        {
+            // Listado de Aglomerados.
+            return view('aglos');
         }
-        $aglos = $aglosQuery->select('*', \DB::raw('false carto,false listado,false segmentadolistado,false segmentadolados'))
-                            ->withCount(['localidades']);
-//        $carto=$aglos->Carto;
-//        $listado=$aglos->Listado;
-        return datatables()->of($aglos)
-/*            ->addColumn('actions', function ($data) {
-                return "<a class='btn btn-xs btn-success' href='/segmentar/$data->id'>Segmentar</a>";
-            })
-*/
-            ->make(true);
-    }
+
+        public function aglosList()
+        {
+            $aglosQuery = Aglomerado::query();
+            $codigo = (!empty($_REQUEST["codigo"])) ? ($_REQUEST["codigo"]) : ('');
+            if($codigo){
+            $aglosQuery->where('codigo','=',$codigo);
+            }
+            $aglos = $aglosQuery->select('*', \DB::raw('false carto,false
+            listado,false segmentadolistado,false segmentadolados'))
+                                ->withCount(['localidades']);
+    //                            ->withCount(['radios']);
+    //        $carto=$aglos->Carto;
+    //        $listado=$aglos->Listado;
+            return datatables()->of($aglos)
+    /*            ->addColumn('actions', function ($data) {
+                    return "<a class='btn btn-xs btn-success' href='/segmentar/$data->id'>Segmentar</a>";
+                })
+    */
+                ->make(true);
+        }
 
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
+        /**
+        * Show the form for creating a new resource.
+        *
+        * @return \Illuminate\Http\Response
+        */
+        public function create()
+        {
+            //
+        }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+        /**
+        * Store a newly created resource in storage.
+        *
+        * @param  \Illuminate\Http\Request  $request
+        * @return \Illuminate\Http\Response
+        */
+        public function store(Request $request)
+        {
+            //
+        }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Model\Aglomerado  $aglomerado
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Aglomerado $aglomerado)
-    {
-        //
-        $carto=$aglomerado->Carto;
-        $listado=$aglomerado->Listado;
-        $radios=$aglomerado->Radios;
-        $svg=$aglomerado->getSVG();
-        return view('aglo.segmenta_view',['aglomerado' => $aglomerado,'carto' => $carto,'listado'=>$listado,'radios'=>$radios,'svg'=>$svg]);
-    }
-    
-    public function show_post(Aglomerado $aglomerado)
-    {
-        //
-        return view('aglo.info',['aglomerado' => $aglomerado]);
-    }
-
-    public function segmenta_post(Aglomerado $aglomerado)
-    {
-        //
-        $carto=$aglomerado->Carto;
-        $listado=$aglomerado->Listado;
-        $radios=$aglomerado->ComboRadios;
-        $svg=$aglomerado->getSVG();
-        return view('aglo.segmenta',['aglomerado' => $aglomerado,'carto' => $carto,'listado'=>$listado,'radios'=>$radios,'svg'=>$svg]);
-    }
-
-    public function run_segmentar(Request $request, Aglomerado $aglomerado)
-    {
-        if($request->optalgoritmo=='listado'){
-            // Segmentacion x listado
-            return $this->run_segmentar_equilibrado($request,$aglomerado); 
-        }elseif($request->optalgoritmo=='lados'){
-            // Segmentacion x lado completo. Esto se realiza x radio o puedo hacerse para los radios del request.
-            return $this->run_segmentar_x_lado($request,$aglomerado); 
+        /**
+        * Display the specified resource.
+        *
+        * @param  \App\Model\Aglomerado  $aglomerado
+        * @return \Illuminate\Http\Response
+        */
+        public function show(Aglomerado $aglomerado)
+        {
+            //
+            if($aglomerado->Localidades()->count()==1) {
+                $carto=$aglomerado->Carto;
+                $listado=$aglomerado->Listado;
+                $radios=$aglomerado->Radios;
+                $svg=$aglomerado->getSVG();
+                return view('aglo.segmenta_view',[
+                            'aglomerado' => $aglomerado,
+                            'carto' => $carto,
+                            'listado'=>$listado,
+                            'radios'=>$radios,
+                            'svg'=>$svg]);
             }else{
-             return 'Not today!';
+                $localidades=$aglomerado->Localidades()->get();
+                return view('aglo.localidades_view',[
+                            'aglomerado'=>$aglomerado,
+                            'localidades'=>$localidades]);
+            }
+        }
+        
+        public function show_post(Aglomerado $aglomerado)
+        {
+            //
+            return view('aglo.info',['aglomerado' => $aglomerado]);
+        }
+
+        public function segmenta_post(Aglomerado $aglomerado)
+        {
+            //
+            $carto=$aglomerado->Carto;
+            $listado=$aglomerado->Listado;
+            $radios=$aglomerado->ComboRadios;
+            $svg=$aglomerado->getSVG();
+            return view('aglo.segmenta',['aglomerado' => $aglomerado,'carto' => $carto,'listado'=>$listado,'radios'=>$radios,'svg'=>$svg]);
+        }
+
+        public function run_segmentar(Request $request, Aglomerado $aglomerado)
+        {
+            if($request->optalgoritmo=='listado'){
+                // Segmentacion x listado
+                return $this->run_segmentar_equilibrado($request,$aglomerado); 
+            }elseif($request->optalgoritmo=='lados'){
+                // Segmentacion x lado completo. Esto se realiza x radio o puedo hacerse para los radios del request.
+                return $this->run_segmentar_x_lado($request,$aglomerado); 
+                }else{
+                    $radio=null;
+                    $result =
+                    $this->run_segmentar_x_lado($request,$aglomerado,$radio,true); 
+                    Log::debug("Segmentacion lucky: ".$radio);
+                    $excedidos =
+                    MyDB::segmentos_excedidos($aglomerado->codigo,$request['vivs_max'],$radio);
+                    $mensajes_excedidos = '';
+                    foreach ($excedidos as $segmento){
+                        $mensajes_excedidos .= 'El lado '.$segmento->lado.' de la manzana '.$segmento->mza.' debe segmentarse x listado, ya que tienen '.$segmento->vivs.' viviendas.
+    ';
+                        Log::debug(json_encode($segmento));
+                    }
+                    if ($radio){
+                        if ($mensajes_excedidos!=''){
+                        $radio->resultado.= '
+    '.$mensajes_excedidos;
+                        }
+//                        $this->run_segmentar_x_lucky($request,$aglomerado,$radio,true); 
+//                        $radio->segmentarLucky($request['vivs_max'],$request['vivs_deseadas']);
+                        return app('App\Http\Controllers\SegmentacionController')->ver_grafo($aglomerado,$radio);        
+                    }
+                //dd($aglomerado);
+              return
+              app('App\Http\Controllers\SegmentacionController')->index($aglomerado);        
             }
 
     }
@@ -162,27 +199,38 @@ class AglomeradoController extends Controller
             }
     }
 
-    public function run_segmentar_x_lado(Request $request, Aglomerado $aglomerado)
+    public function run_segmentar_x_lado(Request $request, Aglomerado
+    $aglomerado,Radio &$radio=null,$lucky=null)
     {
-        if($request->radios){
+      if($request->checkallradios){
+        Log::debug('Se van a segmentar todos los radios del
+        aglomerado: ('.$aglomerado->codigo.') '.$aglomerado->nombre );
+      }
+        elseif($request->radios){
            $radio= Radio::where('codigo',$request->radios)->first();
             if ($radio==null){
                 $radio = new Radio(['id'=>null,'codigo'=>$request->radios,'nombre'=>'Nuevo: '.$request->radios]);
-//            dd($radio);//'No se encontró el radio:'+$request->radios);
+                Log::debug('No se encontró el radio: '.$request->radios.' Se
+                crea temporalmente.');
             }
+            if ($lucky!=true){
            $resultado = $radio->segmentar($aglomerado->codigo,
                                           $request['vivs_deseadas'],
                                           $request['vivs_max'],
                                           $request['vivs_min'],
                                           $request['mzas_indivisibles']);
-              return  app('App\Http\Controllers\SegmentacionController')->ver_grafo($aglomerado,$radio);        
-//            return view('grafo.show', ['aglomerado'=>$aglomerado,'radio'=>$radio]); //$this->ver_segmentacion($aglomerado);
+                                          }else{
+           $resultado = $radio->segmentarLucky($aglomerado->codigo,
+                                          $request['vivs_deseadas'],
+                                          $request['vivs_max'],
+                                          $request['vivs_min'],
+                                          $request['mzas_indivisibles']);
+                                          }
+            return  app('App\Http\Controllers\SegmentacionController')->ver_grafo($aglomerado,$radio);        
         }else{
            flash('No selecciono ningún radio valido!'); 
            dd($request);
         }
-            //return view('segmentacion.info',['segmentacion'=>$segmentacion]);
-//        };
         
     }
 
