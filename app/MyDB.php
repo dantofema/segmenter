@@ -234,7 +234,7 @@ FROM
      // SQL retrun: Select segmento_id,count(*) FROM e0777.segmentacion GROUP BY segmento_id;
 	}
 	
-    public static function segmentar_equilibrado_ver($esquema)
+    public static function segmentar_equilibrado_ver($esquema,$max=2000)
 	{
         $esquema = 'e'.$esquema;
         if (Schema::hasTable($esquema.'.segmentos_desde_hasta')){
@@ -248,7 +248,7 @@ FROM
                         null vivs, null ts
                     	FROM ".$esquema.".segmentos_desde_hasta
                         order by frac,radio,segmento_id,mza,lado
-                        LIMIT 1000;");
+                        LIMIT ".$max.";");
             
         }else{
         	return DB::select('
@@ -262,7 +262,7 @@ FROM
                         '.$esquema.'.listado l ON s.listado_id=l.id 
                         GROUP BY segmento_id,l.frac,l.radio 
                         ORDER BY count(*) asc, array_agg(mza), segmento_id 
-                        LIMIT 1000;');
+                        LIMIT '.$max.';');
         }
     }
 
