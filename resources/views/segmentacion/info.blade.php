@@ -122,6 +122,9 @@
 
    table.on( 'click', 'tr', function () {
         var data = table.row( this ).data();
+        console.log( 'Click en segmento id '+data.segmento_id);
+        console.log( data );
+        return true;
 // AJAX request
    $.ajax({
     url: "{{ url('prov') }}"+"\\"+data.id,
@@ -135,7 +138,6 @@
       $('#empModal').modal('show'); 
     }
   });
-        console.log( 'You clicked on '+data.id+'\'s row' );
    });
   $('#btnFiterSubmitSearch').click(function(){
      $('#laravel_datatable').DataTable().draw(true);
