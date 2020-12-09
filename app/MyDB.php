@@ -308,7 +308,7 @@ FROM
      // SQL retrun: Select segmento_id,count(*) FROM e0777.segmentacion GROUP BY segmento_id;
 	}
 	
-    public static function segmentar_equilibrado_ver($esquema,$max=2000)
+    public static function segmentar_equilibrado_ver($esquema,$max=100)
 	{
         $esquema = 'e'.$esquema;
         if (Schema::hasTable($esquema.'.segmentos_desde_hasta')){
