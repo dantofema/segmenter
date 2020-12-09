@@ -214,15 +214,34 @@ class Aglomerado extends Model
             //dd($viewBox.'/n'.$this->viewBox($extent,$epsilon,$height,$width).'/n'.$x0." -".$y0." ".$x1." -".$y1);
             $svg=DB::select("
 WITH shapes (geom, attribute) AS (
-    SELECT st_buffer(wkb_geometry,2) wkb_geometry, CASE WHEN (segi is not null
-    or segd is not null) THEN 0 else 1 END FROM e".$this->codigo.".arc 
+    ( SELECT st_buffer(ST_OffsetCurve(wkb_geometry,5),2) wkb_geometry, segi
+    FROM e".$this->codigo.".arc WHERE segi is not null)
+    UNION (
+    SELECT st_buffer(ST_OffsetCurve(wkb_geometry,-5),2) wkb_geometry, segd
+    FROM e".$this->codigo.".arc WHERE segd is not null)
+    UNION (
+    SELECT st_buffer(ST_OffsetCurve(wkb_geometry,-5),2) wkb_geometry, 0
+    FROM e".$this->codigo.".arc WHERE segd is null)
+    UNION (
+    SELECT st_buffer(ST_OffsetCurve(wkb_geometry,5),2) wkb_geometry, 0
+    FROM e".$this->codigo.".arc WHERE segi is null)
   ),
   paths (svg) as (
      SELECT concat(
          '<path d= \"', 
          ST_AsSVG(st_buffer(geom,5),0), '\" ',
-         CASE WHEN attribute = 0 THEN 'stroke=\"red\" stroke-width=\"3\" fill=\"none\"' 
-         ELSE 'stroke=\"black\" stroke-width=\"".$stroke."\" fill=\"green\"' END,
+         CASE WHEN attribute = 0 THEN 'stroke=\"gray\" stroke-width=\"2\"
+         fill=\"gray\"' 
+              WHEN attribute < 5 THEN 'stroke=\"none\"
+              stroke-width=\"".$stroke."\" fill=\"#' || attribute*20 || 'AAAA\"' 
+              WHEN attribute < 10 THEN 'stroke=\"none\"
+         stroke-width=\"".$stroke."\" fill=\"#00' || (attribute-5)*20 || '00\"' 
+              WHEN attribute < 15 THEN 'stroke=\"none\"
+         stroke-width=\"".$stroke."\" fill=\"#AA' || (attribute-10)*20 || '00\"' 
+         ELSE 
+            'stroke=\"black\" stroke-width=\"".$stroke."\" fill=\"#22' ||
+            attribute*10 || '88\"' 
+         END,
           ' />') 
      FROM shapes
  )
