@@ -16,17 +16,17 @@
 <script src="/js/cola.min.js"></script>
 <style>
 #cy {
-  width: 1200px;
-  height: 600px;
+  width: 800px;
+  height: 400px;
   display: block;
 }
 </style>
 @endsection
 @section('content_main')
-	<button onClick="ordenar();"value="Ordenar">ReOrdenar</button>
-	<div width= 1200px;
-         height= 600px
+	<div width= 800px;
+         height= 400px
          id=cy>
+	<button type="button" class="btn btn-primary" onClick="ordenar();"value="Ordenar">ReOrdenar</button>
     </div>
 @endsection
 @section('footer_scripts')
@@ -79,6 +79,10 @@
         name: 'grid',
         rows: 25
     }
+    });
+    cy.on('click', 'node', function(evt){
+      var node = evt.target;
+      alert( 'Lado: ' + node.id() );
     });
     var layout = cy.layout({ name: 'random'});
     layout.run();
