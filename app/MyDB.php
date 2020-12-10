@@ -41,6 +41,7 @@ class MyDB extends Model
     lados_completos_a_tabla_segmentacion_ffrr($esquema,$frac,$radio)
 	{
         try{
+            self::addSequenceSegmentos('e'.$esquema);
     		DB::statement("SELECT
             indec.lados_completos_a_tabla_segmentacion_ffrr('e".$esquema."',".$frac.",".$radio.");");
         }catch(Exception $e){
