@@ -42,7 +42,7 @@ class MyDB extends Model
 	{
         try{
             self::addSequenceSegmentos('e'.$esquema);
-            self::generarSegmentacionVacia('e'.$esquema);
+            self::generarSegmentacionVacia($esquema);
     		DB::statement("SELECT
             indec.lados_completos_a_tabla_segmentacion_ffrr('e".$esquema."',".$frac.",".$radio.");");
         }catch(Exception $e){
