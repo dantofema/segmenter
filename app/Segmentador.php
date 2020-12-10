@@ -27,7 +27,7 @@ class Segmentador extends Model
         ini_set('memory_limit','512M');
         */
         $processLog = Process::fromShellCommandline('echo "$tiempo: $usuario_name ($usuario_id) -> va a segmentar: $info_segmenta"  >> segmentaciones.log');
-        $processLog->run(null, ['info_segmenta' => " Aglomerado: ".$aglo ." Radio ".$radio,
+        $processLog->run(null, ['info_segmenta' => " Aglomerado: ".$aglo ." Frac ".$frac." Radio ".$radio,
                                 'usuario_id' => $AppUser->id,
                                 'usuario_name' => $AppUser->name,
                                 'tiempo' => date('Y-m-d H:i:s')]);
