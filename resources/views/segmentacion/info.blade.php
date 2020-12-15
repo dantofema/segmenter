@@ -52,8 +52,6 @@
              <th>Id</th>
              <th>Frac</th>
              <th>Radio</th>
-             <th>Manzana</th>
-             <th>Lado</th>
              <th>Detalle</th>
              <th>Vivs</th>
           </tr>
@@ -111,8 +109,6 @@
                   { data: 'segmento_id', name: 'id' },
                   { data: 'frac', name: 'frac' },
                   { data: 'radio', name: 'radio' },
-                  { data: 'mza', name: 'mza' },
-                  { data: 'lado', name: 'lado' },
                   { data: 'detalle', name: 'detalle' },
                   { data: 'vivs', name: 'vivs' },
                   { visible: false, data: 'ts', name: 'text_search' },
