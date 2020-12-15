@@ -314,7 +314,16 @@ FROM
 	{
         $esquema = 'e'.$esquema;
         if (Schema::hasTable($esquema.'.segmentos_desde_hasta')){
-           return DB::select("SELECT segmento_id, frac, radio, mza, lado,
+          if (Schema::hasColumn($esquema.'.segmentos_desde_hasta','viviendas')){
+           return DB::select("
+                    SELECT segmento_id, frac, radio, viviendas vivs,
+                           descripcion detalle, null ts
+                           FROM
+                        indec.describe_segmentos_con_direcciones('".$esquema."')
+                        order by frac,radio,segmento_id
+                        LIMIT ".$max.";");
+            }else{
+             return DB::select("SELECT segmento_id, frac, radio, mza, lado,
                         CASE  WHEN completo THEN 'Lado Completo'
                         ELSE 'Desde ' ||
                         indec.descripcion_domicilio('".$esquema."',seg_lado_desde) || '
@@ -325,6 +334,7 @@ FROM
                     	FROM ".$esquema.".segmentos_desde_hasta
                         order by frac,radio,segmento_id,mza,lado
                         LIMIT ".$max.";");
+            }
             
         }else{
         	return DB::select('
