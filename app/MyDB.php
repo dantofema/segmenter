@@ -310,8 +310,15 @@ FROM
      // SQL retrun: Select segmento_id,count(*) FROM e0777.segmentacion GROUP BY segmento_id;
 	}
 	
-    public static function segmentar_equilibrado_ver($esquema,$max=100)
+    public static function
+    segmentar_equilibrado_ver($esquema,$max=100,Radio $radio = Null)
 	{
+        if ($radio){
+            $filtro= ' where (frac,radio) =
+            ('.$radio->getCodigoFrac().','.$radio->getCodigoRad().') '
+        } else
+        { $filtro = ''}
+
         $esquema = 'e'.$esquema;
         if (Schema::hasTable($esquema.'.segmentos_desde_hasta')){
           if (Schema::hasColumn($esquema.'.segmentos_desde_hasta','viviendas')){
@@ -319,6 +326,7 @@ FROM
                     SELECT segmento_id, frac, radio, viviendas vivs,
                            descripcion detalle, null ts
                            FROM
+                           '.$filtro.'
                         indec.describe_segmentos_con_direcciones('".$esquema."')
                         order by frac,radio,segmento_id
                         LIMIT ".$max.";");
@@ -332,6 +340,7 @@ FROM
                         END detalle,
                         null vivs, null ts
                     	FROM ".$esquema.".segmentos_desde_hasta
+                           '.$filtro.'
                         order by frac,radio,segmento_id,mza,lado
                         LIMIT ".$max.";");
             }
@@ -346,6 +355,7 @@ FROM
                         FROM 
                         '.$esquema.'.segmentacion s JOIN 
                         '.$esquema.'.listado l ON s.listado_id=l.id 
+                           '.$filtro.'
                         GROUP BY segmento_id,l.frac,l.radio 
                         ORDER BY count(*) asc, array_agg(mza), segmento_id 
                         LIMIT '.$max.';');

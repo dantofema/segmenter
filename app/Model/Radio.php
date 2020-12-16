@@ -168,5 +168,11 @@ class Radio extends Model
         return $this->_resultado=$value;
     }
 
+    public function getCodigoRad($value){
+        return $radio= substr(trim($this->codigo), 7, 2);
+    }
 
+    public function getCodigoFrac($value){
+        return $frac= substr(trim($this->codigo), 5, 2);
+    }
 }
