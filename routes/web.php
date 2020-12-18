@@ -53,6 +53,8 @@ Route::get('/setup', 'SetupController@index')->name('setup');
 Route::get('/setup/{esquema}', 'SetupController@permisos')->name('setup.permisos');
 Route::get('/setup/topo/{esquema}',
 'SetupController@cargarTopologia')->name('setup.topologia');
+Route::get('/setup/index/{esquema}',
+'SetupController@addIndexListado')->name('setup.index');
 
 Route::get('/inicio', 'HomeController@index')->name('inicio');
 Route::resource('/listado', 'ListadoController',['only' => [

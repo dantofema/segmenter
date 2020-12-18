@@ -40,15 +40,23 @@ class SetupController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function permisos($schema )
+    public function permisos($schema)
     {
         MyDB::darPermisos($schema);
         return view('home');
     }
 
-    public function cargarTopologia($schema )
+    public function cargarTopologia($schema)
     {
         MyDB::cargarTopologia($schema);
         return view('home');
     }
+   
+    public function addIndexListado($schema)
+    {
+        MyDB::addIndexListado($schema);
+        flash('Se creo el indice para listado en '.$schema);
+        return view('home');
+    }
+
 }
