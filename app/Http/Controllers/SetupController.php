@@ -55,7 +55,9 @@ class SetupController extends Controller
     public function addIndexListado($schema)
     {
         MyDB::addIndexListado($schema);
-        flash('Se creo el indice para listado en '.$schema);
+        flash('Se creo el indice para lados en listado en '.$schema);
+        MyDB::addIndexListadoId($schema);
+        flash('Se creo el indice para id listado en '.$schema);
         return view('home');
     }
 

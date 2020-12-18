@@ -683,23 +683,28 @@ FROM ".$esquema.".conteos WHERE prov=".$prov." and dpto = ".$dpto." and frac=".$
 	public static function addIndexListado($esquema)
 	{
         try{
-
-        //    Schema::table($esquema.'.listado', function (Blueprint $table) {
-        //        $table->string('')->index(['prov', 'dpto', 'codloc', 'frac',
-         //           'radio', 'mza', 'lado', 'nrocatastr', 'sector', 'edificio',
-         //           'entrada', 'piso']);
-         //   });
             DB::statement(
              "create index IF NOT EXISTS listado_piso on ".$esquema.".listado 
                 (prov, dpto, codloc, frac, radio, mza, lado, 
                  nrocatastr, sector, edificio, entrada, piso);");
         }catch(Exception $e){
-         Log::debug('No se pudo generar indice en '.$esquema);
+         Log::debug('No se pudo generar indice de lado en '.$esquema);
         }
-         Log::debug('Se creo indice en '.$esquema);
+         Log::debug('Se creo indice de lado en '.$esquema);
     }
 
-    
+    // Generar indice en tabla de listados.
+	public static function addIndexListadoId($esquema)
+	{
+        try{
+            DB::statement(
+             "create index IF NOT EXISTS idx_listado_id on ".$esquema.".listado
+                (id);");
+        }catch(Exception $e){
+         Log::debug('No se pudo generar indice en id para '.$esquema);
+        }
+         Log::debug('Se creo indice en id para '.$esquema);
+    }
 
 }
 
