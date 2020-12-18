@@ -58,6 +58,8 @@ class SetupController extends Controller
         flash('Se creo el indice para lados en listado en '.$schema);
         MyDB::addIndexListadoId($schema);
         flash('Se creo el indice para id listado en '.$schema);
+        MyDB::addIndexListadoRadio($schema);
+        flash('Se creo el indice para radio en listado en '.$schema);
         return view('home');
     }
 

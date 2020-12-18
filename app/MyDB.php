@@ -706,5 +706,18 @@ FROM ".$esquema.".conteos WHERE prov=".$prov." and dpto = ".$dpto." and frac=".$
          Log::debug('Se creo indice en id para '.$esquema);
     }
 
+    // Generar indice en tabla de listados x radio.
+	public static function addIndexListadoRadio($esquema)
+	{
+        try{
+            DB::statement(
+             "create index IF NOT EXISTS listado_radio on ".$esquema.".listado 
+                (prov, dpto, codloc, frac, radio);");
+        }catch(Exception $e){
+         Log::debug('No se pudo generar indice de radio en '.$esquema);
+        }
+         Log::debug('Se creo indice de radio en '.$esquema);
+    }
+
 }
 
