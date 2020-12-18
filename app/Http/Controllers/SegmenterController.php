@@ -148,7 +148,7 @@ class SegmenterController extends Controller
             if ($codaglo!=$aglo_interno){
                 $data['file']['aglo_dbf']='El nombre del archivo
                 '.$codaglo.' difiere del aglo '.$aglo_interno.'encontrado en el listado';
-                $codaglo=$aglo_interno;
+                //$codaglo=$aglo_interno;
 		            MyDB::createSchema($codaglo);
             }
 
