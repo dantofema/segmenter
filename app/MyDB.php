@@ -72,12 +72,12 @@ class MyDB extends Model
                 Log::debug('Filtro excedidos del radio: '.$radio->codigo.'
                 aplicando ppddcccffrr like 
                 '.substr($radio->codigo,0,5).'___'.substr($radio->codigo,-4));
-		        $result = DB::select("SELECT * FROM e".$esquema.".v_segmentos_lados_completos
-                WHERE vivs > ".$vivs." and ppdddcccffrr like
-                '".substr($radio->codigo,0,5)."___".substr($radio->codigo,-4)."';");
-                }
-            else{
-		        $result = DB::select("SELECT * FROM e".$esquema.".v_segmentos_lados_completos
+                    $result = DB::select("SELECT * FROM e".$esquema.".v_segmentos_lados_completos
+                    WHERE vivs > ".$vivs." and ppdddcccffrr like
+                    '".substr($radio->codigo,0,5)."___".substr($radio->codigo,-4)."';");
+                    }
+                else{
+                    $result = DB::select("SELECT * FROM e".$esquema.".v_segmentos_lados_completos
                 WHERE vivs > ".$vivs.";");
                 }
          return $result;
@@ -325,9 +325,9 @@ FROM
            return DB::select("
                     SELECT segmento_id, frac, radio, viviendas vivs,
                            descripcion detalle, null ts
-                           FROM
-                           '.$filtro.'
+                       	FROM
                         indec.describe_segmentos_con_direcciones('".$esquema."')
+                           ".$filtro."
                         order by frac,radio,segmento_id
                         LIMIT ".$max.";");
             }else{
@@ -340,7 +340,7 @@ FROM
                         END detalle,
                         null vivs, null ts
                     	FROM ".$esquema.".segmentos_desde_hasta
-                           '.$filtro.'
+                           ".$filtro."
                         order by frac,radio,segmento_id,mza,lado
                         LIMIT ".$max.";");
             }
