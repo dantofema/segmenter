@@ -331,6 +331,8 @@ FROM
                         order by frac,radio,segmento_id
                         LIMIT ".$max.";");
             }else{
+            flash('Se detecto una carga medio antigua. Se encontro tabla de
+            "segmentos desde hasta". Pero sin vivendas... Se hace lo que se puede.');
              return DB::select("SELECT segmento_id, frac, radio, mza, lado,
                         CASE  WHEN completo THEN 'Lado Completo'
                         ELSE 'Desde ' ||
@@ -346,6 +348,8 @@ FROM
             }
             
         }else{
+            flash('Se detecto una carga antigua. No se encontro tabla de
+            "segmentos desde hasta". Se hace lo que se puede.');
         	return DB::select('
                         SELECT segmento_id,l.frac,l.radio,count(*)
                         vivs,count(distinct mza) as mza,array_agg(distinct
