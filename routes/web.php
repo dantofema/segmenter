@@ -133,6 +133,9 @@ Route::get('grafo/{aglomerado}/{radio}/','SegmentacionController@ver_grafo')->na
 
 //Route::get('mail', 'MailCsvController@index');
 
+/* Logout via GET */
+Route::get('/logout', 'Auth\LoginController@logout');
+
 /* Auto-generated admin routes */
 Route::middleware(['auth:' . config('admin-auth.defaults.guard'), 'admin'])->group(static function () {
     Route::prefix('admin')->namespace('Admin')->name('admin/')->group(static function() {
