@@ -63,4 +63,11 @@ class SetupController extends Controller
         return view('home');
     }
 
+    public function addIndexId($tabla)
+    {
+        MyDB::addIndexId($tabla);
+        flash('Se creo el indice para id en '.$tabla);
+        return view('home');
+    }
+
 }
