@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Log;
 use App\Model\Radio;
+use Symfony\Component\Process\Process;
+use Auth;
 
 class MyDB extends Model
 {
@@ -287,6 +289,13 @@ FROM
 
 	public static function segmentar_equilibrado($esquema,$deseado = 10)
 	{
+        $AppUser= Auth::user();
+        $processLog = Process::fromShellCommandline('echo "$tiempo: $usuario_name ($usuario_id) -> va a segmentar a manzana independiente: $info_segmenta"  >> segmentaciones.log');
+        $processLog->run(null, ['info_segmenta' => " Aglomerado: ".$esquema ,
+                                'usuario_id' => $AppUser->id,
+                                'usuario_name' => $AppUser->name,
+                                'tiempo' => date('Y-m-d H:i:s')]);
+
         try{
             self::addSequenceSegmentos('e'.$esquema,false);
             self::generarSegmentacionNula('e'.$esquema);
@@ -311,7 +320,7 @@ FROM
 	}
 	
     public static function
-    segmentar_equilibrado_ver($esquema,$max=100,Radio $radio = Null)
+    segmentar_equilibrado_ver($esquema,$max=1000,Radio $radio = Null)
 	{
         if ($radio){
             $filtro= ' where (frac,radio) =
