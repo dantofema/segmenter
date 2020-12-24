@@ -171,9 +171,9 @@ FROM
              }
 
 
-            if (! Schema::hasColumn($esquema.'.listado' , 'descripcio2')){
+            if (! Schema::hasColumn($esquema.'.listado' , 'descripci2')){
                         DB::statement('ALTER TABLE '.$esquema.'.listado ADD
-                               COLUMN descripcio2 text;');
+                               COLUMN descripci2 text;');
              }
 
              if (Schema::hasColumn($esquema.'.listado' , 'mza')){
