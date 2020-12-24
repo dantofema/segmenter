@@ -18,15 +18,20 @@
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+
+    <!-- More Scripts -->
+    @yield ('header_scripts')
+    
 </head>
 <body>
+    @yield('divs4content')
     <div id="app">
         <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
             <div class="container">
 		@include('flash::message')
                 <a class="navbar-brand text-uppercase" href="{{ url('/') }}">
                 <img src="/images/mandarina.svg" width="30" height="30" class="d-inline-block align-top" alt="">
-                    {{ config('app.name', 'Laravel') }}
+                    {{ config('app.name', 'App sin nombre') }}
                 </a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
                     <span class="navbar-toggler-icon"></span>
@@ -34,11 +39,14 @@
 
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <!-- Left Side Of Navbar -->
-                    <ul class="navbar-nav mr-auto ">
+                    <ul class="navbar-nav mr-auto btn">
                     @auth
-            			<li class="nav-item"><a class="nav-link" href="{{ url('/provs') }}"> Provincias </a> </li>
-            			<li class="nav-item"><a class="nav-link" href="{{ url('/aglos') }}"> Aglomerados </a> </li>
-            			<li class="nav-item"><a class="nav-link" href="{{ url('/segmentador') }}"> Cargar </a> </li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url('/provs') }}"> Provincias </a> </li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url('/aglos') }}"> Aglomerados </a> </li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url('/segmentador') }}"> Cargar </a> </li>
+                        <li class="nav-item"><a class="nav-link" href="{{
+                        url('https://github.com/bichav/salidagrafica-atlas/archive/master.zip')
+                        }}"> Descargar plugin </a> </li>
                     @endauth
                     </ul>
 
@@ -56,11 +64,14 @@
                             @endif
                         @else
                             <li class="nav-item dropdown">
-                                <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                    {{ Auth::user()->name }} <span class="caret"></span>
+                                <a id="navbarDropdownLogin" class="nav-link
+                                dropdown-toggle" href="#logout" role="button"
+                                aria-controls=logout
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre> {{ Auth::user()->name }} <span class="caret"></span>
                                 </a>
 
-                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                                <div id=logout class="dropdown-menu dropdown-menu-right collapse"
+                                aria-labelledby="navbarDropdownLogin">
                                     <a class="dropdown-item" href="{{ route('logout') }}"
                                        onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">
@@ -81,16 +92,23 @@
         <main class="py-4">
             @yield('content')
         </main>
-    </div>
+        </div>
+            @yield('content_main')
+        <div id="copyright" class="text-center justify-content-center"
+            style="display:block"><hr />© Copyright 2020 INDEC - Geoestadística
+            <div>{{ Git::version() }} -  {{ Git::lastCommitDate() }}</div>
+            </div>
 <!-- If using flash()->important() or flash()->overlay(), you'll need to pull in the JS for Twitter Bootstrap. -->
 <script src="//code.jquery.com/jquery.js"></script>
-<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
 <script>
+   $(document).ready( function () {
     $('#flash-overlay-modal').modal();
+});
 </script>
 <script>
 $('div.alert').not('.alert-important').delay(3000).fadeOut(350);
 </script>
+    @yield ('footer_scripts')
 </body>
 </html>
