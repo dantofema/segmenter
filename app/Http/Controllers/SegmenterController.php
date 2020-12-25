@@ -21,12 +21,13 @@ class SegmenterController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
-        $this->epsgs['22182']='EPSG:22182';
-        $this->epsgs['22183']='EPSG:22183';
-        $this->epsgs['22184']='EPSG:22184';
-        $this->epsgs['22185']='EPSG:22185';
-        $this->epsgs['22186']='EPSG:22186';
-        $this->epsgs['22187']='EPSG:22187';
+        $this->epsgs['22182']='(EPSG:22182) POSGAR 94 / Argentina 2';
+        $this->epsgs['22183']='(EPSG:22183) POSGAR 94 / Argentina 3';
+        $this->epsgs['22184']='(EPSG:22184) POSGAR 94 / Argentina 4';
+        $this->epsgs['22185']='(EPSG:22185) POSGAR 94 / Argentina 5';
+        $this->epsgs['22186']='(EPSG:22186) POSGAR 94 / Argentina 6';
+        $this->epsgs['22187']='(EPSG:22187) POSGAR 94 / Argentina 7';
+        $this->epsgs['98333']='(SR-ORG:98333) Gauss Krugger BA';
     }
 
     public function index()
