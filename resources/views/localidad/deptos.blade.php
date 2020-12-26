@@ -24,9 +24,9 @@
     <label class="control-label" for="radio">Seleccione una Comuna para ver los
     radios:</label>
     <div class="">
-<ul class="nav">
+<ul class="nav row justify-content-around">
             @foreach($deptos as $depto)
-    <li class="btn " >
+    <li class="btn  btn-outline-primary" style="margin-bottom: 5px" >
     @if(true)<a href="{{ url('/radios/'.$localidad->id.'/'.$depto->id) }}">
         {{ trim($depto->codigo) }}: {{ trim($depto->nombre) }}</a> @endif
     </li>

@@ -9,15 +9,15 @@
   <div class="form-group">
     <label class="control-label" for="localidad">Seleccione una Localidad:</label>
     <div class="">
-<ul class="nav">
+    <ul class="nav row justify-content-around">
             @foreach($localidades as $localidad)
-    <li class="btn " >
+    <li class="btn  btn-outline-primary" style="margin-bottom: 5px" >
     <a href="{{ url('/localidad/'.$localidad->id) }}">
         {{ trim($localidad->codigo) }}: {{ trim($localidad->nombre) }} 
     </a>
     </li>
             @endforeach
-</ul>
+    </ul>
     </div>
   </div>
 </form>
