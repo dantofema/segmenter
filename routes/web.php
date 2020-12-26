@@ -127,6 +127,11 @@ Route::get('ver-segmentacion-lados/grafico-resumen/{aglomerado}','AglomeradoCont
 Route::post('ver-segmentacion-lados-grafico-resumen/{aglomerado}','AglomeradoController@ver_segmentacion_lados_grafico_resumen')->name('ver-segmentacion-lados-grafico-resumen');
 
 
+// ---------- RADIOS Localidad Depto --------
+// Para CABA
+Route::get('radios/{localidad}/{departamento}','RadiosController@show');
+Route::get('radio/{radio}','RadioController@show');
+
 // ---------- GRAFOS AGLOMERADOS --------
 Route::get('grafo/{aglomerado}','SegmentacionController@index')->name('index');
 Route::get('grafo/{aglomerado}/{radio}/','SegmentacionController@ver_grafo')->name('ver-grafo');
