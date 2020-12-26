@@ -108,17 +108,21 @@ FROM
                         GROUP BY 1,2,3,4,5,6,7,8;')); 
     }
 
-    public static function getAglo($file_name,$esquema)
+    public static function getAglo($tabla,$esquema)
     {
-        $tabla = strtolower( substr($file_name,strrpos($file_name,'/')+1,-4) );
         return (DB::select('SELECT distinct codaglo FROM
         '.$esquema.'.'.$tabla.';')[0]->codaglo);
     }
 
-    public static function getAgloLoc($tabla,$esquema)
+    public static function getProv($tabla,$esquema)
     {
-//        $tabla = strtolower( substr($file_name,strrpos($file_name,'/')+1,-4) );
-        return (DB::select('SELECT codaglo||codloc as link FROM
+        return (DB::select('SELECT prov as link FROM
+        '.$esquema.'.'.$tabla.' Limit 1;')[0]->link);
+    }
+
+    public static function getLoc($tabla,$esquema)
+    {
+        return (DB::select('SELECT distinct prov||dpto||codloc as link FROM
         '.$esquema.'.'.$tabla.' Limit 1;')[0]->link);
     }
 
@@ -184,7 +188,7 @@ FROM
              }
 
             // Tomo nro_listado en lugar de orden reco para CABA
-                if (MyDB::getAgloLoc('listado',$esquema)=='0002010'){
+                if (MyDB::getProv('listado',$esquema)=='02'){
                     Log::debug('Se detecto CABA');
                     if ( Schema::hasColumn($esquema.'.listado' , 'nro_listad')){
                         Log::debug('campo nro_listad');
@@ -202,7 +206,13 @@ FROM
             }
                 
              DB::commit();
-             if (Schema::hasTable($esquema.'.arc') and Schema::hasTable($esquema.'.listado')){
+           self::juntaListadoGeom($esquema);
+
+    }
+    
+    public static function juntaListadoGeom($esquema){
+        if (Schema::hasTable($esquema.'.arc') and Schema::hasTable($esquema.'.listado')){
+            Log::debug('Geometrias y listado cargado, se comienza posprocesos');
             // Comienzan posprocesos de carga
              DB::beginTransaction();
                  try {
@@ -242,10 +252,9 @@ FROM
              self::generarSegmentacionNula($esquema);
 
              DB::commit();
-	         }
-             }
+        }
+    }
 
-    
 	public static function agregarsegisegd($esquema)
 	{
         if (Schema::hasTable('e'.$esquema.'.arc')) {
