@@ -36,4 +36,13 @@ class Departamento extends Model
         return $this->hasMany('App\Model\Fraccion');
     }
 
+    /**
+     * Relación con Radios, un departamentos puede tener muchos Radios a traves
+     * de las Fracciones.
+     */
+    public function radios()
+    {
+        return $this->hasManyThrough('App\Model\Radio','App\Model\Fraccion');
+    }
+
 }

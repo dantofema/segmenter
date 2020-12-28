@@ -50,16 +50,34 @@ class RadiosController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Model\Radio  $radio
+     * @param  \App\Model\Localidad  $localidad
+     * @param  \App\Model\Departamento  $departamento
      * @return \Illuminate\Http\Response
      */
     public function show(Localidad $localidad, Departamento $departamento)
     {
         //
         if($departamento->provincia->codigo=='02'){
-            dd('Ciudad Autónoma de Buenos Aires',$localidad,$departamento);
+            $radios= $departamento->radios;
+//            dd('Ciudad Autónoma de Buenos Aires',
+//            $localidad->nombre,$departamento->nombre,$radios);
+        }else{
+            $radios= $localidad->radios;
+//            dd($localidad,$departamento);
         }
-            dd($localidad,$departamento);
+        $aglomerado=$localidad->aglomerado;
+        $carto=$aglomerado->Carto;
+        $listado=$aglomerado->Listado;
+        $svg=$aglomerado->getSVG();
+        return view('radios.list_view',[
+                    'aglomerado' => $aglomerado,
+                    'carto' => $carto,
+                    'listado'=>$listado,
+                    'radios'=>$radios,
+                    'localidad'=>$localidad,
+                    'departamento'=>$departamento,
+                    'svg'=>$svg]);
+        
     }
 
     /**

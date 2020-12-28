@@ -5,6 +5,7 @@ namespace App\Model;
 use Illuminate\Database\Eloquent\Model;
 use App\Segmentador;
 use App\MyDB;
+use App\Model\Frccion;
 
 class Radio extends Model
 {
@@ -42,11 +43,15 @@ class Radio extends Model
       * Relación con Departamento, una Fraccion pertenece a Un departamento. 
       *
       */
-
+/*
      public function departamento()
      {
-         return $this->fraccion->departamento();
-     }
+         return $this->hasOneThrough(
+                Departamento::class,
+                Fraccion::class,
+                'id','id','id','departamento_id');
+        }
+*/
 
      /**
       * Relación con Localidad, un Radio puede pertenecer a varias localidades. 
