@@ -624,8 +624,9 @@ FROM ".$esquema.".conteos WHERE prov=".$prov." and dpto = ".$dpto." and frac=".$
     public static function isSegmentado($radio,$esquema){
         if (Schema::hasTable($esquema.'.arc')) {
             try {
-                return DB::select("SELECT true FROM ".$esquema.".arc WHERE (substr(mzad,1,5)||substr(mzad,9,4)='".$radio."' and segd is not null and segd>0) 
-                            or (substr(mzai,1,5)||substr(mzai,9,4)='".$radio."' and segi is not null and segi>0)
+                return DB::select("SELECT true FROM ".$esquema.
+                       ".arc WHERE (substr(mzad,1,5)||substr(mzad,9,4)='".$radio."' and segd is not null and segd>0) 
+                        or (substr(mzai,1,5)||substr(mzai,9,4)='".$radio."' and segi is not null and segi>0)
         limit 1;");
                 } catch (Exception $e)  { return null;}
         }else{
