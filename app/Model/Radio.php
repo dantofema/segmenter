@@ -83,7 +83,7 @@ class Radio extends Model
      * Segmentar radio a lados completos
      * 
      */
-    public function segmentar($aglo,$deseadas,$max,$min,$indivisible)
+    public function segmentar($esquema,$deseadas,$max,$min,$indivisible)
     {
         $prov= substr(trim($this->codigo), 0, 2);
         $dpto= substr(trim($this->codigo), 2, 3);
@@ -91,10 +91,10 @@ class Radio extends Model
         $radio= substr(trim($this->codigo), 7, 2);
 
         $segmenta = new Segmentador();
-        $segmenta->segmentar_a_lado_completo($aglo,$prov,$dpto,$frac,$radio,$deseadas,$max,$min,$indivisible);
+        $segmenta->segmentar_a_lado_completo($esquema,$prov,$dpto,$frac,$radio,$deseadas,$max,$min,$indivisible);
 
-        $segmenta->vista_segmentos_lados_completos($aglo);
-        $segmenta->lados_completos_a_tabla_segmentacion_ffrr($aglo,$frac,$radio);
+        $segmenta->vista_segmentos_lados_completos($esquema);
+        $segmenta->lados_completos_a_tabla_segmentacion_ffrr($esquema,$frac,$radio);
         return $this->_resultado = $segmenta->ver_segmentacion();
     }
 
@@ -102,7 +102,7 @@ class Radio extends Model
      * Segmentar radio con metodo magico.
      * 
      */
-    public function segmentarLucky($aglo,$deseadas,$max,$min,$indivisible)
+    public function segmentarLucky($esquema,$deseadas,$max,$min,$indivisible)
     {
         $prov= substr(trim($this->codigo), 0, 2);
         $dpto= substr(trim($this->codigo), 2, 3);
@@ -110,11 +110,11 @@ class Radio extends Model
         $radio= substr(trim($this->codigo), 7, 2);
 
         $segmenta = new Segmentador();
-        $segmenta->segmentar_a_lado_completo($aglo,$prov,$dpto,$frac,$radio,$deseadas,$max,$min,$indivisible);
+        $segmenta->segmentar_a_lado_completo($esquema,$prov,$dpto,$frac,$radio,$deseadas,$max,$min,$indivisible);
 
-        $segmenta->vista_segmentos_lados_completos($aglo);
-        $segmenta->lados_completos_a_tabla_segmentacion_ffrr($aglo,$frac,$radio);
-        $segmenta->segmentar_excedidos_ffrr($aglo,$frac,$radio,$max,$deseadas);
+        $segmenta->vista_segmentos_lados_completos($esquema);
+        $segmenta->lados_completos_a_tabla_segmentacion_ffrr($esquema,$frac,$radio);
+        $segmenta->segmentar_excedidos_ffrr($esquema,$frac,$radio,$max,$deseadas);
 
 //        dd($segmenta);
         return $this->_resultado = $segmenta->ver_segmentacion();
@@ -127,7 +127,13 @@ class Radio extends Model
      public function getCantMzasAttribute($value)
      {
         if ($this->aglomerado() != null){
-          $cant_mzas = MyDB::getCantMzas($this->codigo,'e'.$this->aglomerado()->first()->codigo);
+                if ($this->departamento->provincia->codigo == '02') {
+                      $cant_mzas = MyDB::getCantMzas($this->codigo,'e'.
+                      $this->departamento->provincia->codigo.
+                    $this->departamento->codigo.$this->localidad->codigo);
+                }else{
+                      $cant_mzas = MyDB::getCantMzas($this->codigo,'e'.$this->aglomerado()->first()->codigo);
+                }
           if ($cant_mzas!=0)
               $cant_mzas = $cant_mzas[0]->cant_mzas;
 
@@ -146,7 +152,13 @@ class Radio extends Model
      {
         if (! isset($this->_isSegmentado)){
           if ($this->aglomerado() != null){
-                $result = MyDB::isSegmentado($this->codigo,'e'.$this->aglomerado()->first()->codigo);
+                if ($this->departamento->provincia->codigo == '02') {
+                    $result =
+                    MyDB::isSegmentado($this->codigo,'e'.$this->departamento->provincia->codigo.
+                    $this->departamento->codigo.$this->localidad->codigo);
+                }else{
+                    $result = MyDB::isSegmentado($this->codigo,'e'.$this->aglomerado()->first()->codigo);
+                }
 
 //        $cant_mzas = $cant_mzas[0]->cant_mzas;
               if ($result):
