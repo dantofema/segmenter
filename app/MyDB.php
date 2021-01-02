@@ -452,7 +452,7 @@ FROM
     SELECT id, l.prov, nom_provin, ups, nro_area, l.dpto, nom_dpto, l.codaglo, l.codloc, nom_loc, codent, nom_ent, l.frac, l.radio, l.mza, l.lado, 
     nro_inicia, nro_final, orden_reco, nro_listad, ccalle, ncalle, nro_catast, 
     CASE WHEN nrocatastr='' or nrocatastr='S/N' THEN null ELSE nrocatastr END nrocatastr, 
-    piso, pisoredef, casa, dpto_habit, sector, edificio, entrada, tipoviv, cod_subt_v, cod_subt_2, descripcio, descripci2 , 
+    piso, pisoredef, casa, dpto_habit, sector, edificio, entrada, tipoviv, cod_subt_v, descripcio, descripci2 , 
     row_number() over(partition by l.frac, l.radio, l.mza, l.lado order by l.lado, orden_reco asc) nro_en_lado, conteo, accion
     FROM
     ".$esquema.".listado l
@@ -469,11 +469,12 @@ arcos as (
     UNION
      SELECT ogc_fid,wkb_geometry,nomencla,codigo20,codigo10,tipo, nombre, ancho, anchomed, ladod lado,desded desde,
      hastad hasta,mzad mza, codloc20, nomencla10,nomenclad nomenclax, codinomb, segd seg 
-    FROM ".$esquema.".arc) arcos_juntados
+    FROM ".$esquema.".arc
+    ) arcos_juntados
     GROUP BY nomencla,codigo20,tipo, nombre,lado,mza,codloc20
 )
   SELECT nro_en_lado, conteo,1.0*nro_en_lado/(conteo+1) interpolacion, l.orden_reco,
-  case when nro_en_lado/(conteo+1)>1 
+  case when 1.0*nro_en_lado/(conteo+1)>1 
   then ST_LineInterpolatePoint(st_reverse(st_offsetcurve(ST_LineSubstring(st_LineMerge(wkb_geometry),0.07,0.93),-8-nro_en_lado)),0.5) 
   else
    CASE WHEN ( 
@@ -490,8 +491,8 @@ arcos as (
             frac, radio, l.mza, l.lado, ccalle, ncalle, nrocatastr, pisoredef piso,casa,dpto_habit,sector,edificio,entrada,tipoviv, 
             descripcio,descripci2 , accion
 INTO ".$esquema.".listado_geo
-FROM arcos e JOIN listado l ON l.ccalle::integer=e.codigo20 
-and
+FROM arcos e JOIN listado l ON 
+--l.ccalle::integer=e.codigo20 and
      (l.lado::integer=e.lado and 
          e.mza like 
          '%'||btrim(to_char(l.frac::integer, '09'::text))::character varying(3)||btrim(to_char(l.radio::integer, '09'::text))::character varying(3)||btrim(to_char(l.mza::integer, '099'::text))::character varying(3) 

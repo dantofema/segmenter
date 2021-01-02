@@ -57,6 +57,8 @@ Route::get('/setup/index/{esquema}',
 'SetupController@addIndexListado')->name('setup.index');
 Route::get('/setup/index/id/{tabla}',
 'SetupController@addIndexId')->name('setup.indexId');
+Route::get('/setup/geo/{esquema}',
+'SetupController@georeferenciarEsquema')->name('setup.geo');
 
 Route::get('/inicio', 'HomeController@index')->name('inicio');
 Route::resource('/listado', 'ListadoController',['only' => [

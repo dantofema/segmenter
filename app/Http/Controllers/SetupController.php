@@ -70,4 +70,12 @@ class SetupController extends Controller
         return view('home');
     }
 
+    public function georeferenciarEsquema($schema)
+    {
+        MyDB::georeferenciar_listado($schema);
+        flash('Se georeferencio el listado del esquema '.$schema);
+        return view('home');
+    
+    }
+    
 }
