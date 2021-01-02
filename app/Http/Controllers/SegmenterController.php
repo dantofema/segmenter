@@ -28,7 +28,6 @@ class SegmenterController extends Controller
         $this->epsgs['22186']='(EPSG:22186) POSGAR 94 / Argentina 6';
         $this->epsgs['22187']='(EPSG:22187) POSGAR 94 / Argentina 7';
 //        $this->epsgs['98333']='(SR-ORG:98333) Gauss Krugger BA';
-        $this->epsgs['22185']='(SR-ORG:98333) Gauss Krugger BA';
     }
 
     public function index()
