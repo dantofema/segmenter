@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Segmentador;
 use App\MyDB;
 use App\Model\Frccion;
+use Illuminate\Support\Str;
 
 class Radio extends Model
 {
@@ -126,22 +127,12 @@ class Radio extends Model
       */
      public function getCantMzasAttribute($value)
      {
-        if ($this->aglomerado() != null){
-                if ($this->departamento->provincia->codigo == '02') {
-                      $cant_mzas = MyDB::getCantMzas($this->codigo,'e'.
-                      $this->departamento->provincia->codigo.
-                    $this->departamento->codigo.$this->localidad->codigo);
-                }else{
-                      $cant_mzas = MyDB::getCantMzas($this->codigo,'e'.$this->aglomerado()->first()->codigo);
-                }
-          if ($cant_mzas!=0)
-              $cant_mzas = $cant_mzas[0]->cant_mzas;
+          $cant_mzas = MyDB::getCantMzas($this->codigo,$this->esquema);
+          if ($cant_mzas!=0){
+            $cant_mzas = $cant_mzas[0]->cant_mzas;
+            }else{$cant_mzas=-1;}
 
           return $cant_mzas;
-        }
-        else{
-          return -1;
-        }
      }
 
      /**
@@ -152,13 +143,8 @@ class Radio extends Model
      {
         if (! isset($this->_isSegmentado)){
           if ($this->aglomerado() != null){
-                if ($this->departamento->provincia->codigo == '02') {
                     $result =
-                    MyDB::isSegmentado($this->codigo,'e'.$this->departamento->provincia->codigo.
-                    $this->departamento->codigo.$this->localidad->codigo);
-                }else{
-                    $result = MyDB::isSegmentado($this->codigo,'e'.$this->aglomerado()->first()->codigo);
-                }
+                    MyDB::isSegmentado($this->codigo,$this->esquema);
 
 //        $cant_mzas = $cant_mzas[0]->cant_mzas;
               if ($result):
@@ -191,5 +177,22 @@ class Radio extends Model
 
     public function getCodigoFrac($value){
         return $frac= substr(trim($this->codigo), 5, 2);
+    }
+
+    public function getEsquema($value){
+          if ($this->aglomerado() != null){
+                if ($this->departamento){
+                    if ($this->departamento->provincia->codigo == '02') {
+                    
+                        $esquema = 'e'.$this->departamento->provincia->codigo.
+                        Str::padLeft(((int)$this->departamento->codigo*7),2,0).$this->localidad->codigo;
+                    }else{
+                        $esquema = 'e'.$this->aglomerado()->first()->codigo;
+                    }
+                }else
+                {dd($this->departamento);}
+           Log::debug('Radio en esquema: '.$esquema);
+           return $esquema;
+        }
     }
 }

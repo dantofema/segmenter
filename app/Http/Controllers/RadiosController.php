@@ -59,11 +59,8 @@ class RadiosController extends Controller
         //
         if($departamento->provincia->codigo=='02'){
             $radios= $departamento->radios;
-//            dd('Ciudad Autónoma de Buenos Aires',
-//            $localidad->nombre,$departamento->nombre,$radios);
         }else{
             $radios= $localidad->radios;
-//            dd($localidad,$departamento);
         }
         $aglomerado=$localidad->aglomerado;
         $carto=$aglomerado->Carto;
