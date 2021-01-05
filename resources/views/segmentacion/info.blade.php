@@ -50,8 +50,9 @@
        <thead>
           <tr>
              <th>Id</th>
-             <th>Frac</th>
+             <th>Fracción</th>
              <th>Radio</th>
+             <th>Segmento</th>
              <th>Descripción</th>
              <th>Vivs</th>
           </tr>
@@ -109,6 +110,7 @@
                   { data: 'segmento_id', name: 'id' },
                   { data: 'frac', name: 'frac' },
                   { data: 'radio', name: 'radio' },
+                  { data: 'seg', name: 'seg' },
                   { data: 'detalle', name: 'detalle' },
                   { data: 'vivs', name: 'vivs' },
                   { visible: false, data: 'ts', name: 'text_search' },
