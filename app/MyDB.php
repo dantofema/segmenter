@@ -396,7 +396,7 @@ FROM
             $esquema = 'e'.$esquema;
             return DB::select('SELECT vivs,count(*) cant_segmentos,
                             string_agg(distinct array_to_string(en_lados,\' \'),\',\') en_lados FROM (
-                            SELECT segmento_id,count(*) vivs,count(distinct mza) as
+                            SELECT segmento_id,count(indec.contar_vivienda(tipoviv)) vivs,count(distinct mza) as
                             mzas,array_agg(distinct
                             frac||radio) en_lados,count(distinct lado) as lados FROM
                             '.$esquema.'.
