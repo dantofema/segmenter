@@ -47,6 +47,7 @@ class MyDB extends Model
             self::generarSegmentacionVacia($esquema);
     		DB::statement("SELECT
             indec.lados_completos_a_tabla_segmentacion_ffrr('e".$esquema."',".$frac.",".$radio.");");
+            DB::statement("SELECT indec.segmentos_desde_hasta('e".$esquema."');");
         }catch(Exception $e){
              DB::unprepared('create sequence '.$esquema.'.segmentos_seq');
              Log::debug('Create sequence xq no exisitia...');
@@ -338,7 +339,7 @@ FROM
         {
             if ($radio){
                 $filtro= ' where (frac,radio) =
-                    ('.$radio->getCodigoFrac().','.$radio->getCodigoRad().') ';
+                    ('.$radio->CodigoFrac.','.$radio->CodigoRad.') ';
             } else
             { $filtro = '';}
 
@@ -346,8 +347,9 @@ FROM
             if (Schema::hasTable($esquema.'.segmentos_desde_hasta')){
             if (Schema::hasColumn($esquema.'.segmentos_desde_hasta','viviendas')){
             return DB::select("
-                        SELECT segmento_id, frac, radio, viviendas vivs,
-                            descripcion detalle, null ts
+                        SELECT segmento_id, lpad(frac::text,2,'0') frac,
+                        lpad(radio::text,2,'0') radio, viviendas vivs,
+                            descripcion detalle, lpad(seg,2,'0') seg, null ts
                             FROM
                             indec.describe_segmentos_con_direcciones('".$esquema."')
                             ".$filtro."
@@ -617,27 +619,29 @@ FROM
             }
         }
 
-        public static function getCantMzas($radio,$esquema){
-            $prov=substr($radio,0,2);
-            $dpto=substr($radio,2,3);
-            $frac=substr($radio,5,2);
-            $radio=substr($radio,7,2);
-            if (Schema::hasTable($esquema.'.arc')) {
+        public static function getCantMzas(Radio $radio){
+            $esquema=$radio->esquema;
+            $prov=substr($radio->codigo,0,2);
+            $dpto=substr($radio->codigo,2,3);
+            $frac=substr($radio->codigo,5,2);
+            $rad=substr($radio->codigo,7,2);
+            if (Schema::hasTable($esquema.'.conteos')) {
                 return DB::select("
     SELECT count( distinct mza)  cant_mzas 
-    FROM ".$esquema.".conteos WHERE prov=".$prov." and dpto = ".$dpto." and frac=".$frac." and radio=".$radio." ;");
+    FROM ".$esquema.".conteos WHERE prov=".$prov." and dpto = ".$dpto." and
+    frac=".$frac." and radio=".$rad." ;")[0]->cant_mzas;
+
             }else{
-                return 0;
+                Log::debug('No se encontro esquema para '.$radio);
+                return -2;
             }
         }
 
         public static function isSegmentado($radio,$esquema){
-            if (Schema::hasTable($esquema.'.arc')) {
+            if (Schema::hasTable($esquema.'.segmentacion')) {
                 try {
-                    return DB::select("SELECT true FROM ".$esquema.
-                        ".arc WHERE (substr(mzad,1,5)||substr(mzad,9,4)='".$radio."' and segd is not null and segd>0) 
-                            or (substr(mzai,1,5)||substr(mzai,9,4)='".$radio."' and segi is not null and segi>0)
-            limit 1;");
+                    return DB::select("SELECT true FROM ".$esquema.".segmentacion
+                        WHERE segmento_id is not null limit 1;");
                     } catch (Exception $e)  { return null;}
             }else{
                 return null;

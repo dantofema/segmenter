@@ -127,11 +127,10 @@ class Radio extends Model
       */
      public function getCantMzasAttribute($value)
      {
-          $cant_mzas = MyDB::getCantMzas($this->codigo,$this->esquema);
+          $cant_mzas = MyDB::getCantMzas($this);
           if ($cant_mzas!=0){
-            $cant_mzas = $cant_mzas[0]->cant_mzas;
+            $cant_mzas = $cant_mzas;
             }else{$cant_mzas=-1;}
-
           return $cant_mzas;
      }
 
@@ -148,9 +147,9 @@ class Radio extends Model
 
 //        $cant_mzas = $cant_mzas[0]->cant_mzas;
               if ($result):
-                  return $this->_isSegmentado = true;
+                  $this->_isSegmentado = true;
               else:
-                  return $this->_isSegmentado = false;
+                  $this->_isSegmentado = false;
               endif;
            }
           else{
@@ -169,30 +168,32 @@ class Radio extends Model
     public function setResultadoAttribute($value)
     {
         return $this->_resultado=$value;
+        $this->save();
     }
 
-    public function getCodigoRad($value){
+    public function getCodigoRadAttribute($value){
         return $radio= substr(trim($this->codigo), 7, 2);
     }
 
-    public function getCodigoFrac($value){
+    public function getCodigoFracAttribute($value){
         return $frac= substr(trim($this->codigo), 5, 2);
     }
 
-    public function getEsquema($value){
+    public function getEsquemaAttribute($value){
           if ($this->aglomerado() != null){
                 if ($this->departamento){
                     if ($this->departamento->provincia->codigo == '02') {
-                    
-                        $esquema = 'e'.$this->departamento->provincia->codigo.
+                        return $esquema = 'e'.$this->departamento->provincia->codigo.
                         Str::padLeft(((int)$this->departamento->codigo*7),2,0).$this->localidad->codigo;
                     }else{
-                        $esquema = 'e'.$this->aglomerado()->first()->codigo;
+                        return $esquema = 'e'.$this->aglomerado->codigo;
                     }
                 }else
-                {dd($this->departamento);}
+                { 
+                    return $esquema = 'e'.$this->aglomerado()->first()->codigo;
+                }
            Log::debug('Radio en esquema: '.$esquema);
-           return $esquema;
         }
+        return 'foo';
     }
 }
