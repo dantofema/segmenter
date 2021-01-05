@@ -52,7 +52,7 @@
              <th>Id</th>
              <th>Frac</th>
              <th>Radio</th>
-             <th>Detalle</th>
+             <th>Descripción</th>
              <th>Vivs</th>
           </tr>
        </thead>
