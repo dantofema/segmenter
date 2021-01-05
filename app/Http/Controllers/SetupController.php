@@ -29,6 +29,20 @@ class SetupController extends Controller
         MyDB::addUser('halperin');
         MyDB::addUser('vheredia');
         MyDB::addUser('mretamozo','geoestadistica_test');
+
+
+        MyDB::addUser('adibiase');
+        MyDB::addUser('alitichever');
+        MyDB::addUser('atoca');
+        MyDB::addUser('efilgueira');
+        MyDB::addUser('cdiaz');
+        MyDB::addUser('fhaddad');
+        MyDB::addUser('sfarace');
+        MyDB::addUser('malves');
+        MyDB::addUser('nallendes');
+        MyDB::addUser('pdelsere');
+        MyDB::addUser('sbouzas');
+        MyDB::addUser('sfailde');
         MyDB::darPermisos('e0002');
 
         return view('home');
