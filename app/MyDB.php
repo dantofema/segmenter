@@ -637,11 +637,20 @@ FROM
             }
         }
 
-        public static function isSegmentado($radio,$esquema){
+        public static function isSegmentado(Radio $radio=null){
+            $esquema=$radio->esquema;
+            if ($radio){
+                $filtro= " and (frac,radio) =
+                    ('".$radio->CodigoFrac."','".$radio->CodigoRad."') ";
+            } else
+            { $filtro = '';}
             if (Schema::hasTable($esquema.'.segmentacion')) {
                 try {
-                    return DB::select("SELECT true FROM ".$esquema.".segmentacion
-                        WHERE segmento_id is not null limit 1;");
+                    return DB::select("SELECT true FROM ".$esquema.".segmentacion s JOIN
+                            ".$esquema.".listado l ON s.listado_id=l.id
+                            WHERE segmento_id is not null
+                            ".$filtro."
+                        limit 1;");
                     } catch (Exception $e)  { return null;}
             }else{
                 return null;
