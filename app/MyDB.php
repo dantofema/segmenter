@@ -506,7 +506,7 @@ FROM
             e.mza like 
             '%'||btrim(to_char(l.frac::integer, '09'::text))::character varying(3)||btrim(to_char(l.radio::integer, '09'::text))::character varying(3)||btrim(to_char(l.mza::integer, '099'::text))::character varying(3) 
         );");
-        DB::statement("GRANT SELECT ON TABLE  ".$esquema.".listado_geo TO sig");
+        DB::statement("GRANT SELECT ON TABLE  ".$esquema.".listado_geo TO geoestadistica");
             return $resultado;
         }
 
