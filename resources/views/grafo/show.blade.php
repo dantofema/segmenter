@@ -5,6 +5,9 @@
 <pre style="line-height: initial;font-size: 75%;">
 {{ $radio->Resultado ?? 'No hay resultado de segmenta' }}
 </pre>
+<div>MiniMap: {!! $radio->getSVG() !!}</div>
+@endsection
+@section('content')
 @endsection
 @section('header_scripts')
 <script src="https://unpkg.com/numeric/numeric-1.2.6.js"></script>
