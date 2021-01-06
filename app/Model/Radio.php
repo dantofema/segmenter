@@ -143,7 +143,7 @@ class Radio extends Model
         if (! isset($this->_isSegmentado)){
           if ($this->aglomerado() != null){
                     $result =
-                    MyDB::isSegmentado($this->codigo,$this->esquema);
+                    MyDB::isSegmentado($this);
 
 //        $cant_mzas = $cant_mzas[0]->cant_mzas;
               if ($result):
