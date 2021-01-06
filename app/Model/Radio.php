@@ -204,7 +204,7 @@ class Radio extends Model
         // return SVG Radio? Listado? Segmentación?
         if (Schema::hasTable($this->esquema.'.listado_geo')){
             $height=800;
-            $width=900;
+            $width=600;
             $escalar=false;
             $extent=DB::select("SELECT box2d(st_collect(wkb_geometry)) box FROM
             ".$this->esquema.".listado_geo
@@ -221,14 +221,24 @@ class Radio extends Model
           else { $viewBox=$this->viewBox($extent,$epsilon,$height,$width); $stroke=2*$epsilon;
           }
 
+
+        if (Schema::hasTable($this->esquema.'.manzanas')){
+            $mzas= "
+                UNION
+                 ( SELECT st_buffer(wkb_geometry,-2) geom, mza::integer
+                         FROM ".$this->esquema.".manzanas
+                    WHERE  prov||dpto||frac||radio='".$this->codigo."'
+                 ) ";
+            }else{$mzas='';}
+
             //dd($viewBox.'/n'.$this->viewBox($extent,$epsilon,$height,$width).'/n'.$x0." -".$y0." ".$x1." -".$y1);
             $svg=DB::select("
 WITH shapes (geom, attribute) AS (
-    ( SELECT st_buffer(lg.wkb_geometry,1) wkb_geometry, segmento_id
+    ( SELECT st_buffer(lg.wkb_geometry,1) wkb_geometry, segmento_id::integer
     FROM ".$this->esquema.".listado_geo lg JOIN ".$this->esquema.".segmentacion
     s ON s.listado_id=id_list
     WHERE  substr(mzae,1,5)||substr(mzae,9,4)='".$this->codigo."'
-    )
+    ) ".$mzas." 
   ),
   paths (svg) as (
      SELECT concat(
