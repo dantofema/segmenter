@@ -7,6 +7,7 @@ use App\Segmentador;
 use App\MyDB;
 use App\Model\Frccion;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 
 class Radio extends Model
 {
@@ -195,5 +196,84 @@ class Radio extends Model
            Log::debug('Radio en esquema: '.$esquema);
         }
         return 'foo';
+    }
+
+    public function getSVG()
+    {
+        // return SVG Radio? Listado? Segmentación?
+
+        if ($this->esquema){
+            $height=800;
+            $width=900;
+            $escalar=false;
+            $extent=DB::select("SELECT box2d(st_collect(wkb_geometry)) box FROM
+            ".$this->esquema.".listado_geo
+            WHERE  substr(mzae,1,5)||substr(mzae,9,4)='".$this->codigo."' ");
+            $extent=$extent[0]->box;
+            list($x0,$y0,$x1,$y1) = sscanf($extent,'BOX(%f %f,%f %f)');
+
+             $Dx=$x1-$x0; $Dy=$y1-$y0;
+            if (!$height and $width) $height=round($width*$Dy/$Dx);
+            if ($height and !$width) $width=round($height*$Dx/$Dy);
+            if (!$height and !$width) {$width=round($perimeter*$Dx/2/($Dx+$Dy)); $height=round($width*$Dy/$Dx);}
+            $dx=$Dx/$width; $dy=$Dy/$height; $epsilon=min($dx,$dy)/15; // mínima reolución, acho y alto de lo que representa un pixel
+            if ($escalar) {$viewBox="0 0 $width $height"; $stroke=2;}
+            else { $viewBox=$this->viewBox($extent,$epsilon,$height,$width); $stroke=2*$epsilon;
+        }
+
+            //dd($viewBox.'/n'.$this->viewBox($extent,$epsilon,$height,$width).'/n'.$x0." -".$y0." ".$x1." -".$y1);
+            $svg=DB::select("
+WITH shapes (geom, attribute) AS (
+    ( SELECT st_buffer(lg.wkb_geometry,1) wkb_geometry, segmento_id
+    FROM ".$this->esquema.".listado_geo lg JOIN ".$this->esquema.".segmentacion
+    s ON s.listado_id=id_list
+    WHERE  substr(mzae,1,5)||substr(mzae,9,4)='".$this->codigo."'
+    )
+  ),
+  paths (svg) as (
+     SELECT concat(
+         '<path d= \"',
+         ST_AsSVG(st_buffer(geom,5),0), '\" ',
+         CASE WHEN attribute = 0 THEN 'stroke=\"gray\" stroke-width=\"2\"
+         fill=\"gray\"'
+              WHEN attribute < 5 THEN 'stroke=\"none\"
+              stroke-width=\"".$stroke."\" fill=\"#' || attribute*20 || 'AAAA\"'
+              WHEN attribute < 10 THEN 'stroke=\"none\"
+         stroke-width=\"".$stroke."\" fill=\"#00' || (attribute-5)*20 || '00\"'
+              WHEN attribute < 15 THEN 'stroke=\"none\"
+         stroke-width=\"".$stroke."\" fill=\"#AA' || (attribute-10)*20 || '00\"'
+         ELSE
+            'stroke=\"black\" stroke-width=\"".$stroke."\" fill=\"#22' ||
+            attribute*10 || '88\"'
+         END,
+          ' />')
+     FROM shapes
+ )
+ SELECT concat(
+         '<svg id=\"radio_".$this->codigo."\"xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"".$viewBox.
+         "\" height=\"".$height."\" width=\"".$width."\">',
+         array_to_string(array_agg(svg),''),
+         '</svg>')
+ FROM paths;
+");
+            return $svg[0]->concat;
+        }else{ return "No geodata"; }
+
+    }
+
+    private function viewBox($extent,$epsilon,$height,$width){
+        list ( $x0, $y0, $x1, $y1 ) = sscanf ( $extent, 'BOX(%f %f,%f %f)' );
+        $Dx = $x1 - $x0;
+        $Dy = $y1 - $y0;
+            $m_izq=.1*$Dx; $m_der=.1*$Dx; $m_arr=.1*$Dy; $m_aba=.1*$Dy;
+        $viewBox = ($x0 - $m_izq) . " " . (- $y1 - $m_arr) . " " . ($Dx + $m_izq + $m_der) . " " . ($Dy + $m_arr + $m_aba);
+        if (! $height and ! $width)
+            $height = 600;
+        if (! $height)
+            $height = $width * $Dy / $Dx;
+        if (! $width)
+           $width = $height * $Dx / $Dy;
+        $epsilon = min ( $Dx / $width, $Dy / $height );
+        return $viewBox;
     }
 }
