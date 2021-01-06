@@ -8,6 +8,7 @@ use App\MyDB;
 use App\Model\Frccion;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class Radio extends Model
 {
@@ -201,8 +202,7 @@ class Radio extends Model
     public function getSVG()
     {
         // return SVG Radio? Listado? Segmentación?
-
-        if ($this->esquema){
+        if (Schema::hasTable($this->esquema.'.listado_geo')){
             $height=800;
             $width=900;
             $escalar=false;
@@ -218,8 +218,8 @@ class Radio extends Model
             if (!$height and !$width) {$width=round($perimeter*$Dx/2/($Dx+$Dy)); $height=round($width*$Dy/$Dx);}
             $dx=$Dx/$width; $dy=$Dy/$height; $epsilon=min($dx,$dy)/15; // mínima reolución, acho y alto de lo que representa un pixel
             if ($escalar) {$viewBox="0 0 $width $height"; $stroke=2;}
-            else { $viewBox=$this->viewBox($extent,$epsilon,$height,$width); $stroke=2*$epsilon;
-        }
+          else { $viewBox=$this->viewBox($extent,$epsilon,$height,$width); $stroke=2*$epsilon;
+          }
 
             //dd($viewBox.'/n'.$this->viewBox($extent,$epsilon,$height,$width).'/n'.$x0." -".$y0." ".$x1." -".$y1);
             $svg=DB::select("
