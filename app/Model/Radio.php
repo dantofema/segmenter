@@ -225,28 +225,36 @@ class Radio extends Model
         if (Schema::hasTable($this->esquema.'.manzanas')){
             $mzas= "
                 UNION
-                 ( SELECT st_buffer(wkb_geometry,-5) geom, -1*mza::integer
+                 ( SELECT st_buffer(wkb_geometry,-5) geom, -1*mza::integer, 'mza' tipo
                          FROM ".$this->esquema.".manzanas
                     WHERE  prov||dpto||frac||radio='".$this->codigo."'
                  ) ";
-            }else{$mzas='';}
+            $mzas_labels="
+                UNION (SELECT '<text x=\"'||st_x(st_centroid(wkb_geometry))||'\"
+                y=\"-'||st_y(st_centroid(wkb_geometry))||'\">'||mza||'</text>'
+                as svg ,2 as orden
+                FROM ".$this->esquema.".manzanas
+                    WHERE  prov||dpto||frac||radio='".$this->codigo."' )";
+            }else{$mzas='';$mzas_labels='';}
 
             //dd($viewBox.'/n'.$this->viewBox($extent,$epsilon,$height,$width).'/n'.$x0." -".$y0." ".$x1." -".$y1);
             $svg=DB::select("
-WITH shapes (geom, attribute) AS (
-    ( SELECT st_buffer(lg.wkb_geometry,1) wkb_geometry, segmento_id::integer
+WITH shapes (geom, attribute, tipo) AS (
+    ( SELECT st_buffer(lg.wkb_geometry,1) wkb_geometry, segmento_id::integer,
+    lg.tipoviv tipo
     FROM ".$this->esquema.".listado_geo lg JOIN ".$this->esquema.".segmentacion
     s ON s.listado_id=id_list
     WHERE  substr(mzae,1,5)||substr(mzae,9,4)='".$this->codigo."'
     ) ".$mzas." 
   ),
-  paths (svg) as (
-     SELECT concat(
+  paths (svg,orden) as (
+     SELECT * FROM ( 
+     (SELECT concat(
          '<path d= \"',
          ST_AsSVG(st_buffer(geom,5),0), '\" ',
          CASE WHEN attribute = 0 THEN 'stroke=\"gray\" stroke-width=\"2\"
          fill=\"gray\"'
-              WHEN attribute < 0 THEN 'stroke=\"white\"
+              WHEN tipo='mza' THEN 'stroke=\"white\"
               stroke-width=\"1\" fill=\"#BBBBC5\"'
               WHEN attribute < 5 THEN 'stroke=\"none\"
               stroke-width=\"".$stroke."\" fill=\"#' || attribute*20 || 'AAAA\"'
@@ -258,8 +266,10 @@ WITH shapes (geom, attribute) AS (
             'stroke=\"black\" stroke-width=\"".$stroke."\" fill=\"#22' ||
             attribute*10 || '88\"'
          END,
-          ' />')
-     FROM shapes ORDER BY attribute asc
+          ' />') as svg, 1 as orden
+     FROM shapes 
+     ORDER BY attribute asc)
+     ".$mzas_labels." ) foo order by orden asc
  )
  SELECT concat(
          '<svg id=\"radio_".$this->codigo."\"xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"".$viewBox.
