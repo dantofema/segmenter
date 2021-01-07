@@ -225,7 +225,7 @@ class Radio extends Model
         if (Schema::hasTable($this->esquema.'.manzanas')){
             $mzas= "
                 UNION
-                 ( SELECT st_buffer(wkb_geometry,-2) geom, mza::integer
+                 ( SELECT st_buffer(wkb_geometry,-5) geom, -1*mza::integer
                          FROM ".$this->esquema.".manzanas
                     WHERE  prov||dpto||frac||radio='".$this->codigo."'
                  ) ";
@@ -246,6 +246,8 @@ WITH shapes (geom, attribute) AS (
          ST_AsSVG(st_buffer(geom,5),0), '\" ',
          CASE WHEN attribute = 0 THEN 'stroke=\"gray\" stroke-width=\"2\"
          fill=\"gray\"'
+              WHEN attribute < 0 THEN 'stroke=\"white\"
+              stroke-width=\"1\" fill=\"#BBBBC5\"'
               WHEN attribute < 5 THEN 'stroke=\"none\"
               stroke-width=\"".$stroke."\" fill=\"#' || attribute*20 || 'AAAA\"'
               WHEN attribute < 10 THEN 'stroke=\"none\"
@@ -257,7 +259,7 @@ WITH shapes (geom, attribute) AS (
             attribute*10 || '88\"'
          END,
           ' />')
-     FROM shapes
+     FROM shapes ORDER BY attribute asc
  )
  SELECT concat(
          '<svg id=\"radio_".$this->codigo."\"xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"".$viewBox.
