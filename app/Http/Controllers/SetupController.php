@@ -63,8 +63,14 @@ class SetupController extends Controller
     public function cargarTopologia($schema)
     {
         MyDB::cargarTopologia($schema);
+        flash('Se creo la topología para '.$schema);
         return view('home');
     }
+
+    public function dropTopologia($schema)
+    {
+        MyDB::dropTopologia($schema);
+        return view('home');
    
     public function addIndexListado($schema)
     {

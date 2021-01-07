@@ -691,11 +691,26 @@ FROM
             try{
                 DB::statement(" SELECT indec.cargarTopologia(
                 'e".$esquema."','arc');");
+                DB::statement(" CREATE e".$esquema.".manzanas AS SELECT * FROM
+                e".$esquema.".v_manzanas);");
             }catch(Exception $e){
             Log::error('No se pudo cargar la topologia');
             }
             Log::debug('Se genraron fracciones, radios y manzanas ');
         }
+
+        // DROPEA esquema de topologia si quedo desfazado por rollback mal
+        // hecho
+        public static function dropTopologia($esquema)
+        {
+            try{
+                DB::statement(" DROP SCHEMA '".$esquema."' CASCADE ;");
+            }catch(Exception $e){
+            Log::error('No se pudo borrar la topologia');
+            }
+            Log::debug('Se borro esquema con topos ');
+        }
+
 
         // Crea secuencia para id de segmentos.
         //
