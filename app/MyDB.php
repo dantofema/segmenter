@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Log;
 use App\Model\Radio;
 use Symfony\Component\Process\Process;
 use Auth;
+use Illuminate\Database\QueryException;
 
 class MyDB extends Model
 {
@@ -691,8 +692,9 @@ FROM
             try{
                 DB::statement(" SELECT indec.cargarTopologia(
                 'e".$esquema."','arc');");
-                DB::statement(" CREATE e".$esquema.".manzanas AS SELECT * FROM
-                e".$esquema.".v_manzanas);");
+                DB::statement(" DROP TABLE if exists e".$esquema.".manzanas;");
+                DB::statement(" CREATE TABLE e".$esquema.".manzanas AS SELECT * FROM
+                e".$esquema.".v_manzanas;");
             }catch(Exception $e){
             Log::error('No se pudo cargar la topologia');
             }
@@ -704,7 +706,13 @@ FROM
         public static function dropTopologia($esquema)
         {
             try{
-                DB::statement(" DROP SCHEMA '".$esquema."' CASCADE ;");
+                DB::statement(" SELECT topology.dropTopology('".$esquema."');");
+            }catch(QueryException $e){
+            Log::error('No se pudo borrar la topologia de topology');
+            }
+            Log::debug('Se borro la topologia ');
+            try{
+                DB::statement(' DROP SCHEMA IF EXISTS "'.$esquema.'" CASCADE ;');
             }catch(Exception $e){
             Log::error('No se pudo borrar la topologia');
             }

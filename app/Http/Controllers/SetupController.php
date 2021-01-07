@@ -71,7 +71,8 @@ class SetupController extends Controller
     {
         MyDB::dropTopologia($schema);
         return view('home');
-   
+    }
+
     public function addIndexListado($schema)
     {
         MyDB::addIndexListado($schema);
