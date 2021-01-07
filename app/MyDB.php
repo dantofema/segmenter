@@ -21,13 +21,11 @@ class MyDB extends Model
         try{
             Log::debug('Resegmentando segmentos excedidos de fraccion
             '.$frac.', radio '.$radio);
-            self::cambiarSegmentarBigInt($esquema);
     		DB::statement(" SELECT indec.segmentar_excedidos_ffrr(
             'e".$esquema."',".$frac.",".$radio.",".$umbral.",".$deseado.");");
-        }catch(Illuminate\Database\QueryException $e){
-            Log::debug('No se pudo segmentar segmentos excedidos, reintentando');
+        }catch(QueryException $e){
+            Log::debug('No se pudo segmentar segmentos excedidos, reintentando...');
             $self::cambiarSegmentarBigInt($esquema);
-
             try{
     		    DB::statement(" SELECT indec.segmentar_excedidos_ffrr(
                 'e".$esquema."',".$frac.",".$radio.",".$umbral.",".$deseado.");");
@@ -451,8 +449,9 @@ FROM
 
         public static function georeferenciar_listado($esquema)
         {
-            //return true;
     //   --ALTER TABLE ' ".$esquema." '.arc alter column wkb_geometry type geometry('LineString',22182) USING (st_setsrid(wkb_geometry,22182));
+
+        try{
             $esquema = 'e'.$esquema;
             DB::statement("DROP TABLE IF EXISTS ".$esquema.".listado_geo;");
             $resultado= DB::select("
@@ -488,226 +487,233 @@ FROM
     then ST_LineInterpolatePoint(st_reverse(st_offsetcurve(ST_LineSubstring(st_LineMerge(wkb_geometry),0.07,0.93),-8-nro_en_lado)),0.5) 
     else
     CASE WHEN ( 
-        e.mza like '%'||btrim(to_char(l.frac::integer, '09'::text))::character varying(3)||btrim(to_char(l.radio::integer, '09'::text))::character varying(3)||btrim(to_char(l.mza::integer, '099'::text))::character varying(3)) 
-                and l.lado::integer=e.lado and l.tipoviv='LSV' 
-                THEN ST_LineInterpolatePoint(st_reverse(st_offsetcurve(ST_LineSubstring(st_LineMerge(wkb_geometry),0.07,0.93),-8)),0.5) 
-        WHEN ( e.mza like '%'||btrim(to_char(l.frac::integer, '09'::text))::character varying(3)||btrim(to_char(l.radio::integer, '09'::text))::character varying(3)||btrim(to_char(l.mza::integer, '099'::text))::character varying(3)) 
-                and l.lado::integer=e.lado 
-                THEN ST_LineInterpolatePoint(st_reverse(st_offsetcurve(ST_LineSubstring(st_LineMerge(wkb_geometry),0.07,0.93),-8)),1.0*nro_en_lado/(conteo+1)) 
-            end
-            END as wkb_geometry, e.ogc_fid||'-'||l.id id ,e.ogc_fid id_lin,l.id id_list, wkb_geometry wkb_geometry_lado,
-                codigo10, nomencla, codigo20, 
-                tipo, nombre, e.lado ladoe, desde, hasta,e.mza mzae, 
-                frac, radio, l.mza, l.lado, ccalle, ncalle, l.nrocatastr, piso,casa,dpto_habit,sector,edificio,entrada,tipoviv, 
-                descripcio,descripci2 , accion
-    INTO ".$esquema.".listado_geo
-    FROM arcos e JOIN listado l ON 
-    --l.ccalle::integer=e.codigo20 and
-        (l.lado::integer=e.lado and 
-            e.mza like 
-            '%'||btrim(to_char(l.frac::integer, '09'::text))::character varying(3)||btrim(to_char(l.radio::integer, '09'::text))::character varying(3)||btrim(to_char(l.mza::integer, '099'::text))::character varying(3) 
-        );");
-        DB::statement("GRANT SELECT ON TABLE  ".$esquema.".listado_geo TO geoestadistica");
-            return $resultado;
-        }
-
-        public static function georeferenciar_segmentacion($esquema)
-        {
-            //return true;
-    //   --ALTER TABLE ' ".$esquema." '.arc alter column wkb_geometry type geometry('LineString',22182) USING (st_setsrid(wkb_geometry,22182));
-            $esquema = 'e'.$esquema;
-            DB::statement("DROP TABLE IF EXISTS ".$esquema.".listado_segmentado_geo;");
-            $resultado= DB::select("
-            WITH listado as (
-        SELECT id, l.prov, nom_provin, ups, nro_area, l.dpto, nom_dpto, l.codaglo, l.codloc, nom_loc, codent, nom_ent, l.frac, l.radio, l.mza, l.lado, 
-        s.segmento_id as segmento_id, nro_inicia, nro_final, orden_reco,
-        nro_listad, ccalle, ncalle,  
-        CASE WHEN l.nrocatastr='' or l.nrocatastr='S/N' THEN null ELSE
-        l.nrocatastr END as nrocatastr, 
-        piso, casa, dpto_habit, sector, edificio, entrada, tipoviv, descripcio, descripci2 , 
-        row_number() over(partition by l.frac, l.radio, l.mza, l.lado order by l.lado, orden_reco asc) nro_en_lado, conteo, accion
-        FROM
-        ".$esquema.".listado l
-        JOIN ".$esquema.".segmentacion s ON s.listado_id=l.id
-        LEFT JOIN ".$esquema.".conteos c ON 
-        (c.prov,c.dpto,c.codloc,c.frac,c.radio,c.mza,c.lado)=(l.prov::integer,l.dpto::integer,l.codloc::integer,l.frac::integer,l.radio::integer,l.mza::integer,l.lado::integer)
-    ), 
-    arcos as (
-        SELECT min(ogc_fid) ogc_fid, st_LineMerge(st_union(wkb_geometry)) wkb_geometry,nomencla,codigo20,array_agg(distinct codigo10) codigo10, tipo, nombre,lado,min(desde) desde,
-        max(hasta) hasta,mza 
-        FROM 
-        (SELECT ogc_fid,st_reverse(wkb_geometry) wkb_geometry,nomencla10 nomencla,codigo20,codigo10,tipo, nombre, ancho, anchomed, ladoi lado,desdei desde,
-        hastai hasta,mzai mza, nomencla10,nomenclai nomenclax, codinomb, segi seg 
-        FROM ".$esquema.".arc
-    UNION
-        SELECT ogc_fid,wkb_geometry,nomencla10 nomencla,codigo20,codigo10,tipo, nombre, ancho, anchomed, ladod lado,desded desde,
-        hastad hasta,mzad mza, nomencla10,nomenclad nomenclax, codinomb, segd seg 
-        FROM ".$esquema.".arc) arcos_juntados
-        GROUP BY nomencla,codigo20,tipo, nombre,lado,mza
-    )
-    SELECT segmento_id,nro_en_lado, conteo,1.0*nro_en_lado/(conteo+1) interpolacion, l.orden_reco,
-    case when nro_en_lado/(conteo+1)>1 
-    then ST_LineInterpolatePoint(st_reverse(st_offsetcurve(ST_LineSubstring(st_LineMerge(wkb_geometry),0.07,0.93),-8-nro_en_lado)),0.5) 
-    else
-    CASE WHEN ( 
-        e.mza like '%'||btrim(to_char(l.frac::integer, '09'::text))::character varying(3)||btrim(to_char(l.radio::integer, '09'::text))::character varying(3)||btrim(to_char(l.mza::integer, '099'::text))::character varying(3)) 
-                and l.lado::integer=e.lado and l.tipoviv='LSV' 
-                THEN ST_LineInterpolatePoint(st_reverse(st_offsetcurve(ST_LineSubstring(st_LineMerge(wkb_geometry),0.07,0.93),-8)),0.5) 
-        WHEN ( e.mza like '%'||btrim(to_char(l.frac::integer, '09'::text))::character varying(3)||btrim(to_char(l.radio::integer, '09'::text))::character varying(3)||btrim(to_char(l.mza::integer, '099'::text))::character varying(3)) 
-                and l.lado::integer=e.lado 
-                THEN ST_LineInterpolatePoint(st_reverse(st_offsetcurve(ST_LineSubstring(st_LineMerge(wkb_geometry),0.07,0.93),-8)),1.0*nro_en_lado/(conteo+1)) 
-            end
-            END as wkb_geometry, e.ogc_fid||'-'||l.id id ,e.ogc_fid id_lin,l.id id_list, wkb_geometry wkb_geometry_lado,
-                codigo10, nomencla, codigo20, 
-                    tipo, nombre, e.lado ladoe, desde, hasta,e.mza mzae
+            e.mza like '%'||btrim(to_char(l.frac::integer, '09'::text))::character varying(3)||btrim(to_char(l.radio::integer, '09'::text))::character varying(3)||btrim(to_char(l.mza::integer, '099'::text))::character varying(3)) 
+                    and l.lado::integer=e.lado and l.tipoviv='LSV' 
+                    THEN ST_LineInterpolatePoint(st_reverse(st_offsetcurve(ST_LineSubstring(st_LineMerge(wkb_geometry),0.07,0.93),-8)),0.5) 
+            WHEN ( e.mza like '%'||btrim(to_char(l.frac::integer, '09'::text))::character varying(3)||btrim(to_char(l.radio::integer, '09'::text))::character varying(3)||btrim(to_char(l.mza::integer, '099'::text))::character varying(3)) 
+                    and l.lado::integer=e.lado 
+                    THEN ST_LineInterpolatePoint(st_reverse(st_offsetcurve(ST_LineSubstring(st_LineMerge(wkb_geometry),0.07,0.93),-8)),1.0*nro_en_lado/(conteo+1)) 
+                end
+                END as wkb_geometry, e.ogc_fid||'-'||l.id id ,e.ogc_fid id_lin,l.id id_list, wkb_geometry wkb_geometry_lado,
+                    codigo10, nomencla, codigo20, 
+                    tipo, nombre, e.lado ladoe, desde, hasta,e.mza mzae, 
                     frac, radio, l.mza, l.lado, ccalle, ncalle, l.nrocatastr, piso,casa,dpto_habit,sector,edificio,entrada,tipoviv, 
-                descripcio,descripci2 , accion
-    INTO ".$esquema.".listado_segmentado_geo
-    FROM arcos e JOIN listado l ON l.ccalle::integer=e.codigo20 
-    and
-        (l.lado::integer=e.lado and 
-            e.mza like 
-            '%'||btrim(to_char(l.frac::integer, '09'::text))::character varying(3)||btrim(to_char(l.radio::integer, '09'::text))::character varying(3)||btrim(to_char(l.mza::integer, '099'::text))::character varying(3) 
-        );");
-        DB::statement("GRANT SELECT ON TABLE
-        ".$esquema.".listado_segmentado_geo TO geoestadistica");
-            return $resultado;
-        }
+                    descripcio,descripci2 , accion
+        INTO ".$esquema.".listado_geo
+        FROM arcos e JOIN listado l ON 
+        --l.ccalle::integer=e.codigo20 and
+            (l.lado::integer=e.lado and 
+                e.mza like 
+                '%'||btrim(to_char(l.frac::integer, '09'::text))::character varying(3)||btrim(to_char(l.radio::integer, '09'::text))::character varying(3)||btrim(to_char(l.mza::integer, '099'::text))::character varying(3) 
+            );");
+            DB::statement("GRANT SELECT ON TABLE  ".$esquema.".listado_geo TO geoestadistica");
+                return $resultado;
 
-        public static function getNodos($esquema,$radio = '%01103')
-        {
-            return DB::select('SELECT distinct *, substr(mza_i,13,3)||\':\'||lado_i as label,c.conteo FROM (
-                                                SELECT mza_i,lado_i from e'.$esquema.'.lados_adyacentes WHERE mza_i like :radio UNION
-                                                SELECT mza_j,lado_j from e'.$esquema.'.lados_adyacentes WHERE mza_j like :radio) foo
-        LEFT JOIN
-        e'.$esquema.'.conteos c
-        ON (c.prov,c.dpto,c.codloc,c.frac,c.radio,c.mza,c.lado)=
-            (substr(mza_i,1,2)::integer,
-            substr(mza_i,3,3)::integer,
-            substr(mza_i,6,3)::integer,
-            substr(mza_i,9,2)::integer,
-            substr(mza_i,11,2)::integer,
-            substr(mza_i,13,3)::integer,
-            lado_i)
-
-                            ',['radio'=>$radio.'%']);
-        }
-
-        public static function getAdyacencias($esquema,$radio = '%01103')
-        {
-                    return DB::select('SELECT * from e'.$esquema.'.lados_adyacentes
-            WHERE mza_i like :radio and mza_j like :radio;',['radio'=>$radio.'%']);
-        }
-        
-        public static function getSegmentos($esquema,$radio = '%01103')
-        {
-            if (Schema::hasTable('e'.$esquema.'.arc')) {
-                    return DB::select('SELECT array_agg(mza||\'-\'||lado) segmento
-                                        FROM
-                                        (SELECT
-                                            mzai mza,ladoi lado, segi seg
-                                            FROM e'.$esquema.'.arc
-                                        UNION
-                                            SELECT
-                                            mzad mza,ladod lado, segd seg
-                                            FROM e'.$esquema.'.arc
-                                        ) segs
-                                        WHERE mza like :radio
-                                        GROUP BY seg
-                                        ;',['radio'=>$radio.'%']);
-            }else{
-                return null;
-            }
-        }
-
-        public static function getCantMzas(Radio $radio){
-            $esquema=$radio->esquema;
-            $prov=substr($radio->codigo,0,2);
-            $dpto=substr($radio->codigo,2,3);
-            $frac=substr($radio->codigo,5,2);
-            $rad=substr($radio->codigo,7,2);
-            if (Schema::hasTable($esquema.'.conteos')) {
-                return DB::select("
-    SELECT count( distinct mza)  cant_mzas 
-    FROM ".$esquema.".conteos WHERE prov=".$prov." and dpto = ".$dpto." and
-    frac=".$frac." and radio=".$rad." ;")[0]->cant_mzas;
-
-            }else{
-                Log::debug('No se encontro esquema para '.$radio);
-                return -2;
-            }
-        }
-
-        public static function isSegmentado(Radio $radio=null){
-            $esquema=$radio->esquema;
-            if ($radio){
-                $filtro= " and (frac,radio) =
-                    ('".$radio->CodigoFrac."','".$radio->CodigoRad."') ";
-            } else
-            { $filtro = '';}
-            if (Schema::hasTable($esquema.'.segmentacion')) {
-                try {
-                    return DB::select("SELECT true FROM ".$esquema.".segmentacion s JOIN
-                            ".$esquema.".listado l ON s.listado_id=l.id
-                            WHERE segmento_id is not null
-                            ".$filtro."
-                        limit 1;");
-                    } catch (Exception $e)  { return null;}
-            }else{
-                return null;
-            }
-        }
-
-        public static function darPermisos($esquema,$grupo='geoestadistica'){
-                try {
-                DB::statement("GRANT USAGE ON SCHEMA ".$esquema." TO ".$grupo.";");
-                DB::statement("GRANT SELECT ON ALL TABLES IN SCHEMA  ".$esquema." TO ".$grupo);
-                DB::statement("ALTER DEFAULT PRIVILEGES IN SCHEMA  ".$esquema." GRANT
-        SELECT ON TABLES TO ".$grupo);
-            //GRANT geoestadistica TO manuel;
-                    
-                    } catch (Exception $e)  { 
-                        Log::Error('No se pudieron asignar permisos');
-                        return null;}
-                Log::Debug('Se establecieron permisos para geoestadistica');
-                return null;
-        }
-
-        public static function addUser($usuario,$grupo='geoestadistica'){
-                try {
-    //                return DB::select("GRANT USAGE ON ".$esquema." TO ".$grupo.";");
-                DB::unprepared("GRANT ".$grupo." TO ".$usuario.";");
-                    
-                    } catch (Exception $e)  { 
-                        Log::Debug('No se pudo agregar al grupo '.$grupo.' al '.$usuario);
-                        return null;}
-                Log::Debug('Se pudo agregar al grupo '.$grupo.' al '.$usuario);
-                return null;
-        }
-
-        // Carga geometria en topologia y genera manzanas, fracciones y radios.
-        // Necesita arc y lab.
-        public static function cargarTopologia($esquema)
-        {
-            try{
-                DB::statement(" SELECT indec.cargarTopologia(
-                'e".$esquema."','arc');");
-                DB::statement(" DROP TABLE if exists e".$esquema.".manzanas;");
-                DB::statement(" CREATE TABLE e".$esquema.".manzanas AS SELECT * FROM
-                e".$esquema.".v_manzanas;");
-            }catch(Exception $e){
-            Log::error('No se pudo cargar la topologia');
-            }
-            Log::debug('Se genraron fracciones, radios y manzanas ');
-        }
-
-        // DROPEA esquema de topologia si quedo desfazado por rollback mal
-        // hecho
-        public static function dropTopologia($esquema)
-        {
-            try{
-                DB::statement(" SELECT topology.dropTopology('".$esquema."');");
             }catch(QueryException $e){
+                    Log::error('No se pudo georeferenciar el listado.'.$e);
+                        flash('No se pudo georeferenciar el listado')->error();
+                    return false;
+            }
+            
+            }
+
+            public static function georeferenciar_segmentacion($esquema)
+            {
+                //return true;
+        //   --ALTER TABLE ' ".$esquema." '.arc alter column wkb_geometry type geometry('LineString',22182) USING (st_setsrid(wkb_geometry,22182));
+                $esquema = 'e'.$esquema;
+                DB::statement("DROP TABLE IF EXISTS ".$esquema.".listado_segmentado_geo;");
+                $resultado= DB::select("
+                WITH listado as (
+            SELECT id, l.prov, nom_provin, ups, nro_area, l.dpto, nom_dpto, l.codaglo, l.codloc, nom_loc, codent, nom_ent, l.frac, l.radio, l.mza, l.lado, 
+            s.segmento_id as segmento_id, nro_inicia, nro_final, orden_reco,
+            nro_listad, ccalle, ncalle,  
+            CASE WHEN l.nrocatastr='' or l.nrocatastr='S/N' THEN null ELSE
+            l.nrocatastr END as nrocatastr, 
+            piso, casa, dpto_habit, sector, edificio, entrada, tipoviv, descripcio, descripci2 , 
+            row_number() over(partition by l.frac, l.radio, l.mza, l.lado order by l.lado, orden_reco asc) nro_en_lado, conteo, accion
+            FROM
+            ".$esquema.".listado l
+            JOIN ".$esquema.".segmentacion s ON s.listado_id=l.id
+            LEFT JOIN ".$esquema.".conteos c ON 
+            (c.prov,c.dpto,c.codloc,c.frac,c.radio,c.mza,c.lado)=(l.prov::integer,l.dpto::integer,l.codloc::integer,l.frac::integer,l.radio::integer,l.mza::integer,l.lado::integer)
+        ), 
+        arcos as (
+            SELECT min(ogc_fid) ogc_fid, st_LineMerge(st_union(wkb_geometry)) wkb_geometry,nomencla,codigo20,array_agg(distinct codigo10) codigo10, tipo, nombre,lado,min(desde) desde,
+            max(hasta) hasta,mza 
+            FROM 
+            (SELECT ogc_fid,st_reverse(wkb_geometry) wkb_geometry,nomencla10 nomencla,codigo20,codigo10,tipo, nombre, ancho, anchomed, ladoi lado,desdei desde,
+            hastai hasta,mzai mza, nomencla10,nomenclai nomenclax, codinomb, segi seg 
+            FROM ".$esquema.".arc
+        UNION
+            SELECT ogc_fid,wkb_geometry,nomencla10 nomencla,codigo20,codigo10,tipo, nombre, ancho, anchomed, ladod lado,desded desde,
+            hastad hasta,mzad mza, nomencla10,nomenclad nomenclax, codinomb, segd seg 
+            FROM ".$esquema.".arc) arcos_juntados
+            GROUP BY nomencla,codigo20,tipo, nombre,lado,mza
+        )
+        SELECT segmento_id,nro_en_lado, conteo,1.0*nro_en_lado/(conteo+1) interpolacion, l.orden_reco,
+        case when nro_en_lado/(conteo+1)>1 
+        then ST_LineInterpolatePoint(st_reverse(st_offsetcurve(ST_LineSubstring(st_LineMerge(wkb_geometry),0.07,0.93),-8-nro_en_lado)),0.5) 
+        else
+        CASE WHEN ( 
+            e.mza like '%'||btrim(to_char(l.frac::integer, '09'::text))::character varying(3)||btrim(to_char(l.radio::integer, '09'::text))::character varying(3)||btrim(to_char(l.mza::integer, '099'::text))::character varying(3)) 
+                    and l.lado::integer=e.lado and l.tipoviv='LSV' 
+                    THEN ST_LineInterpolatePoint(st_reverse(st_offsetcurve(ST_LineSubstring(st_LineMerge(wkb_geometry),0.07,0.93),-8)),0.5) 
+            WHEN ( e.mza like '%'||btrim(to_char(l.frac::integer, '09'::text))::character varying(3)||btrim(to_char(l.radio::integer, '09'::text))::character varying(3)||btrim(to_char(l.mza::integer, '099'::text))::character varying(3)) 
+                    and l.lado::integer=e.lado 
+                    THEN ST_LineInterpolatePoint(st_reverse(st_offsetcurve(ST_LineSubstring(st_LineMerge(wkb_geometry),0.07,0.93),-8)),1.0*nro_en_lado/(conteo+1)) 
+                end
+                END as wkb_geometry, e.ogc_fid||'-'||l.id id ,e.ogc_fid id_lin,l.id id_list, wkb_geometry wkb_geometry_lado,
+                    codigo10, nomencla, codigo20, 
+                        tipo, nombre, e.lado ladoe, desde, hasta,e.mza mzae
+                        frac, radio, l.mza, l.lado, ccalle, ncalle, l.nrocatastr, piso,casa,dpto_habit,sector,edificio,entrada,tipoviv, 
+                    descripcio,descripci2 , accion
+        INTO ".$esquema.".listado_segmentado_geo
+        FROM arcos e JOIN listado l ON l.ccalle::integer=e.codigo20 
+        and
+            (l.lado::integer=e.lado and 
+                e.mza like 
+                '%'||btrim(to_char(l.frac::integer, '09'::text))::character varying(3)||btrim(to_char(l.radio::integer, '09'::text))::character varying(3)||btrim(to_char(l.mza::integer, '099'::text))::character varying(3) 
+            );");
+            DB::statement("GRANT SELECT ON TABLE
+            ".$esquema.".listado_segmentado_geo TO geoestadistica");
+                return $resultado;
+            }
+
+            public static function getNodos($esquema,$radio = '%01103')
+            {
+                return DB::select('SELECT distinct *, substr(mza_i,13,3)||\':\'||lado_i as label,c.conteo FROM (
+                                                    SELECT mza_i,lado_i from e'.$esquema.'.lados_adyacentes WHERE mza_i like :radio UNION
+                                                    SELECT mza_j,lado_j from e'.$esquema.'.lados_adyacentes WHERE mza_j like :radio) foo
+            LEFT JOIN
+            e'.$esquema.'.conteos c
+            ON (c.prov,c.dpto,c.codloc,c.frac,c.radio,c.mza,c.lado)=
+                (substr(mza_i,1,2)::integer,
+                substr(mza_i,3,3)::integer,
+                substr(mza_i,6,3)::integer,
+                substr(mza_i,9,2)::integer,
+                substr(mza_i,11,2)::integer,
+                substr(mza_i,13,3)::integer,
+                lado_i)
+
+                                ',['radio'=>$radio.'%']);
+            }
+
+            public static function getAdyacencias($esquema,$radio = '%01103')
+            {
+                        return DB::select('SELECT * from e'.$esquema.'.lados_adyacentes
+                WHERE mza_i like :radio and mza_j like :radio;',['radio'=>$radio.'%']);
+            }
+            
+            public static function getSegmentos($esquema,$radio = '%01103')
+            {
+                if (Schema::hasTable('e'.$esquema.'.arc')) {
+                        return DB::select('SELECT array_agg(mza||\'-\'||lado) segmento
+                                            FROM
+                                            (SELECT
+                                                mzai mza,ladoi lado, segi seg
+                                                FROM e'.$esquema.'.arc
+                                            UNION
+                                                SELECT
+                                                mzad mza,ladod lado, segd seg
+                                                FROM e'.$esquema.'.arc
+                                            ) segs
+                                            WHERE mza like :radio
+                                            GROUP BY seg
+                                            ;',['radio'=>$radio.'%']);
+                }else{
+                    return null;
+                }
+            }
+
+            public static function getCantMzas(Radio $radio){
+                $esquema=$radio->esquema;
+                $prov=substr($radio->codigo,0,2);
+                $dpto=substr($radio->codigo,2,3);
+                $frac=substr($radio->codigo,5,2);
+                $rad=substr($radio->codigo,7,2);
+                if (Schema::hasTable($esquema.'.conteos')) {
+                    return DB::select("
+        SELECT count( distinct mza)  cant_mzas 
+        FROM ".$esquema.".conteos WHERE prov=".$prov." and dpto = ".$dpto." and
+        frac=".$frac." and radio=".$rad." ;")[0]->cant_mzas;
+
+                }else{
+                    Log::debug('No se encontro esquema para '.$radio);
+                    return -2;
+                }
+            }
+
+            public static function isSegmentado(Radio $radio=null){
+                $esquema=$radio->esquema;
+                if ($radio){
+                    $filtro= " and (frac,radio) =
+                        ('".$radio->CodigoFrac."','".$radio->CodigoRad."') ";
+                } else
+                { $filtro = '';}
+                if (Schema::hasTable($esquema.'.segmentacion')) {
+                    try {
+                        return DB::select("SELECT true FROM ".$esquema.".segmentacion s JOIN
+                                ".$esquema.".listado l ON s.listado_id=l.id
+                                WHERE segmento_id is not null
+                                ".$filtro."
+                            limit 1;");
+                        } catch (Exception $e)  { return null;}
+                }else{
+                    return null;
+                }
+            }
+
+            public static function darPermisos($esquema,$grupo='geoestadistica'){
+                    try {
+                    DB::statement("GRANT USAGE ON SCHEMA ".$esquema." TO ".$grupo.";");
+                    DB::statement("GRANT SELECT ON ALL TABLES IN SCHEMA  ".$esquema." TO ".$grupo);
+                    DB::statement("ALTER DEFAULT PRIVILEGES IN SCHEMA  ".$esquema." GRANT
+            SELECT ON TABLES TO ".$grupo);
+                //GRANT geoestadistica TO manuel;
+                        
+                        } catch (Exception $e)  { 
+                            Log::Error('No se pudieron asignar permisos');
+                            return null;}
+                    Log::Debug('Se establecieron permisos para geoestadistica');
+                    return null;
+            }
+
+            public static function addUser($usuario,$grupo='geoestadistica'){
+                    try {
+        //                return DB::select("GRANT USAGE ON ".$esquema." TO ".$grupo.";");
+                    DB::unprepared("GRANT ".$grupo." TO ".$usuario.";");
+                        
+                        } catch (Exception $e)  { 
+                            Log::Debug('No se pudo agregar al grupo '.$grupo.' al '.$usuario);
+                            return null;}
+                    Log::Debug('Se pudo agregar al grupo '.$grupo.' al '.$usuario);
+                    return null;
+            }
+
+            // Carga geometria en topologia y genera manzanas, fracciones y radios.
+            // Necesita arc y lab.
+            public static function cargarTopologia($esquema)
+            {
+                try{
+                    DB::statement(" SELECT indec.cargarTopologia(
+                    'e".$esquema."','arc');");
+                    DB::statement(" DROP TABLE if exists e".$esquema.".manzanas;");
+                    DB::statement(" CREATE TABLE e".$esquema.".manzanas AS SELECT * FROM
+                    e".$esquema.".v_manzanas;");
+                }catch(Exception $e){
+                Log::error('No se pudo cargar la topologia');
+                }
+                Log::debug('Se genraron fracciones, radios y manzanas ');
+            }
+
+            // DROPEA esquema de topologia si quedo desfazado por rollback mal
+            // hecho
+            public static function dropTopologia($esquema)
+            {
+                try{
+                    DB::statement(" SELECT topology.dropTopology('".$esquema."');");
+                }catch(QueryException $e){
             Log::error('No se pudo borrar la topologia de topology');
             }
             Log::debug('Se borro la topologia ');
