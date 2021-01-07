@@ -96,7 +96,22 @@ class SetupController extends Controller
         MyDB::georeferenciar_listado($schema);
         flash('Se georeferencio el listado del esquema '.$schema);
         return view('home');
-    
+    }
+
+    public function testFlash($texto='Mensaje de prueba.')
+    {
+        flash(' Normal  '.$texto);
+        flash(' Error  '.$texto)->error();
+        flash(' Info  '.$texto)->info();
+        flash(' Success  '.$texto)->success();
+        flash('Message success')->success();// Set the flash theme to "success".
+        flash('Message error')->error();// Set the flash theme to "danger".
+        flash('Message warning')->warning();// Set the flash theme to "warning".
+        flash('Message overlay')->overlay();// Render the message as an overlay.
+        flash()->overlay('Modal Message', 'Modal Title');// Display a modal overlay with a title.
+        flash('Message important')->important();//: Add a close button to the flash message.
+        flash('Message error()->important')->error()->important();//        
+        return view('home');
     }
     
 }

@@ -26,9 +26,8 @@
 <body>
     @yield('divs4content')
     <div id="app">
-        <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
+            <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
             <div class="container">
-		@include('flash::message')
                 <a class="navbar-brand text-uppercase" href="{{ url('/') }}">
                 <img src="/images/mandarina.svg" width="30" height="30" class="d-inline-block align-top" alt="">
                     {{ config('app.name', 'App sin nombre') }}
@@ -88,8 +87,8 @@
                 </div>
             </div>
         </nav>
-
         <main class="py-4">
+		    @include('flash::message')
             @yield('content')
         </main>
         </div>
@@ -104,11 +103,12 @@
 <script>
    $(document).ready( function () {
     $('#flash-overlay-modal').modal();
+    $('div.alert').not('.alert-important').delay(5000).fadeOut(350);
 });
 </script>
+    @yield ('footer_scripts')
 <script>
 $('div.alert').not('.alert-important').delay(3000).fadeOut(350);
 </script>
-    @yield ('footer_scripts')
 </body>
 </html>

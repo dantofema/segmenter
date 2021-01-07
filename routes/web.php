@@ -50,6 +50,7 @@ Route::get('/contact', function()
 });
 
 Route::get('/setup', 'SetupController@index')->name('setup');
+Route::get('/setup/test', 'SetupController@testFlash')->name('setup.test');
 Route::get('/setup/{esquema}', 'SetupController@permisos')->name('setup.permisos');
 Route::get('/setup/topo/{esquema}',
 'SetupController@cargarTopologia')->name('setup.topologia');
