@@ -59,22 +59,22 @@ Radio: {{ $radio->codigo}}
       </div>
       <div class="row no-gutters">
         <div class="col">
-        <div class="row text-center">
-            <div class="col-sm-1 ">id</div>  
-            <div class="col-sm-1 ">Seg</div>  
-            <div class="col-sm-9 ">Descripción</div>  
-            <div class="col-sm-1 ">Viviendas</div>  
+        <div class="row text-center border">
+            <div class="col-sm-1 border">id</div>
+            <div class="col-sm-1 border">Seg</div>
+            <div class="col-sm-9 border">Descripción</div>
+            <div class="col-sm-1 border">Viviendas</div>
         </div>
         @forelse ($segmentacion_data_listado as $segmento)
-        <div class="row ">
-        <div class="col-sm-1 ">{{ $segmento->segmento_id }}</div>  
-        <div class="col-sm-1 ">{{ $segmento->seg }}</div>  
-        <div class="col-sm-9 ">{{ $segmento->detalle }}</div>  
-        <div class="col-sm-1 ">{{ $segmento->vivs }}</div>  
+        <div class="row border">
+        <div class="col-sm-1 ">{{ $segmento->segmento_id }}</div>
+        <div class="col-sm-1 ">{{ $segmento->seg }}</div>
+        <div class="col-sm-9 ">{{ $segmento->detalle }}</div>
+        <div class="col-sm-1 ">{{ $segmento->vivs }}</div>
         </div>
         @empty
             <p>No hay segmentos</p>
-        @endforelse        
+        @endforelse
         </div>
       </div>
     </div>
