@@ -37,7 +37,7 @@ Radio: {{ $radio->codigo}}
 </style>
 @endsection
 @section('content_main')
-<div class="container-xl border" >
+<div class="container-xl" >
     <div class="col no-gutters">
       <div class="row no-gutters">
         <div class="col-sm-12">
