@@ -9,6 +9,7 @@ use App\MyDB;
 use App\Model\Aglomerado;
 use App\Model\Radio;
 
+
 class SegmentacionController extends Controller
 {
     
@@ -37,6 +38,7 @@ class SegmentacionController extends Controller
         foreach ($segmentacion_data as $data){ 
                 $segmentacion[]=explode(',',str_replace('}','',str_replace('{','',$data->segmento)));
                 }
+        $radio->refresh();
         return view('grafo.show',['nodos'=>$nodos,'relaciones'=>$edges,'segmentacion'=>$segmentacion,'aglomerado'=>$aglomerado,'radio'=>$radio]);
     }
 
