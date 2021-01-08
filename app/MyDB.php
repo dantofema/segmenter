@@ -337,7 +337,7 @@ FROM
         segmentar_equilibrado_ver($esquema,$max=1000,Radio $radio = Null)
         {
             if ($radio){
-                $filtro= ' where (frac,radio) =
+                $filtro= ' where (frac::integer,radio::integer) =
                     ('.$radio->CodigoFrac.','.$radio->CodigoRad.') ';
             } else
             { $filtro = '';}
