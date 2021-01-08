@@ -363,8 +363,8 @@ FROM
                             indec.descripcion_domicilio('".$esquema."',seg_lado_desde) || '
                                 hasta ' ||
                                 indec.descripcion_domicilio('".$esquema."',seg_lado_hasta)
-                            END detalle,
-                            null vivs, null ts
+                            END detalle, 
+                            null vivs, segmento_id seg, null ts
                             FROM ".$esquema.".segmentos_desde_hasta
                             ".$filtro."
                             order by frac,radio,segmento_id,mza,lado
@@ -379,6 +379,7 @@ FROM
                             vivs,count(distinct mza) as mza,array_agg(distinct
                             prov||dpto||codloc||frac||radio||mza||lado)
                             detalle,count(distinct lado) as lado, 
+                            segmento_id seg,
                             null ts
                             FROM 
                             '.$esquema.'.segmentacion s JOIN 
