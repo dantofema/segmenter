@@ -103,8 +103,7 @@ use Illuminate\Support\Facades\Log;
             $carto=$aglomerado->Carto;
             $listado=$aglomerado->Listado;
             $radios=$aglomerado->ComboRadios;
-            $svg=$aglomerado->getSVG();
-            return view('aglo.segmenta',['aglomerado' => $aglomerado,'carto' => $carto,'listado'=>$listado,'radios'=>$radios,'svg'=>$svg]);
+            return view('aglo.segmenta',['aglomerado' => $aglomerado,'carto' => $carto,'listado'=>$listado,'radios'=>$radios]);
         }
 
         public function run_segmentar(Request $request, Aglomerado $aglomerado)
