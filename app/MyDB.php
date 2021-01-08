@@ -25,7 +25,7 @@ class MyDB extends Model
             'e".$esquema."',".$frac.",".$radio.",".$umbral.",".$deseado.");");
         }catch(QueryException $e){
             Log::debug('No se pudo segmentar segmentos excedidos, reintentando...');
-            $self::cambiarSegmentarBigInt($esquema);
+            self::cambiarSegmentarBigInt($esquema);
             try{
     		    DB::statement(" SELECT indec.segmentar_excedidos_ffrr(
                 'e".$esquema."',".$frac.",".$radio.",".$umbral.",".$deseado.");");
