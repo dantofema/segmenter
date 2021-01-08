@@ -2,16 +2,10 @@
 @section('content')
 <div class="row center"><div class="col-lg-12 text-center">
 <h3>({{ $aglomerado->codigo}}) {{ $aglomerado->nombre}}</h3>
-
 Radio: {{ $radio->codigo}}
 </div></div>
   <div class="row">
-    <div class="col-lg-3">
-        <pre style="line-height: initial;font-size: 75%;">
-        {{ $radio->Resultado ?? 'No hay resultado de segmenta' }}
-        </pre>
     </div>
-    <div class="col-lg-4" title=MiniMap> {!! $radio->getSVG() !!}</div>
 </div>
 @endsection
 @section('content')
@@ -25,19 +19,50 @@ Radio: {{ $radio->codigo}}
 <script src="/js/cytoscape-cola.js"></script>
 <script src="/js/cola.min.js"></script>
 <style>
-#cy {
-  width: 800px;
-  height: 400px;
+#grafo_cy {
+  width: 400px;
+  height: 500px;
   display: block;
+}
+.no-gutters {
+  margin-right: 0;
+  margin-left: 0;
+
+  > .col,
+  > [class*="col-"] {
+    padding-right: 0;
+    padding-left: 0;
+  }
 }
 </style>
 @endsection
 @section('content_main')
-	<div width= 800px;
-         height= 400px
-         id=cy>
-	<button type="button" class="btn btn-primary" onClick="ordenar();"value="Ordenar">ReOrdenar</button>
+<div class="container-xl border" >
+    <div class="col no-gutters">
+      <div class="row no-gutters">
+        <div class="col-sm-12">
+        <pre style="line-height: initial;font-size: 75%;">
+        {{ $radio->resultado ?? 'No hay resultado de segmenta' }}
+        </pre>
+        </div>
+      </div>
+      <div class="row no-gutters">
+        <div class="col" title=MiniMap> {!! $radio->getSVG() !!}</div>
+        <div class="col ">
+            <div id=grafo_cy width= 400px; height= 500px
+               title="Grafo de adyacencias" >
+            </div>
+            <div class="text-center">
+        	  <button type="button" class="btn btn-primary" onClick="ordenar();"value="Ordenar">ReOrdenar</button>
+            </div>
+        </div>  
+      </div>
+      <div class="row no-gutters">
+        <div class="col">
+        </div>
+      </div>
     </div>
+</div>
 @endsection
 @section('footer_scripts')
 	<script>
@@ -46,7 +71,7 @@ Radio: {{ $radio->codigo}}
                         ,'#555','#CCC','#A00','#0A0','#00A','#F00','#0F0','#00F','#008','#800','#080'];
 		var cy = cytoscape({
 
-  container: document.getElementById('cy'), // container to render in
+    container: document.getElementById('grafo_cy'), // container to render in
 
   elements: [ // list of graph elements to start with
     @foreach ($nodos as $nodo)
@@ -87,15 +112,15 @@ Radio: {{ $radio->codigo}}
       ],
     layout: {
         name: 'grid',
-        rows: 25
+        rows: 9
     }
     });
     cy.on('click', 'node', function(evt){
       var node = evt.target;
       alert( 'Lado: ' + node.id() );
     });
-    var layout = cy.layout({ name: 'random'});
-    layout.run();
+//    var layout = cy.layout({ name: 'cose'});
+//    layout.run();
     function ordenar(){
         var layout = cy.layout({ name: 'cose'});
         layout.run();

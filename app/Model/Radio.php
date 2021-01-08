@@ -9,14 +9,15 @@ use App\Model\Frccion;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Log;
 
 class Radio extends Model
 {
     //
     protected $table='radio';
-
+    protected $primaryKey = 'id';
     protected $fillable = [
-        'id','codigo','nombre'
+            'id','codigo','nombre'
     ];
 
     private $_isSegmentado;
@@ -98,7 +99,9 @@ class Radio extends Model
 
         $segmenta->vista_segmentos_lados_completos($esquema);
         $segmenta->lados_completos_a_tabla_segmentacion_ffrr($esquema,$frac,$radio);
-        return $this->_resultado = $segmenta->ver_segmentacion();
+        $this->resultado = $segmenta->ver_segmentacion();
+        $this->save();
+        return $this->resultado;
     }
 
     /**
@@ -119,8 +122,9 @@ class Radio extends Model
         $segmenta->lados_completos_a_tabla_segmentacion_ffrr($esquema,$frac,$radio);
         $segmenta->segmentar_excedidos_ffrr($esquema,$frac,$radio,$max,$deseadas);
 
-//        dd($segmenta);
-        return $this->_resultado = $segmenta->ver_segmentacion();
+        $this->resultado = $segmenta->ver_segmentacion();
+        $this->save();
+        return $this->resultado;
     }
 
      /**
@@ -147,7 +151,6 @@ class Radio extends Model
                     $result =
                     MyDB::isSegmentado($this);
 
-//        $cant_mzas = $cant_mzas[0]->cant_mzas;
               if ($result):
                   $this->_isSegmentado = true;
               else:
@@ -161,17 +164,6 @@ class Radio extends Model
             return $this->_isSegmentado;
         }
      }
-
-    public function getResultadoAttribute($value)
-    {
-        return $this->_resultado;
-    }
-
-    public function setResultadoAttribute($value)
-    {
-        return $this->_resultado=$value;
-        $this->save();
-    }
 
     public function getCodigoRadAttribute($value){
         return $radio= substr(trim($this->codigo), 7, 2);
