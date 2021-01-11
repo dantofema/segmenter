@@ -224,7 +224,7 @@ class Radio extends Model
             $mzas_labels="
                 UNION (SELECT '<text x=\"'||st_x(st_centroid(wkb_geometry))||'\"
                 y=\"-'||st_y(st_centroid(wkb_geometry))||'\">'||mza||'</text>'
-                as svg ,2 as orden
+                as svg ,20 as orden
                 FROM ".$this->esquema.".manzanas
                     WHERE  prov||dpto||frac||radio='".$this->codigo."' )";
             }else{$mzas='';$mzas_labels='';}
@@ -232,7 +232,8 @@ class Radio extends Model
             //dd($viewBox.'/n'.$this->viewBox($extent,$epsilon,$height,$width).'/n'.$x0." -".$y0." ".$x1." -".$y1);
             $svg=DB::select("
 WITH shapes (geom, attribute, tipo) AS (
-    ( SELECT st_buffer(lg.wkb_geometry,1) wkb_geometry, segmento_id::integer,
+    ( SELECT st_buffer(CASE WHEN trim(lg.tipoviv) in ('','LSV') then lg.wkb_geometry_lado
+    else lg.wkb_geometry END,1) wkb_geometry, segmento_id::integer,
     lg.tipoviv tipo
     FROM ".$this->esquema.".listado_geo lg JOIN ".$this->esquema.".segmentacion
     s ON s.listado_id=id_list
@@ -243,7 +244,7 @@ WITH shapes (geom, attribute, tipo) AS (
      SELECT * FROM ( 
      (SELECT concat(
          '<path d= \"',
-         ST_AsSVG(st_buffer(geom,5),0), '\" ',
+         ST_AsSVG(st_buffer(geom,3),0), '\" ',
          CASE WHEN attribute = 0 THEN 'stroke=\"gray\" stroke-width=\"2\"
          fill=\"gray\"'
               WHEN tipo='mza' THEN 'stroke=\"white\"
@@ -258,7 +259,10 @@ WITH shapes (geom, attribute, tipo) AS (
             'stroke=\"black\" stroke-width=\"".$stroke."\" fill=\"#22' ||
             attribute*10 || '88\"'
          END,
-          ' />') as svg, 1 as orden
+          ' />') as svg,
+          CASE WHEN tipo='mza' then 0
+               WHEN tipo='LSV' then 1
+          ELSE 10 END as orden
      FROM shapes 
      ORDER BY attribute asc)
      ".$mzas_labels." ) foo order by orden asc
