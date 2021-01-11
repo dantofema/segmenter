@@ -23,7 +23,7 @@
     <div class="">
         <select name="radios" class="form-control" >
             @foreach($radios as $radio)
-                <option value="{{ $radio->link }}">{{ trim($radio->nombre) }} - Viviendas: {{ trim($radio->vivs) }}</option>
+                <option value="{{ $radio->link }}">{{ trim($radio->nombre) }} - Viv: {{ trim($radio->vivs) }}</option>
             @endforeach
         </select>
     </div>
