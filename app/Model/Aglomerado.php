@@ -162,7 +162,7 @@ class Aglomerado extends Model
         if ($this->Listado==1){
             $radios = DB::table('e'.$this->codigo.'.listado')
                                 ->select(DB::raw("prov||dpto||frac||radio as link,codloc,
-             '('||dpto||') '||max(nom_dpto)||': '||frac||' '||radio as nombre,
+             '('||dpto||') F'||frac||' R'||radio as nombre,
              count(distinct mza) as cant_mzas,
              count(*) as registros,
              count(indec.contar_vivienda(tipoviv)) as vivs,
