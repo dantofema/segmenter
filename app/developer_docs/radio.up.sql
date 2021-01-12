@@ -35,7 +35,8 @@ CREATE TABLE public.radio (
     user_id integer,
     issegmentado boolean,
     updated_at timestamp without time zone,
-    created_at timestamp without time zone
+    created_at timestamp without time zone,
+    nombre character varying
 );
 
 
