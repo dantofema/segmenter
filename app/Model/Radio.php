@@ -17,7 +17,7 @@ class Radio extends Model
     protected $table='radio';
     protected $primaryKey = 'id';
     protected $fillable = [
-            'id','codigo','nombre'
+            'codigo','nombre'
     ];
 
     private $_isSegmentado;
