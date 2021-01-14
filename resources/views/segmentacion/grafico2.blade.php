@@ -35,7 +35,7 @@
                   data: {
                       labels:Viviendas,
                       datasets: [{
-                          label: 'Número de Segmentos ',
+                          label: 'Cantidad de Segmentos ',
                           data: SegmentosCantidad,
                           borderWidth: 1,
                           backgroundColor: 'rgb(36, 125, 173)',
