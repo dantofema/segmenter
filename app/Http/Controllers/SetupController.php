@@ -98,6 +98,13 @@ class SetupController extends Controller
         return view('home');
     }
 
+    public function segmentarEsquema($schema)
+    {
+        MyDB::segmentar_equilibrado($schema,36);
+        flash('Se segmento el listado del esquema '.$schema);
+        return view('home');
+    }
+
     public function testFlash($texto='Mensaje de prueba.')
     {
         flash(' Normal  '.$texto);
