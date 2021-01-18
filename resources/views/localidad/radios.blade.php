@@ -1,11 +1,13 @@
-@extends('layouts.default')
+@extends('layouts.app')
 
-@section('title', 'Aglomerado {{ $aglomerado->nombre }}')
+@section('title', 'Localidad {{ $localidad->nombre }}')
 
 @section('content')
 <div class="container">
     Información de la Localidad ({{ $localidad->codigo }}) 
     <b> {{ $localidad->nombre }} </b><br />
+    Aglomerado ({{ $aglomerado->codigo }}) 
+    <b> {{ $aglomerado->nombre }} </b><br />
     <div class="">
      @if($carto)
         La base geográfica está cargada.
@@ -39,15 +41,6 @@
 </ul>
     </div>
   </div>
-  <div class="form-group">
-    <label class="control-label" for="radio">Metodo de segmentación:</label><br />
-    <label class="radio-inline"><input type="radio" name="optalgoritmo" value=op1>Op. 1</label>
-    <label class="radio-inline"><input type="radio" name="optalgoritmo" value=op2>Op. 2</label>
-    <label class="radio-inline"><input type="radio" name="optalgoritmo" value=op3 disabled>Magic</label>
-  </div>
- <div class="mx-auto">
- <input type="submit" class="segmentar btn btn-primary" value="Ver Grafo">
- </div>
 </form>
 </div>
 
