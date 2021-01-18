@@ -6,6 +6,7 @@ use App\Archivo;
 use Illuminate\Http\Request;
 use Auth;
 use Symfony\Component\Process\Process;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Config;
 use App\MyDB;
@@ -13,6 +14,7 @@ use App\Listado;
 use App\Imports\CsvImport;
 use Maatwebsite\Excel;
 use App\Model\Aglomerado;
+use Illuminate\Support\Facades\Log;
 
 class SegmenterController extends Controller
 {
@@ -27,7 +29,7 @@ class SegmenterController extends Controller
         $this->epsgs['22185']='(EPSG:22185) POSGAR 94 / Argentina 5 - Formosa, Chaco, Santa Fe, Entre Ríos y Buenos Aires';
         $this->epsgs['22186']='(EPSG:22186) POSGAR 94 / Argentina 6 - Corrientes';
         $this->epsgs['22187']='(EPSG:22187) POSGAR 94 / Argentina 7 - Misiones';
-//        $this->epsgs['98333']='(SR-ORG:98333) Gauss Krugger BA';
+        $this->epsgs['8333']='(SR-ORG:8333) Gauss Krugger BA';
     }
 
     public function index()
@@ -141,9 +143,36 @@ class SegmenterController extends Controller
             $codaglo=isset($codaglo)?$codaglo:$original_name;
             MyDB::createSchema($codaglo);
 
-            $processOGR2OGR = Process::fromShellCommandline('/usr/bin/ogr2ogr -f "PostgreSQL" PG:"dbname=$db host=$host user=$user port=$port active_schema=e$e00 password=$pass" --config PG_USE_COPY YES -lco OVERWRITE=YES --config OGR_TRUNCATE YES -dsco PRELUDE_STATEMENTS="SET client_encoding TO latin1;CREATE SCHEMA IF NOT EXISTS e$e00;" -dsco active_schema=e$e00 -lco PRECISION=NO -lco SCHEMA=e$e00 -s_srs epsg:$epsg -t_srs epsg:$epsg -nln arc -skipfailures -overwrite $file ');
-            $processOGR2OGR->setTimeout(3600);
-            $processOGR2OGR->run(null, ['epsg' => $epsg_id, 'file' => storage_path().'/app/'.$data['file']['shp'],'e00'=>$codaglo,'db'=>Config::get('database.connections.pgsql.database'),'host'=>Config::get('database.connections.pgsql.host'),'user'=>Config::get('database.connections.pgsql.username'),'pass'=>Config::get('database.connections.pgsql.password'),'port'=>Config::get('database.connections.pgsql.port')]);
+            if ($epsg_id=='8333'){
+                Log::debug('Proyeccion de CABA en '.$codaglo.', con SRID: '.$epsg_id);
+                // USO .prj 8333.prj
+                $prj_file='./app/developer_docs/8333.prj';
+                    $epsg_def='epsg:'.$epsg_id;
+                    $epsg_def='+proj=tmerc +lat_0=-34.6297166 +lon_0=-58.4627 +k=1 +x_0=100000 +y_0=100000 +ellps=intl +units=m +no_defs';
+                    $srs_name='sr-org:8333';
+
+                $processOGR2OGR =
+                Process::fromShellCommandline('(/usr/bin/ogr2ogr -f \
+                "PostgreSQL" PG:"dbname=$db host=$host user=$user port=$port \
+                active_schema=e$e00 password=$pass" --config PG_USE_COPY YES \
+                -lco OVERWRITE=YES --config OGR_TRUNCATE YES -dsco \
+                PRELUDE_STATEMENTS="SET client_encoding TO latin1;CREATE SCHEMA \
+                IF NOT EXISTS e$e00;" -dsco active_schema=e$e00 -lco \
+                PRECISION=NO -lco SCHEMA=e$e00 -t_srs "$epsg" \
+                -s_srs "$epsg" \
+                -a_srs "$epsg" -nln arc \
+                -overwrite $file )');
+                $processOGR2OGR->setTimeout(3600);
+                $processOGR2OGR->run(null, ['epsg'=>$epsg_def,'file' => storage_path().'/app/'.$data['file']['shp'],'e00'=>$codaglo,'db'=>Config::get('database.connections.pgsql.database'),'host'=>Config::get('database.connections.pgsql.host'),'user'=>Config::get('database.connections.pgsql.username'),'pass'=>Config::get('database.connections.pgsql.password'),'port'=>Config::get('database.connections.pgsql.port')]);
+            }else{
+                $processOGR2OGR = Process::fromShellCommandline('/usr/bin/ogr2ogr -f "PostgreSQL" PG:"dbname=$db host=$host user=$user port=$port active_schema=e$e00 password=$pass" --config PG_USE_COPY YES -lco OVERWRITE=YES --config OGR_TRUNCATE YES -dsco PRELUDE_STATEMENTS="SET client_encoding TO latin1;CREATE SCHEMA IF NOT EXISTS e$e00;" -dsco active_schema=e$e00 -lco PRECISION=NO -lco SCHEMA=e$e00 -s_srs epsg:$epsg -t_srs epsg:$epsg -nln arc -overwrite $file ');
+                $processOGR2OGR->setTimeout(3600);
+                $processOGR2OGR->run(null, ['epsg' => $epsg_id, 'file' => storage_path().'/app/'.$data['file']['shp'],'e00'=>$codaglo,'db'=>Config::get('database.connections.pgsql.database'),'host'=>Config::get('database.connections.pgsql.host'),'user'=>Config::get('database.connections.pgsql.username'),'pass'=>Config::get('database.connections.pgsql.password'),'port'=>Config::get('database.connections.pgsql.port')]);
+
+            }
+            if (!$processOGR2OGR->isSuccessful()) {
+                throw new ProcessFailedException($processOGR2OGR);
+            }
             MyDB::agregarsegisegd($codaglo);
 
         }elseif ($original_extension == 'e00'){
