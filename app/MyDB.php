@@ -423,55 +423,73 @@ FROM
                                                             substr(lados.mza,9,2)::integer,substr(lados.mza,11,2)::integer,substr(lados.mza,13,3)::integer,lados.lado::integer)
 
                         JOIN  '.$esquema.'.descripcion_segmentos d ON
-                        (d.prov::integer,d.depto::integer,d.codloc::integer,d.frac::integer,d.radio::integer,d.seg)=(
-                                                            substr(lados.mza,1,2)::integer,substr(lados.mza,3,3)::integer,substr(lados.mza,6,3)::integer,
-                                                            substr(lados.mza,9,2)::integer,substr(lados.mza,11,2)::integer,lados.seg::integer)
+                            (d.prov::integer,d.depto::integer,d.codloc::integer,d.frac::integer,d.radio::integer,d.seg)=(
+                                                                substr(lados.mza,1,2)::integer,substr(lados.mza,3,3)::integer,substr(lados.mza,6,3)::integer,
+                                                                substr(lados.mza,9,2)::integer,substr(lados.mza,11,2)::integer,lados.seg::integer)
 
-                            WHERE substr(lados.mza,1,12)!=\'\'
-                            GROUP BY  substr(lados.mza,1,12), lados.seg,descripcion');
-        // SQL retrun: 
-        }
+                                WHERE substr(lados.mza,1,12)!=\'\'
+                                GROUP BY  substr(lados.mza,1,12), lados.seg,descripcion');
+            // SQL retrun: 
+            }
 
-        public static function segmentar_lados_ver_resumen($esquema)
-        {
-            $esquema = 'e'.$esquema;
-            return DB::select('SELECT vivs,count(seg) cant_segmentos FROM (
-                SELECT substr(lados.mza,1,12) radio, seg,count(*) lados,count(distinct lados.mza) as mzas_count,array_agg(distinct substr(lados.mza,13,3)) mzas, sum(c.conteo) vivs FROM
-                (SELECT segi seg,mzai mza,ladoi lado FROM '.$esquema.'.arc WHERE segi is not null 
-                UNION SELECT segd,mzad,ladod FROM '.$esquema.'.arc WHERE segd is not null) lados
-                            JOIN '.$esquema.'.conteos c ON (c.prov,c.dpto,c.codloc,c.frac,c.radio,c.mza,c.lado)=(
-                                                            substr(lados.mza,1,2)::integer,substr(lados.mza,3,3)::integer,substr(lados.mza,6,3)::integer,
-                                                            substr(lados.mza,9,2)::integer,substr(lados.mza,11,2)::integer,substr(lados.mza,13,3)::integer,lados.lado::integer)
-                            WHERE lados.mza != \'\'
-                            GROUP BY  substr(lados.mza,1,12), seg ) foo
-                            GROUP BY vivs order by vivs asc;');
-        // SQL retrun: 
-        }
+            public static function segmentar_lados_ver_resumen($esquema)
+            {
+                $esquema = 'e'.$esquema;
+                return DB::select('SELECT vivs,count(seg) cant_segmentos FROM (
+                    SELECT substr(lados.mza,1,12) radio, seg,count(*) lados,count(distinct lados.mza) as mzas_count,array_agg(distinct substr(lados.mza,13,3)) mzas, sum(c.conteo) vivs FROM
+                    (SELECT segi seg,mzai mza,ladoi lado FROM '.$esquema.'.arc WHERE segi is not null 
+                    UNION SELECT segd,mzad,ladod FROM '.$esquema.'.arc WHERE segd is not null) lados
+                                JOIN '.$esquema.'.conteos c ON (c.prov,c.dpto,c.codloc,c.frac,c.radio,c.mza,c.lado)=(
+                                                                substr(lados.mza,1,2)::integer,substr(lados.mza,3,3)::integer,substr(lados.mza,6,3)::integer,
+                                                                substr(lados.mza,9,2)::integer,substr(lados.mza,11,2)::integer,substr(lados.mza,13,3)::integer,lados.lado::integer)
+                                WHERE lados.mza != \'\'
+                                GROUP BY  substr(lados.mza,1,12), seg ) foo
+                                GROUP BY vivs order by vivs asc;');
+            // SQL retrun: 
+            }
 
-        public static function georeferenciar_listado($esquema)
-        {
-    //   --ALTER TABLE ' ".$esquema." '.arc alter column wkb_geometry type geometry('LineString',22182) USING (st_setsrid(wkb_geometry,22182));
+            public static function georeferenciar_listado($esquema)
+            {
+        //   --ALTER TABLE ' ".$esquema." '.arc alter column wkb_geometry type geometry('LineString',22182) USING (st_setsrid(wkb_geometry,22182));
 
-        try{
-            $esquema = 'e'.$esquema;
-            DB::statement("DROP TABLE IF EXISTS ".$esquema.".listado_geo;");
-            $resultado= DB::select("
-            WITH listado as (
-        SELECT id, l.prov, nom_provin, ups, nro_area, l.dpto, nom_dpto, l.codaglo, l.codloc, nom_loc, codent, nom_ent, l.frac, l.radio, l.mza, l.lado, 
-        nro_inicia, nro_final, orden_reco, nro_listad, ccalle, ncalle,
-        CASE WHEN l.nrocatastr='' or l.nrocatastr='S/N' THEN null ELSE l.nrocatastr END nrocatastr, 
-        piso, casa, dpto_habit, sector, edificio, entrada, tipoviv, descripcio, descripci2 , 
-        row_number() over(partition by l.frac, l.radio, l.mza, l.lado order by l.lado, orden_reco asc) nro_en_lado, conteo, accion
-        FROM
-        ".$esquema.".listado l
-        LEFT JOIN ".$esquema.".conteos c ON 
-        (c.prov,c.dpto,c.codloc,c.frac,c.radio,c.mza,c.lado)=(l.prov::integer,l.dpto::integer,l.codloc::integer,l.frac::integer,l.radio::integer,l.mza::integer,l.lado::integer)
-    ), 
-    arcos as (
-        SELECT min(ogc_fid) ogc_fid, st_LineMerge(st_union(wkb_geometry)) wkb_geometry,nomencla,codigo20,array_agg(distinct codigo10) codigo10, tipo, nombre,lado,min(desde) desde,
-        max(hasta) hasta,mza 
-        FROM 
-        (SELECT ogc_fid,st_reverse(wkb_geometry) wkb_geometry,nomencla10 nomencla,codigo20,codigo10,tipo, nombre, ancho, anchomed, ladoi lado,desdei desde,
+            try{
+                $esquema = 'e'.$esquema;
+
+            self::juntaListadoGeom($esquema);
+                DB::statement("DROP TABLE IF EXISTS ".$esquema.".listado_geo;");
+                $resultado= DB::select("
+                WITH listado as (
+            SELECT id, l.prov, nom_provin, ups, nro_area, l.dpto, nom_dpto, l.codaglo, l.codloc, 
+                nom_loc, codent, nom_ent, l.frac, l.radio, l.mza, l.lado, 
+                nro_inicia, nro_final, orden_reco, nro_listad, ccalle, ncalle,
+                CASE WHEN l.nrocatastr='' or l.nrocatastr='S/N' THEN null::integer ELSE
+                l.nrocatastr::integer END nrocatastr, 
+            piso, casa, dpto_habit, sector, edificio, entrada, tipoviv, descripcio, descripci2 , 
+            row_number() over w_lado as nro_en_lado,
+            count(*) over w_lado as cant_en_lado,
+            count(*) over w as conteo,
+            conteo as conteo_vivs, accion,
+            row_number() over w_nrocatastr as nro_en_numero
+
+            FROM
+            ".$esquema.".listado l
+            LEFT JOIN ".$esquema.".conteos c ON 
+            (c.prov,c.dpto,c.codloc,c.frac,c.radio,c.mza,c.lado)=(l.prov::integer,l.dpto::integer,l.codloc::integer,l.frac::integer,l.radio::integer,l.mza::integer,l.lado::integer)
+            WINDOW w_nrocatastr AS (partition by l.frac, l.radio, l.mza, l.lado ,
+            nrocatastr
+            order by CASE WHEN orden_reco='' THEN 1::integer ELSE
+            orden_reco::integer END asc),
+            w_lado AS (partition by l.frac, l.radio, l.mza, l.lado order by
+            CASE WHEN orden_reco='' THEN 1::integer ELSE
+            orden_reco::integer END asc),
+            w AS (partition by l.frac, l.radio, l.mza, l.lado)
+
+        ), 
+        arcos as (
+            SELECT min(ogc_fid) ogc_fid, st_LineMerge(st_union(wkb_geometry)) wkb_geometry,nomencla,codigo20,array_agg(distinct codigo10) codigo10, tipo, nombre,lado,min(desde) desde,
+            max(hasta) hasta,mza 
+            FROM 
+            (SELECT ogc_fid,st_reverse(wkb_geometry) wkb_geometry,nomencla10 nomencla,codigo20,codigo10,tipo, nombre, ancho, anchomed, ladoi lado,desdei desde,
         hastai hasta,mzai mza, nomencla10,nomenclai nomenclax, codinomb, segi seg 
         FROM ".$esquema.".arc
         UNION
@@ -483,23 +501,48 @@ FROM
         HAVING
         st_geometrytype(st_LineMerge(st_union(wkb_geometry)))='ST_LineString'
     )
-    SELECT nro_en_lado, conteo,1.0*nro_en_lado/(conteo+1) interpolacion, l.orden_reco,
-    case when 1.0*nro_en_lado/(conteo+1)>1 
-    then ST_LineInterpolatePoint(st_reverse(st_offsetcurve(ST_LineSubstring(st_LineMerge(wkb_geometry),0.07,0.93),-8-nro_en_lado)),0.5) 
+    SELECT nro_en_lado, nro_en_numero, conteo,1.0*nro_en_lado/(conteo+1) interpolacion, l.orden_reco,
+    case when 1.0*nro_en_lado/(conteo+1)>1 then 
+        ST_LineInterpolatePoint(st_reverse(st_offsetcurve(ST_LineSubstring(st_LineMerge(wkb_geometry),0.07,0.93),-8-nro_en_lado)),0.5) 
     else
     CASE WHEN ( 
             e.mza like '%'||btrim(to_char(l.frac::integer, '09'::text))::character varying(3)||btrim(to_char(l.radio::integer, '09'::text))::character varying(3)||btrim(to_char(l.mza::integer, '099'::text))::character varying(3)) 
                     and l.lado::integer=e.lado and l.tipoviv='LSV' 
-                    THEN ST_LineInterpolatePoint(st_reverse(st_offsetcurve(ST_LineSubstring(st_LineMerge(wkb_geometry),0.07,0.93),-8)),0.5) 
+                    THEN
+                    ST_LineInterpolatePoint(st_reverse(st_offsetcurve(ST_LineSubstring(st_LineMerge(wkb_geometry),0.07,0.93),-8-(0.5*nro_en_numero))),0.5) 
             WHEN ( e.mza like '%'||btrim(to_char(l.frac::integer, '09'::text))::character varying(3)||btrim(to_char(l.radio::integer, '09'::text))::character varying(3)||btrim(to_char(l.mza::integer, '099'::text))::character varying(3)) 
                     and l.lado::integer=e.lado 
-                    THEN ST_LineInterpolatePoint(st_reverse(st_offsetcurve(ST_LineSubstring(st_LineMerge(wkb_geometry),0.07,0.93),-8)),1.0*nro_en_lado/(conteo+1)) 
+                    THEN
+                    ST_LineInterpolatePoint(st_reverse(st_offsetcurve(ST_LineSubstring(st_LineMerge(wkb_geometry),0.07,0.93),-8-(0.5*nro_en_numero))),1.0*(nro_en_lado)/(conteo+1)) 
                 end
                 END as wkb_geometry, e.ogc_fid||'-'||l.id id ,e.ogc_fid id_lin,l.id id_list, wkb_geometry wkb_geometry_lado,
+	CASE WHEN nro_final::integer-nro_inicia::integer>0 and (nrocatastr)>0 THEN 
+    row_number() OVER (PARTITION BY prov,dpto,codloc,frac,radio,l.mza,l.lado
+    ORDER BY l.nrocatastr,l.piso) 
+    END orden_segun_numero,
+    row_number() OVER (PARTITION BY prov,dpto,codloc,frac,radio,l.mza,l.lado, l.nrocatastr ORDER BY l.piso) 
+    orden_en_numero,
+    
+    CASE WHEN nro_final::integer-nro_inicia::integer>0 and (nrocatastr)>0 THEN 
+        CASE 
+           WHEN (((nrocatastr::integer-nro_inicia::integer)::numeric/(nro_final::integer-nro_inicia::integer)<0 
+                  or (nrocatastr::integer-nro_inicia::integer)::numeric/(nro_final::integer-nro_inicia::integer)>1 )) THEN
+            ST_LineInterpolatePoint(st_reverse(st_offsetcurve(ST_LineSubstring(st_LineMerge(wkb_geometry),0.07,0.93),-8)),0.5)
+			ELSE
+            ST_LineInterpolatePoint(st_reverse(st_offsetcurve(ST_LineSubstring(st_LineMerge(wkb_geometry),0.07,0.93),-8)),1-
+                                    (nrocatastr::integer-nro_inicia::integer)::numeric/(nro_final::integer-nro_inicia::integer))
+        END
+	ELSE
+    ST_LineInterpolatePoint(st_reverse(st_offsetcurve(ST_LineSubstring(st_LineMerge(wkb_geometry),0.07,0.93),-8)),
+        0.5 --deberia usarse la posicion del anterior.. tiro null quizas ?
+        )
+        END geom_segun_nro_catastral,
+                
                     codigo10, nomencla, codigo20, 
                     tipo, nombre, e.lado ladoe, desde, hasta,e.mza mzae, 
                     frac, radio, l.mza, l.lado, ccalle, ncalle, l.nrocatastr, piso,casa,dpto_habit,sector,edificio,entrada,tipoviv, 
-                    descripcio,descripci2 , accion
+                    descripcio,descripci2 , accion,
+                    cant_en_lado
         INTO ".$esquema.".listado_geo
         FROM arcos e JOIN listado l ON 
         --l.ccalle::integer=e.codigo20 and
@@ -507,6 +550,12 @@ FROM
                 e.mza like 
                 '%'||btrim(to_char(l.frac::integer, '09'::text))::character varying(3)||btrim(to_char(l.radio::integer, '09'::text))::character varying(3)||btrim(to_char(l.mza::integer, '099'::text))::character varying(3) 
             );");
+
+            DB::statement("UPDATE ".$esquema.".listado_geo SET
+                    wkb_geometry=st_translate(wkb_geometry,-50,50),
+                    geom_segun_nro_catastral=st_translate(geom_segun_nro_catastral,-50,50)
+                    ;");
+
             DB::statement("GRANT SELECT ON TABLE  ".$esquema.".listado_geo TO geoestadistica");
                 return $resultado;
 
@@ -529,8 +578,8 @@ FROM
             SELECT id, l.prov, nom_provin, ups, nro_area, l.dpto, nom_dpto, l.codaglo, l.codloc, nom_loc, codent, nom_ent, l.frac, l.radio, l.mza, l.lado, 
             s.segmento_id as segmento_id, nro_inicia, nro_final, orden_reco,
             nro_listad, ccalle, ncalle,  
-            CASE WHEN l.nrocatastr='' or l.nrocatastr='S/N' THEN null ELSE
-            l.nrocatastr END as nrocatastr, 
+            CASE WHEN l.nrocatastr='' or l.nrocatastr='S/N' THEN null::integer ELSE
+            l.nrocatastr::integer END as nrocatastr, 
             piso, casa, dpto_habit, sector, edificio, entrada, tipoviv, descripcio, descripci2 , 
             row_number() over(partition by l.frac, l.radio, l.mza, l.lado order by l.lado, orden_reco asc) nro_en_lado, conteo, accion
             FROM
@@ -737,9 +786,9 @@ FROM
                     }
                 DB::unprepared('create sequence IF NOT EXISTS '.$esquema.'.segmentos_seq');
             }catch(Exception $e){
-            Log::error('No se pudo recrear la secuencia');
+                Log::error('No se pudo recrear la secuencia');
             }
-            Log::debug('Se genero una nueva secuencia de segmentos.');
+            Log::debug('Se genero una nueva secuencia de segmentos, si no exisitia.');
         }
 
 
