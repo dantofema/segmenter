@@ -22,8 +22,17 @@ class GaussKruggerBAenDB extends Migration
         +y_0=100000 +ellps=intl +units=m +no_defs \', \'PROJCS["Gauss Krugger
         BA",GEOGCS["GCS_Campo_Inchauspe",DATUM["D_Campo_Inchauspe",SPHEROID["International_1924",6378388.0,297.0]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Transverse_Mercator"],PARAMETER["False_Easting",100000.0],PARAMETER["False_Northing",100000.0],PARAMETER["Central_Meridian",-58.4627],PARAMETER["Scale_Factor",1.0],PARAMETER["Latitude_Of_Origin",-34.6297166],UNIT["Meter",1.0]]\');');
         }catch(Exception $e){
-            dd($e);
+            if ($e->getCode()==23505){
+//                $this->command->info('Proyeccion CABA ya instalada!');
+                echo 'Proyeccion CABA ya instalada. Duplicado.
+';
+                return 0;
+            }else{
+                dd($e);
+            }
         }
+        echo 'Proyeccion CABA instalada. SRID:8333
+';
     }
 
     /**
