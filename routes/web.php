@@ -49,6 +49,8 @@ Route::get('/contact', function()
     return View::make('pages.contact');
 });
 
+Route::get('/sala', 'SalaController@index')->name('sala');
+
 Route::get('/setup', 'SetupController@index')->name('setup');
 Route::get('/setup/test', 'SetupController@testFlash')->name('setup.test');
 Route::get('/setup/{esquema}', 'SetupController@permisos')->name('setup.permisos');
