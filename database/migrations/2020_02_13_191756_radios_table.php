@@ -13,9 +13,14 @@ class RadiosTable extends Migration
      */
     public function up()
     {
-        //
-	 $sql = file_get_contents(app_path() . '/developer_docs/radio.up.sql');
-	 DB::unprepared($sql);
+        // SI ya no esta la tabla de radios.
+        if (! Schema::hasTable('radio')){
+        	 $sql = file_get_contents(app_path() . '/developer_docs/radio.up.sql');
+        	 DB::unprepared($sql);
+        }else{
+             echo 'No se crea tabla de radios xq ya se encuentra una.
+';
+        }
 
     }
 
@@ -27,6 +32,6 @@ class RadiosTable extends Migration
     public function down()
     {
         //
-        Schema::dropIfExists('radio');
+        //Schema::dropIfExists('radio');
     }
 }
