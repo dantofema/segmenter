@@ -229,7 +229,7 @@ WITH shapes (geom, attribute) AS (
   paths (svg) as (
      SELECT concat(
          '<path d= \"', 
-         ST_AsSVG(st_buffer(geom,5),0), '\" ',
+         ST_AsSVG(st_buffer(st_union(geom),5),0), '\" ',
          CASE WHEN attribute = 0 THEN 'stroke=\"gray\" stroke-width=\"2\"
          fill=\"gray\"' 
               WHEN attribute < 5 THEN 'stroke=\"none\"
@@ -243,7 +243,7 @@ WITH shapes (geom, attribute) AS (
             attribute*10 || '88\"' 
          END,
           ' />') 
-     FROM shapes
+     FROM shapes GROUP BY attribute
  )
  SELECT concat(
          '<svg id=\"aglo_".$this->codigo."\"xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"".$viewBox.
