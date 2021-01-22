@@ -551,10 +551,12 @@ FROM
                 '%'||btrim(to_char(l.frac::integer, '09'::text))::character varying(3)||btrim(to_char(l.radio::integer, '09'::text))::character varying(3)||btrim(to_char(l.mza::integer, '099'::text))::character varying(3) 
             );");
 
-            DB::statement("UPDATE ".$esquema.".listado_geo SET
-                    wkb_geometry=st_translate(wkb_geometry,-50,50),
-                    geom_segun_nro_catastral=st_translate(geom_segun_nro_catastral,-50,50)
-                    ;");
+            if (in_array($esquema,array ("e02014010","e02035010","e02021010")))
+            // Agrego las excpeciones para corregir corrimiento en Comuna 2 y 5
+            // para la prueba experimental. Yapa la comuna 3 para probar.
+            {
+                self::geo_translate($esquema);
+            }
 
             DB::statement("GRANT SELECT ON TABLE  ".$esquema.".listado_geo TO geoestadistica");
                 return $resultado;
@@ -566,6 +568,21 @@ FROM
             }
             
             }
+
+        public static function geo_translate($esquema)
+        {
+            try{
+                DB::statement("UPDATE ".$esquema.".listado_geo SET
+                    wkb_geometry=st_translate(wkb_geometry,-50,50),
+                    geom_segun_nro_catastral=st_translate(geom_segun_nro_catastral,-50,50)
+                    ;");
+            }catch(QueryException $e){
+                    Log::error('No se pudo trasladar la geometria.'.$e);
+                        flash('No se pudo trasladar geometria')->error();
+                    return false;
+            }   
+                return ture;
+        }
 
             public static function georeferenciar_segmentacion($esquema)
             {
