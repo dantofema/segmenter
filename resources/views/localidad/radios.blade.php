@@ -6,8 +6,9 @@
 <div class="container">
     Información de la Localidad ({{ $localidad->codigo }}) 
     <b> {{ $localidad->nombre }} </b><br />
-    Aglomerado ({{ $aglomerado->codigo }}) 
-    <b> {{ $aglomerado->nombre }} </b><br />
+    Aglomerado <a href="{{ url("/aglo/{$aglomerado->id}") }}" >
+    ({{ $aglomerado->codigo }}) 
+    <b> {{ $aglomerado->nombre }} </b></a><br />
     <div class="">
      @if($carto)
         La base geográfica está cargada.

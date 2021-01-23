@@ -1,7 +1,7 @@
 @extends('layouts.app')
 @section('content')
 <div class="row center"><div class="col-lg-12 text-center">
-<h3>({{ $aglomerado->codigo}}) {{ $aglomerado->nombre}}</h3>
+<h3><a href="{{ url("/aglo/{$aglomerado->id}") }}" > ({{ $aglomerado->codigo}}) {{ $aglomerado->nombre}}</a></h3>
 Radio: {{ $radio->codigo}}
 </div></div>
   <div class="row">
@@ -82,6 +82,27 @@ Radio: {{ $radio->codigo}}
 @endsection
 @section('footer_scripts')
 	<script>
+    var transformMatrix = [1, 0, 0, 1, 0, 0];
+    var svg = document.getElementById('radio_{{$radio->codigo}}');
+    var viewbox = svg.getAttributeNS(null, "viewBox").split(" ");
+    var centerX = parseFloat(viewbox[2]) / 2;
+    var centerY = parseFloat(viewbox[3]) / 2;
+    var matrixGroup = svg.getElementById("matrix-group");
+
+function zoom(scale) {
+  for (var i = 0; i < 4; i++) {
+    transformMatrix[i] *= scale;
+  }
+  transformMatrix[4] = centerX;
+  transformMatrix[5] = centerY;
+		        
+  var newMatrix = "matrix(" +  transformMatrix.join(' ') + ")";
+  matrixGroup.setAttributeNS(null, "transform", newMatrix);
+  console.log(scale);
+  console.log(transformMatrix);
+}
+
+
     let arrayOfClusterArrays = @json($segmentacion) ;  
     let clusterColors = ['#FF0', '#0FF', '#F0F', '#4139dd', '#d57dba', '#8dcaa4'
                         ,'#555','#CCC','#A00','#0A0','#00A','#F00','#0F0','#00F','#008','#800','#080'];

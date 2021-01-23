@@ -1,10 +1,13 @@
 <div class="container">
-    Información del aglomerado ({{ $aglomerado->codigo }}) 
-    <b> {{ $aglomerado->nombre }} </b><br />
-    Localidad ({{ $localidad->codigo }}) 
-    <b> {{ $localidad->nombre }} </b><br />
-    Departamento/Partido/Comuna ({{ $departamento->codigo }}) 
-    <b> {{ $departamento->nombre }} </b><br />
+    Información del aglomerado  <a href="{{ url("/aglo/{$aglomerado->id}") }}" >
+    ({{ $aglomerado->codigo }}) 
+    <b> {{ $aglomerado->nombre }} </b></a><br />
+    Localidad <a href="{{ url("/localidad/{$localidad->id}") }}" >({{ $localidad->codigo }}) 
+    <b> {{ $localidad->nombre }} </b></a><br />
+    Departamento/Partido/Comuna </b>
+    <a href="{{ url("/depto/{$departamento->id}") }}" >
+    ({{ $departamento->codigo }})
+    <b> {{ $departamento->nombre }}  </b></a><br />
     <div class="">
      @if($carto)
         La base geográfica está cargada.
