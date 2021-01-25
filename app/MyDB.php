@@ -651,7 +651,9 @@ FROM
             {
                 return DB::select('SELECT distinct *, substr(mza_i,13,3)||\':\'||lado_i as label,c.conteo FROM (
                                                     SELECT mza_i,lado_i from e'.$esquema.'.lados_adyacentes WHERE mza_i like :radio UNION
-                                                    SELECT mza_j,lado_j from e'.$esquema.'.lados_adyacentes WHERE mza_j like :radio) foo
+                                                    SELECT mza_j,lado_j from
+                                                    e'.$esquema.'.lados_adyacentes
+                                                    WHERE mza_j like :radio2) foo
             LEFT JOIN
             e'.$esquema.'.conteos c
             ON (c.prov,c.dpto,c.codloc,c.frac,c.radio,c.mza,c.lado)=
@@ -663,7 +665,7 @@ FROM
                 substr(mza_i,13,3)::integer,
                 lado_i)
 
-                                ',['radio'=>$radio.'%']);
+                                ',['radio'=>$radio.'%','radio2'=>$radio.'%']);
             }
 
             public static function getAdyacencias($esquema,$radio = '%01103')
