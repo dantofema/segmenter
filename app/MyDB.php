@@ -352,7 +352,7 @@ FROM
                             FROM
                             indec.describe_segmentos_con_direcciones('".$esquema."')
                             ".$filtro."
-                            order by frac,radio,segmento_id
+                            order by frac,radio,seg,segmento_id
                             LIMIT ".$max.";");
                 }else{
                 flash('Se detecto una carga medio antigua. Se encontro tabla de
@@ -795,7 +795,7 @@ FROM
 
         // Crea secuencia para id de segmentos.
         //
-        public static function addSequenceSegmentos($esquema,$reset = true)
+        public static function addSequenceSegmentos($esquema,$reset = false)
         {
             try{
                 if($reset){
