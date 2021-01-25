@@ -50,6 +50,7 @@ class Segmentador extends Model
                         if (!$process->isSuccessful()) {
                                 dd($process->getErrorOutput());
                         }else{  
+                            MyDB::lados_completos_a_tabla_segmentacion_ffrr($aglo,$frac,$radio);
                             return $this->resultado=$process->getOutput();
                         }
             // e0777.arc 50 084 1 4 20 30 10 1');
