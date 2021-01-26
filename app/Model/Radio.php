@@ -76,9 +76,12 @@ class Radio extends Model
      public function aglomerado()
      {  
         //TODO
-//        return $this->belongsToMany('App\Model\Localidad', 'radio_localidad');
-            if (count($this->localidades())>1){
-                dd($this->$localidades());
+    //    return $this->hasOneThrough(Aglomerado::class,Fraccion::class);
+    //    return $this->belongsToMany('App\Model\Localidad', 'radio_localidad');
+            if ($this->localidades()->count()>1){
+                Log::warning('Varias localidades: '.$this->$localidades());
+                return $localidad=$this->localidades()->first();
+
             }elseif ($localidad=$this->localidades()->first())
                 {
                     return $localidad->aglomerado()->get();
@@ -180,12 +183,13 @@ class Radio extends Model
     public function getEsquemaAttribute($value){
           $esquema='foo';
           if ($this->aglomerado() != null){
-                if ($this->departamento){
-                    if ($this->departamento->provincia->codigo == '02') {
-                        $esquema = 'e'.$this->departamento->provincia->codigo.
-                        Str::padLeft(((int)$this->departamento->codigo*7),2,0).$this->localidad->codigo;
+                if ($this->aglomerado()->first()->codigo=='0001'){
+                    if ($this->fraccion->departamento->provincia->codigo == '02') {
+                        $esquema = 'e'.
+                                    $this->fraccion->departamento->codigo.
+                                    $this->localidades()->first()->codigoLoc;
                     }else{
-                        $esquema = 'e'.$this->aglomerado->codigo;
+                        $esquema = 'e'.$this->aglomerado()->codigo;
                     }
                 }else
                 { 

@@ -35,14 +35,17 @@ class Aglomerado extends Model
     public function getCartoAttribute($value)
     {
     //select * from information_schema.tables where table_schema = 'e0777' and table_name = 'arc' and table_type = 'BASE TABLE'
-        if($this->codigo!='0001'){
+        if(! $this->carto){
+            if ($this->codigo!='0001'){
             if (Schema::hasTable('e'.$this->codigo.'.arc')) {
             //
-                return true;
+                $this->carto = true;
             }else{
-                return false;
+                $this->carto = false;
             }
-        }else { return false; }
+            }else { $this->carto = false; }
+        }
+        return $this->carto;
     }
 
     public function getListadoAttribute($value)
