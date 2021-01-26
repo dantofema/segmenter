@@ -581,7 +581,7 @@ FROM
                         flash('No se pudo trasladar geometria')->error();
                     return false;
             }   
-                return ture;
+                return true;
         }
 
             public static function georeferenciar_segmentacion($esquema)
