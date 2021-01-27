@@ -13,6 +13,19 @@ use Illuminate\Database\QueryException;
 
 class MyDB extends Model
 {
+
+    // Muestrea el esquema
+    //
+	public static function muestrear($esquema)
+    {
+        try{
+            DB::statement(" SELECT indec.muestrear('".$esquema."');");
+        }catch(Exception $e){
+            Log::error('No se pudo muestrar el esquema '.$esquema);
+        }
+        Log::debug('Se muestreo el esquema '.$esquema.' !');
+    }
+
     // Segmenta a listado lso lados excedidos segun umbral
     // 
 	public static function 
@@ -419,14 +432,12 @@ FROM
                 (SELECT segi seg,mzai mza,ladoi lado FROM '.$esquema.'.arc WHERE segi is not null 
                 UNION SELECT segd,mzad,ladod FROM '.$esquema.'.arc WHERE segd is not null) lados
                         JOIN  '.$esquema.'.conteos c ON (c.prov,c.dpto,c.codloc,c.frac,c.radio,c.mza,c.lado)=(
-                                                            substr(lados.mza,1,2)::integer,substr(lados.mza,3,3)::integer,substr(lados.mza,6,3)::integer,
-                                                            substr(lados.mza,9,2)::integer,substr(lados.mza,11,2)::integer,substr(lados.mza,13,3)::integer,lados.lado::integer)
-
+                        substr(lados.mza,1,2)::integer,substr(lados.mza,3,3)::integer,substr(lados.mza,6,3)::integer,
+                        substr(lados.mza,9,2)::integer,substr(lados.mza,11,2)::integer,substr(lados.mza,13,3)::integer,lados.lado::integer)
                         JOIN  '.$esquema.'.descripcion_segmentos d ON
                             (d.prov::integer,d.depto::integer,d.codloc::integer,d.frac::integer,d.radio::integer,d.seg)=(
-                                                                substr(lados.mza,1,2)::integer,substr(lados.mza,3,3)::integer,substr(lados.mza,6,3)::integer,
-                                                                substr(lados.mza,9,2)::integer,substr(lados.mza,11,2)::integer,lados.seg::integer)
-
+                             substr(lados.mza,1,2)::integer,substr(lados.mza,3,3)::integer,substr(lados.mza,6,3)::integer,
+                             substr(lados.mza,9,2)::integer,substr(lados.mza,11,2)::integer,lados.seg::integer)
                                 WHERE substr(lados.mza,1,12)!=\'\'
                                 GROUP BY  substr(lados.mza,1,12), lados.seg,descripcion');
             // SQL retrun: 
