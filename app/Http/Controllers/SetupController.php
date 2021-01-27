@@ -105,6 +105,13 @@ class SetupController extends Controller
         return view('home');
     }
 
+    public function muestrearEsquema($schema)
+    {
+        MyDB::muestrear($schema);
+        flash('Se muestreo el esquema '.$schema);
+        return view('home');
+    }
+
     public function testFlash($texto='Mensaje de prueba.')
     {
         flash(' Normal  '.$texto);

@@ -66,6 +66,8 @@ Route::get('/setup/geo/{esquema}',
 'SetupController@georeferenciarEsquema')->name('setup.geo');
 Route::get('/setup/segmenta/{esquema}',
 'SetupController@segmentarEsquema')->name('setup.segmenta');
+Route::get('/setup/muestrea/{esquema}',
+'SetupController@muestreaEsquema')->name('setup.muestrea');
 
 Route::get('/inicio', 'HomeController@index')->name('inicio');
 Route::resource('/listado', 'ListadoController',['only' => [
