@@ -43,12 +43,13 @@ class MyDB extends Model
     		DB::statement(" SELECT indec.segmentar_excedidos_ffrr(
             'e".$esquema."',".$frac.",".$radio.",".$umbral.",".$deseado.");");
         }catch(QueryException $e){
-            Log::debug('No se pudo segmentar segmentos excedidos, reintentando...');
+            Log::warning('No se pudo segmentar segmentos excedidos, reintentando...');
             self::cambiarSegmentarBigInt($esquema);
+            self::recrea_vista_segmentos_lados_completos($esquema);
             try{
     		    DB::statement(" SELECT indec.segmentar_excedidos_ffrr(
                 'e".$esquema."',".$frac.",".$radio.",".$umbral.",".$deseado.");");
-            }catch(Exception $e){
+            }catch(QueryException $e){
                  Log::error('No se pudo segmentar segmentos excedidos');
             }
         }
@@ -67,7 +68,7 @@ class MyDB extends Model
             DB::statement("SELECT indec.segmentos_desde_hasta('e".$esquema."');");
         }catch(QueryException $e){
              self::addSequenceSegmentos('e'.$esquema);
-             Log::debug('Create sequence xq no exisitia...');
+             Log::warning('Create sequence xq no exisitia...');
              self::recrea_vista_segmentos_lados_completos($esquema);
     		DB::statement("SELECT
             indec.lados_completos_a_tabla_segmentacion_ffrr('e".$esquema."',".$frac.",".$radio.");");
