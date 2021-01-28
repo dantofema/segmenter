@@ -16,6 +16,9 @@ class Muestrear extends Migration
         //
         $path = 'app/developer_docs/segmentacion-core/muestreo/muestrear.sql';
         DB::unprepared(file_get_contents($path));
+
+        $path = 'app/developer_docs/segmentacion-core/descripcion_segmentos/describe_despues_de_muestreo.sql';
+        DB::unprepared(file_get_contents($path));
     }
 
     /**
