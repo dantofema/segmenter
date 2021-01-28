@@ -19,10 +19,13 @@ class MyDB extends Model
 	public static function muestrear($esquema)
     {
         try{
+            DB::beginTransaction();
             DB::statement(" SELECT indec.muestrear('".$esquema."');");
             DB::statement(" SELECT indec.segmentos_desde_hasta('".$esquema."');");
             $result = DB::statement(" SELECT * from indec.describe_despues_de_muestreo('".$esquema."');");
+            DB::commit();
         }catch(Exception $e){
+            DB::Rollback();
             Log::error('No se pudo muestrar el esquema '.$esquema);
         }
         Log::debug('Se muestreo el esquema '.$esquema.' !');
