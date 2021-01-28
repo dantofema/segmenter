@@ -20,10 +20,13 @@ class MyDB extends Model
     {
         try{
             DB::statement(" SELECT indec.muestrear('".$esquema."');");
+            DB::statement(" SELECT indec.segmentos_desde_hasta('".$esquema."');");
+            $result = DB::statement(" SELECT * from indec.describe_despues_de_muestreo('".$esquema."');");
         }catch(Exception $e){
             Log::error('No se pudo muestrar el esquema '.$esquema);
         }
         Log::debug('Se muestreo el esquema '.$esquema.' !');
+        return $result;
     }
 
     // Segmenta a listado lso lados excedidos segun umbral
