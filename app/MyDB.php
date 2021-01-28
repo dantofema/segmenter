@@ -67,8 +67,9 @@ class MyDB extends Model
             indec.lados_completos_a_tabla_segmentacion_ffrr('e".$esquema."',".$frac.",".$radio.");");
             DB::statement("SELECT indec.segmentos_desde_hasta('e".$esquema."');");
         }catch(Exception $e){
-             DB::unprepared('create sequence '.$esquema.'.segmentos_seq');
+             DB::unprepared('create sequence e'.$esquema.'.segmentos_seq');
              Log::debug('Create sequence xq no exisitia...');
+             self::recrea_vista_segmentos_lados_completos($esquema);
     		DB::statement("SELECT
             indec.lados_completos_a_tabla_segmentacion_ffrr('e".$esquema."',".$frac.",".$radio.");");
         
