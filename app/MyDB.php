@@ -379,7 +379,7 @@ FROM
                     Log::warnign($e);
                     flash('Se detecto una carga medio antigua. Se encontro tabla de
                     "segmentos desde hasta". Pero sin vivendas... Se hace lo
-                    que se puede.');a
+                    que se puede.');
                     try{
                         return DB::select("SELECT segmento_id, frac, radio, mza, lado,
                             CASE  WHEN completo THEN 'Lado Completo'
