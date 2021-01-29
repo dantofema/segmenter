@@ -521,6 +521,7 @@ FROM
         GROUP BY nomencla,codigo20,tipo, nombre,lado,mza
         HAVING
         st_geometrytype(st_LineMerge(st_union(wkb_geometry)))='ST_LineString'
+        and mza!=''
     )
     SELECT nro_en_lado, nro_en_numero, conteo,1.0*nro_en_lado/(conteo+1) interpolacion, l.orden_reco,
     case when 1.0*nro_en_lado/(conteo+1)>1 then 
@@ -528,7 +529,8 @@ FROM
     else
     CASE WHEN ( 
             e.mza like '%'||btrim(to_char(l.frac::integer, '09'::text))::character varying(3)||btrim(to_char(l.radio::integer, '09'::text))::character varying(3)||btrim(to_char(l.mza::integer, '099'::text))::character varying(3)) 
-                    and l.lado::integer=e.lado and l.tipoviv='LSV' 
+                    and l.lado::integer=e.lado and (l.tipoviv='LSV' or
+                    l.tipoviv='')
                     THEN
                     ST_LineInterpolatePoint(st_reverse(st_offsetcurve(ST_LineSubstring(st_LineMerge(wkb_geometry),0.07,0.93),-8-(0.5*nro_en_numero))),0.5) 
             WHEN ( e.mza like '%'||btrim(to_char(l.frac::integer, '09'::text))::character varying(3)||btrim(to_char(l.radio::integer, '09'::text))::character varying(3)||btrim(to_char(l.mza::integer, '099'::text))::character varying(3)) 
