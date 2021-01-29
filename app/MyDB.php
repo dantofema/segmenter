@@ -479,7 +479,9 @@ FROM
                 WITH listado as (
             SELECT id, l.prov, nom_provin, ups, nro_area, l.dpto, nom_dpto, l.codaglo, l.codloc, 
                 nom_loc, codent, nom_ent, l.frac, l.radio, l.mza, l.lado, 
-                nro_inicia, nro_final, orden_reco, nro_listad, ccalle, ncalle,
+                nro_inicia, nro_final, CASE WHEN orden_reco='''' THEN 0 ELSE
+                orden_reco::integer END ::integer as orden_reco,
+                nro_listad, ccalle, ncalle,
                 CASE WHEN l.nrocatastr='' or l.nrocatastr='S/N' THEN null::integer ELSE
                 l.nrocatastr::integer END nrocatastr, 
             piso, casa, dpto_habit, sector, edificio, entrada, tipoviv, descripcio, descripci2 , 
@@ -492,10 +494,11 @@ FROM
             FROM
             ".$esquema.".listado l
             LEFT JOIN ".$esquema.".conteos c ON 
-            (c.prov,c.dpto,c.codloc,c.frac,c.radio,c.mza,c.lado)=(l.prov::integer,l.dpto::integer,l.codloc::integer,l.frac::integer,l.radio::integer,l.mza::integer,l.lado::integer)
+            (c.prov,c.dpto,c.codloc,c.frac,c.radio,c.mza,c.lado)=
+            (l.prov::integer,l.dpto::integer,l.codloc::integer,l.frac::integer,l.radio::integer,l.mza::integer,l.lado::integer)
             WINDOW w_nrocatastr AS (partition by l.frac, l.radio, l.mza, l.lado ,
             nrocatastr
-            order by CASE WHEN orden_reco='' THEN 1::integer ELSE
+            order by orden_reco='' THEN 1::integer ELSE
             orden_reco::integer END asc),
             w_lado AS (partition by l.frac, l.radio, l.mza, l.lado order by
             CASE WHEN orden_reco='' THEN 1::integer ELSE
