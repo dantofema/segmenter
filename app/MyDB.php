@@ -413,6 +413,7 @@ FROM
                             GROUP BY segmento_id,l.frac,l.radio 
                             ORDER BY count(*) asc, array_agg(mza), segmento_id 
                             LIMIT '.$max.';');
+                }
             }
         }
 
