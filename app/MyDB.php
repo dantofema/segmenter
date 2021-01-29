@@ -359,25 +359,29 @@ FROM
             if ($radio){
                 $filtro= ' where (frac::integer,radio::integer) =
                     ('.$radio->CodigoFrac.','.$radio->CodigoRad.') ';
+                $funcion_describe= " indec.describe_segmentos_con_direcciones_ffrr('".$esquema."',".$radio->CodigoFrac.",".$radio->CodigoRad.") ";
             } else
-            { $filtro = '';}
+            { $filtro = '';
+              $funcion_describe= " indec.describe_segmentos_con_direcciones('".$esquema."') ";
+            }
 
             $esquema = 'e'.$esquema;
-            if (Schema::hasTable($esquema.'.segmentos_desde_hasta')){
-            if (Schema::hasColumn($esquema.'.segmentos_desde_hasta','viviendas')){
-            return DB::select("
+            try{
+                return DB::select("
                         SELECT segmento_id, lpad(frac::text,2,'0') frac,
                         lpad(radio::text,2,'0') radio, viviendas vivs,
                             descripcion detalle, lpad(seg,2,'0') seg, null ts
                             FROM
-                            indec.describe_segmentos_con_direcciones('".$esquema."')
-                            ".$filtro."
+                            ".$funcion_describe."
                             order by frac,radio,seg,segmento_id
                             LIMIT ".$max.";");
-                }else{
-                flash('Se detecto una carga medio antigua. Se encontro tabla de
-                "segmentos desde hasta". Pero sin vivendas... Se hace lo que se puede.');
-                return DB::select("SELECT segmento_id, frac, radio, mza, lado,
+                }catch(QueryException $e){
+                    Log::warnign($e);
+                    flash('Se detecto una carga medio antigua. Se encontro tabla de
+                    "segmentos desde hasta". Pero sin vivendas... Se hace lo
+                    que se puede.');a
+                    try{
+                        return DB::select("SELECT segmento_id, frac, radio, mza, lado,
                             CASE  WHEN completo THEN 'Lado Completo'
                             ELSE 'Desde ' ||
                             indec.descripcion_domicilio('".$esquema."',seg_lado_desde) || '
@@ -389,12 +393,13 @@ FROM
                             ".$filtro."
                             order by frac,radio,segmento_id,mza,lado
                             LIMIT ".$max.";");
-                }
+                    }catch(QueryException $e){
+
+                        Log::error($e);
                 
-            }else{
-                flash('Se detecto una carga antigua. No se encontro tabla de
-                "segmentos desde hasta". Se hace lo que se puede.');
-                return DB::select('
+                        flash('Se detecto una carga antigua. No se encontro tabla de
+                            "segmentos desde hasta". Se hace lo que se puede.');
+                        return DB::select('
                             SELECT segmento_id,l.frac,l.radio,count(*)
                             vivs,count(distinct mza) as mza,array_agg(distinct
                             prov||dpto||codloc||frac||radio||mza||lado)
