@@ -16,6 +16,9 @@ class DescribeSegmentosConDirecciones extends Migration
         //
         $path = 'app/developer_docs/segmentacion-core/descripcion_segmentos/describe_segmentos_con_direcciones.sql';
         DB::unprepared(file_get_contents($path));
+        $path = 'app/developer_docs/segmentacion-core/descripcion_segmentos/describe_segmentos_con_direcciones_ffrr.sql';
+        DB::unprepared(file_get_contents($path));
+
     }
 
     /**
