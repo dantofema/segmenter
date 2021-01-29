@@ -498,7 +498,7 @@ FROM
             (l.prov::integer,l.dpto::integer,l.codloc::integer,l.frac::integer,l.radio::integer,l.mza::integer,l.lado::integer)
             WINDOW w_nrocatastr AS (partition by l.frac, l.radio, l.mza, l.lado ,
             nrocatastr
-            order by orden_reco='' THEN 1::integer ELSE
+            order by CASE WHEN orden_reco='' THEN 1::integer ELSE
             orden_reco::integer END asc),
             w_lado AS (partition by l.frac, l.radio, l.mza, l.lado order by
             CASE WHEN orden_reco='' THEN 1::integer ELSE
