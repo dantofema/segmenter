@@ -479,7 +479,7 @@ FROM
                 WITH listado as (
             SELECT id, l.prov, nom_provin, ups, nro_area, l.dpto, nom_dpto, l.codaglo, l.codloc, 
                 nom_loc, codent, nom_ent, l.frac, l.radio, l.mza, l.lado, 
-                nro_inicia, nro_final, CASE WHEN orden_reco='''' THEN 0 ELSE
+                nro_inicia, nro_final, CASE WHEN orden_reco='' THEN 0 ELSE
                 orden_reco::integer END ::integer as orden_reco,
                 nro_listad, ccalle, ncalle,
                 CASE WHEN l.nrocatastr='' or l.nrocatastr='S/N' THEN null::integer ELSE
