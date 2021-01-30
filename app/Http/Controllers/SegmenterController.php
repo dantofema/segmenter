@@ -119,7 +119,6 @@ class SegmenterController extends Controller
             $data['file']['shp_msg'] .= " y nombre original: ".$original_name;
         $original_extension = $request->shp->getClientOriginalExtension();
         $data['file']['shp_msg'] .= ". Extension original: ".$original_extension;
-        $original_name = $request->shp->getClientOriginalName();
 
         if ($original_extension == 'shp'){
             $random_name='t_'.$request->shp->hashName();
@@ -140,7 +139,7 @@ class SegmenterController extends Controller
                                  'usuario_name' => $AppUser->name,
                                  'tiempo' => date('Y-m-d H:i:s')]);
                         
-            $codaglo=isset($codaglo)?$codaglo:$original_name;
+            $codaglo=isset($codaglo)?$codaglo:'test'; //$random_name;
             MyDB::createSchema($codaglo);
 
             if ($epsg_id=='8333'){
@@ -158,9 +157,10 @@ class SegmenterController extends Controller
                 -lco OVERWRITE=YES --config OGR_TRUNCATE YES -dsco \
                 PRELUDE_STATEMENTS="SET client_encoding TO latin1;CREATE SCHEMA \
                 IF NOT EXISTS e$e00;" -dsco active_schema=e$e00 -lco \
-                PRECISION=NO -lco SCHEMA=e$e00 -t_srs "$epsg" \
-                -s_srs "$epsg" \
-                -a_srs "$epsg" -nln arc \
+                PRECISION=NO -lco SCHEMA=e$e00 \
+                 -s_srs epsg:$epsg -t_srs epsg:$epsg \
+                -nln arc \
+                -skipfailures \
                 -overwrite $file )');
                 $processOGR2OGR->setTimeout(3600);
                 $processOGR2OGR->run(null, ['epsg'=>$epsg_def,'file' => storage_path().'/app/'.$data['file']['shp'],'e00'=>$codaglo,'db'=>Config::get('database.connections.pgsql.database'),'host'=>Config::get('database.connections.pgsql.host'),'user'=>Config::get('database.connections.pgsql.username'),'pass'=>Config::get('database.connections.pgsql.password'),'port'=>Config::get('database.connections.pgsql.port')]);
@@ -171,6 +171,8 @@ class SegmenterController extends Controller
 
             }
             if (!$processOGR2OGR->isSuccessful()) {
+                dd($processOGR2OGR,'epsg '.$epsg_id,'epsg_def '.$epsg_def,
+                'file '.storage_path().'/app/'.$data['file']['shp'],'e00 '.$codaglo);
                 throw new ProcessFailedException($processOGR2OGR);
             }
             MyDB::agregarsegisegd($codaglo);
@@ -184,7 +186,7 @@ class SegmenterController extends Controller
             $processOGR->run(null, ['file' => storage_path().'/app/'.$data['file']['shp']]);
             $data['file']['e00_info'] = $processOGR->getOutput();
 
-            //$codaglo = substr($original_name,1,4);
+            $original_name = substr($original_name,1,4);
             $codaglo=isset($codaglo)?$codaglo:$original_name;
             MyDB::createSchema($codaglo);
 
@@ -201,7 +203,7 @@ class SegmenterController extends Controller
             MyDB::agregarsegisegd($codaglo);
         }
     }
-    MyDB::juntaListadoGeom($codaglo);
+    MyDB::juntaListadoGeom('e'.$codaglo);
     }else {//dd($request->file('shp')); 
         flash('File geo not valid');
     }

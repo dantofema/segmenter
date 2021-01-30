@@ -277,6 +277,23 @@ FROM
                 self::generarSegmentacionNula($esquema);
 
                 DB::commit();
+
+            // Indices y georef.
+            $schema=$esquema;
+            self::addIndexListado($schema);
+            flash('Se creo el indice para lados en listado en '.$schema);
+            self::addIndexListadoId($schema);
+            flash('Se creo el indice para id listado en '.$schema);
+            self::addIndexListadoRadio($schema);
+            flash('Se creo el indice para radio en listado en '.$schema);
+
+            self::cargarTopologia($schema);
+            flash('Se creo la topología para '.$schema);
+
+            self::georeferenciar_listado($schema);
+            flash('Se georeferencio el listado del esquema '.$schema);
+            
+            
             }
         }
 
@@ -479,7 +496,6 @@ FROM
             try{
                 $esquema = 'e'.$esquema;
 
-            self::juntaListadoGeom($esquema);
                 DB::statement("DROP TABLE IF EXISTS ".$esquema.".listado_geo;");
                 $resultado= DB::select("
                 WITH listado as (
@@ -595,7 +611,8 @@ FROM
 
             }catch(QueryException $e){
                     Log::error('No se pudo georeferenciar el listado.'.$e);
-                        flash('No se pudo georeferenciar el listado')->error();
+                        flash('No se pudo georeferenciar el listado. Reintente. ')->error();
+                        self::juntaListadoGeom($esquema);
                     return false;
             }
             
