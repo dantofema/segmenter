@@ -376,7 +376,7 @@ FROM
                             order by frac,radio,seg,segmento_id
                             LIMIT ".$max.";");
                 }catch(QueryException $e){
-                    Log::warnign($e);
+                    Log::warning($e);
                     flash('Se detecto una carga medio antigua. Se encontro tabla de
                     "segmentos desde hasta". Pero sin vivendas... Se hace lo
                     que se puede.');
