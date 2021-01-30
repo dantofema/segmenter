@@ -356,6 +356,7 @@ FROM
         public static function
         segmentar_equilibrado_ver($esquema,$max=1000,Radio $radio = Null)
         {
+            $esquema = 'e'.$esquema;
             if ($radio){
                 $filtro= ' where (frac::integer,radio::integer) =
                     ('.$radio->CodigoFrac.','.$radio->CodigoRad.') ';
@@ -365,7 +366,6 @@ FROM
               $funcion_describe= " indec.describe_segmentos_con_direcciones('".$esquema."') ";
             }
 
-            $esquema = 'e'.$esquema;
             try{
                 return DB::select("
                         SELECT segmento_id, lpad(frac::text,2,'0') frac,
