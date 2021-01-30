@@ -494,7 +494,6 @@ FROM
         //   --ALTER TABLE ' ".$esquema." '.arc alter column wkb_geometry type geometry('LineString',22182) USING (st_setsrid(wkb_geometry,22182));
 
             try{
-                $esquema = 'e'.$esquema;
 
                 DB::statement("DROP TABLE IF EXISTS ".$esquema.".listado_geo;");
                 $resultado= DB::select("
@@ -815,10 +814,10 @@ FROM
             {
                 try{
                     DB::statement(" SELECT indec.cargarTopologia(
-                    'e".$esquema."','arc');");
-                    DB::statement(" DROP TABLE if exists e".$esquema.".manzanas;");
-                    DB::statement(" CREATE TABLE e".$esquema.".manzanas AS SELECT * FROM
-                    e".$esquema.".v_manzanas;");
+                    '".$esquema."','arc');");
+                    DB::statement(" DROP TABLE if exists ".$esquema.".manzanas;");
+                    DB::statement(" CREATE TABLE ".$esquema.".manzanas AS SELECT * FROM
+                    ".$esquema.".v_manzanas;");
                 }catch(Exception $e){
                 Log::error('No se pudo cargar la topologia');
                 }
