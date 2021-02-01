@@ -24,7 +24,7 @@ class MyDB extends Model
             DB::statement(" SELECT indec.segmentos_desde_hasta('".$esquema."');");
             $result = DB::statement(" SELECT * from indec.describe_despues_de_muestreo('".$esquema."');");
             DB::commit();
-        }catch(Exception $e){
+        }catch(QueryException $e){
             DB::Rollback();
             Log::error('No se pudo muestrar el esquema '.$esquema);
         }
