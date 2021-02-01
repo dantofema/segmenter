@@ -26,6 +26,7 @@ class MyDB extends Model
             DB::commit();
         }catch(QueryException $e){
             DB::Rollback();
+            $result=null;
             Log::error('No se pudo muestrar el esquema '.$esquema);
         }
         Log::debug('Se muestreo el esquema '.$esquema.' !');
