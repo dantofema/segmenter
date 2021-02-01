@@ -384,6 +384,15 @@ FROM
             }
 
             try{
+                return DB::select("SELECT segmento_id, lpad(frac::text,2,'0') frac,
+                        lpad(radio::text,2,'0') radio, viviendas vivs,
+                            descripcion detalle, lpad(seg,2,'0') seg, null ts
+                            FROM
+                            indec.describe_despues_de_muestreo('".$esquema."')
+                            ".$filtro." ;");
+                }catch(QueryException $e){
+                    Log::debug('Sin muestreo...');
+              try{
                 return DB::select("
                         SELECT segmento_id, lpad(frac::text,2,'0') frac,
                         lpad(radio::text,2,'0') radio, viviendas vivs,
@@ -431,6 +440,7 @@ FROM
                             ORDER BY count(*) asc, array_agg(mza), segmento_id 
                             LIMIT '.$max.';');
                 }
+              }
             }
         }
 
