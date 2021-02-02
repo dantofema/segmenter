@@ -27,7 +27,7 @@ class MyDB extends Model
         }catch(QueryException $e){
             DB::Rollback();
             $result=null;
-            Log::error('No se pudo muestrar el esquema '.$esquema);
+            Log::error('No se pudo muestrar el esquema '.$esquema,$e);
         }
         Log::debug('Se muestreo el esquema '.$esquema.' !');
         return $result;
@@ -614,6 +614,7 @@ FROM
             // para la prueba experimental. Yapa la comuna 3 para probar.
             {
                 self::geo_translate($esquema);
+                Log::('Traslado CABA '.$esquema);
             }
 
             DB::statement("GRANT SELECT ON TABLE  ".$esquema.".listado_geo TO geoestadistica");
@@ -709,12 +710,12 @@ FROM
             public static function getNodos($esquema,$radio = '%01103')
             {
                 return DB::select('SELECT distinct *, substr(mza_i,13,3)||\':\'||lado_i as label,c.conteo FROM (
-                                                    SELECT mza_i,lado_i from e'.$esquema.'.lados_adyacentes WHERE mza_i like :radio UNION
+                                                    SELECT mza_i,lado_i from '.$esquema.'.lados_adyacentes WHERE mza_i like :radio UNION
                                                     SELECT mza_j,lado_j from
-                                                    e'.$esquema.'.lados_adyacentes
+                                                    '.$esquema.'.lados_adyacentes
                                                     WHERE mza_j like :radio2) foo
             LEFT JOIN
-            e'.$esquema.'.conteos c
+            '.$esquema.'.conteos c
             ON (c.prov,c.dpto,c.codloc,c.frac,c.radio,c.mza,c.lado)=
                 (substr(mza_i,1,2)::integer,
                 substr(mza_i,3,3)::integer,
@@ -729,22 +730,22 @@ FROM
 
             public static function getAdyacencias($esquema,$radio = '%01103')
             {
-                        return DB::select('SELECT * from e'.$esquema.'.lados_adyacentes
+                        return DB::select('SELECT * from '.$esquema.'.lados_adyacentes
                 WHERE mza_i like :radio and mza_j like :radio;',['radio'=>$radio.'%']);
             }
             
             public static function getSegmentos($esquema,$radio = '%01103')
             {
-                if (Schema::hasTable('e'.$esquema.'.arc')) {
+                if (Schema::hasTable($esquema.'.arc')) {
                         return DB::select('SELECT array_agg(mza||\'-\'||lado) segmento
                                             FROM
                                             (SELECT
                                                 mzai mza,ladoi lado, segi seg
-                                                FROM e'.$esquema.'.arc
+                                                FROM '.$esquema.'.arc
                                             UNION
                                                 SELECT
                                                 mzad mza,ladod lado, segd seg
-                                                FROM e'.$esquema.'.arc
+                                                FROM '.$esquema.'.arc
                                             ) segs
                                             WHERE mza like :radio
                                             GROUP BY seg
