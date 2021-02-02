@@ -22,6 +22,7 @@ class Radio extends Model
 
     private $_isSegmentado;
     private $_resultado;
+    private $_esquema;
 
      /**
       * Fix datos..
@@ -181,23 +182,27 @@ class Radio extends Model
     }
 
     public function getEsquemaAttribute($value){
-          $esquema='foo';
+        if (! $this->_esquema){
+          $this->_esquema='foo';
           if ($this->aglomerado() != null){
                 if ($this->aglomerado()->first()->codigo=='0001'){
                     if ($this->fraccion->departamento->provincia->codigo == '02') {
-                        $esquema = 'e'.
+                        $this->_esquema = 'e'.
                                     $this->fraccion->departamento->codigo.
                                     $this->localidades()->first()->codigoLoc;
                     }else{
-                        $esquema = 'e'.$this->aglomerado()->codigo;
+                        $this->_esquema = 'e'.$this->aglomerado()->codigo;
                     }
                 }else
                 { 
-                    $esquema = 'e'.$this->aglomerado()->first()->codigo;
+                    $this->_esquema = 'e'.$this->aglomerado()->first()->codigo;
                 }
-           Log::debug('Radio en esquema: '.$esquema);
+           Log::debug('Radio '.$this->codigo.' esperado en esquema: '.$this->_esquema);
+        }else{
+            $this->_esquema='e'.$this->codigo;
         }
-        return $esquema;
+        }
+        return $this->_esquema;
     }
 
     public function getSVG()
