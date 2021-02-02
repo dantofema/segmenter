@@ -376,6 +376,7 @@ FROM
         {
             $esquema = 'e'.$esquema;
             if ($radio){
+                $esquema=$radio->esquema;
                 $filtro= ' where (frac::integer,radio::integer) =
                     ('.$radio->CodigoFrac.','.$radio->CodigoRad.') ';
                 $funcion_describe= " indec.describe_segmentos_con_direcciones_ffrr('".$esquema."',".$radio->CodigoFrac.",".$radio->CodigoRad.") ";
