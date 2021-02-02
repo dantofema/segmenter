@@ -614,7 +614,7 @@ FROM
             // para la prueba experimental. Yapa la comuna 3 para probar.
             {
                 self::geo_translate($esquema);
-                Log::('Traslado CABA '.$esquema);
+                Log::debug('Traslado CABA '.$esquema);
             }
 
             DB::statement("GRANT SELECT ON TABLE  ".$esquema.".listado_geo TO geoestadistica");
