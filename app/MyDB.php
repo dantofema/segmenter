@@ -38,7 +38,7 @@ class MyDB extends Model
 	public static function 
     segmentar_excedidos_ffrr($esquema,$frac,$radio,$umbral=20,$deseado=20)
 	{
-        try{
+        trry{
             Log::debug('Resegmentando segmentos excedidos de fraccion
             '.$frac.', radio '.$radio);
     		DB::statement(" SELECT indec.segmentar_excedidos_ffrr(
@@ -832,7 +832,7 @@ FROM
                     DB::statement(" CREATE TABLE ".$esquema.".manzanas AS SELECT * FROM
                     ".$esquema.".v_manzanas;");
                 }catch(QueryException $e){
-                Log::error('No se pudo cargar la topologia...',$e);
+                Log::error('No se pudo cargar la topologia...'.$e);
                 }
                 Log::debug('Se genraron fracciones, radios y manzanas ');
             }
