@@ -831,8 +831,8 @@ FROM
                     DB::statement(" DROP TABLE if exists ".$esquema.".manzanas;");
                     DB::statement(" CREATE TABLE ".$esquema.".manzanas AS SELECT * FROM
                     ".$esquema.".v_manzanas;");
-                }catch(Exception $e){
-                Log::error('No se pudo cargar la topologia');
+                }catch(QueryException $e){
+                Log::error('No se pudo cargar la topologia...',$e);
                 }
                 Log::debug('Se genraron fracciones, radios y manzanas ');
             }
