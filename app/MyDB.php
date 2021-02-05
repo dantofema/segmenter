@@ -38,7 +38,7 @@ class MyDB extends Model
 	public static function 
     segmentar_excedidos_ffrr($esquema,$frac,$radio,$umbral=20,$deseado=20)
 	{
-        trry{
+        try{
             Log::debug('Resegmentando segmentos excedidos de fraccion
             '.$frac.', radio '.$radio);
     		DB::statement(" SELECT indec.segmentar_excedidos_ffrr(
