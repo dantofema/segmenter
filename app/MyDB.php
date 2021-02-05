@@ -832,9 +832,11 @@ FROM
                     DB::statement(" CREATE TABLE ".$esquema.".manzanas AS SELECT * FROM
                     ".$esquema.".v_manzanas;");
                 }catch(QueryException $e){
-                Log::error('No se pudo cargar la topologia...'.$e);
+                    Log::error('No se pudo cargar la topologia...'.$e);
+                    return null;
                 }
                 Log::debug('Se genraron fracciones, radios y manzanas ');
+                return true;
             }
 
             // DROPEA esquema de topologia si quedo desfazado por rollback mal
