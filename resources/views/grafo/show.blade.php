@@ -2,6 +2,14 @@
 @section('content')
 <div class="row center"><div class="col-lg-12 text-center">
 <h3><a href="{{ url("/aglo/{$aglomerado->id}") }}" > ({{ $aglomerado->codigo}}) {{ $aglomerado->nombre}}</a></h3>
+<h4>
+@foreach($radio->localidades() as $localidad)
+@if($localidad)
+<a href="{{ url("/localidad/{$localidad->id}") }}" > ({{
+$localidad->codigo}}) {{ $localidad->nombre}}</a>
+@endif
+@endforeach
+</h4>
 Radio: {{ $radio->codigo}}
 </div></div>
   <div class="row">
@@ -111,12 +119,17 @@ function zoom(scale) {
     container: document.getElementById('grafo_cy'), // container to render in
 
   elements: [ // list of graph elements to start with
+    @if($nodos)
     @foreach ($nodos as $nodo)
         { data: { group: 'nodes',mza: '{{ $nodo->mza_i }}',label: '{{ $nodo->label }}', conteo: '{{ $nodo->conteo }}', id: '{{ $nodo->mza_i }}-{{ $nodo->lado_i }}'  } },
     @endforeach    
     @foreach ($relaciones as $nodo)
         { data: { group: 'edges',tipo: '{{ $nodo->tipo }}', id: '{{ $nodo->mza_i }}-{{ $nodo->lado_i }}->{{ $nodo->mza_j }}-{{ $nodo->lado_j }}', source:'{{ $nodo->mza_i }}-{{ $nodo->lado_i }}', target:'{{ $nodo->mza_j }}-{{ $nodo->lado_j }}'} },
     @endforeach    
+    @else
+        { data: { group: 'nodes',mza: 'A', label: 'A', conteo: '1', id: 'A-1'  } },
+        { data: { group: 'edges',tipo: 'test', id: 'A-1->A-1', source:'A-1', target:'A-1'} },
+    @endif
   ],
   style: [ // the stylesheet for the graph
     {
@@ -143,7 +156,9 @@ function zoom(scale) {
         'line-color': function (ele) { if (ele.data('tipo')=='dobla') return '#555'; else return '#ccc'; },
         'target-arrow-color': '#aae',
         'target-arrow-shape': 'triangle',
-        'label': function (ele) { return ''; if (ele.data('tipo')=='dobla') return 'd'; else if (ele.data('tipo')=='enfrente') return 'e'; }
+        'label': function (ele) { return ''; if (ele.data('tipo')=='dobla')
+        return 'd'; else if (ele.data('tipo')=='enfrente') return 'e' else
+        return 'o'; }
       }
     }
       ],

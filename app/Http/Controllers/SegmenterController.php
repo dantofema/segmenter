@@ -73,7 +73,7 @@ class SegmenterController extends Controller
 
 	      }elseif ($original_extension == 'dbf'){
             // Mensaje de subida de DBF y logeo en archivo.
-            $data['file']['csv_info'] = 'Se Cargo un DBF.';
+            flash($data['file']['csv_info'] = 'Se Cargo un DBF.');
 		    $processLog = Process::fromShellCommandline('echo "C1 DBF: $name" >> archivos.log');
 		    $processLog->run(null, ['name' => "Archivo: ".$original_name." subido como: ".$data['file']['c1']]);
 
@@ -82,7 +82,7 @@ class SegmenterController extends Controller
 		    $process->run(null, ['c1_dbf_file' => storage_path().'/app/'.$data['file']['c1'],'db'=>Config::get('database.connections.pgsql.database'),'host'=>Config::get('database.connections.pgsql.host'),'user'=>Config::get('database.connections.pgsql.username'),'port'=>Config::get('database.connections.pgsql.port'),'PGPASSWORD'=>Config::get('database.connections.pgsql.password')]);
         // executes after the command finishes
         if (!$process->isSuccessful()) {
-            $data['file']['error']=$process->getErrorOutput();
+            flash($data['file']['error']=$process->getErrorOutput())->important();
         }else{
             // Leo dentro del csv que aglo/s viene/n o localidad depto CABA
 
@@ -92,7 +92,7 @@ class SegmenterController extends Controller
             $codprov=MyDB::getProv($tabla,'public');
             if ($codprov=='02'){
                 $ppdddlll=MyDB::getLoc($tabla,'public');
-                $data['file']['caba']='Se detecto CABA: '.$ppdddlll;
+                flash($data['file']['caba']='Se detecto CABA: '.$ppdddlll);
                 $codaglo=$ppdddlll;
             }else{
                 $codaglo=$aglo_interno;
@@ -106,19 +106,18 @@ class SegmenterController extends Controller
             $data['file']['codigo_usado']=$codaglo;
         }
       
-       }else{$data['file']['csv_info'] = 'Se Cargo un archivo de formato no esperado!';}
+       }else{flash($data['file']['csv_info'] = 'Se Cargo un archivo de formato
+       no esperado!')->error()->important();}
     }
 
     if ($request->hasFile('shp')) {
         if ($request->file('shp')->isValid() or true) {
             $data['file']['shp_msg'] = "Subió una base geográfica ";
-            flash($data['file']['shp_msg'])->success();
-        $extension = $request->shp->extension();
-            $data['file']['shp_msg'] .= " salvado con extensión: ".$extension;
-        $original_name = $request->shp->getClientOriginalName();
+            $original_name = $request->shp->getClientOriginalName();
             $data['file']['shp_msg'] .= " y nombre original: ".$original_name;
-        $original_extension = $request->shp->getClientOriginalExtension();
-        $data['file']['shp_msg'] .= ". Extension original: ".$original_extension;
+            $original_extension = $request->shp->getClientOriginalExtension();
+            $data['file']['shp_msg'] .= ". Extension original: ".$original_extension;
+            flash($data['file']['shp_msg']);
 
         if ($original_extension == 'shp'){
             $random_name='t_'.$request->shp->hashName();
@@ -198,15 +197,17 @@ class SegmenterController extends Controller
             $processOGR2OGR_lab->setTimeout(3600);
             $processOGR2OGR_lab->run(null, ['epsg' => $epsg_id, 'file' => storage_path().'/app/'.$data['file']['shp'],'e00'=>$codaglo,'db'=>Config::get('database.connections.pgsql.database'),'host'=>Config::get('database.connections.pgsql.host'),'user'=>Config::get('database.connections.pgsql.username'),'pass'=>Config::get('database.connections.pgsql.password'),'port'=>Config::get('database.connections.pgsql.port')]);
             //dd($processOGR2OGR_lab->getErrorOutput());
-            $data['file']['ogr2ogr_lab'] = $processOGR2OGR_lab->getErrorOutput().'<br />'.$processOGR2OGR_lab->getOutput();
-            $data['file']['ogr2ogr'] = $processOGR2OGR->getErrorOutput().'<br />'.$processOGR2OGR->getOutput();
+            flash($data['file']['ogr2ogr_lab'] = $processOGR2OGR_lab->getErrorOutput().'<br />'.$processOGR2OGR_lab->getOutput())->important();
+            flash($data['file']['ogr2ogr'] = $processOGR2OGR->getErrorOutput().'<br />'.$processOGR2OGR->getOutput())->important();
             MyDB::agregarsegisegd($codaglo);
+        }else {//dd($request->file('shp')); 
+            flash('File geo not valid')->error()->important();
+        }
+        if (isset($codaglo)){
+            MyDB::juntaListadoGeom('e'.$codaglo);
         }
     }
-    MyDB::juntaListadoGeom('e'.$codaglo);
-    }else {//dd($request->file('shp')); 
-        flash('File geo not valid');
-    }
+   }
 
 
      if (Archivo::cargar($request, Auth::user())) {
