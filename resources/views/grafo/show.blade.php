@@ -1,16 +1,18 @@
 @extends('layouts.app')
 @section('content')
 <div class="row center"><div class="col-lg-12 text-center">
-<h3><a href="{{ url("/aglo/{$aglomerado->id}") }}" > ({{ $aglomerado->codigo}}) {{ $aglomerado->nombre}}</a></h3>
-<h4>
-@foreach($radio->localidades() as $localidad)
+<h4><a href="{{ url("/aglo/{$aglomerado->id}") }}" > ({{ $aglomerado->codigo}}) {{ $aglomerado->nombre}}</a></h4>
+<h5>
+@foreach($radio->localidades as $localidad)
 @if($localidad)
 <a href="{{ url("/localidad/{$localidad->id}") }}" > ({{
 $localidad->codigo}}) {{ $localidad->nombre}}</a>
+@else
+{{ Rural? }}
 @endif
 @endforeach
-</h4>
-Radio: {{ $radio->codigo}}
+</h5>
+<h3>Radio: {{ $radio->codigo}}</h3>
 </div></div>
   <div class="row">
     </div>
