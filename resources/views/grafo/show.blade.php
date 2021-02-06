@@ -8,7 +8,7 @@
 <a href="{{ url("/localidad/{$localidad->id}") }}" > ({{
 $localidad->codigo}}) {{ $localidad->nombre}}</a>
 @else
-{{ Rural? }}
+ Rural? 
 @endif
 @endforeach
 </h5>
