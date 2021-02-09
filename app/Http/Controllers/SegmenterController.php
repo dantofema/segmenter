@@ -51,7 +51,7 @@ class SegmenterController extends Controller
     if ($request->hasFile('c1')) {
         $random_name='t_'.$request->c1->hashName();
         $data['file']['c1'] = $request->c1->storeAs('segmentador', $random_name); //.'.'.$request->c1->getClientOriginalExtension());
-        $original_extension = $request->c1->getClientOriginalExtension();
+        $original_extension = strtolower($request->c1->getClientOriginalExtension());
         $original_name = $request->c1->getClientOriginalName();
 
         //Si no se cargo geometria tomo del nombre del listado los utilmos 8
