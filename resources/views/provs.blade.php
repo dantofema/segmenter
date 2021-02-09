@@ -59,6 +59,7 @@
              <th>Código</th>
              <th>Nombre</th>
              <th>Cantidad de Departamentos</th>
+             <th> * </th>
           </tr>
        </thead>
     </table>
@@ -113,8 +114,13 @@
                   { visible: false, data: 'id', name: 'id' },
                   { data: 'codigo', name: 'codigo' },
                   { data: 'nombre', name: 'nombre' },
-                  { searchable: false , data: 'departamentos_count', name: 'departamentos_count' }
-               ]
+                  { searchable: false , data: 'departamentos_count', name: 'departamentos_count' },
+                  { searchable: false , data: function ( row, type, val, meta ) {
+                                var html =  '<button type="button" class="btn_departamentos btn-sm btn-primary" >Ver</button>';
+                              return html;
+                            }
+                }
+        ]
       });
 
    table.on( 'click', 'tr', function () {
@@ -134,6 +140,18 @@
   });
         console.log( 'You clicked on '+data.id+'\'s row' );
    });
+
+// Función de botón Departamentos.
+    table.on('click', '.btn_departamentos', function () {
+      var row = $(this).closest('tr');
+      var data = table.row( row ).data();
+      console.log('Ver Departamentos de: '+data.codigo);
+        if (typeof data !== 'undefined') {
+            url= "{{ url('prov/deptos') }}"+"/"+data.id;
+            $(location).attr('href',url);
+           };
+    });
+  
   $('#btnFiterSubmitSearch').click(function(){
      $('#laravel_datatable').DataTable().draw(true);
   });
