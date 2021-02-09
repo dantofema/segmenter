@@ -80,7 +80,8 @@ class Radio extends Model
     //    return $this->hasOneThrough(Aglomerado::class,Fraccion::class);
     //    return $this->belongsToMany('App\Model\Localidad', 'radio_localidad');
             if ($this->localidades()->count()>1){
-                Log::warning('Varias localidades: '.$this->localidades());
+                Log::warning('Varias localidades: Tomo la primera
+                '.$this->localidades()->first()->codigo);
                 return $localidad=$this->localidades()->first();
 
             }elseif ($localidad=$this->localidades()->first())
