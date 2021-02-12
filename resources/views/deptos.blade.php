@@ -58,7 +58,7 @@
              <th>Id</th>
              <th>Código</th>
              <th>Nombre</th>
-             <th>Cantidad de Localidades</th>
+             <th>Localidades</th>
           </tr>
        </thead>
     </table>
@@ -71,6 +71,7 @@
           }
       });
       var table =  $('#laravel_datatable').DataTable({
+        "pageLength": -1,
          language: //{url:'https://cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json'},
 {
 	"sProcessing":     "Procesando...",
@@ -107,6 +108,7 @@
           type: 'GET',
           data: function (d) {
           d.codigo = $('#codigo').val();
+          console.log(d);
           }
          },
          columns: [
