@@ -79,14 +79,13 @@ class Radio extends Model
         //TODO
     //    return $this->hasOneThrough(Aglomerado::class,Fraccion::class);
     //    return $this->belongsToMany('App\Model\Localidad', 'radio_localidad');
-            if ($this->localidades()->count()>1){
+            if ($this->localidades->count()>1){
                 Log::warning('Varias localidades: Tomo la primera
-                '.$this->localidades()->first()->codigo);
-                return $localidad=$this->localidades()->first();
-
-            }elseif ($localidad=$this->localidades()->first())
+                '.$this->localidades->first()->codigo);
+                return $aglo = $this->localidades->first()->aglomerado;
+            }elseif ($localidad=$this->localidades->first())
                 {
-                    return $localidad->aglomerado()->get();
+                    return $aglo=$localidad->aglomerado;
                 }
                 else
                     return null; //new Aglomerado();
@@ -157,8 +156,7 @@ class Radio extends Model
      {
         if (! isset($this->_isSegmentado)){
           if ($this->aglomerado() != null){
-                    $result =
-                    MyDB::isSegmentado($this);
+                    $result = MyDB::isSegmentado($this);
 
               if ($result):
                   $this->_isSegmentado = true;
@@ -186,7 +184,7 @@ class Radio extends Model
         if (! $this->_esquema){
           $this->_esquema='foo';
           if ($this->aglomerado() != null){
-                if ($this->aglomerado()->first()->codigo=='0001'){
+                if ($this->aglomerado()->codigo=='0001'){
                     if ($this->fraccion->departamento->provincia->codigo == '02') {
                         $this->_esquema = 'e'.
                                     $this->fraccion->departamento->codigo.
@@ -196,7 +194,7 @@ class Radio extends Model
                     }
                 }else
                 { 
-                    $this->_esquema = 'e'.$this->aglomerado()->first()->codigo;
+                    $this->_esquema = 'e'.$this->aglomerado()->codigo;
                 }
            Log::debug('Radio '.$this->codigo.' esperado en esquema: '.$this->_esquema);
         }else{
