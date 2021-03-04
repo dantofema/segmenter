@@ -169,6 +169,7 @@ class SegmenterController extends Controller
 
             }
             if (!$processOGR2OGR->isSuccessful()) {
+                $epsg_def=isset($epsg_def)?$epsg_def:'No definido';
                 dd($processOGR2OGR,'epsg '.$epsg_id,'epsg_def '.$epsg_def.
                 'file '.storage_path().'/app/'.$data['file']['shp'],'e00 '.$codaglo);
                 throw new ProcessFailedException($processOGR2OGR);
