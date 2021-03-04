@@ -45,8 +45,7 @@ class SegmenterController extends Controller
     $data = [];
     $epsg_id = $request->input('epsg_id')?$request->input('epsg_id'):'22183';
     $data['epsg']['id']=$epsg_id;
-
-
+    flash('SRS: '.$data['epsg']['id']);
 
     if ($request->hasFile('c1')) {
         $random_name='t_'.$request->c1->hashName();
@@ -170,7 +169,7 @@ class SegmenterController extends Controller
 
             }
             if (!$processOGR2OGR->isSuccessful()) {
-                dd($processOGR2OGR,'epsg '.$epsg_id,'epsg_def '.$epsg_def,
+                dd($processOGR2OGR,'epsg '.$epsg_id,'epsg_def '.$epsg_def.
                 'file '.storage_path().'/app/'.$data['file']['shp'],'e00 '.$codaglo);
                 throw new ProcessFailedException($processOGR2OGR);
             }
