@@ -114,7 +114,7 @@ class SegmenterController extends Controller
             $data['file']['shp_msg'] = "Subió una base geográfica ";
             $original_name = $request->shp->getClientOriginalName();
             $data['file']['shp_msg'] .= " y nombre original: ".$original_name;
-            $original_extension = $request->shp->getClientOriginalExtension();
+            $original_extension = strtolower($request->shp->getClientOriginalExtension());
             $data['file']['shp_msg'] .= ". Extension original: ".$original_extension;
             flash($data['file']['shp_msg']);
 
