@@ -3,7 +3,8 @@
     provincia {{ $departamento->nombre }} <br />
     con {{ $departamento->localidades_count }} localidades.
     @foreach ($departamento->localidades as $localidad)
-        <p> ({{ $localidad->codigo }}) {{ $localidad->nombre }}</p>
+        <a href="{{ url("/localidad/{$localidad->id}") }}" >({{ $localidad->codigo }})
+    <b> {{ $localidad->nombre }} </b></a>
     @endforeach
 
 <div/>
