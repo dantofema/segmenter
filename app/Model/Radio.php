@@ -98,7 +98,6 @@ class Radio extends Model
      */
     public function segmentar($esquema,$deseadas,$max,$min,$indivisible)
     {
-        $this->middleware('auth');
         $AppUser= Auth::user();
         $prov= substr(trim($this->codigo), 0, 2);
         $dpto= substr(trim($this->codigo), 2, 3);
@@ -122,7 +121,6 @@ class Radio extends Model
      */
     public function segmentarLucky($esquema,$deseadas,$max,$min,$indivisible)
     {
-        $this->middleware('auth');
         $AppUser= Auth::user();
         $prov= substr(trim($this->codigo), 0, 2);
         $dpto= substr(trim($this->codigo), 2, 3);
