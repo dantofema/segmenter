@@ -110,7 +110,7 @@ class Radio extends Model
         $segmenta->vista_segmentos_lados_completos($esquema);
         $segmenta->lados_completos_a_tabla_segmentacion_ffrr($esquema,$frac,$radio);
         $this->resultado = $segmenta->ver_segmentacion().' 
-        x '.$appUser.' en '.date("Y-m-d H:i:s");
+        x '.$AppUser.' en '.date("Y-m-d H:i:s");
         $this->save();
         return $this->resultado;
     }
@@ -135,7 +135,7 @@ class Radio extends Model
         $segmenta->segmentar_excedidos_ffrr($esquema,$frac,$radio,$max,$deseadas);
 
         $this->resultado = $segmenta->ver_segmentacion().' 
-        x '.$appUser.' en '.date("Y-m-d H:i:s");
+        x '.$AppUser.' en '.date("Y-m-d H:i:s");
         $this->save();
         return $this->resultado;
     }
