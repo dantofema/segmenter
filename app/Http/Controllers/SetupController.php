@@ -105,6 +105,14 @@ class SetupController extends Controller
         return view('home');
     }
 
+    public function juntarSegmentos($schema)
+    {
+        flash('Resultado: '.MyDB::juntar_segmentos($schema));
+        flash('Se juntaron los segmentos con 0 viviendas del esquema '.$schema);
+        return view('home');
+    }
+
+
     public function muestreaEsquema($schema)
     {
         $result= MyDB::muestrear($schema);

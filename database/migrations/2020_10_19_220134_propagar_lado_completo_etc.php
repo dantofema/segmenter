@@ -23,6 +23,9 @@ class PropagarLadoCompletoEtc extends Migration
         // crea fn para segmentar listado 
         $path = 'app/developer_docs/segmentacion-core/manzanas_independientes/segmentar_listado_equilibrado.sql';
         DB::unprepared(file_get_contents($path));
+        // crea fn para juntar segmentos de 0 viviendas 
+        $path = 'app/developer_docs/segmentacion-core/juntar_segmentos.sql';
+        DB::unprepared(file_get_contents($path));
     }
 
     /**
