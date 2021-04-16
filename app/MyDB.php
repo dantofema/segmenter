@@ -109,7 +109,7 @@ class MyDB extends Model
     // Junta los segmentos con 0 vivendas al segmneto menor cercano.
     public static function juntar_segmentos($esquema)
     {
-        $result = DB::statement('SELECT indec.juntar_segmentos('.$esquema.')');
+        $result = DB::statement("SELECT indec.juntar_segmentos('".$esquema."')");
         Log::debug('Juntando segmentos del esquema-> '.$esquema);
         return $result;
     }
