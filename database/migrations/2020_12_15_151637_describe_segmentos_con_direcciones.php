@@ -20,7 +20,7 @@ class DescribeSegmentosConDirecciones extends Migration
         DB::unprepared(file_get_contents($path));
         $path = 'app/developer_docs/segmentacion-core/descripcion_segmentos/describe_despues_de_muestreo_ffrr.sql';
         DB::unprepared(file_get_contents($path));
-        $path = 'app/developer_docs/segmentacion-core/descripcion_segmentos/describe_sin_muestreo_ffrr.sqL';
+        $path = 'app/developer_docs/segmentacion-core/descripcion_segmentos/describe_sin_muestreo_ffrr.sql';
         DB::unprepared(file_get_contents($path));
 
     }

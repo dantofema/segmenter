@@ -928,7 +928,20 @@ FROM
      Log::debug('No se pudo generar indice de lado en '.$esquema);
     }
      Log::debug('Se creo indice de lado en '.$esquema);
-}
+    }
+
+    // Generar indice en tabla de listados.
+    public static function createIndex($esquema,$tabla,$campos)
+    {
+        try{
+            DB::statement(
+            "create index IF NOT EXISTS ".$esquema."_".$tabla." on ".$esquema.".".$tabla." 
+               (".$campos.");");
+        }catch(QueryException $e){
+            Log::debug('No se pudo generar indice de lado en '.$esquema);
+        }
+     Log::debug('Se creo indice de lado en '.$esquema);
+    }
 
 // Generar indice en tabla de listados.
 public static function addIndexListadoId($esquema)
