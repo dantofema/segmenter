@@ -74,6 +74,8 @@ Route::get('/setup/muestrea/{esquema}',
 'SetupController@muestreaEsquema')->name('setup.muestrea');
 Route::get('/setup/junta/{esquema}',
 'SetupController@juntarSegmentos')->name('setup.junta');
+Route::get('/setup/index/{esquema}/{tabla}/{cols}',
+'SetupController@createIndex')->name('setup.create.index');
 
 Route::get('/inicio', 'HomeController@index')->name('inicio');
 Route::resource('/listado', 'ListadoController',['only' => [

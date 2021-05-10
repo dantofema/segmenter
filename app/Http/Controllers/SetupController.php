@@ -91,6 +91,13 @@ class SetupController extends Controller
         return view('home');
     }
 
+    public function createIndex($schema,$tabla,$cols)
+    {
+        MyDB::createIndex($schema,$tabla,$cols);
+        flash('Se creo el indice para '.$tabla.' del esquema '.$schema.' para las columnas '.$cols);
+        return view('home');
+    }
+
     public function georeferenciarEsquema($schema)
     {
         MyDB::georeferenciar_listado($schema);
