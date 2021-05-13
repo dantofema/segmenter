@@ -70,16 +70,16 @@ $localidad->codigo}}) {{ $localidad->nombre}}</a>
       <div class="row no-gutters">
         <div class="col">
         <div class="row text-center border">
-            <div class="col-sm-1 border">id</div>
+            <div class="col-sm-1 border" style="display:none" >id</div>
             <div class="col-sm-1 border">Seg</div>
             <div class="col-sm-9 border">Descripción</div>
             <div class="col-sm-1 border">Viviendas</div>
         </div>
         @forelse ($segmentacion_data_listado as $segmento)
         <div class="row border">
-        <div class="col-sm-1 ">{{ $segmento->segmento_id }}</div>
+        <div class="col-sm-1 " style="display:none" >{{ $segmento->segmento_id }}</div>
         <div class="col-sm-1 ">{{ $segmento->seg }}</div>
-        <div class="col-sm-9 ">{{ $segmento->detalle }}</div>
+        <div class="col-sm-9 ">{{ ".  ",".<br/>",str_replace($segmento->detalle) }}</div>
         <div class="col-sm-1 ">{{ $segmento->vivs }}</div>
         </div>
         @empty
