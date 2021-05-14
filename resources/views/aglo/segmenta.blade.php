@@ -44,6 +44,22 @@
     value=magic checked>Mixto</label><br />
   </div>
   <div class="form-group">
+   <label class="control-label" for="radio">Cuestionario: </label>
+   <div class="form-check form-check-inline">
+    <input class="form-check-input" type="radio" name="Cuestionario"
+    id="CuestionarioB" value="B" checked>
+    <label class="form-check-label" for="basico">
+    Básico
+    </label>
+   </div>
+   <div class="form-check">
+     <input class="form-check-input" type="radio" name="Cuestionario"
+     id="CuestionarioA" value="A">
+     <label class="form-check-label" for="basico">
+     Ampliado
+     </label>
+    </div>
+  </div>
     <label class="control-label" for="radio">Parametros:</label><br />
     <div class="">
     <label class="control-label " for="radio">Cantidad deseada de viviendas:</label>
