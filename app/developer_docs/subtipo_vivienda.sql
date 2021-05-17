@@ -1,50 +1,10 @@
---
--- PostgreSQL database dump
---
-
--- Dumped from database version 9.5.16
--- Dumped by pg_dump version 9.5.16
-
-SET client_encoding = 'UTF8';
-SELECT pg_catalog.set_config('search_path', 'public' , false);
-
---
--- Name: subtipo_vivienda; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.subtipo_vivienda (
-    id integer NOT NULL,
-    codigo character(2),
-    nombre character varying(50),
-    fecha_desde timestamp without time zone,
-    fecha_hasta timestamp without time zone
-);
-
-
---
--- Name: subtipo_vivienda_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.subtipo_vivienda_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: subtipo_vivienda_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.subtipo_vivienda_id_seq OWNED BY public.subtipo_vivienda.id;
-
-
---
--- Name: id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.subtipo_vivienda ALTER COLUMN id SET DEFAULT nextval('public.subtipo_vivienda_id_seq'::regclass);
-
-
-
+INSERT INTO public.subtipo_vivienda VALUES (1,'CO1','Obrador');
+INSERT INTO public.subtipo_vivienda VALUES (2,'CO2','Colegio internado');
+INSERT INTO public.subtipo_vivienda VALUES (3,'CO3','Cuartel');
+INSERT INTO public.subtipo_vivienda VALUES (4,'CO4','Hogar de adultos mayores');
+INSERT INTO public.subtipo_vivienda VALUES (5,'CO5','Hogar de niñas, niños y adolescentes');
+INSERT INTO public.subtipo_vivienda VALUES (6,'CO6','Hogar de religiosos');
+INSERT INTO public.subtipo_vivienda VALUES (7,'CO7','Hospital');
+INSERT INTO public.subtipo_vivienda VALUES (8,'CO8','Alojamiento turístico');
+INSERT INTO public.subtipo_vivienda VALUES (9,'CO9','Prisión');
+INSERT INTO public.subtipo_vivienda VALUES (10,'CO10','Otros');
