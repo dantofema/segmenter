@@ -15,7 +15,8 @@ class SubtipoViviendaTable extends Migration
     {
         // SI ya no esta la tabla de subtipo_viviendas.
         if (! Schema::hasTable('subtipo_vivienda')){
-        	 $sql = file_get_contents(app_path() . '/developer_docs/subtipo_vivienda.up.sql');
+        	 $sql = file_get_contents(app_path() .
+                         '/developer_docs/subtipo_vivienda.up.sql');
         	 DB::unprepared($sql);
         }else{
              echo 'No se crea tabla de subtipo_viviendas xq ya se encuentra una.
@@ -32,6 +33,6 @@ class SubtipoViviendaTable extends Migration
     public function down()
     {
         //
-        //Schema::dropIfExists('subtipo_vivienda');
+        Schema::dropIfExists('subtipo_vivienda');
     }
 }

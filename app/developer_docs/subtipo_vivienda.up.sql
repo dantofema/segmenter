@@ -14,7 +14,7 @@ SELECT pg_catalog.set_config('search_path', 'public' , false);
 
 CREATE TABLE public.subtipo_vivienda (
     id integer NOT NULL,
-    codigo character(2),
+    codigo character(4),
     nombre character varying(50),
     fecha_desde timestamp without time zone,
     fecha_hasta timestamp without time zone
