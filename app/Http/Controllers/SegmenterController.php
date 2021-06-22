@@ -93,6 +93,10 @@ class SegmenterController extends Controller
                 $ppdddlll=MyDB::getLoc($tabla,'public');
                 flash($data['file']['caba']='Se detecto CABA: '.$ppdddlll);
                 $codaglo=$ppdddlll;
+            }elseif ($codprov=='06'){
+                $ppdddlll=MyDB::getLoc($tabla,'public');
+                flash($data['file']['data']='Se detecto PBA: '.$ppdddlll);
+                $codaglo=substr($ppdddlll,0,5);
             }else{
                 $codaglo=$aglo_interno;
             }

@@ -36,7 +36,7 @@ class Radio extends Model
 
 
      /**
-      * Relación con Fraccion , un Radio pertenece a Una fracción. 
+      * Relación con Fraccion , un Radio pertenece a Una fracción.
       *
       */
 
@@ -46,7 +46,7 @@ class Radio extends Model
      }
 
      /**
-      * Relación con Departamento, una Fraccion pertenece a Un departamento. 
+      * Relación con Departamento, una Fraccion pertenece a Un departamento.
       *
       */
 /*
@@ -60,7 +60,7 @@ class Radio extends Model
 */
 
      /**
-      * Relación con Localidad, un Radio puede pertenecer a varias localidades. 
+      * Relación con Localidad, un Radio puede pertenecer a varias localidades.
       *
       */
 
@@ -71,12 +71,12 @@ class Radio extends Model
      }
 
      /**
-      * Relación con Aglomerado, un Radio puede pertenecer a varios aglomerado? Espero que solo este en 1. 
+      * Relación con Aglomerado, un Radio puede pertenecer a varios aglomerado? Espero que solo este en 1.
       *
       */
 
      public function aglomerado()
-     {  
+     {
         //TODO
     //    return $this->hasOneThrough(Aglomerado::class,Fraccion::class);
     //    return $this->belongsToMany('App\Model\Localidad', 'radio_localidad');
@@ -94,7 +94,7 @@ class Radio extends Model
 
     /**
      * Segmentar radio a lados completos
-     * 
+     *
      */
     public function segmentar($esquema,$deseadas,$max,$min,$indivisible)
     {
@@ -109,7 +109,7 @@ class Radio extends Model
 
         $segmenta->vista_segmentos_lados_completos($esquema);
         $segmenta->lados_completos_a_tabla_segmentacion_ffrr($esquema,$frac,$radio);
-        $this->resultado = $segmenta->ver_segmentacion().' 
+        $this->resultado = $segmenta->ver_segmentacion().'
         x '.$AppUser.' en '.date("Y-m-d H:i:s");
         $this->save();
         return $this->resultado;
@@ -117,7 +117,7 @@ class Radio extends Model
 
     /**
      * Segmentar radio con metodo magico.
-     * 
+     *
      */
     public function segmentarLucky($esquema,$deseadas,$max,$min,$indivisible)
     {
@@ -134,7 +134,7 @@ class Radio extends Model
         $segmenta->lados_completos_a_tabla_segmentacion_ffrr($esquema,$frac,$radio);
         $segmenta->segmentar_excedidos_ffrr($esquema,$frac,$radio,$max,$deseadas);
 
-        $this->resultado = $segmenta->ver_segmentacion().' 
+        $this->resultado = $segmenta->ver_segmentacion().'
         x '.$AppUser.' en '.date("Y-m-d H:i:s");
         $this->save();
         return $this->resultado;
@@ -195,11 +195,16 @@ class Radio extends Model
                                     $this->fraccion->departamento->codigo.
                                     $this->localidades()->first()->codigoLoc;
                     }else{
-                        $this->_esquema = 'e'.$this->aglomerado()->codigo;
+                        $this->_esquema = 'e'.$this->fraccion->departamento->codigo;
                     }
                 }else
-                { 
+                {
                     $this->_esquema = 'e'.$this->aglomerado()->codigo;
+                    try{
+                        if ($this->fraccion->departamento->provincia->codigo == '06') {
+                            $this->_esquema = 'e'.$this->fraccion->departamento->codigo;
+            }
+                    }catch ($e){};
                 }
            Log::debug('Radio '.$this->codigo.' esperado en esquema: '.$this->_esquema);
         }else{
@@ -256,10 +261,10 @@ WITH shapes (geom, attribute, tipo) AS (
     FROM ".$this->esquema.".listado_geo lg JOIN ".$this->esquema.".segmentacion
     s ON s.listado_id=id_list
     WHERE  substr(mzae,1,5)||substr(mzae,9,4)='".$this->codigo."'
-    ) ".$mzas." 
+    ) ".$mzas."
   ),
   paths (svg,orden) as (
-     SELECT * FROM ( 
+     SELECT * FROM (
      (SELECT concat(
          '<path d= \"',
          ST_AsSVG(st_buffer(geom,3),0), '\" ',
@@ -281,7 +286,7 @@ WITH shapes (geom, attribute, tipo) AS (
           CASE WHEN tipo='mza' then 0
                WHEN tipo='LSV' then 1
           ELSE 10 END as orden
-     FROM shapes 
+     FROM shapes
      ORDER BY attribute asc)
      ".$mzas_labels." ) foo order by orden asc
  )
