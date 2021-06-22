@@ -18,6 +18,9 @@ class InstalarFunctionDescripcion extends Migration
         Eloquent::unguard();
         $path = 'app/developer_docs/segmentacion-core/descripcion_segmentos/descripcion_segmentos.sql';
         DB::unprepared(file_get_contents($path));
+	
+        $path = 'app/developer_docs/segmentacion-core/descripcion_segmentos/manzana_completa.sql';
+        DB::unprepared(file_get_contents($path));
     }
 
     /**
