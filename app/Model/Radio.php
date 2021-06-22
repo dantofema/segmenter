@@ -203,8 +203,10 @@ class Radio extends Model
                     try{
                         if ($this->fraccion->departamento->provincia->codigo == '06') {
                             $this->_esquema = 'e'.$this->fraccion->departamento->codigo;
-            }
-                    }catch ($e){};
+                        }
+                    }catch (Exception $e){
+                         Log::error('Algo muy raro paso: '.$e);
+                    };
                 }
            Log::debug('Radio '.$this->codigo.' esperado en esquema: '.$this->_esquema);
         }else{
