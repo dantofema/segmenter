@@ -160,7 +160,7 @@ function zoom(scale) {
         'target-arrow-color': '#aae',
         'target-arrow-shape': 'triangle',
         'label': function (ele) { return ''; if (ele.data('tipo')=='dobla')
-        return 'd'; else if (ele.data('tipo')=='enfrente') return 'e' else
+        return 'd'; else if (ele.data('tipo')=='enfrente') return 'e'; else
         return 'o'; }
       }
     }
