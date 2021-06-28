@@ -30,7 +30,7 @@ $localidad->codigo}}) {{ $localidad->nombre}}</a>
 <script src="/js/cola.min.js"></script>
 <style>
 #grafo_cy {
-  width: 400px;
+  width: 480px;
   height: 500px;
   display: block;
 }
