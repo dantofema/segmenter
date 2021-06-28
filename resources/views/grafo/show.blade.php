@@ -79,7 +79,8 @@ $localidad->codigo}}) {{ $localidad->nombre}}</a>
         <div class="row border">
         <div class="col-sm-1 " style="display:none" >{{ $segmento->segmento_id }}</div>
         <div class="col-sm-1 ">{{ $segmento->seg }}</div>
-        <div class="col-sm-9 ">{!! str_replace(".  ",".<br/>",$segmento->detalle)  !!}</div>
+        <div class="col-sm-9 ">{!! str_replace(". Manzana ",".<br/>Manzana ",
+                                            str_replace(".  ",".<br/>",$segmento->detalle))  !!}</div>
         <div class="col-sm-1 ">{{ $segmento->vivs }}</div>
         </div>
         @empty
@@ -159,7 +160,7 @@ function zoom(scale) {
         'target-arrow-color': '#aae',
         'target-arrow-shape': 'triangle',
         'label': function (ele) { return ''; if (ele.data('tipo')=='dobla')
-        return 'd'; else if (ele.data('tipo')=='enfrente') return 'e' else
+        return 'd'; else if (ele.data('tipo')=='enfrente') return 'e'; else
         return 'o'; }
       }
     }
