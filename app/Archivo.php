@@ -8,7 +8,7 @@ class Archivo extends Model
 {
 
     // Fucnion para cargar archivo en la base de datos.
-    public function cargar($request_file, $user){
+    public static function cargar($request_file, $user){
 	return true;
     }
 }
