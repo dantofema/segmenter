@@ -212,7 +212,7 @@ class SegmenterController extends Controller
         if (isset($codaglo)){
             MyDB::juntaListadoGeom('e'.$codaglo);
             if($segmenta_auto) {
-                    MyDB::segmentar_equilibrado('e'.$codaglo,36);
+                    MyDB::segmentar_equilibrado($codaglo,36);
                     flash('Segmentado automáticamente a 36 viviendas x segmento')->important();
                     flash('Resultado: '.MyDB::juntar_segmentos('e'.$codaglo));
             }
