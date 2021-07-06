@@ -22,6 +22,7 @@ class SegmenterController extends Controller
 
     public function __construct()
     {
+        $segmenta_auto=false;
         $this->middleware('auth');
         $this->epsgs['22182']='(EPSG:22182) POSGAR 94 / Argentina 2 - San Juan, Mendoza, Neuquén, Chubut, Santa Cruz y Tierra del Fuego...';
         $this->epsgs['22183']='(EPSG:22183) POSGAR 94 / Argentina 3 - Jujuy, Salta, Tucuman, Catamárca, La Rioja, San Luis, La Pampa y Río Negro';
@@ -93,6 +94,7 @@ class SegmenterController extends Controller
                 $ppdddlll=MyDB::getLoc($tabla,'public');
                 flash($data['file']['caba']='Se detecto CABA: '.$ppdddlll);
                 $codaglo=$ppdddlll;
+                $segmenta_auto=true;
             }elseif ($codprov=='06'){
                 $ppdddlll=MyDB::getLoc($tabla,'public');
                 flash($data['file']['data']='Se detecto PBA: '.$ppdddlll);
@@ -208,7 +210,12 @@ class SegmenterController extends Controller
             flash('File geo not valid')->error()->important();
         }
         if (isset($codaglo)){
-            MyDB::juntaListadoGeom('e'.$codaglo);
+            MyDB::juntaListadoGeom('e'.$codaglo);a
+            if($segmenta_auto) {
+                    MyDB::segmentar_equilibrado($schema,36);
+                    flash('Segmentado automáticamente a 26 viviendas x segmento')->important();
+                    flash('Resultado: '.MyDB::juntar_segmentos($schema));
+            }
         }
     }
    }
