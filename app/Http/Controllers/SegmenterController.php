@@ -210,11 +210,11 @@ class SegmenterController extends Controller
             flash('File geo not valid')->error()->important();
         }
         if (isset($codaglo)){
-            MyDB::juntaListadoGeom('e'.$codaglo);a
+            MyDB::juntaListadoGeom('e'.$codaglo);
             if($segmenta_auto) {
-                    MyDB::segmentar_equilibrado($schema,36);
-                    flash('Segmentado automáticamente a 26 viviendas x segmento')->important();
-                    flash('Resultado: '.MyDB::juntar_segmentos($schema));
+                    MyDB::segmentar_equilibrado('e'.$codaglo,36);
+                    flash('Segmentado automáticamente a 36 viviendas x segmento')->important();
+                    flash('Resultado: '.MyDB::juntar_segmentos('e'.$codaglo));
             }
         }
     }
