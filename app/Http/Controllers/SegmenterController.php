@@ -108,6 +108,7 @@ class SegmenterController extends Controller
 
             MyDB::moverDBF(storage_path().'/app/'.$data['file']['c1'],$codaglo);
             $data['file']['info_dbf']=MyDB::infoDBF('listado',$codaglo);
+            flash('Subido:'.$data['file']['info_dbf'])->important();
 //            $aglo= Aglomerado::where('codigo', $codaglo)->first();
             $data['file']['codigo_usado']=$codaglo;
         }
