@@ -44,6 +44,7 @@ class SegmenterController extends Controller
     {
     $AppUser= Auth::user();
     $data = [];
+    $segmenta_auto=false;
     $epsg_id = $request->input('epsg_id')?$request->input('epsg_id'):'22183';
     $data['epsg']['id']=$epsg_id;
     flash('SRS: '.$data['epsg']['id']);
