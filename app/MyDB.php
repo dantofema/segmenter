@@ -361,7 +361,7 @@ FROM
                 self::addSequenceSegmentos('e'.$esquema,false);
                 self::generarSegmentacionNula('e'.$esquema);
                 if ( DB::statement("SELECT indec.segmentar_equilibrado('e".$esquema."',".$deseado.");") ){
-                //    MyDB::georeferenciar_segmentacion($esquema);
+                	self::georeferenciar_segmentacion($esquema);
                 // llamar generar r3 como tabla resultado de function indec.r3(agl)
                 ( DB::statement("SELECT indec.r3('e".$esquema."');") );
                 ( DB::statement("SELECT indec.descripcion_segmentos('e".$esquema."');") );
@@ -522,7 +522,7 @@ FROM
             try{
 
                 DB::statement("DROP TABLE IF EXISTS ".$esquema.".listado_geo;");
-                $resultado= DB::select("
+			$query="
                 WITH listado as (
             SELECT id, l.prov, nom_provin, ups, nro_area, l.dpto, nom_dpto, l.codaglo, l.codloc, 
                 nom_loc, codent, nom_ent, l.frac, l.radio, l.mza, l.lado, 
@@ -622,7 +622,10 @@ FROM
             (l.lado::integer=e.lado and 
                 e.mza like 
                 '%'||btrim(to_char(l.frac::integer, '09'::text))::character varying(3)||btrim(to_char(l.radio::integer, '09'::text))::character varying(3)||btrim(to_char(l.mza::integer, '099'::text))::character varying(3) 
-            );");
+            );";
+            Log::debug(' Georreferenciando: '.$query);
+		
+	    $resultado= DB::select($query);
 
             if (in_array($esquema,array ("e02014010","e02035010","e02021010")))
             // Agrego las excpeciones para corregir corrimiento en Comuna 2 y 5
