@@ -105,7 +105,7 @@ class SetupController extends Controller
         return view('home');
     }
 
-    public function georeferenciarSegmentacion($schema)
+    public function georeferenciarSegmentacionEsquema($schema)
     {
         // Georreferrenciar segmentación...
         MyDB::georeferenciar_segmentacion($schema);
