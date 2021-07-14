@@ -68,6 +68,8 @@ Route::get('/setup/index/id/{tabla}',
 'SetupController@addIndexId')->name('setup.indexId');
 Route::get('/setup/geo/{esquema}',
 'SetupController@georeferenciarEsquema')->name('setup.geo');
+Route::get('/setup/geoseg/{esquema}',
+'SetupController@georeferenciarSegmentacionEsquema')->name('setup.geoseg');
 Route::get('/setup/segmenta/{esquema}',
 'SetupController@segmentarEsquema')->name('setup.segmenta');
 Route::get('/setup/muestrea/{esquema}',

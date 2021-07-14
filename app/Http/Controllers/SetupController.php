@@ -105,6 +105,14 @@ class SetupController extends Controller
         return view('home');
     }
 
+    public function georeferenciarSegmentacion($schema)
+    {
+        // Georreferrenciar segmentación...
+        MyDB::georeferenciar_segmentacion($schema);
+        flash('Se georeferencio el listado del esquema '.$schema);
+        return view('home');
+    }
+
     public function segmentarEsquema($schema)
     {
         MyDB::segmentar_equilibrado($schema,36);
