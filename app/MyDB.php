@@ -716,7 +716,7 @@ FROM
                 end
                 END as wkb_geometry, e.ogc_fid||'-'||l.id id ,e.ogc_fid id_lin,l.id id_list, wkb_geometry wkb_geometry_lado,
                     codigo10, nomencla, codigo20, 
-                        tipo, nombre, e.lado ladoe, desde, hasta,e.mza mzae
+                        tipo, nombre, e.lado ladoe, desde, hasta,e.mza mzae,
                         frac, radio, l.mza, l.lado, ccalle, ncalle, l.nrocatastr, piso,casa,dpto_habit,sector,edificio,entrada,tipoviv, 
                     descripcio,descripci2 , accion
         INTO ".$esquema.".listado_segmentado_geo
