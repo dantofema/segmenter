@@ -307,6 +307,22 @@ FROM
             }
         }
 
+        public static function limpiar_esquema($esquema)
+        {
+           // Comienzan limíeza de esquema
+               try {
+           	    DB::beginTransaction();
+                    DB::statement('DROP SCHEMA '.$esquema.' CASCADE;');
+		    DB::commit();
+		    Log::info('Se eliminó el esquema '.$esquema);
+	            return true;
+                }catch (\Illuminate\Database\QueryException $exception) {
+                    Log::error('No se pudo limpiar el esquema: '.$exception);
+                    DB::Rollback();
+        	    return false;
+                }
+        }
+
         public static function agregarsegisegd($esquema)
         {
             if (Schema::hasTable('e'.$esquema.'.arc')) {

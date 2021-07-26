@@ -120,6 +120,13 @@ class SetupController extends Controller
         return view('home');
     }
 
+    public function limpiarEsquema($schema)
+    {
+        MyDB::limpiar_esquema($schema);
+        flash('Limpieza de esquema '.$schema);
+	return view('home');
+    }
+    
     public function juntarSegmentos($schema)
     {
         flash('Resultado: '.MyDB::juntar_segmentos($schema));

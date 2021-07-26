@@ -72,6 +72,8 @@ Route::get('/setup/geoseg/{esquema}',
 'SetupController@georeferenciarSegmentacionEsquema')->name('setup.geoseg');
 Route::get('/setup/segmenta/{esquema}',
 'SetupController@segmentarEsquema')->name('setup.segmenta');
+Route::get('/setup/limpia/{esquema}',
+'SetupController@limpiarEsquema')->name('setup.limpia');
 Route::get('/setup/muestrea/{esquema}',
 'SetupController@muestreaEsquema')->name('setup.muestrea');
 Route::get('/setup/junta/{esquema}',
