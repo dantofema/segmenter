@@ -100,15 +100,30 @@ $localidad->codigo}}) {{ $localidad->nombre}}</a>
     var centerY = parseFloat(viewbox[3]) / 2;
     var matrixGroup = svg.getElementById("matrix-group");
 
+
+    function pan(dx, dy) {     	
+      transformMatrix[4] += dx;
+      transformMatrix[5] += dy;
+                
+      var newMatrix = "matrix(" +  transformMatrix.join(' ') + ")";
+      matrixGroup.setAttributeNS(null, "transform", newMatrix);
+    }
+
+
 function zoom(scale) {
   for (var i = 0; i < 4; i++) {
     transformMatrix[i] *= scale;
   }
-  transformMatrix[4] = centerX;
-  transformMatrix[5] = centerY;
+  transformMatrix[4] += (1 - scale) * centerX;
+  transformMatrix[5] += (1 - scale) * centerY;  
+svg.viewBox.baseVal.x*=scale;
+svg.viewBox.baseVal.y*=scale;
+//  transformMatrix[4] = centerX;
+//  transformMatrix[5] = centerY;
 		        
   var newMatrix = "matrix(" +  transformMatrix.join(' ') + ")";
   matrixGroup.setAttributeNS(null, "transform", newMatrix);
+  console.log(viewbox);
   console.log(scale);
   console.log(transformMatrix);
 }
