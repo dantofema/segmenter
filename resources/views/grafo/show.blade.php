@@ -116,14 +116,15 @@ function zoom(scale) {
   }
   transformMatrix[4] += (1 - scale) * centerX;
   transformMatrix[5] += (1 - scale) * centerY;  
-svg.viewBox.baseVal.x*=scale;
-svg.viewBox.baseVal.y*=scale;
+
+  svg.viewBox.baseVal.x*=scale;
+  svg.viewBox.baseVal.y*=scale;
 //  transformMatrix[4] = centerX;
 //  transformMatrix[5] = centerY;
 		        
   var newMatrix = "matrix(" +  transformMatrix.join(' ') + ")";
   matrixGroup.setAttributeNS(null, "transform", newMatrix);
-  console.log(viewbox);
+  console.log(svg.getAttributeNS(null, "viewBox").split(" "));
   console.log(scale);
   console.log(transformMatrix);
 }
