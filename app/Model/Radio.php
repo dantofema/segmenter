@@ -220,7 +220,7 @@ class Radio extends Model
     {
         // return SVG Radio? Listado? Segmentación?
         if (Schema::hasTable($this->esquema.'.listado_geo')){
-            $height=800;
+            $height=600;
             $width=600;
             $escalar=false;
             $extent=DB::select("SELECT box2d(st_collect(wkb_geometry)) box FROM
