@@ -155,6 +155,12 @@ FROM
         '.$esquema.'.'.$tabla.' Limit 1;')[0]->link);
     }
 
+    public static function procesarPxRad($tabla,$esquema)
+    {
+        return response()->json(DB::select('SELECT codprov||coddepto||codloc as link,count(*) FROM
+        '.$esquema.'.'.$tabla.' GROUP BY codprov||coddepto||codloc ;'));
+    }
+
 //         $tabla = strtolower( substr($file_name,strrpos($file_name,'/')+1,-4) );
     public static function moverDBF($file_name,$esquema)
     {

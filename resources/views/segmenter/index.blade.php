@@ -67,6 +67,12 @@
                         <input type="file" class="form-control-file" id="c1" name="c1">
                     </div>
                 </div>
+                <div class="form-group row">
+                    <label for="pxrad" class="col-sm-2 col-form-label ">PxxRad (del departamento)</label>
+                    <div class="col-sm-10">
+                        <input type="file" class="form-control-file" id="pxrad" name="pxrad">
+                    </div>
+                </div>
                 <button type="submit" class="btn btn-primary">Enviar</button>
             </form>
         </div>

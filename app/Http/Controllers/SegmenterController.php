@@ -221,7 +221,43 @@ class SegmenterController extends Controller
         }
     }
    }
+    if ($request->hasFile('pxrad')) {
+        $random_name='t_'.$request->pxrad->hashName();
+        $data['file_pxrad']['pxrad'] = $request->pxrad->storeAs('segmentador', $random_name); //.'.'.$request->c1->getClientOriginalExtension());
+        $original_extension = strtolower($request->pxrad->getClientOriginalExtension());
+        $original_name = $request->pxrad->getClientOriginalName();
 
+        //Si no se cargo geometria tomo del nombre del listado los utilmos 8
+        //caracteres del nombre, puede ser fecha
+        $codaglo=isset($codaglo)?$codaglo:substr($original_name,-13,9);
+
+	     if ($original_extension == 'csv'){
+		$data['file_pxrad']['csv_info'] = 'Se Cargo un csv en pxrad, no esperado.';
+	     }
+	     elseif ($original_extension == 'dbf'){
+		$data['file_pxrad']['dbf_info'] = 'Se Cargo una pxrad en formato dbf.';
+		// Subo DBF con pgdbf a una tabla temporal.
+            	$process = Process::fromShellCommandline('pgdbf -s latin1 $pxrad_dbf_file | psql -h $host -p $port -U $user $db');
+		$process->run(null, ['pxrad_dbf_file' => storage_path().'/app/'.$data['file_pxrad']['pxrad'],'db'=>Config::get('database.connections.pgsql.database'),'host'=>Config::get('database.connections.pgsql.host'),'user'=>Config::get('database.connections.pgsql.username'),'port'=>Config::get('database.connections.pgsql.port'),'PGPASSWORD'=>Config::get('database.connections.pgsql.password')]);
+        // executes after the command finishes
+        if (!$process->isSuccessful()) {
+            flash($data['file']['error']=$process->getErrorOutput())->important();
+	}else{
+	    flash($data['file_pxrad']['info']=$process->getOutput())->important();	
+	    // Leo dentro de la tabla importada desde el dbf 
+            
+            $tabla = strtolower(
+            substr($data['file_pxrad']['pxrad'],strrpos($data['file_pxrad']['pxrad'],'/')+1,-4) );
+            $data['pxrad']['info']=MyDB::procesarPxRad($tabla,'public');
+	    flash('PxRad: '.$data['pxrad']['info'])->important();
+	}
+
+	     }
+	    $data['file']['pxrad']='Si';
+    }else{
+	    $data['file_pxrad']['pxrad']='none pxrad';
+	    $data['file']['pxrad']='none';
+    }
 
      if (Archivo::cargar($request, Auth::user())) {
         return view('segmenter/index', ['data' => $data,'epsgs'=> $this->epsgs]);
