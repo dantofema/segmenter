@@ -157,8 +157,42 @@ FROM
 
     public static function procesarPxRad($tabla,$esquema)
     {
-        return response()->json(DB::select('SELECT codprov||coddepto||codloc as link,count(*) FROM
-        '.$esquema.'.'.$tabla.' GROUP BY codprov||coddepto||codloc ;'));
+	    try {
+		    $resumen = DB::select('SELECT * FROM 
+                   '.$esquema.'.'.$tabla.' limit 1;');
+                 flash('Se pudo leer el registro en '.$tabla.' . Ejemplo : '.collect($resumen)->toJson())->success()->important();
+            }catch (\Illuminate\Database\QueryException $exception) {
+		  Log::error('No se cargó correctamente la PxRad: '.$exception);
+		  flash( $resumen='NO se cargó correctamente la PxRad')->error()->important();
+	    }
+	    try {
+	    $radios = DB::select('SELECT codprov, coddepto, codloc, codent, codaglo,
+		    frac2001, radio2001, 
+                    frac2010, radio2010, tiporad10, 
+                    tiporad20, frac2020, radio2020, tiporad20,
+                    nomloc, noment,total_pobl 
+                   FROM
+		   '.$esquema.'.'.$tabla.' ;');
+	    $resumen = DB::select('SELECT array_agg(distinct codprov) prov, 
+		    array_agg( distinct codprov|| coddepto) depto,
+		    array_length( array_agg( distinct codprov|| coddepto|| codloc),1) localidades,
+		    array_length( array_agg( distinct codprov|| coddepto|| frac2020),1) frac2020,
+		    array_length( array_agg( distinct codprov|| coddepto|| frac2020 || radio2020),1) rad2020 FROM
+                   '.$esquema.'.'.$tabla.' ;');
+
+	     flash(collect($resumen)->toJson());
+            }catch (\Illuminate\Database\QueryException $exception) {
+		    Log::error('No se valido correctamente la PxRad: '.$exception);
+		    flash('No se valido correctamente la PxRad')->error()->important();
+	    }
+	    try{
+		    $resumen=DB::select('SELECT codprov,coddepto,codloc,count(*) as radios FROM
+        '.$esquema.'.'.$tabla.' GROUP BY codprov,coddepto,codloc ;');
+            }catch (\Illuminate\Database\QueryException $exception) {
+		    Log::error('No se cargó correctamente la PxRad: '.$exception);
+		  flash( $resumen='NO se cargó correctamente la PxRad')->error()->important();
+	    }
+		return collect($resumen)->toJson();
     }
 
 //         $tabla = strtolower( substr($file_name,strrpos($file_name,'/')+1,-4) );
