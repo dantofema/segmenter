@@ -237,7 +237,7 @@ class SegmenterController extends Controller
 	     elseif ($original_extension == 'dbf'){
 		$data['file_pxrad']['dbf_info'] = 'Se Cargo una pxrad en formato dbf.';
 		// Subo DBF con pgdbf a una tabla temporal.
-            	$process = Process::fromShellCommandline('pgdbf -s latin1 $pxrad_dbf_file | psql -h $host -p $port -U $user $db');
+            	$process = Process::fromShellCommandline('pgdbf -s UTF8 $pxrad_dbf_file | psql -h $host -p $port -U $user $db');
 		$process->run(null, ['pxrad_dbf_file' => storage_path().'/app/'.$data['file_pxrad']['pxrad'],'db'=>Config::get('database.connections.pgsql.database'),'host'=>Config::get('database.connections.pgsql.host'),'user'=>Config::get('database.connections.pgsql.username'),'port'=>Config::get('database.connections.pgsql.port'),'PGPASSWORD'=>Config::get('database.connections.pgsql.password')]);
         // executes after the command finishes
         if (!$process->isSuccessful()) {
@@ -249,7 +249,6 @@ class SegmenterController extends Controller
             $tabla = strtolower(
             substr($data['file_pxrad']['pxrad'],strrpos($data['file_pxrad']['pxrad'],'/')+1,-4) );
             $data['pxrad']['info']=MyDB::procesarPxRad($tabla,'public');
-	    flash('PxRad: '.$data['pxrad']['info'])->important();
 	}
 
 	     }
