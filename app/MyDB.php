@@ -160,7 +160,9 @@ FROM
 	    try {
 		    $resumen = DB::select('SELECT * FROM 
                    '.$esquema.'.'.$tabla.' limit 1;');
-                 flash('Se pudo leer el registro en '.$tabla.' . Ejemplo : '.collect($resumen)->toJson())->success()->important();
+		    flash('Se pudo leer el registro en '.$tabla.' . Ejemplo : '.
+			    (collect($resumen)->toJson(JSON_UNESCAPED_UNICODE))
+		    )->success()->important();
             }catch (\Illuminate\Database\QueryException $exception) {
 		  Log::error('No se cargó correctamente la PxRad: '.$exception);
 		  flash( $resumen='NO se cargó correctamente la PxRad')->error()->important();
@@ -182,14 +184,14 @@ FROM
 
 	     flash(collect($resumen)->toJson());
             }catch (\Illuminate\Database\QueryException $exception) {
-		    Log::error('No se valido correctamente la PxRad: '.$exception);
-		    flash('No se valido correctamente la PxRad')->error()->important();
+		    Log::error('No se valido correctamente la PxRad: ('.collect($resumen)->toJson(JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE).' )' .$exception);
+		    flash('No se valido correctamente la PxRad ')->error()->important();
 	    }
 	    try{
 		    $resumen=DB::select('SELECT codprov,coddepto,codloc,count(*) as radios FROM
         '.$esquema.'.'.$tabla.' GROUP BY codprov,coddepto,codloc ;');
             }catch (\Illuminate\Database\QueryException $exception) {
-		    Log::error('No se cargó correctamente la PxRad: '.$exception);
+		    Log::error('No se cargó correctamente la PxRad: '.$resumen.'' .$exception);
 		  flash( $resumen='NO se cargó correctamente la PxRad')->error()->important();
 	    }
 		return collect($resumen)->toJson();
