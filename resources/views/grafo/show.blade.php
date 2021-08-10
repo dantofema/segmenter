@@ -50,10 +50,24 @@ $localidad->codigo}}) {{ $localidad->nombre}}</a>
 <div class="container-xl" >
     <div class="col no-gutters">
       <div class="row no-gutters">
-        <div class="col-sm-12">
-        <pre style="line-height: initial;font-size: 75%;">
-        {{ $radio->resultado ?? 'No hay resultado de segmenta' }}
-        </pre>
+        <div class="col">
+        <div class="row text-center border">
+            <div class="col-sm-1 border" style="display:none" >id</div>
+            <div class="col-sm- border">Seg</div>
+            <div class="col-sm-10 border">Descripción</div>
+            <div class="col-sm-1 border">Viviendas</div>
+        </div>
+        @forelse ($segmentacion_data_listado as $segmento)
+        <div class="row border">
+        <div class="col-sm-1 " style="display:none" >{{ $segmento->segmento_id }}</div>
+        <div class="col-sm- ">{{ $segmento->seg }}</div>
+        <div class="col-sm-10 ">{!! str_replace(". Manzana ",".<br/>Manzana ",
+                                            str_replace(".  ",".<br/>",$segmento->detalle))  !!}</div>
+        <div class="col-sm-1 ">{{ $segmento->vivs }}</div>
+        </div>
+        @empty
+            <p>No hay segmentos</p>
+        @endforelse
         </div>
       </div>
       <div class="row no-gutters">
@@ -63,29 +77,15 @@ $localidad->codigo}}) {{ $localidad->nombre}}</a>
                title="Grafo de adyacencias" >
             </div>
             <div class="text-center">
-        	  <button type="button" class="btn btn-primary" onClick="ordenar();"value="Ordenar">ReOrdenar</button>
+       	     <button type="button" class="btn btn-primary" onClick="ordenar();"value="Ordenar">ReOrdenar</button>
             </div>
-        </div>  
+        </div>
       </div>
       <div class="row no-gutters">
-        <div class="col">
-        <div class="row text-center border">
-            <div class="col-sm-1 border" style="display:none" >id</div>
-            <div class="col-sm-1 border">Seg</div>
-            <div class="col-sm-9 border">Descripción</div>
-            <div class="col-sm-1 border">Viviendas</div>
-        </div>
-        @forelse ($segmentacion_data_listado as $segmento)
-        <div class="row border">
-        <div class="col-sm-1 " style="display:none" >{{ $segmento->segmento_id }}</div>
-        <div class="col-sm-1 ">{{ $segmento->seg }}</div>
-        <div class="col-sm-9 ">{!! str_replace(". Manzana ",".<br/>Manzana ",
-                                            str_replace(".  ",".<br/>",$segmento->detalle))  !!}</div>
-        <div class="col-sm-1 ">{{ $segmento->vivs }}</div>
-        </div>
-        @empty
-            <p>No hay segmentos</p>
-        @endforelse
+        <div class="col-sm-12">
+        <pre style="line-height: initial;font-size: 75%;">
+        {{ $radio->resultado ?? 'No hay resultado de segmenta' }}
+        </pre>
         </div>
       </div>
     </div>
@@ -100,15 +100,31 @@ $localidad->codigo}}) {{ $localidad->nombre}}</a>
     var centerY = parseFloat(viewbox[3]) / 2;
     var matrixGroup = svg.getElementById("matrix-group");
 
+
+    function pan(dx, dy) {     	
+      transformMatrix[4] += dx;
+      transformMatrix[5] += dy;
+                
+      var newMatrix = "matrix(" +  transformMatrix.join(' ') + ")";
+      matrixGroup.setAttributeNS(null, "transform", newMatrix);
+    }
+
+
 function zoom(scale) {
   for (var i = 0; i < 4; i++) {
     transformMatrix[i] *= scale;
   }
-  transformMatrix[4] = centerX;
-  transformMatrix[5] = centerY;
+  transformMatrix[4] += (1 - scale) * centerX;
+  transformMatrix[5] += (1 - scale) * centerY;  
+
+  svg.viewBox.baseVal.x*=scale;
+  svg.viewBox.baseVal.y*=scale;
+//  transformMatrix[4] = centerX;
+//  transformMatrix[5] = centerY;
 		        
   var newMatrix = "matrix(" +  transformMatrix.join(' ') + ")";
   matrixGroup.setAttributeNS(null, "transform", newMatrix);
+  console.log(svg.getAttributeNS(null, "viewBox").split(" "));
   console.log(scale);
   console.log(transformMatrix);
 }

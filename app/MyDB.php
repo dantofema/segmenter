@@ -155,6 +155,48 @@ FROM
         '.$esquema.'.'.$tabla.' Limit 1;')[0]->link);
     }
 
+    public static function procesarPxRad($tabla,$esquema)
+    {
+	    try {
+		    $resumen = DB::select('SELECT * FROM 
+                   '.$esquema.'.'.$tabla.' limit 1;');
+		    flash('Se pudo leer el registro en '.$tabla.' . Ejemplo : '.
+			    (collect($resumen)->toJson(JSON_UNESCAPED_UNICODE))
+		    )->success()->important();
+            }catch (\Illuminate\Database\QueryException $exception) {
+		  Log::error('No se cargó correctamente la PxRad: '.$exception);
+		  flash( $resumen='NO se cargó correctamente la PxRad')->error()->important();
+	    }
+	    try {
+	    $radios = DB::select('SELECT codprov, coddepto, codloc, codent, codaglo,
+		    frac2001, radio2001, 
+                    frac2010, radio2010, tiporad10, 
+                    tiporad20, frac2020, radio2020, tiporad20,
+                    nomloc, noment,total_pobl 
+                   FROM
+		   '.$esquema.'.'.$tabla.' ;');
+	    $resumen = DB::select('SELECT array_agg(distinct codprov) prov, 
+		    array_agg( distinct codprov|| coddepto) depto,
+		    array_length( array_agg( distinct codprov|| coddepto|| codloc),1) localidades,
+		    array_length( array_agg( distinct codprov|| coddepto|| frac2020),1) frac2020,
+		    array_length( array_agg( distinct codprov|| coddepto|| frac2020 || radio2020),1) rad2020 FROM
+                   '.$esquema.'.'.$tabla.' ;');
+
+	     flash(collect($resumen)->toJson());
+            }catch (\Illuminate\Database\QueryException $exception) {
+		    Log::error('No se valido correctamente la PxRad: ('.collect($resumen)->toJson(JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE).' )' .$exception);
+		    flash('No se valido correctamente la PxRad ')->error()->important();
+	    }
+	    try{
+		    $resumen=DB::select('SELECT codprov,coddepto,codloc,count(*) as radios FROM
+        '.$esquema.'.'.$tabla.' GROUP BY codprov,coddepto,codloc ;');
+            }catch (\Illuminate\Database\QueryException $exception) {
+		    Log::error('No se cargó correctamente la PxRad: '.$resumen.'' .$exception);
+		  flash( $resumen='NO se cargó correctamente la PxRad')->error()->important();
+	    }
+		return collect($resumen)->toJson();
+    }
+
 //         $tabla = strtolower( substr($file_name,strrpos($file_name,'/')+1,-4) );
     public static function moverDBF($file_name,$esquema)
     {
@@ -307,6 +349,22 @@ FROM
             }
         }
 
+        public static function limpiar_esquema($esquema)
+        {
+           // Comienzan limíeza de esquema
+               try {
+           	    DB::beginTransaction();
+                    DB::statement('DROP SCHEMA '.$esquema.' CASCADE;');
+		    DB::commit();
+		    Log::info('Se eliminó el esquema '.$esquema);
+	            return true;
+                }catch (\Illuminate\Database\QueryException $exception) {
+                    Log::error('No se pudo limpiar el esquema: '.$exception);
+                    DB::Rollback();
+        	    return false;
+                }
+        }
+
         public static function agregarsegisegd($esquema)
         {
             if (Schema::hasTable('e'.$esquema.'.arc')) {
@@ -361,7 +419,7 @@ FROM
                 self::addSequenceSegmentos('e'.$esquema,false);
                 self::generarSegmentacionNula('e'.$esquema);
                 if ( DB::statement("SELECT indec.segmentar_equilibrado('e".$esquema."',".$deseado.");") ){
-                //    MyDB::georeferenciar_segmentacion($esquema);
+                	self::georeferenciar_segmentacion($esquema);
                 // llamar generar r3 como tabla resultado de function indec.r3(agl)
                 ( DB::statement("SELECT indec.r3('e".$esquema."');") );
                 ( DB::statement("SELECT indec.descripcion_segmentos('e".$esquema."');") );
@@ -522,7 +580,7 @@ FROM
             try{
 
                 DB::statement("DROP TABLE IF EXISTS ".$esquema.".listado_geo;");
-                $resultado= DB::select("
+			$query="
                 WITH listado as (
             SELECT id, l.prov, nom_provin, ups, nro_area, l.dpto, nom_dpto, l.codaglo, l.codloc, 
                 nom_loc, codent, nom_ent, l.frac, l.radio, l.mza, l.lado, 
@@ -622,7 +680,10 @@ FROM
             (l.lado::integer=e.lado and 
                 e.mza like 
                 '%'||btrim(to_char(l.frac::integer, '09'::text))::character varying(3)||btrim(to_char(l.radio::integer, '09'::text))::character varying(3)||btrim(to_char(l.mza::integer, '099'::text))::character varying(3) 
-            );");
+            );";
+            Log::debug(' Georreferenciando: '.$query);
+		
+	    $resultado= DB::select($query);
 
             if (in_array($esquema,array ("e02014010","e02035010","e02021010")))
             // Agrego las excpeciones para corregir corrimiento en Comuna 2 y 5
@@ -713,7 +774,7 @@ FROM
                 end
                 END as wkb_geometry, e.ogc_fid||'-'||l.id id ,e.ogc_fid id_lin,l.id id_list, wkb_geometry wkb_geometry_lado,
                     codigo10, nomencla, codigo20, 
-                        tipo, nombre, e.lado ladoe, desde, hasta,e.mza mzae
+                        tipo, nombre, e.lado ladoe, desde, hasta,e.mza mzae,
                         frac, radio, l.mza, l.lado, ccalle, ncalle, l.nrocatastr, piso,casa,dpto_habit,sector,edificio,entrada,tipoviv, 
                     descripcio,descripci2 , accion
         INTO ".$esquema.".listado_segmentado_geo
