@@ -25,7 +25,7 @@ sudo apt install pgdbf postgis
 * python3 pip psycopg2
 ```
 sudo apt install python3-dev python3-pip
-pip install psycopg2
+pip3 install psycopg2
 ```
 
 ## Para instalar el entorno de desarrollo se debe, (según extracto de [guia][1]):
