@@ -26,109 +26,110 @@ class MyDB extends Model
             DB::commit();
         }catch(QueryException $e){
             DB::Rollback();
-            $result=null;
-            Log::error('No se pudo muestrar el esquema '.$esquema.' Error:'.$e);
+                $result=null;
+                Log::error('No se pudo muestrar el esquema '.$esquema.' Error:'.$e);
+            }
+            Log::debug('Se muestreo el esquema '.$esquema.' !');
+            return $result;
         }
-        Log::debug('Se muestreo el esquema '.$esquema.' !');
-        return $result;
-    }
 
-    // Segmenta a listado lso lados excedidos segun umbral
-    // 
-    public static function 
-    segmentar_excedidos_ffrr($esquema,$frac,$radio,$umbral=20,$deseado=20)
-    {
-        try{
-            Log::debug('Resegmentando segmentos excedidos de fraccion
-            '.$frac.', radio '.$radio);
-            DB::statement(" SELECT indec.segmentar_excedidos_ffrr(
-            'e".$esquema."',".$frac.",".$radio.",".$umbral.",".$deseado.");");
-        }catch(QueryException $e){
-            Log::warning('No se pudo segmentar segmentos excedidos, reintentando...');
-            self::cambiarSegmentarBigInt($esquema);
-            self::recrea_vista_segmentos_lados_completos($esquema);
+        // Segmenta a listado lso lados excedidos segun umbral
+        // 
+        public static function 
+        segmentar_excedidos_ffrr($esquema,$frac,$radio,$umbral=20,$deseado=20)
+        {
             try{
+                Log::debug('Resegmentando segmentos excedidos de fraccion
+                '.$frac.', radio '.$radio);
                 DB::statement(" SELECT indec.segmentar_excedidos_ffrr(
                 'e".$esquema."',".$frac.",".$radio.",".$umbral.",".$deseado.");");
             }catch(QueryException $e){
-                Log::error('No se pudo segmentar segmentos excedidos');
-            }
-        }
-        Log::debug('Se resegmentaron los segmentos excedidos!');
-    }
-
-    // Propaga la segmentacion a partir de lados completos hacia la tabla de
-    // segmentacion.
-    public static function 
-    lados_completos_a_tabla_segmentacion_ffrr($esquema,$frac,$radio)
-    {
-        try{
-            self::generarSegmentacionVacia($esquema);
-            DB::statement("SELECT
-            indec.lados_completos_a_tabla_segmentacion_ffrr('e".$esquema."',".$frac.",".$radio.");");
-            DB::statement("SELECT indec.segmentos_desde_hasta('e".$esquema."');");
-        }catch(QueryException $e){
-            self::addSequenceSegmentos('e'.$esquema);
-            Log::warning('Create sequence xq no exisitia...');
-            self::recrea_vista_segmentos_lados_completos($esquema);
-            DB::statement("SELECT
-            indec.lados_completos_a_tabla_segmentacion_ffrr('e".$esquema."',".$frac.",".$radio.");");
-        
-        }
-        Log::debug('Propagando segmentacion lados completos de tabla arc a
-        tabla segmentacion -> '.$esquema);
-    }
-
-    // crea o reemplaza la vista de segmentos generados por lados completos. 
-    public static function recrea_vista_segmentos_lados_completos($esquema)
-    {
-        DB::statement("SELECT
-        indec.v_segmentos_lados_completos('e".$esquema."');");
-        Log::debug('Creando vista manzana lado numero segmento en radio, cant
-        viviendas -> '.$esquema);
-    }
-
-    // Obtengo segmentos excedidos. 
-    public static function segmentos_excedidos($esquema,$vivs,Radio $radio=null)
-    {
-            if ($radio){
-                Log::debug('Filtro excedidos del radio: '.$radio->codigo.'
-                aplicando ppddcccffrr like 
-                '.substr($radio->codigo,0,5).'___'.substr($radio->codigo,-4));
-                    $result = DB::select("SELECT * FROM e".$esquema.".v_segmentos_lados_completos
-                    WHERE vivs > ".$vivs." and ppdddcccffrr like
-                    '".substr($radio->codigo,0,5)."___".substr($radio->codigo,-4)."';");
-                    }
-                else{
-                    $result = DB::select("SELECT * FROM e".$esquema.".v_segmentos_lados_completos
-                WHERE vivs > ".$vivs.";");
+                Log::warning('No se pudo segmentar segmentos excedidos, reintentando...');
+                self::cambiarSegmentarBigInt($esquema);
+                self::recrea_vista_segmentos_lados_completos($esquema);
+                try{
+                    DB::statement(" SELECT indec.segmentar_excedidos_ffrr(
+                    'e".$esquema."',".$frac.",".$radio.",".$umbral.",".$deseado.");");
+                }catch(QueryException $e){
+                    Log::error('No se pudo segmentar segmentos excedidos'.$e);
+                    return 0;
                 }
-        return $result;
-    }
+            }
+            Log::debug('Se resegmentaron los segmentos excedidos!');
+        }
 
-    // Junta los segmentos con 0 vivendas al segmneto menor cercano.
-    public static function juntar_segmentos($esquema)
-    {
-        $result = DB::statement("SELECT indec.juntar_segmentos('".$esquema."')");
-        Log::debug('Juntando segmentos del esquema-> '.$esquema);
-        return $result;
-    }
+        // Propaga la segmentacion a partir de lados completos hacia la tabla de
+        // segmentacion.
+        public static function 
+        lados_completos_a_tabla_segmentacion_ffrr($esquema,$frac,$radio)
+        {
+            try{
+                self::generarSegmentacionVacia($esquema);
+                DB::statement("SELECT
+                indec.lados_completos_a_tabla_segmentacion_ffrr('e".$esquema."',".$frac.",".$radio.");");
+                DB::statement("SELECT indec.segmentos_desde_hasta('e".$esquema."');");
+            }catch(QueryException $e){
+                self::addSequenceSegmentos('e'.$esquema);
+                Log::warning('Create sequence xq no exisitia...');
+                self::recrea_vista_segmentos_lados_completos($esquema);
+                DB::statement("SELECT
+                indec.lados_completos_a_tabla_segmentacion_ffrr('e".$esquema."',".$frac.",".$radio.");");
+            
+            }
+            Log::debug('Propagando segmentacion lados completos de tabla arc a
+            tabla segmentacion -> '.$esquema);
+        }
 
-    //Crea el esquema si no existe y asigna los permisos.
-    public static function createSchema($esquema)
-    {
-        DB::statement('CREATE SCHEMA IF NOT EXISTS e'.$esquema);
-        Log::debug('Creando esquema-> '.$esquema);
-        self::darPermisos('e'.$esquema);
-    }
+        // crea o reemplaza la vista de segmentos generados por lados completos. 
+        public static function recrea_vista_segmentos_lados_completos($esquema)
+        {
+            DB::statement("SELECT
+            indec.v_segmentos_lados_completos('e".$esquema."');");
+            Log::debug('Creando vista manzana lado numero segmento en radio, cant
+            viviendas -> '.$esquema);
+        }
 
-    //Develve data del DBF subido.
-    public static function infoDBF($tabla,$esquema)
-    {
-        return json_encode(DB::select('
-                        SELECT prov,dpto,nom_loc,codaglo, codloc, nom_loc, codent,nom_ent,count(*) registros, 
-                        count(distinct frac||radio) as radios,
-                        count(indec.contar_vivienda(tipoviv)) as viviendas 
+        // Obtengo segmentos excedidos. 
+        public static function segmentos_excedidos($esquema,$vivs,Radio $radio=null)
+        {
+                if ($radio){
+                    Log::debug('Filtro excedidos del radio: '.$radio->codigo.'
+                    aplicando ppddcccffrr like 
+                    '.substr($radio->codigo,0,5).'___'.substr($radio->codigo,-4));
+                        $result = DB::select("SELECT * FROM e".$esquema.".v_segmentos_lados_completos
+                        WHERE vivs > ".$vivs." and ppdddcccffrr like
+                        '".substr($radio->codigo,0,5)."___".substr($radio->codigo,-4)."';");
+                        }
+                    else{
+                        $result = DB::select("SELECT * FROM e".$esquema.".v_segmentos_lados_completos
+                    WHERE vivs > ".$vivs.";");
+                    }
+            return $result;
+        }
+
+        // Junta los segmentos con 0 vivendas al segmneto menor cercano.
+        public static function juntar_segmentos($esquema)
+        {
+            $result = DB::statement("SELECT indec.juntar_segmentos('".$esquema."')");
+            Log::debug('Juntando segmentos del esquema-> '.$esquema);
+            return $result;
+        }
+
+        //Crea el esquema si no existe y asigna los permisos.
+        public static function createSchema($esquema)
+        {
+            DB::statement('CREATE SCHEMA IF NOT EXISTS e'.$esquema);
+            Log::debug('Creando esquema-> '.$esquema);
+            self::darPermisos('e'.$esquema);
+        }
+
+        //Develve data del DBF subido.
+        public static function infoDBF($tabla,$esquema)
+        {
+            return json_encode(DB::select('
+                            SELECT prov,dpto,nom_loc,codaglo, codloc, nom_loc, codent,nom_ent,count(*) registros, 
+                            count(distinct frac||radio) as radios,
+                            count(indec.contar_vivienda(tipoviv)) as viviendas 
                         --,count(*) vivs
                         ,count(distinct prov||dpto||codloc||frac||radio||mza) as mzas
                         --,array_agg(distinct prov||dpto||codloc||frac||radio||mza||lado),count(distinct lado) as lados 
@@ -219,6 +220,16 @@ FROM
                         DB::statement('ALTER TABLE '.$esquema.'.listado ADD COLUMN tipoviv text;');
                     }
             }
+            if (! Schema::hasColumn($esquema.'.listado' , 'cod_subt_v')){
+                  DB::statement('ALTER TABLE '.$esquema.'.listado ADD COLUMN cod_subt_v text;');
+                  Log::debug('No se encontró cod_subt_v, se agrega');
+            }else{
+                  DB::statement('UPDATE '.$esquema.'.listado SET
+                  cod_subt_v=trim(cod_subt_v);');
+                  Log::debug('Se quitan espacios en cod_subt_v');
+            }
+
+
             if (! Schema::hasColumn($esquema.'.listado' , 'codent')){
                         DB::statement('ALTER TABLE '.$esquema.'.listado ADD
                         COLUMN codent text;');
