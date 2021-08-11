@@ -127,7 +127,11 @@ y elegir un puerto libre para que la app laravel esté escuchando
 ```bash
 php artisan serve --host=<url_del_servidor_donde_corre_la_aplicacion_laravel> --port=<puerto_del_servicio_de_la_aplicación>
 ```
- 
+
+Y hacer esto:
+```bash
+cp app/developer_docs/PostgresBuilder.php.example vendor/laravel/framework/src/Illuminate/Database/Schema/PostgresBuilder.php
+ ```
 
 [1]: https://devmarketer.io/learn/setup-laravel-project-cloned-github-com/
 [logo]: https://www.indec.gob.ar/Images_WEBINDEC/Logo/Logo_Indec.png
