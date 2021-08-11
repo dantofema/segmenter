@@ -221,9 +221,25 @@ FROM
                     }
             }
             if (! Schema::hasColumn($esquema.'.listado' , 'cod_subt_v')){
+                if (Schema::hasColumn($esquema.'.listado' , 'cod_subt_2')){
+                    DB::unprepared('ALTER TABLE '.$esquema.'.listado RENAME
+                    cod_subt_2 TO cod_subt_v');
+                }else{
                   DB::statement('ALTER TABLE '.$esquema.'.listado ADD COLUMN cod_subt_v text;');
                   Log::debug('No se encontró cod_subt_v, se agrega');
-            }else{
+                }
+            }elseif (Schema::hasColumn($esquema.'.listado' , 'cod_subt_2')){
+                  DB::statement('ALTER TABLE '.$esquema.'.listado ADD COLUMN
+                    cod_subt_v_original text ;');
+
+                  DB::statement("UPDATE ".$esquema.".listado SET
+                  cod_subt_v_original=cod_subt_v,
+                    cod_subt_v=COALESCE(nullif(trim(cod_subt_2),''),nullif(trim(cod_subt_v),''));");
+                  Log::debug('Se encontró cod_subt_v y cod_subt_2, se usa el _2
+                    y si esta vacio se usa el _v');
+                }
+                
+            else{
                   DB::statement('UPDATE '.$esquema.'.listado SET
                   cod_subt_v=trim(cod_subt_v);');
                   Log::debug('Se quitan espacios en cod_subt_v');
