@@ -150,6 +150,17 @@ FROM
         '.$esquema.'.'.$tabla.' Limit 1;')[0]->link);
     }
 
+    public static function getCodProv($tabla,$esquema)
+    {
+        try {
+            return (DB::select('SELECT codprov as link FROM
+            '.$esquema.'.'.$tabla.' group by 1 order by count(*) Limit 1;')[0]->link);
+        }catch (\Illuminate\Database\QueryException $exception) {
+	    Log::error('Error: '.$exception);
+	    return '0';
+	}
+    }
+
     public static function getLoc($tabla,$esquema)
     {
         return (DB::select('SELECT distinct prov||dpto||codloc as link FROM
