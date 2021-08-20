@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use App\MyDB;
 
 class SetupController extends Controller
@@ -152,10 +153,22 @@ class SetupController extends Controller
         flash('Message success')->success();// Set the flash theme to "success".
         flash('Message error')->error();// Set the flash theme to "danger".
         flash('Message warning')->warning();// Set the flash theme to "warning".
-        flash('Message overlay')->overlay();// Render the message as an overlay.
-        flash()->overlay('Modal Message', 'Modal Title');// Display a modal overlay with a title.
+        flash('Proyecto Mandarina Test Overlay flash message')->overlay();// Render the message as an overlay.
+        flash()->overlay('Modal Message Mandarina', 'Mandarina Modal Title');// Display a modal overlay with a title.
         flash('Message important')->important();//: Add a close button to the flash message.
-        flash('Message error()->important')->error()->important();//        
+	flash('Message error()->important')->error()->important();//       
+        flash(' Info Importante '.$texto)->info()->important();
+        flash(' Success imporatnte  '.$texto)->success()->important();
+        
+
+        Log::emergency($texto);
+        Log::alert($texto);
+        Log::critical($texto);
+        Log::error($texto);
+        Log::warning($texto);
+        Log::notice($texto);
+        Log::info($texto);
+        Log::debug($texto);       	
         return view('home');
     }
     
