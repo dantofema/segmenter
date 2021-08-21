@@ -37,7 +37,8 @@ class SegmenterController extends Controller
     public function index()
     {
     //	  $data['whoami'] = exec('whoami');
-        $data=null;
+	    $data=null;
+	    //dd(App()->make('App\Model\Radio'));
         return view('segmenter/index',['data' => $data,'epsgs'=> $this->epsgs]);
     }
 
@@ -253,9 +254,10 @@ class SegmenterController extends Controller
 	    // Busco provincia encontrada en pxrad:
 	    //
 	    //
-	    $prov=$procesar_result['prov'];
+	    $prov=MyDB::getCodProv($tabla,'public');
 	    $oProvincia= Provincia::where('codigo', $prov)->first();
-	    Log::debug('Provincia: '.$oProvincia->tojson());
+
+	    Log::debug('Provincia: '.$oProvincia->tojson(JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 	    
 	}
 
