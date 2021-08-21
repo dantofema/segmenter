@@ -1,6 +1,13 @@
 <div class="container">
     Información del aglomerado ({{ $aglomerado->codigo }}) 
     <b> {{ $aglomerado->nombre }} </b><br />
+            @foreach($aglomerado->localidades as $localidad)
+            	@foreach($localidad->departamentos as $departamento)
+		  En Departamento: <a href="{{ url('/depto/'.$departamento->id) }}">
+({{ $departamento->codigo }}) {{ $departamento->nombre }} </a>
+		<br />
+                @endforeach
+            @endforeach
     <div class="">
      @if($carto)
         La base geográfica está cargada.
