@@ -25,7 +25,12 @@ class Radio extends Model
     private $_resultado;
     private $_esquema;
 
-     /**
+    public static function getradioData(){
+      $value=DB::table($table)->orderBy('id', 'asc')->get();
+      return $value;
+    }
+
+    /**
       * Fix datos..
       *
       */
@@ -82,7 +87,8 @@ class Radio extends Model
     //    return $this->belongsToMany('App\Model\Localidad', 'radio_localidad');
             if ($this->localidades->count()>1){
                 Log::warning('Varias localidades: Tomo la primera
-                '.$this->localidades->first()->codigo);
+			'.$this->localidades->first()->codigo.
+			' '.($this->localidades)->toJson(JSON_PRETTY_PRINT));
                 return $aglo = $this->localidades->first()->aglomerado;
             }elseif ($localidad=$this->localidades->first())
                 {
@@ -203,15 +209,22 @@ class Radio extends Model
                     try{
                         if ($this->fraccion->departamento->provincia->codigo == '06') {
                             $this->_esquema = 'e'.$this->fraccion->departamento->codigo;
+			}elseif ($this->localidades()->count() > 1) {
+				Log::warning('TODO: Implementar radio multilocalidades'.$this->localidades()->get()->toJson(
+					JSON_PRETTY_PRINT));
+				foreach($this->localidades()->get() as $localidad){
+					Log::info('Posible esquema:'.($localidad->codigo));
+				}
+                           $this->_esquema = 'e'.$this->fraccion->departamento->codigo;
                         }
                     }catch (Exception $e){
                          Log::error('Algo muy raro paso: '.$e);
                     };
                 }
-           Log::debug('Radio '.$this->codigo.' esperado en esquema: '.$this->_esquema);
         }else{
             $this->_esquema='e'.$this->codigo;
         }
+        Log::debug('Radio '.$this->codigo.' esperado en esquema: '.$this->_esquema);
         }
         return $this->_esquema;
     }

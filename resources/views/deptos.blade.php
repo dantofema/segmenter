@@ -59,6 +59,8 @@
              <th>Código</th>
              <th>Nombre</th>
              <th>Localidades</th>
+             <th>Fracciones</th>
+             <th>Radios</th>
           </tr>
        </thead>
     </table>
@@ -115,8 +117,10 @@
                   { visible: false, data: 'id', name: 'id' },
                   { data: 'codigo', name: 'codigo' },
                   { data: 'nombre', name: 'nombre' },
-                  { searchable: false , data: 'localidades_count', name: 'localidades_count' }
-               ]
+		  { searchable: false , data: 'localidades_count', name: 'localidades_count' },
+		  { searchable: false , data: 'fracciones_count', name: 'fracciones_count' },
+		  { searchable: false , data: 'radios_count', name: 'radios_count' }
+	          ]
       });
 
    table.on( 'click', 'tr', function () {

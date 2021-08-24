@@ -14,6 +14,7 @@ use App\Listado;
 use App\Imports\CsvImport;
 use Maatwebsite\Excel;
 use App\Model\Aglomerado;
+use App\Model\Provincia;
 use Illuminate\Support\Facades\Log;
 
 class SegmenterController extends Controller
@@ -36,7 +37,8 @@ class SegmenterController extends Controller
     public function index()
     {
     //	  $data['whoami'] = exec('whoami');
-        $data=null;
+	    $data=null;
+	    //dd(App()->make('App\Model\Radio'));
         return view('segmenter/index',['data' => $data,'epsgs'=> $this->epsgs]);
     }
 
@@ -243,12 +245,20 @@ class SegmenterController extends Controller
         if (!$process->isSuccessful()) {
             flash($data['file']['error']=$process->getErrorOutput())->important();
 	}else{
-	    flash($data['file_pxrad']['info']=$process->getOutput())->important();	
+	    flash($data['file_pxrad']['info']=$process->getOutput())->success()->important();	
 	    // Leo dentro de la tabla importada desde el dbf 
             
             $tabla = strtolower(
-            substr($data['file_pxrad']['pxrad'],strrpos($data['file_pxrad']['pxrad'],'/')+1,-4) );
-            $data['pxrad']['info']=MyDB::procesarPxRad($tabla,'public');
+	    substr($data['file_pxrad']['pxrad'],strrpos($data['file_pxrad']['pxrad'],'/')+1,-4) );    
+	    $procesar_result=MyDB::procesarPxRad($tabla,'public');
+	    // Busco provincia encontrada en pxrad:
+	    //
+	    //
+	    $prov=MyDB::getCodProv($tabla,'public');
+	    $oProvincia= Provincia::where('codigo', $prov)->first();
+
+	    Log::debug('Provincia: '.$oProvincia->tojson(JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+	    
 	}
 
 	     }

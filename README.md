@@ -38,21 +38,6 @@ git clone https://github.com/manureta/segmenter.git --recurse-submodules
 ```bash
 cd segmenter
 ```
-- crear archivo .gitignore
-```bash
-echo "/node_modules
-/public/hot
-/public/storage
-/storage/*.key
-/vendor
-.env
-.env.backup
-.phpunit.result.cache
-Homestead.json
-Homestead.yaml
-npm-debug.log
-yarn-error.log" > .gitignore
-```
 
 - Instalar Composer Dependencias
 ```bash
