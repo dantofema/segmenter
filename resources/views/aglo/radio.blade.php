@@ -20,17 +20,16 @@
 <form action="/grafo/{{ $aglomerado->id }}" method="GET" enctype="multipart/form-data">
                 @csrf
   <div class="form-group">
-    <label class="control-label" for="radio">Seleccione un Radio para ver grafo de segmentación:</label>
     <div class="">
-    <ul class="nav">
-            @foreach($radios as $radio)
-    <li class="btn @if($radio->isSegmentado) segmentado @endif " >
-    @if($radio->isSegmentado)<a href="{{ url('/grafo/'.$aglomerado->id.'/'.$radio->id) }}"> @endif
-        {{ trim($radio->codigo) }}: {{ trim($radio->nombre) }} <br />Mzas: {{ trim($radio->CantMzas) }}
-    @if($radio->isSegmentado)</a> @endif
-    </li>
-            @endforeach
-    </ul>
+        @foreach($radios as $radio)
+            <a class="panel panel-default @if($radio->isSegmentado) segmentado @endif "
+            href="{{ url('/grafo/'.$aglomerado->id.'/'.$radio->id) }}">
+            <div class="panel-body">
+                <h3> {{ trim($radio->codigo) }}: {{ trim($radio->nombre) }}</h3>
+                <p class="text-muted">Mzas: {{ trim($radio->CantMzas) }}</p>
+            </div>
+            </a>
+        @endforeach
     </div>
   </div>
 </form>
