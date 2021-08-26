@@ -22,16 +22,18 @@ SET default_with_oids = false;
 -- Name: radio; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE or replace TABLE public.tipo_de_radio (
+CREATE TABLE public.tipo_de_radio (
     id integer NOT NULL,
     nombre character varying,
     descripcion character varying
-);
+)
 
-INSERT INTO public.tipo_de_radio (id, nombre, descripcion) VALUES (1, 'M', 'Mixto');
-INSERT INTO public.tipo_de_radio (id, nombre, descripcion) VALUES (2, 'R', 'Rural');
-INSERT INTO public.tipo_de_radio (id, nombre, descripcion) VALUES (3, 'U', 'Urbano');
 
+COPY public.tipo_de_radio (id, nombre, descripcion) FROM stdin;
+1       M       Mixto
+2       R       Rural
+3       U       Urbano
+\.
 
 --
 -- PostgreSQL database dump complete
