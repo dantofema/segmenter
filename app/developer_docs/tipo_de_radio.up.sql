@@ -26,14 +26,12 @@ CREATE TABLE public.tipo_de_radio (
     id integer NOT NULL,
     nombre character varying,
     descripcion character varying
-)
+);
 
 
-COPY public.tipo_de_radio (id, nombre, descripcion) FROM stdin;
-1       M       Mixto
-2       R       Rural
-3       U       Urbano
-\.
+INSERT INTO public.tipo_de_radio (id, nombre, descripcion) VALUES (1, 'M', 'Mixto');
+INSERT INTO public.tipo_de_radio (id, nombre, descripcion) VALUES (2, 'R', 'Rural');
+INSERT INTO public.tipo_de_radio (id, nombre, descripcion) VALUES (3, 'U', 'Urbano');
 
 --
 -- PostgreSQL database dump complete
