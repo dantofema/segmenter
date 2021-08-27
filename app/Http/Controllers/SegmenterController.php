@@ -25,12 +25,12 @@ class SegmenterController extends Controller
     {
         $segmenta_auto=false;
         $this->middleware('auth');
-        $this->epsgs['22182']='(EPSG:22182) POSGAR 94 / Argentina 2 - San Juan, Mendoza, Neuquén, Chubut, Santa Cruz y Tierra del Fuego...';
-        $this->epsgs['22183']='(EPSG:22183) POSGAR 94 / Argentina 3 - Jujuy, Salta, Tucuman, Catamárca, La Rioja, San Luis, La Pampa y Río Negro';
-        $this->epsgs['22184']='(EPSG:22184) POSGAR 94 / Argentina 4 - Santiago del Estero y Córdoba';
-        $this->epsgs['22185']='(EPSG:22185) POSGAR 94 / Argentina 5 - Formosa, Chaco, Santa Fe, Entre Ríos y Buenos Aires';
-        $this->epsgs['22186']='(EPSG:22186) POSGAR 94 / Argentina 6 - Corrientes';
-        $this->epsgs['22187']='(EPSG:22187) POSGAR 94 / Argentina 7 - Misiones';
+        $this->epsgs['22182']='(EPSG:22182) POSGAR 94/Argentina 2 - San Juan, Mendoza, Neuquén, Chubut, Santa Cruz y Tierra del Fuego...';
+        $this->epsgs['22183']='(EPSG:22183) POSGAR 94/Argentina 3 - Jujuy, Salta, Tucuman, Catamárca, La Rioja, San Luis, La Pampa y Río Negro';
+        $this->epsgs['22184']='(EPSG:22184) POSGAR 94/Argentina 4 - Santiago del Estero y Córdoba';
+        $this->epsgs['22185']='(EPSG:22185) POSGAR 94/Argentina 5 - Formosa, Chaco, Santa Fe, Entre Ríos y Buenos Aires';
+        $this->epsgs['22186']='(EPSG:22186) POSGAR 94/Argentina 6 - Corrientes';
+        $this->epsgs['22187']='(EPSG:22187) POSGAR 94/Argentina 7 - Misiones';
         $this->epsgs['8333']='(SR-ORG:8333) Gauss Krugger BA';
     }
 
