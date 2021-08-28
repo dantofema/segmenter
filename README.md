@@ -16,6 +16,7 @@ sudo apt-get install gdal-bin
 sudo apt-get install libgdal-dev
 export CPLUS_INCLUDE_PATH=/usr/include/gdal
 export C_INCLUDE_PATH=/usr/include/gdal
+sudo apt install python3-pip
 pip install GDAL
 ```
 * pgdbf postgis
