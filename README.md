@@ -16,8 +16,6 @@ sudo apt-get install gdal-bin
 sudo apt-get install libgdal-dev
 export CPLUS_INCLUDE_PATH=/usr/include/gdal
 export C_INCLUDE_PATH=/usr/include/gdal
-sudo apt install python3-pip
-pip install GDAL
 ```
 * pgdbf postgis
 ```
@@ -27,6 +25,7 @@ sudo apt install pgdbf postgis
 ```
 sudo apt install python3-dev python3-pip
 pip3 install psycopg2
+pip3 install GDAL
 ```
 
 ## Para instalar el entorno de desarrollo se debe, (según extracto de [guia][1]):
