@@ -15,6 +15,7 @@ use App\Imports\CsvImport;
 use Maatwebsite\Excel;
 use App\Model\Aglomerado;
 use App\Model\Provincia;
+use App\Model\Departamento;
 use Illuminate\Support\Facades\Log;
 
 class SegmenterController extends Controller
@@ -265,6 +266,15 @@ class SegmenterController extends Controller
 
 	    }
 	    Log::debug('Provincia: '.$oProvincia->tojson(JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+	    
+	    $depto_data=MyDB::getDatadepto($tabla,'public');
+	    Log::debug('Deptos data: '.collect($depto_data) ); //.' cantidad: '.count($depto_data));
+	    foreach($depto_data as $depto){
+		    $oProvincia->Departamentos()->save(Departamento::firstOrNew(collect($depto)->toArray()));
+	    }
+	    
+	    Log::debug('Provincia: '.$oProvincia->tojson(JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+
 	    
 	}
 

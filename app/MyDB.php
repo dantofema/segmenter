@@ -178,8 +178,8 @@ FROM
     public static function getDataDepto($tabla,$esquema)
     {
         try {
-            return (DB::select('SELECT codprov, codprov||coddepto as codigo,nomdepto as nombre FROM
-            '.$esquema.'.'.$tabla.' group by 1,2,3 order by codprov||coddepto asc ;'));
+            return (DB::select('SELECT codprov||coddepto as codigo,nomdepto as nombre FROM
+            '.$esquema.'.'.$tabla.' group by 1,2 order by codprov||coddepto asc ;'));
         }catch (\Illuminate\Database\QueryException $exception) {
 		Log::error('Error: '.$exception);
 		//Supongo codprov sin Nombre
