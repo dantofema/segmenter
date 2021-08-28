@@ -27,6 +27,7 @@ sudo apt install python3-dev python3-pip
 pip3 install psycopg2
 pip3 install GDAL
 ```
+--- pip3 install psycopg2-binary ---
 
 ## Para instalar el entorno de desarrollo se debe, (según extracto de [guia][1]):
 
