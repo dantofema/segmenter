@@ -256,7 +256,14 @@ class SegmenterController extends Controller
 	    //
 	    $prov=MyDB::getCodProv($tabla,'public');
 	    $oProvincia= Provincia::where('codigo', $prov)->first();
+	    if ($oProvincia==null){
+	    	$prov_data=MyDB::getDataProv($tabla,'public');
+		$oProvincia= new Provincia ($prov_data);
+		if ($oProvincia->save()){
+			flash('Se creó la provincia: '.$oProvincia->tojson(JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))->success()->important();
+		}
 
+	    }
 	    Log::debug('Provincia: '.$oProvincia->tojson(JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 	    
 	}

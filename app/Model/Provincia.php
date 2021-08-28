@@ -13,6 +13,10 @@ class Provincia extends Model
         'id','codigo','nombre'
     ];
 
+    // Sin fecha de creación o modificación
+    //
+    public $timestamps = false;
+
      /**
      * Get the departamentos de la provincia.
      */
