@@ -29,6 +29,10 @@ pip3 install GDAL
 ```
 --- pip3 install psycopg2-binary ---
 
+* y usamos NodeJs también 
+```
+sudo apt install npm
+```
 ## Para instalar el entorno de desarrollo se debe, (según extracto de [guia][1]):
 
 - Clonar repositorio GitHub
