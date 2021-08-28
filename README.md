@@ -3,9 +3,9 @@
 
 
 ## Prerequisitos (las instrucciones asumen que se está usando Ubuntu)
-* PHP 7: php-mbstring php-dom php-zip php-gd php-pdo-pgsql 
+* PHP 7: php-mbstring php-dom php-zip php-gd php-pdo-pgsql composer
 ```
-sudo apt install php-mbstring php-dom php-zip php-gd php-pdo-pgsql
+sudo apt install php-mbstring php-dom php-zip php-gd php-pdo-pgsql composer
 ```
 * gdal (ogr2ogr)
 ```
