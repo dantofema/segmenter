@@ -1,6 +1,20 @@
 # Proyecto Mandarina
 ![Logo INDEC][logo]
 
+Hola, bienvenide!
+
+Aquí están las instrucciones para instalar el entorno de desarrollo de este proyecto.
+Esta es la parte web nacida del segmentador asistido para el censo de población, hogares y viviendas de la ronda 2020 de Argentina.
+
+Pensado como una interfaz para ejecutar el **Segmentador-core** y también como interfaz de carga de los datos mínimos necesarios para éste.
+
+Preparando junto al core la información en la base de datos para el plugin de QGIS, **salida gráfica**.
+
+Intentado implementar el almacenamiento relacional de la información geoestadística imaginado x JC llamado toto5.
+
+Todo aporte es bienvenido y agradecido.
+
+salud! M.
 
 ## Prerequisitos (las instrucciones asumen que se está usando Ubuntu)
 * PHP 7: php-mbstring php-dom php-zip php-gd php-pdo-pgsql composer
