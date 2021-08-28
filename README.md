@@ -9,7 +9,7 @@ sudo apt install php-mbstring php-dom php-zip php-gd php-pdo-pgsql
 ```
 * gdal (ogr2ogr)
 ```
-sudo apt-get install python3.6-dev
+sudo apt-get install python3.6
 sudo add-apt-repository ppa:ubuntugis/ppa && sudo apt-get update
 sudo apt-get update
 sudo apt-get install gdal-bin
