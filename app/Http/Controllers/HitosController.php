@@ -63,15 +63,15 @@ class HitosController extends Controller
 
         if ($original_extension == 'shp'){
             $random_name='t_'.$request->hitos_shp->hashName();
-            $data['file']['hitos_shp'] = $request->hitos_shp->storeAs('segmentador', $random_name.'.'.$request->hitos_shp->getClientOriginalExtension());
+            $data['file']['hitos_shp'] = $request->hitos_shp->storeAs('hitos', $random_name.'.'.$request->hitos_shp->getClientOriginalExtension());
             if ($request->hasFile('hitos_shx')) {
-                $data['file']['hitos_shx'] = $request->hitos_shx->storeAs('segmentador', $random_name.'.'.$request->hitos_shx->getClientOriginalExtension());
+                $data['file']['hitos_shx'] = $request->hitos_shx->storeAs('hitos', $random_name.'.'.$request->hitos_shx->getClientOriginalExtension());
             }
             if ($request->hasFile('hitos_prj')) {
-                $data['file']['hitos_prj'] = $request->hitos_prj->storeAs('segmentador', $random_name.'.'.$request->hitos_prj->getClientOriginalExtension());
+                $data['file']['hitos_prj'] = $request->hitos_prj->storeAs('hitos', $random_name.'.'.$request->hitos_prj->getClientOriginalExtension());
             }
             if ($request->hasFile('hitos_dbf')) {
-                $data['file']['hitos_dbf'] = $request->hitos_dbf->storeAs('segmentador', $random_name.'.'.$request->hitos_dbf->getClientOriginalExtension());
+                $data['file']['hitos_dbf'] = $request->hitos_dbf->storeAs('hitos', $random_name.'.'.$request->hitos_dbf->getClientOriginalExtension());
             }
 
             $process = Process::fromShellCommandline('echo "$tiempo: $usuario_name ($usuario_id) -> $log" >> archivos.log');
@@ -117,11 +117,10 @@ class HitosController extends Controller
                 'file '.storage_path().'/app/'.$data['file']['hitos_shp'],'e00 '.$codaglo);
                 throw new ProcessFailedException($processOGR2OGR);
             }
-            MyDB::agregarsegisegd($codaglo);
 
         }elseif ($original_extension == 'e00'){
             $random_name='t_'.$request->hitos_shp->hashName();
-            $data['file']['hitos_shp'] = $request->hitos_shp->storeAs('segmentador', $random_name.'.'.$request->hitos_shp->getClientOriginalExtension());
+            $data['file']['hitos_shp'] = $request->hitos_shp->storeAs('hitos', $random_name.'.'.$request->hitos_shp->getClientOriginalExtension());
             $process = Process::fromShellCommandline('echo "E00: $name" >> archivos.log');
             $process->run(null, ['name' => "Archivo: ".$original_name." subido como: ".$data['file']['hitos_shp']]);
             $processOGR = Process::fromShellCommandline('/usr/bin/ogrinfo -so $file ARC');
@@ -142,24 +141,19 @@ class HitosController extends Controller
             //dd($processOGR2OGR_lab->getErrorOutput());
             flash($data['file']['ogr2ogr_lab'] = $processOGR2OGR_lab->getErrorOutput().'<br />'.$processOGR2OGR_lab->getOutput())->important();
             flash($data['file']['ogr2ogr'] = $processOGR2OGR->getErrorOutput().'<br />'.$processOGR2OGR->getOutput())->important();
-            MyDB::agregarsegisegd($codaglo);
         }else {//dd($request->file('hitos_shp')); 
             flash('File geo not valid')->error()->important();
         }
         if (isset($codaglo)){
-            MyDB::juntaListadoGeom('e'.$codaglo);
-            if($segmenta_auto) {
-                    MyDB::segmentar_equilibrado($codaglo,36);
-                    flash('Segmentado automáticamente a 36 viviendas x segmento')->important();
-                    flash('Resultado: '.MyDB::juntar_segmentos('e'.$codaglo));
-            }
+
+            // renombra la tabla hitos $random_name
         }
     }
    }
 
 
      if (Archivo::cargar($request, Auth::user())) {
-        return view('segmenter/index', ['data' => $data,'epsgs'=> $this->epsgs]);
+        return view('hitos/upload', ['data' => $data,'epsgs'=> $this->epsgs]);
      } else {
         echo "Error en el modelo cargar";
      }
