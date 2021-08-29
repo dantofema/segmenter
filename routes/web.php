@@ -92,6 +92,11 @@ Route::post('/domicilio/guardar/','DomicilioController@save');
 Route::get('/segmentador', 'SegmenterController@index')->name('segmentador');
 Route::post('/segmentador/guardar', 'SegmenterController@store');
 
+// --------- HITOS upload (pantalla para mostrar nomás) ---------
+Route::get('/hitos', 'HitosController@index')->name('hitos');
+//Route::get('/hitos', function () { return view('hitos'); });
+Route::post('/hitos/guardar', 'HitosController@guardar');
+
 Route::get('/', function () {
     flash(' Bienvenides !')->success();
     return view('welcome');
@@ -148,6 +153,7 @@ Route::post('ver-segmentacion-grafico-resumen/{aglomerado}','AglomeradoControlle
 //ver_segmentacion_lados_grafico_resumen
 Route::get('ver-segmentacion-lados/grafico-resumen/{aglomerado}','AglomeradoController@ver_segmentacion_lados_grafico_resumen')->name('ver-segmentacion-lados-grafico-resumen');
 Route::post('ver-segmentacion-lados-grafico-resumen/{aglomerado}','AglomeradoController@ver_segmentacion_lados_grafico_resumen')->name('ver-segmentacion-lados-grafico-resumen');
+
 
 
 // ---------- RADIOS Localidad Depto --------
