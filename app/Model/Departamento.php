@@ -12,6 +12,11 @@ class Departamento extends Model
     protected $fillable = [
         'codigo','nombre'
     ];
+
+    // Sin fecha de creación o modificación
+    //
+    public $timestamps = false;
+
     /**
      * Obtener la provicnia a donde pertencen el Departamento.
      */

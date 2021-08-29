@@ -150,6 +150,20 @@ FROM
         '.$esquema.'.'.$tabla.' Limit 1;')[0]->link);
     }
 
+    public static function getDataProv($tabla,$esquema)
+    {
+        try {
+            return (DB::select('SELECT codprov as codigo,nomprov as nombre FROM
+            '.$esquema.'.'.$tabla.' group by 1,2 order by count(*) desc Limit 1;')[0]);
+        }catch (\Illuminate\Database\QueryException $exception) {
+		Log::error('Error: '.$exception);
+		//Supongo codprov sin Nombre
+		//
+		$codprov=self::getCodProv($tabla,$esquema);
+	    return ['codigo'=>$codprov,'nombre'=>'Sin Nombre'];
+	}
+    }
+
     public static function getCodProv($tabla,$esquema)
     {
         try {
@@ -161,6 +175,18 @@ FROM
 	}
     }
 
+    public static function getDataDepto($tabla,$esquema)
+    {
+        try {
+            return (DB::select('SELECT codprov||coddepto as codigo,nomdepto as nombre FROM
+            '.$esquema.'.'.$tabla.' group by 1,2 order by codprov||coddepto asc ;'));
+        }catch (\Illuminate\Database\QueryException $exception) {
+		Log::error('Error: '.$exception);
+		//Supongo codprov sin Nombre
+		//
+	    return null;;
+	}
+    }
     public static function getLoc($tabla,$esquema)
     {
         return (DB::select('SELECT distinct prov||dpto||codloc as link FROM
