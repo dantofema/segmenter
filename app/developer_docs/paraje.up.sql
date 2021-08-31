@@ -23,7 +23,7 @@ SET default_with_oids = false;
 --
 
 CREATE TABLE public.paraje (
-    id integer DEFAULT nextval('public.paraje_id_seq'::regclass) NOT NULL,
+    id serial,
     codigo character(8) NOT NULL,
     nombre character varying,
     departamento_id integer NOT NULL,
@@ -36,6 +36,9 @@ CREATE TABLE public.paraje (
     gobierno_local_id integer,
     tipo_de_poblacion_id integer
 );
+
+
+
 
 
 --
