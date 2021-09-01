@@ -35,12 +35,17 @@ class Aglomerado extends Model
     public function getCartoAttribute($value)
     {
     //select * from information_schema.tables where table_schema = 'e0777' and table_name = 'arc' and table_type = 'BASE TABLE'
-        if (Schema::hasTable('e'.$this->codigo.'.arc')) {
+        if(! $this->carto){
+            if ($this->codigo!='0001'){
+            if (Schema::hasTable('e'.$this->codigo.'.arc')) {
             //
-            return true;
-        }else{
-            return false;
+                $this->carto = true;
+            }else{
+                $this->carto = false;
+            }
+            }else { $this->carto = false; }
         }
+        return $this->carto;
     }
 
     public function getListadoAttribute($value)
@@ -135,15 +140,17 @@ class Aglomerado extends Model
             $new_radios=[];
             $objRadios= Collect (new Radio);
             $nuevos_radios=0;
-        foreach($radios as $radio){
-            if (Radio::where('codigo',$radio->link)->exists()){
-                           $links[]=$radio->link;
-            }else{
-                $new_radios[]=new Radio (['codigo'=>$radio->link,'nombre'=>'Nuevo: '.$radio->link]);
-                $nuevos_radios++;
-            }
+        if($radios){
+            foreach($radios as $radio){
+                if (Radio::where('codigo',$radio->link)->exists()){
+                               $links[]=$radio->link;
+                }else{
+                    $new_radios[]=new Radio (['codigo'=>$radio->link,'nombre'=>'Nuevo: '.$radio->link]);
+                    $nuevos_radios++;
+                }
 //            $links[]=$radio->link; };
             }
+        }
         if (count($links)>0){
             $objRadios=Radio::whereIn('codigo',$links)->get();
         }
@@ -160,7 +167,7 @@ class Aglomerado extends Model
         if ($this->Listado==1){
             $radios = DB::table('e'.$this->codigo.'.listado')
                                 ->select(DB::raw("prov||dpto||frac||radio as link,codloc,
-             '('||dpto||') '||max(nom_dpto)||': '||frac||' '||radio as nombre,
+             '('||dpto||') F'||frac||' R'||radio as nombre,
              count(distinct mza) as cant_mzas,
              count(*) as registros,
              count(indec.contar_vivienda(tipoviv)) as vivs,
@@ -212,17 +219,36 @@ class Aglomerado extends Model
             //dd($viewBox.'/n'.$this->viewBox($extent,$epsilon,$height,$width).'/n'.$x0." -".$y0." ".$x1." -".$y1);
             $svg=DB::select("
 WITH shapes (geom, attribute) AS (
-    SELECT st_buffer(wkb_geometry,2) wkb_geometry, CASE WHEN (segi is not null
-    or segd is not null) THEN 0 else 1 END FROM e".$this->codigo.".arc 
+    ( SELECT st_buffer(ST_OffsetCurve(wkb_geometry,5),2) wkb_geometry, segi
+    FROM e".$this->codigo.".arc WHERE segi is not null)
+    UNION (
+    SELECT st_buffer(ST_OffsetCurve(wkb_geometry,-5),2) wkb_geometry, segd
+    FROM e".$this->codigo.".arc WHERE segd is not null)
+    UNION (
+    SELECT st_buffer(ST_OffsetCurve(wkb_geometry,-5),2) wkb_geometry, 0
+    FROM e".$this->codigo.".arc WHERE segd is null)
+    UNION (
+    SELECT st_buffer(ST_OffsetCurve(wkb_geometry,5),2) wkb_geometry, 0
+    FROM e".$this->codigo.".arc WHERE segi is null)
   ),
   paths (svg) as (
      SELECT concat(
          '<path d= \"', 
-         ST_AsSVG(st_buffer(geom,5),0), '\" ',
-         CASE WHEN attribute = 0 THEN 'stroke=\"red\" stroke-width=\"3\" fill=\"none\"' 
-         ELSE 'stroke=\"black\" stroke-width=\"".$stroke."\" fill=\"green\"' END,
+         ST_AsSVG(st_buffer(st_union(geom),5),0), '\" ',
+         CASE WHEN attribute = 0 THEN 'stroke=\"gray\" stroke-width=\"2\"
+         fill=\"gray\"' 
+              WHEN attribute < 5 THEN 'stroke=\"none\"
+              stroke-width=\"".$stroke."\" fill=\"#' || attribute*20 || 'AAAA\"' 
+              WHEN attribute < 10 THEN 'stroke=\"none\"
+         stroke-width=\"".$stroke."\" fill=\"#00' || (attribute-5)*20 || '00\"' 
+              WHEN attribute < 15 THEN 'stroke=\"none\"
+         stroke-width=\"".$stroke."\" fill=\"#AA' || (attribute-10)*20 || '00\"' 
+         ELSE 
+            'stroke=\"black\" stroke-width=\"".$stroke."\" fill=\"#22' ||
+            attribute*10 || '88\"' 
+         END,
           ' />') 
-     FROM shapes
+     FROM shapes GROUP BY attribute
  )
  SELECT concat(
          '<svg id=\"aglo_".$this->codigo."\"xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"".$viewBox.
@@ -231,7 +257,7 @@ WITH shapes (geom, attribute) AS (
          '</svg>')
  FROM paths;
 ");
-        return $svg[0];
+            return $svg[0]->concat;
         }else{ return "No geodata"; }
         
     }
@@ -240,7 +266,7 @@ WITH shapes (geom, attribute) AS (
         list ( $x0, $y0, $x1, $y1 ) = sscanf ( $extent, 'BOX(%f %f,%f %f)' );
         $Dx = $x1 - $x0;
         $Dy = $y1 - $y0;
-         $m_izq=.9*$Dx; $m_der=.9*$Dx; $m_arr=0.9*$Dy; $m_aba=.0*$Dy;
+            $m_izq=.1*$Dx; $m_der=.1*$Dx; $m_arr=.1*$Dy; $m_aba=.1*$Dy;
         $viewBox = ($x0 - $m_izq) . " " . (- $y1 - $m_arr) . " " . ($Dx + $m_izq + $m_der) . " " . ($Dy + $m_arr + $m_aba);
         if (! $height and ! $width)
             $height = 600;

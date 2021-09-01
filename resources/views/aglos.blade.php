@@ -142,20 +142,13 @@
                                     botones =  '<button type="button" class="segmentar btn-sm btn-primary" value="Segmentar"/>Segmentar</button>';
                                     botones = botones+ '<button type="button" disabled= class="muestrear btn-sm btn-primary" value="Muestrear"/>Muestrear</button> ';
                                 }else{
-                                       if ((row.carto!=1)) {
-                                         botones = botones+ '<button type="button" class="cargar btn-sm btn-primary" value="Cargar"/>Cargar geo</button>';
-                                        }
-                                       if ((row.listado!==1)) {
-                                         botones = botones+ '<button type="button" class="cargar btn-sm btn-primary" value="CargarC1"/>Cargar C1</button>';
+                                       if ((row.carto!=1) || (row.listado!=1)) {
+                                         botones = botones+ '<button type="button" class="cargar btn-sm btn-primary" value="Cargar"/>Cargar info</button>';
                                         }
                                 }
                                 if ((row.segmentadolistado==1)) {
-                                       botones = botones+ '<input type="button" class="ver_segmenta_listado  btn-sm btn-primary" value="Ver Segmentación Listado"/> ';
-                                       botones = botones+ '<input type="button" class="ver_segmenta_listado_grafico  btn-sm btn-primary" value="Ver Gráfico de Segmentación Listado"/> ';
-                                }
-                                if ((row.segmentadolados==1)) {
-                                       botones = botones+ '<input type="button" class="ver_segmenta_lados btn-sm btn-primary" value="Ver Segmentación x lados"/> ';
-                                       botones = botones+ '<input type="button" class="ver_segmenta_lados_grafico btn-sm btn-primary" value="Ver Gráfico de Segmentación x lados"/> ';
+                                       botones = botones+ '<input type="button" class="ver_segmenta_listado  btn-sm btn-primary" value="Ver Segmentación"/> ';
+                                       botones = botones+ '<input type="button" class="ver_segmenta_listado_grafico  btn-sm btn-primary" value="Ver Gráfico de Segmentación"/> ';
                                 }
                                 return botones;
                             }
@@ -279,6 +272,11 @@
 
 } );
 
+// Funcin para cargar todos los radios en lugar del selector de radios.
+function changeAllRadios(_this, id) {
+    var status = $(_this).prop('checked') == true ? 1 : 0;
+    
+}
 </script>
 </body>
 </html>

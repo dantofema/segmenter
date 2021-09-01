@@ -1,7 +1,17 @@
 <div class="container">
-    código {{ $departamento->codigo }} <br />
-    provincia {{ $departamento->nombre }} <br />
-    con {{ $departamento->localidades_count }} localidades.
+    @if ($provincia=$departamento->provincia)
+    <li class="btn  btn-outline-secondary" style="margin-bottom: 2px" >
+        <a href="{{ url("/prov/{$provincia->id}") }}" >({{ $provincia->codigo }})
+    <b> {{ $provincia->nombre }} </b></a>
+    </li>
+    @endif
+    <h3> ({{ $departamento->codigo }}) {{ $departamento->nombre }} </h3>
+    {{ $departamento->localidades_count }} localidades.
+    @foreach ($departamento->localidades as $localidad)
+        <a href="{{ url("/localidad/{$localidad->id}") }}" >({{ $localidad->codigo }})
+    <b> {{ $localidad->nombre }} </b></a>
+    @endforeach
+
 <div/>
 @if($departamento->codigo =='30028')         
 <div>

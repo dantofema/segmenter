@@ -1,22 +1,35 @@
 # Proyecto Mandarina
-![Logo INDEC][logo] INDEC
+![Logo INDEC][logo]
 
+Hola, bienvenide!
 
-## Prerequisitos (las instrucciones asumen que se está usando Ubuntu)
-* PHP 7: php-mbstring php-dom php-zip php-gd php-pdo-pgsql 
+Aquí están las instrucciones para instalar el entorno de desarrollo de este proyecto.
+Esta es la parte web nacida del segmentador asistido para el censo de población, hogares y viviendas de la ronda 2020 de Argentina.
+
+Pensado como una interfaz para ejecutar el **Segmentador-core** y también como interfaz de carga de los datos mínimos necesarios para éste.
+
+Preparando junto al core la información en la base de datos para el plugin de QGIS, **salida gráfica**.
+
+Intentado implementar el almacenamiento relacional de la información geoestadística imaginado x JC llamado toto5.
+
+Todo aporte es bienvenido y agradecido.
+
+salud! M.
+
+## Prerrequisitos (las instrucciones asumen que se está usando Ubuntu)
+* PHP 7: php-mbstring php-dom php-zip php-gd php-pdo-pgsql composer
 ```
-sudo apt install php-mbstring php-dom php-zip php-gd php-pdo-pgsql
+sudo apt install php-mbstring php-dom php-zip php-gd php-pdo-pgsql composer
 ```
 * gdal (ogr2ogr)
 ```
-sudo apt-get install python3.6-dev
+sudo apt-get install python3.6
 sudo add-apt-repository ppa:ubuntugis/ppa && sudo apt-get update
 sudo apt-get update
 sudo apt-get install gdal-bin
 sudo apt-get install libgdal-dev
 export CPLUS_INCLUDE_PATH=/usr/include/gdal
 export C_INCLUDE_PATH=/usr/include/gdal
-pip install GDAL
 ```
 * pgdbf postgis
 ```
@@ -25,9 +38,15 @@ sudo apt install pgdbf postgis
 * python3 pip psycopg2
 ```
 sudo apt install python3-dev python3-pip
-pip install psycopg2
+pip3 install psycopg2
+pip3 install GDAL
 ```
+--- pip3 install psycopg2-binary ---
 
+* y usamos NodeJs también 
+```
+sudo apt install npm
+```
 ## Para instalar el entorno de desarrollo se debe, (según extracto de [guia][1]):
 
 - Clonar repositorio GitHub
@@ -37,21 +56,6 @@ git clone https://github.com/manureta/segmenter.git --recurse-submodules
 - cambiar directorio a su proyecto
 ```bash
 cd segmenter
-```
-- crear archivo .gitignore
-```bash
-echo "/node_modules
-/public/hot
-/public/storage
-/storage/*.key
-/vendor
-.env
-.env.backup
-.phpunit.result.cache
-Homestead.json
-Homestead.yaml
-npm-debug.log
-yarn-error.log" > .gitignore
 ```
 
 - Instalar Composer Dependencias
@@ -127,6 +131,11 @@ y elegir un puerto libre para que la app laravel esté escuchando
 ```bash
 php artisan serve --host=<url_del_servidor_donde_corre_la_aplicacion_laravel> --port=<puerto_del_servicio_de_la_aplicación>
 ```
+
+Y hacer esto:
+```bash
+cp app/developer_docs/PostgresBuilder.php.example vendor/laravel/framework/src/Illuminate/Database/Schema/PostgresBuilder.php
+ ```
 
 [1]: https://devmarketer.io/learn/setup-laravel-project-cloned-github-com/
 [logo]: https://www.indec.gob.ar/Images_WEBINDEC/Logo/Logo_Indec.png

@@ -26,9 +26,8 @@
 <body>
     @yield('divs4content')
     <div id="app">
-        <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
+            <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
             <div class="container">
-		@include('flash::message')
                 <a class="navbar-brand text-uppercase" href="{{ url('/') }}">
                 <img src="/images/mandarina.svg" width="30" height="30" class="d-inline-block align-top" alt="">
                     {{ config('app.name', 'App sin nombre') }}
@@ -41,11 +40,12 @@
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav mr-auto btn">
                     @auth
-                        <li class="nav-item"><a class="nav-link" href="{{ url('/users') }}"> Users </a> </li>
-                        <li class="nav-item"><a class="nav-link" href="{{ url('/listado') }}"> Listado </a> </li>
                         <li class="nav-item"><a class="nav-link" href="{{ url('/provs') }}"> Provincias </a> </li>
-                        <li class="nav-item"><a class="nav-link" href="{{ url('/segmentador') }}"> Cargar </a> </li>
                         <li class="nav-item"><a class="nav-link" href="{{ url('/aglos') }}"> Aglomerados </a> </li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url('/segmentador') }}"> Cargar </a> </li>
+                        <li class="nav-item"><a class="nav-link" href="{{
+                        url('https://github.com/bichav/salidagrafica-atlas/archive/master.zip')
+                        }}"> Descargar plugin </a> </li>
                     @endauth
                     </ul>
 
@@ -63,11 +63,14 @@
                             @endif
                         @else
                             <li class="nav-item dropdown">
-                                <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                    {{ Auth::user()->name }} <span class="caret"></span>
+                                <a id="navbarDropdownLogin" class="nav-link
+                                dropdown-toggle" href="#logout" role="button"
+                                aria-controls=logout
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre> {{ Auth::user()->name }} <span class="caret"></span>
                                 </a>
 
-                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                                <div id=logout class="dropdown-menu dropdown-menu-right collapse"
+                                aria-labelledby="navbarDropdownLogin">
                                     <a class="dropdown-item" href="{{ route('logout') }}"
                                        onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">
@@ -84,25 +87,28 @@
                 </div>
             </div>
         </nav>
-
         <main class="py-4">
+		    @include('flash::message')
             @yield('content')
         </main>
         </div>
             @yield('content_main')
         <div id="copyright" class="text-center justify-content-center"
-        style="display:block"><hr />© Copyright 2020 INDEC - Geoestadística - {{ Git::version() }}</div>
+            style="display:block"><hr />© Copyright 2021 INDEC - Geoestadística
+            <div>{{ Git::version() }} -  {{ Git::lastCommitDate() }}</div>
+            </div>
 <!-- If using flash()->important() or flash()->overlay(), you'll need to pull in the JS for Twitter Bootstrap. -->
 <script src="//code.jquery.com/jquery.js"></script>
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
 <script>
    $(document).ready( function () {
     $('#flash-overlay-modal').modal();
+    $('div.alert').not('.alert-important').delay(5000).fadeOut(350);
 });
 </script>
+    @yield ('footer_scripts')
 <script>
 $('div.alert').not('.alert-important').delay(3000).fadeOut(350);
 </script>
-    @yield ('footer_scripts')
 </body>
 </html>

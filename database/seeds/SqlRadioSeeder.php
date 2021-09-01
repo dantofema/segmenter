@@ -14,7 +14,14 @@ class SqlRadioSeeder extends Seeder
         Eloquent::unguard();
         $this->command->info('Sembrando radios...');
         $path = 'app/developer_docs/radio.sql';
-        DB::unprepared(file_get_contents($path));
+        try{
+            DB::unprepared(file_get_contents($path));
+            }catch(Exception $e){
+                if ($e->getCode()==23505){
+                    $this->command->error('Radios NO fueron plantados!');
+                    return 0;
+                }
+            }
         $this->command->info('Radios plantados!');
     }
 }

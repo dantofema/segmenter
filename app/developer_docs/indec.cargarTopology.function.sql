@@ -125,6 +125,7 @@
      SELECT ROW_NUMBER() OVER() gid, prov,depto dpto,codloc,frac,radio, 
      st_union(topology.ST_GetFaceGeometry((SELECT st_srid(wkb_geometry) FROM %2$s limit 1)||''_topo'',face_id_postgis)) wkb_geometry
      FROM %1$s.lab 
+     WHERE lab.face_id_postgis is not null and lab.face_id_postgis!=0
      GROUP BY prov,depto,codloc,frac,radio
      );'
                       ,esquema,estearc); 
@@ -136,6 +137,7 @@
      SELECT ROW_NUMBER() OVER() gid, prov,depto dpto,codloc,frac,
      st_union(topology.ST_GetFaceGeometry((SELECT st_srid(wkb_geometry) FROM %2$s limit 1)||''_topo'',face_id_postgis)) wkb_geometry
      FROM %1$s.lab 
+     WHERE lab.face_id_postgis is not null and lab.face_id_postgis!=0
      GROUP BY prov,depto,codloc,frac
      );'
                       ,esquema,estearc); 
@@ -148,7 +150,7 @@
      SELECT ROW_NUMBER() OVER() gid, prov,depto dpto,codloc,frac, radio,mza,
      st_union(topology.ST_GetFaceGeometry((SELECT st_srid(wkb_geometry) FROM %2$s limit 1)||''_topo'',face_id_postgis)) wkb_geometry
      FROM %1$s.lab 
-     WHERE lab.face_id_postgis is not null
+     WHERE lab.face_id_postgis is not null and lab.face_id_postgis!=0
      GROUP BY prov,depto,codloc,frac, radio, mza
      );'
                       ,esquema,estearc); 

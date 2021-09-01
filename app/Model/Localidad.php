@@ -35,6 +35,12 @@ class Localidad extends Model
         return $this->belongsToMany('App\Model\Radio', 'radio_localidad');
     }
 
+    //
+    public function getCodigoLocAttribute($value){
+        return $codloc= substr(trim($this->codigo), 5, 3);
+    }
+
+    
 
 
 }

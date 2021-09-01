@@ -23,14 +23,20 @@ SET default_with_oids = false;
 --
 
 CREATE TABLE public.radio (
-    id integer NOT NULL,
+    id integer NOT NULL PRIMARY KEY,
     codigo character(12),
     fraccion_id integer,
     fecha_desde timestamp without time zone,
     fecha_hasta timestamp without time zone,
     observacion_id integer,
     geometria_id integer,
-    tipo_de_radio_id integer
+    tipo_de_radio_id integer,
+    resultado character varying,
+    user_id integer,
+    issegmentado boolean,
+    updated_at timestamp without time zone,
+    created_at timestamp without time zone,
+    nombre character varying
 );
 
 

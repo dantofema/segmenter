@@ -54,6 +54,8 @@ class RadioController extends Controller
     public function show(Radio $radio)
     {
         //
+
+       // dd($radio);
     }
 
     /**

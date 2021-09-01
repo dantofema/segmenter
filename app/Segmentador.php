@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Symfony\Component\Process\Process;
 use Illuminate\Support\Facades\Config;
+use Auth;
+use App\MyDB;
 
 class Segmentador extends Model
 {
@@ -14,6 +16,7 @@ class Segmentador extends Model
     
     public function segmentar_a_lado_completo($aglo,$prov,$dpto,$frac,$radio,$vivs_deseada,$vivs_max,$vivs_min,$mza_indivisible)
 	{
+        $AppUser= Auth::user();
         // Set the limit to 500 MB.
         // Varios intentos para aumentar la memoria.
         /*
@@ -23,8 +26,11 @@ class Segmentador extends Model
         rewind($fp);
         ini_set('memory_limit','512M');
         */
-        $processLog = Process::fromShellCommandline('echo "Se va a segmentar: $info_segmenta"  >> segmentaciones.log');
-        $processLog->run(null, ['info_segmenta' => " Aglomerado: ".$aglo ." Radio ".$radio]);
+        $processLog = Process::fromShellCommandline('echo "$tiempo: $usuario_name ($usuario_id) -> va a segmentar: $info_segmenta"  >> segmentaciones.log');
+        $processLog->run(null, ['info_segmenta' => " Aglomerado: ".$aglo ." Frac ".$frac." Radio ".$radio,
+                                'usuario_id' => $AppUser->id,
+                                'usuario_name' => $AppUser->name,
+                                'tiempo' => date('Y-m-d H:i:s')]);
 
         $esquema = 'e'.$aglo;
 
@@ -44,6 +50,7 @@ class Segmentador extends Model
                         if (!$process->isSuccessful()) {
                                 dd($process->getErrorOutput());
                         }else{  
+                            MyDB::lados_completos_a_tabla_segmentacion_ffrr($aglo,$frac,$radio);
                             return $this->resultado=$process->getOutput();
                         }
             // e0777.arc 50 084 1 4 20 30 10 1');
@@ -55,4 +62,24 @@ class Segmentador extends Model
             return $this->resultado;
         }else{ return "No hay segmentacion realizada.";}
     }
+
+    public function vista_segmentos_lados_completos($esquema)
+    {
+        MyDB::recrea_vista_segmentos_lados_completos($esquema);
+    }
+
+    public function
+    lados_completos_a_tabla_segmentacion_ffrr($esquema,$frac,$radio)
+    {
+       MyDB::lados_completos_a_tabla_segmentacion_ffrr($esquema,$frac,$radio);
+        
+    }
+
+    public function
+    segmentar_excedidos_ffrr($esquema,$frac,$radio,$umbral,$desado)
+    {
+        MyDB::segmentar_excedidos_ffrr($esquema,$frac,$radio,$umbral,$desado);
+        
+    }
+
 }

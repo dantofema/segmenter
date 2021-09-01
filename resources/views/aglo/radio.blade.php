@@ -1,6 +1,13 @@
 <div class="container">
     Información del aglomerado ({{ $aglomerado->codigo }}) 
     <b> {{ $aglomerado->nombre }} </b><br />
+            @foreach($aglomerado->localidades as $localidad)
+            	@foreach($localidad->departamentos as $departamento)
+		  En Departamento: <a href="{{ url('/depto/'.$departamento->id) }}">
+({{ $departamento->codigo }}) {{ $departamento->nombre }} </a>
+		<br />
+                @endforeach
+            @endforeach
     <div class="">
      @if($carto)
         La base geográfica está cargada.
@@ -19,38 +26,24 @@
 <div class="form-horizontal">
 <form action="/grafo/{{ $aglomerado->id }}" method="GET" enctype="multipart/form-data">
                 @csrf
-
   <div class="form-group">
-    <label class="control-label" for="radio">Seleccione un Radio para ver grafo de segmentación:</label>
     <div class="">
-<ul class="nav">
-            @foreach($radios as $radio)
-    <li class="btn @if($radio->isSegmentado) segmentado @endif " >
-    @if($radio->isSegmentado)<a href="{{ url('/grafo/'.$aglomerado->id.'/'.$radio->id) }}"> @endif
-        {{ trim($radio->codigo) }}: {{ trim($radio->nombre) }} <br />Mzas: {{ trim($radio->CantMzas) }}
-    @if($radio->isSegmentado)</a> @endif
-    </li>
-            @endforeach
-</ul>
+        @foreach($radios as $radio)
+            <a class="panel panel-default @if($radio->isSegmentado) segmentado @endif "
+            href="{{ url('/grafo/'.$aglomerado->id.'/'.$radio->id) }}">
+            <div class="panel-body">
+                <h3> {{ trim($radio->codigo) }}: {{ trim($radio->nombre) }}</h3>
+                <p class="text-muted">Mzas: {{ trim($radio->CantMzas) }}</p>
+            </div>
+            </a>
+        @endforeach
     </div>
   </div>
-  <div class="form-group">
-    <label class="control-label" for="radio">Metodo de segmentación:</label><br />
-    <label class="radio-inline"><input type="radio" name="optalgoritmo" value=op1>Op. 1</label>
-    <label class="radio-inline"><input type="radio" name="optalgoritmo" value=op2>Op. 2</label>
-    <label class="radio-inline"><input type="radio" name="optalgoritmo" value=op3 disabled>Magic</label>
-  </div>
- <div class="mx-auto">
- <input type="submit" class="segmentar btn btn-primary" value="Ver Grafo">
- </div>
 </form>
+@if($carto)
+   {!! $svg !!}
+@endif
 </div>
-
-
-</div>
-     @if($carto)
-        {!! $svg->concat !!}
-     @endif
 @if($aglomerado->codigo =='0125')         
 <div>
 
@@ -119,4 +112,3 @@
 </svg>
 </div>
 @endif
-

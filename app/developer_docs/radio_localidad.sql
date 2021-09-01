@@ -30142,6 +30142,8 @@ INSERT INTO public.radio_localidad VALUES (39284, 4171);
 INSERT INTO public.radio_localidad VALUES (39285, 4166);
 INSERT INTO public.radio_localidad VALUES (39286, 4170);
 INSERT INTO public.radio_localidad VALUES (39289, 4174);
+INSERT INTO public.radio_localidad VALUES (39290, 4169);
+INSERT INTO public.radio_localidad VALUES (39291, 4169);
 INSERT INTO public.radio_localidad VALUES (39292, 4169);
 INSERT INTO public.radio_localidad VALUES (39293, 4169);
 INSERT INTO public.radio_localidad VALUES (39294, 4169);

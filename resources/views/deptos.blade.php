@@ -58,7 +58,9 @@
              <th>Id</th>
              <th>Código</th>
              <th>Nombre</th>
-             <th>Cantidad de Localidades</th>
+             <th>Localidades</th>
+             <th>Fracciones</th>
+             <th>Radios</th>
           </tr>
        </thead>
     </table>
@@ -71,6 +73,7 @@
           }
       });
       var table =  $('#laravel_datatable').DataTable({
+        "pageLength": -1,
          language: //{url:'https://cdn.datatables.net/plug-ins/1.10.20/i18n/Spanish.json'},
 {
 	"sProcessing":     "Procesando...",
@@ -107,14 +110,17 @@
           type: 'GET',
           data: function (d) {
           d.codigo = $('#codigo').val();
+          console.log(d);
           }
          },
          columns: [
                   { visible: false, data: 'id', name: 'id' },
                   { data: 'codigo', name: 'codigo' },
                   { data: 'nombre', name: 'nombre' },
-                  { searchable: false , data: 'localidades_count', name: 'localidades_count' }
-               ]
+		  { searchable: false , data: 'localidades_count', name: 'localidades_count' },
+		  { searchable: false , data: 'fracciones_count', name: 'fracciones_count' },
+		  { searchable: false , data: 'radios_count', name: 'radios_count' }
+	          ]
       });
 
    table.on( 'click', 'tr', function () {

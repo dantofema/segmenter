@@ -12,6 +12,11 @@ class Departamento extends Model
     protected $fillable = [
         'codigo','nombre'
     ];
+
+    // Sin fecha de creación o modificación
+    //
+    public $timestamps = false;
+
     /**
      * Obtener la provicnia a donde pertencen el Departamento.
      */
@@ -34,6 +39,15 @@ class Departamento extends Model
     public function fracciones()
     {
         return $this->hasMany('App\Model\Fraccion');
+    }
+
+    /**
+     * Relación con Radios, un departamentos puede tener muchos Radios a traves
+     * de las Fracciones.
+     */
+    public function radios()
+    {
+        return $this->hasManyThrough('App\Model\Radio','App\Model\Fraccion');
     }
 
 }
