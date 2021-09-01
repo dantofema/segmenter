@@ -54,7 +54,7 @@
              <th>Viviendas</th>
              <th>Cant. Lados</th>
              <th>Cant. Manzanas</th>
-             <th>Manznanas</th>
+             <th>Manzanas</th>
              <th>Descripción</th>
           </tr>
        </thead>
