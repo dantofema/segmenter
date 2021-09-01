@@ -53,7 +53,7 @@
              <th>Cant. Viviendas</th>
              <th>Cant. Lados</th>
              <th>Cant. Manzanas</th>
-             <th>Manznanas</th>
+             <th>Manzanas</th>
           </tr>
        </thead>
     </table>
