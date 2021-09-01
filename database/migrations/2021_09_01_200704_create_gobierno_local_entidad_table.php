@@ -16,10 +16,10 @@ class CreateGobiernoLocalEntidadTable extends Migration
 /*        Schema::create('gobierno_local_entidad', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->timestamps();
+        });
 */
        $sql = file_get_contents(app_path() . '/developer_docs/gobierno_local_entidad.up.sql');
        DB::unprepared($sql);
-        });
     }
 
     /**
