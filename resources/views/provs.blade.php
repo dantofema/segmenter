@@ -58,7 +58,7 @@
              <th>Id</th>
              <th>Código</th>
              <th>Nombre</th>
-             <th>Cantidad de Departamentos</th>
+             <th>Cantidad de Comunas / Partidos / Departamentos</th>
              <th> * </th>
           </tr>
        </thead>
