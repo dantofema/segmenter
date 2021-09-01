@@ -18,10 +18,14 @@ class CreateEntidadTable extends Migration
             $table->timestamps();
         });
 */
-       $sql = file_get_contents(app_path() . '/developer_docs/entidad.up.sql');
+    $sql = file_get_contents(app_path() . '/developer_docs/entidad.up.sql');
+    try{
        DB::unprepared($sql);        
+    }catch(Illuminate\Database\QueryException $e){
+       DB::Rollback();
+       echo _('Error creando entidad...');
     }
-
+    }
     /**
      * Reverse the migrations.
      *
