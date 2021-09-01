@@ -19,8 +19,13 @@ class CreateGobiernoLocalEntidadTable extends Migration
         });
 */
        $sql = file_get_contents(app_path() . '/developer_docs/gobierno_local_entidad.up.sql');
-       DB::unprepared($sql);
-    }
+       try{
+           DB::unprepared($sql);
+       }catch(Illuminate\Database\QueryException $e){
+          DB::Rollback();
+          echo _('Error creando relacion gobierno_local - entidad...');
+       }
+     }
 
     /**
      * Reverse the migrations.
