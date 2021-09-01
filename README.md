@@ -17,7 +17,7 @@ Todo aporte es bienvenido y agradecido.
 salud! M.
 
 ## Prerrequisitos (las instrucciones asumen que se está usando Ubuntu)
-* PHP 7: php-mbstring php-dom php-zip php-gd php-pdo-pgsql composer
+* PHP 7.3 o superior.3 o superior.3 o superior: php-mbstring php-dom php-zip php-gd php-pdo-pgsql composer
 ```
 sudo apt install php-mbstring php-dom php-zip php-gd php-pdo-pgsql composer
 ```
