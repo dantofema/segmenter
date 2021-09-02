@@ -34,6 +34,11 @@ class CreateOperativosTables extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('operativos_tables');
+        Schema::dropIfExists('operativo');
+        Schema::dropIfExists('operativo__localidad');
+        Schema::dropIfExists('operativo__paraje');
+        Schema::dropIfExists('operativo__base_antartica');
+        Schema::dropIfExists('operativo__entidad');
+        Schema::dropIfExists('operativo__gobierno_local');
     }
 }
