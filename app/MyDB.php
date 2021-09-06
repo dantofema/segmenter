@@ -179,7 +179,7 @@ FROM
     {
         try {
             return (DB::select('SELECT codprov||coddepto as codigo,nomdepto as nombre FROM
-            '.$esquema.'.'.$tabla.' group by 1,2 order by codprov||coddepto asc ;'));
+            '.$esquema.'.'.$tabla.' group by 1,2 order by codprov||coddepto asc,count(*) desc ;'));
         }catch (\Illuminate\Database\QueryException $exception) {
 		Log::error('Error: '.$exception);
 		//Supongo codprov sin Nombre
@@ -187,6 +187,23 @@ FROM
 	    return null;;
 	}
     }
+
+    public static function getDataLoc($tabla,$esquema,$codigo_depto=null)
+    {
+	    log::debug(' Localidades del depto: '.$codigo_depto);
+	    if(isset($codigo_depto)){ $filtro=" WHERE codprov||coddepto= '".$codigo_depto."'";
+	    }else{$filtro='';}
+        try {
+            return (DB::select('SELECT codprov||coddepto||codloc as codigo,nomloc as nombre FROM
+            '.$esquema.'.'.$tabla.' '.$filtro.' group by 1,2 order by codprov||coddepto||codloc asc, count(*) desc ;'));
+        }catch (\Illuminate\Database\QueryException $exception) {
+		Log::error('Error: '.$exception);
+		//Supongo codprov sin Nombre
+		//
+	    return null;;
+	}
+    }
+
     public static function getLoc($tabla,$esquema)
     {
         return (DB::select('SELECT distinct prov||dpto||codloc as link FROM

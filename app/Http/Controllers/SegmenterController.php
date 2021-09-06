@@ -16,6 +16,7 @@ use Maatwebsite\Excel;
 use App\Model\Aglomerado;
 use App\Model\Provincia;
 use App\Model\Departamento;
+use App\Model\Localidad;
 use Illuminate\Support\Facades\Log;
 
 class SegmenterController extends Controller
@@ -265,17 +266,30 @@ class SegmenterController extends Controller
 		}
 
 	    }
-	    Log::debug('Provincia: '.$oProvincia->tojson(JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+//	    Log::debug('Provincia: '.$oProvincia->tojson(JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 	    
 	    $depto_data=MyDB::getDatadepto($tabla,'public');
-	    Log::debug('Deptos data: '.collect($depto_data) ); //.' cantidad: '.count($depto_data));
+//	    Log::debug('Deptos data: '.collect($depto_data) ); //.' cantidad: '.count($depto_data));
 	    foreach($depto_data as $depto){
-		    $oProvincia->Departamentos()->save(Departamento::firstOrNew(collect($depto)->toArray()));
+		    $depto->provincia_id=$oProvincia->id;
+		    //:dd($depto);
+		    $oProvincia->Departamentos()->save($oDepto = Departamento::firstOrCreate(['codigo'=>$depto->codigo
+		    ],collect($depto)->toArray()));
+	            Log::debug('Depto: '.$oDepto->tojson(JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+		    $loc_data=MyDB::getDataLoc($tabla,'public',$oDepto->codigo);
+		    foreach($loc_data as $localidad){
+//			    dd($oDepto,$localidad,Localidad::firstOrNew(collect($localidad)->toArray()));
+			    $localidad->depto_id=$oDepto->id;
+			    $oDepto->load('localidades');
+		    $oDepto->Localidades()->sync($oLocalidad = Localidad::firstOrCreate(['codigo'=>$localidad->codigo
+                    ],collect($localidad)->toArray()),false);
+	            Log::debug('Localidad: '.$oLocalidad->tojson(JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+//			$aLocalidades[]=Localidad::firstOrNew(collect($localidad)->toArray());
+		    }
 	    }
 	    
 	    Log::debug('Provincia: '.$oProvincia->tojson(JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 
-	    
 	}
 
 	     }
