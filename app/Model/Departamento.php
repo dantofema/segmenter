@@ -10,7 +10,7 @@ class Departamento extends Model
      protected $table = 'departamentos';
 
     protected $fillable = [
-        'codigo','nombre'
+        'codigo','nombre','provincia_id'
     ];
 
     // Sin fecha de creación o modificación

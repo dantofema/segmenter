@@ -1,4 +1,4 @@
-<div class="container">
+<div>
     @if ($provincia=$departamento->provincia)
     <li class="btn  btn-outline-secondary" style="margin-bottom: 2px" >
         <a href="{{ url("/prov/{$provincia->id}") }}" >({{ $provincia->codigo }})

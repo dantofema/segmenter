@@ -1,6 +1,7 @@
-<div class="container">
+<div>
+    <b>Provincia</b><br />
     código {{ $provincia->codigo }} <br />
-    provincia {{ $provincia->nombre }} <br />
+    nombre {{ $provincia->nombre }} <br />
     con {{ $provincia->departamentos_count }} divisiones de segundo orden (comunas/partidos/departamentos)
             	@foreach($provincia->departamentos as $departamento)
     		<li class="btn  btn-outline-secondary" style="margin-bottom: 1px" >

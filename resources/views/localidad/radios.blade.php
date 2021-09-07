@@ -6,9 +6,13 @@
 <div class="container">
     Información de la Localidad ({{ $localidad->codigo }}) 
     <b> {{ $localidad->nombre }} </b><br />
+    @if($aglomerado)
     Aglomerado <a href="{{ url("/aglo/{$aglomerado->id}") }}" >
     ({{ $aglomerado->codigo }}) 
     <b> {{ $aglomerado->nombre }} </b></a><br />
+     @else
+        NO está definido ningún aglomerado.
+     @endif
     <div class="">
      @if($carto)
         La base geográfica está cargada.
