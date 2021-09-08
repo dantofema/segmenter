@@ -532,7 +532,11 @@ FROM
                 ( DB::statement("SELECT indec.descripcion_segmentos('e".$esquema."');") );
                 ( DB::statement("SELECT indec.segmentos_desde_hasta('e".$esquema."');") );
             // (?) crear 3 public static function distintas y correrlas desde arribo 
-            // como segmentar_equilibrado
+		// como segmentar_equilibrado
+		//
+		// TODO: Llamar a función guardar segmentación para actualizar la r3 con los resultados...
+		// $esquema,$frac,$radio
+		// self::grabarSegmentacion($esquema,$frac,$radio)
 
                     return true;
                 }else{ 
