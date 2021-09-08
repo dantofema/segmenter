@@ -29,7 +29,6 @@ class DatabaseSeeder extends Seeder
             SqlLocalidadGobLocSeeder::class,
             SqlParajeSeeder::class,
             SqlOperativosSeeder::class,
-            SqlFuenteSeeder::class,
             SqlSubtipoViviendaSeeder::class
 ]);
 
