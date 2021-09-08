@@ -489,7 +489,7 @@ FROM
 
         public static function generarR3Vacia($esquema)
         {
-            if (not Schema::hasTable('e'.$esquema.'.r3')) {
+            if (! Schema::hasTable('e'.$esquema.'.r3')) {
             DB::statement('create TABLE if not exists
                 e'.$esquema.".r3 as select * from indec.describe_segmentos_con_direcciones_ffrr('e".$esquema."', 0, 0)
                 ;"); // crea la R3 con una consulta que devuelve la esctructura vacía
