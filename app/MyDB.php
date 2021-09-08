@@ -65,6 +65,7 @@ class MyDB extends Model
         {
             try{
                 self::generarSegmentacionVacia($esquema);
+                self::generarR3Vacia($esquema);
                 DB::statement("SELECT
                 indec.lados_completos_a_tabla_segmentacion_ffrr('e".$esquema."',".$frac.",".$radio.");");
                 DB::statement("SELECT indec.segmentos_desde_hasta('e".$esquema."');");
@@ -479,6 +480,31 @@ FROM
             DB::statement('create TABLE if not exists 
                 e'.$esquema.'.segmentacion (listado_id integer, segmento_id integer)
                 ;');
+            return true;
+            }
+            else{
+            return false;
+            }
+        }
+
+        public static function generarR3Vacia($esquema)
+        {
+            if (! Schema::hasTable('e'.$esquema.'.r3')) {
+            DB::statement('create TABLE if not exists
+                e'.$esquema.".r3 as select * from indec.describe_segmentos_con_direcciones_ffrr('e".$esquema."', 0, 0)
+                ;"); // crea la R3 con una consulta que devuelve la esctructura vacía
+            return true;
+            }
+            else{
+            return false;
+            }
+        }
+
+        public static function grabarSegmentacion($esquema,$frac,$radio)
+        {
+            if (Schema::hasTable('e'.$esquema.'.r3')) {
+            DB::statement("select indec.sincro_r3_ffrr('e".$esquema."', $frac, $radio)
+                ;"); // guarda indec.describe_segmentos_con_direcciones_ffrr en esquema.r3 (hace delete & insert)
             return true;
             }
             else{
