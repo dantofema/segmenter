@@ -65,6 +65,7 @@ class MyDB extends Model
         {
             try{
                 self::generarSegmentacionVacia($esquema);
+                self::generarR3Vacia($esquema);
                 DB::statement("SELECT
                 indec.lados_completos_a_tabla_segmentacion_ffrr('e".$esquema."',".$frac.",".$radio.");");
                 DB::statement("SELECT indec.segmentos_desde_hasta('e".$esquema."');");
