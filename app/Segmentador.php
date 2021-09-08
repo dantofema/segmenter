@@ -72,6 +72,7 @@ class Segmentador extends Model
     lados_completos_a_tabla_segmentacion_ffrr($esquema,$frac,$radio)
     {
        MyDB::lados_completos_a_tabla_segmentacion_ffrr($esquema,$frac,$radio);
+       MyDB::grabarSegmentacion($esquema,$frac,$radio);
         
     }
 
@@ -79,7 +80,7 @@ class Segmentador extends Model
     segmentar_excedidos_ffrr($esquema,$frac,$radio,$umbral,$desado)
     {
         MyDB::segmentar_excedidos_ffrr($esquema,$frac,$radio,$umbral,$desado);
-        
+	MyDB::grabarSegmentacion($esquema,$frac,$radio);
     }
 
 }
