@@ -500,6 +500,18 @@ FROM
             }
         }
 
+        public static function grabarSegmentacion($esquema,$frac,$radio)
+        {
+            if (Schema::hasTable('e'.$esquema.'.r3')) {
+            DB::statement("select indec.sincro_r3_ffrr('e".$esquema."', $frac, $radio)
+                ;"); // guarda indec.describe_segmentos_con_direcciones_ffrr en esquema.r3 (hace delete & insert)
+            return true;
+            }
+            else{
+            return false;
+            }
+        }
+
 
         public static function segmentar_equilibrado($esquema,$deseado = 10)
         {
