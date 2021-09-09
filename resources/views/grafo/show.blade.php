@@ -13,6 +13,7 @@ $localidad->codigo}}) {{ $localidad->nombre}}</a>
 @endforeach
 </h5>
 <h3>Radio: {{ $radio->codigo}}</h3>
+@if($radio->viviendas)	<p class="text-center">Con {{ $radio->viviendas }} viviendas.</p> @endif
 </div></div>
   <div class="row">
     </div>
@@ -49,26 +50,32 @@ $localidad->codigo}}) {{ $localidad->nombre}}</a>
 @section('content_main')
 <div class="container-xl" >
     <div class="col no-gutters">
-      <div class="row no-gutters">
+    @forelse ($segmentacion_data_listado as $segmento)
+      @if($loop->first)
+       Se encontraron {{ $loop->count }} segmentos.
+       <div class="row no-gutters">
         <div class="col">
         <div class="row text-center border">
             <div class="col-sm-1 border" style="display:none" >id</div>
-            <div class="col-sm- border">Seg</div>
-            <div class="col-sm-10 border">Descripción</div>
-            <div class="col-sm-1 border">Viviendas</div>
-        </div>
-        @forelse ($segmentacion_data_listado as $segmento)
+            <div class="col-sm- border"> Seg </div>
+            <div class="col-sm-11 border"> Descripción </div>
+            <div class="col-sm- border"> Viviendas </div>
+	</div>
+      @endif
         <div class="row border">
         <div class="col-sm-1 " style="display:none" >{{ $segmento->segmento_id }}</div>
         <div class="col-sm- ">{{ $segmento->seg }}</div>
-        <div class="col-sm-10 ">{!! str_replace(". Manzana ",".<br/>Manzana ",
+        <div class="col-sm-11 ">{!! str_replace(". Manzana ",".<br/>Manzana ",
                                             str_replace(".  ",".<br/>",$segmento->detalle))  !!}</div>
-        <div class="col-sm-1 ">{{ $segmento->vivs }}</div>
-        </div>
+        <div class="col-sm- text-right "><p class="text-right">{{ $segmento->vivs }}</p></div>
+	</div>
+       @if($loop->last)
+          </div>
+       @endif
+
         @empty
             <p>No hay segmentos</p>
         @endforelse
-        </div>
       </div>
       <div class="row no-gutters">
         <div class="col" title=MiniMap> {!! $radio->getSVG() !!}</div>
