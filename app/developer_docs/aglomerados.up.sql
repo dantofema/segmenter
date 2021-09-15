@@ -61,6 +61,13 @@ ALTER TABLE ONLY public.aglomerados ALTER COLUMN id SET DEFAULT nextval('public.
 
 
 --
+-- Name: aglomerados_id_index; Type: INDEX; Schema: public; Owner: laravel
+--
+
+CREATE INDEX aglomerados_id_index ON public.aglomerados USING btree (id);
+
+
+--
 -- PostgreSQL database dump complete
 --
 
