@@ -147,7 +147,7 @@ class Aglomerado extends Model
                 }else{
                     $new_radios[]=new Radio (['codigo'=>$radio->link,'nombre'=>'Nuevo: '.$radio->link]);
 		    $nuevos_radios++;
-		    flash('No se encontró radio  -> '.$radioi->link)->error()->important();
+		    flash('No se encontró radio  -> '.$radio->link)->error()->important();
                 }
 //            $links[]=$radio->link; };
             }
