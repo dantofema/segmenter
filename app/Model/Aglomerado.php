@@ -146,13 +146,15 @@ class Aglomerado extends Model
                                $links[]=$radio->link;
                 }else{
                     $new_radios[]=new Radio (['codigo'=>$radio->link,'nombre'=>'Nuevo: '.$radio->link]);
-                    $nuevos_radios++;
+		    $nuevos_radios++;
+		    flash('No se encontró radio  -> '.$radioi->link)->error()->important();
                 }
 //            $links[]=$radio->link; };
             }
         }
         if (count($links)>0){
             $objRadios=Radio::whereIn('codigo',$links)->get();
+	    flash('Radios verificados -> '.$objRadios->count())->success();
         }
             //dd($new_radios,$nuevos_radios);
             $objs=$objRadios->union(Collect ($new_radios));
