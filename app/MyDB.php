@@ -268,7 +268,7 @@ FROM
                    '.$esquema.'.'.$tabla.' limit 1;');
 		    Log::debug('Se pudo leer el registro en '.$tabla.' . Ejemplo : '.
 			    (collect($resumen)->toJson(JSON_UNESCAPED_UNICODE))
-		    )->success()->important();
+		    );
             }catch (\Illuminate\Database\QueryException $exception) {
 		  Log::error('No se cargó correctamente la PxRad: '.$exception);
 		  flash( $resumen='NO se cargó correctamente la PxRad')->error()->important();
