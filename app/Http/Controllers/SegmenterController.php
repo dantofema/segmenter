@@ -17,6 +17,8 @@ use App\Model\Aglomerado;
 use App\Model\Provincia;
 use App\Model\Departamento;
 use App\Model\Localidad;
+use App\Model\Radio;
+use App\Model\Fraccion;
 use Illuminate\Support\Facades\Log;
 
 class SegmenterController extends Controller
@@ -275,16 +277,40 @@ class SegmenterController extends Controller
 		    //:dd($depto);
 		    $oProvincia->Departamentos()->save($oDepto = Departamento::firstOrCreate(['codigo'=>$depto->codigo
 		    ],collect($depto)->toArray()));
-	            Log::debug('Depto: '.$oDepto->tojson(JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+		    Log::debug('Depto: '.$oDepto->tojson(JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+
+                    // Recorro Fracciones leídas del departamento
+		    $frac_data=MyDB::getDataFrac($tabla,'public',$oDepto->codigo);
+		    foreach($frac_data as $fraccion){
+		        $oDepto->Fracciones()->save($oFraccion = Fraccion::firstOrCreate(['codigo'=>$fraccion->codigo
+                        ],collect($fraccion)->toArray()),false);
+		    }
+
+		    //Leo Localidades y recorro
 		    $loc_data=MyDB::getDataLoc($tabla,'public',$oDepto->codigo);
 		    foreach($loc_data as $localidad){
-//			    dd($oDepto,$localidad,Localidad::firstOrNew(collect($localidad)->toArray()));
-			    $localidad->depto_id=$oDepto->id;
-			    $oDepto->load('localidades');
-		    $oDepto->Localidades()->sync($oLocalidad = Localidad::firstOrCreate(['codigo'=>$localidad->codigo
-                    ],collect($localidad)->toArray()),false);
-	            Log::debug('Localidad: '.$oLocalidad->tojson(JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+//		        dd($oDepto,$localidad,Localidad::firstOrNew(collect($localidad)->toArray()));
+		        $localidad->depto_id=$oDepto->id;
+		        $oDepto->load('localidades');
+		        $oDepto->Localidades()->sync($oLocalidad = Localidad::firstOrCreate(['codigo'=>$localidad->codigo
+                        ],collect($localidad)->toArray()),false);
+	                Log::debug('Localidad: '.$oLocalidad->tojson(JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 //			$aLocalidades[]=Localidad::firstOrNew(collect($localidad)->toArray());
+
+                        // Obtengo, recorro y cargo los radios
+	                $radio_data=MyDB::getDataRadio($tabla,'public',$oLocalidad->codigo);
+			foreach($radio_data as $radio){
+		            $radio->localidad_id=$oLocalidad->id;
+                            $oLocalidad->load('radios');
+                            $oLocalidad->Radios()->sync($oRadio = Radio::firstOrCreate(['codigo'=>$radio->codigo
+			    ],collect($radio)->toArray()),false);
+				
+			    $oRadio->Fraccion()->associate(Fraccion::where('codigo',substr($radio->codigo,0,7))->firstorFail());
+                            $oRadio->save();
+
+                            Log::debug('Radio: '.$oRadio->tojson(JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+
+                        }
 		    }
 	    }
 	    

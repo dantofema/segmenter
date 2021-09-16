@@ -159,7 +159,6 @@ FROM
         }catch (\Illuminate\Database\QueryException $exception) {
 		Log::error('Error: '.$exception);
 		//Supongo codprov sin Nombre
-		//
 		$codprov=self::getCodProv($tabla,$esquema);
 	    return ['codigo'=>$codprov,'nombre'=>'Sin Nombre'];
 	}
@@ -183,7 +182,39 @@ FROM
             '.$esquema.'.'.$tabla.' group by 1,2 order by codprov||coddepto asc,count(*) desc ;'));
         }catch (\Illuminate\Database\QueryException $exception) {
 		Log::error('Error: '.$exception);
-		//Supongo codprov sin Nombre
+		//
+	    return null;;
+	}
+    }
+
+    public static function getDataFrac($tabla,$esquema,$codigo_dpto=null)
+    {
+	    if(isset($codigo_dpto)){ 
+	        log::debug(' Fracciones del departamento: '.$codigo_dpto);   
+                $filtro=" WHERE codprov||coddepto= '".$codigo_dpto."'";
+	    }else{$filtro='';}
+        try {
+	    return (DB::select('SELECT codprov||coddepto||frac2020 as codigo,
+		codprov||coddepto||codloc||frac2020 as nombre FROM
+                '.$esquema.'.'.$tabla.' '.$filtro.' group by 1,2 order by codprov||coddepto||codloc||frac2020 asc, count(*) desc ;'));
+        }catch (\Illuminate\Database\QueryException $exception) {
+		Log::error('Error: '.$exception);
+		//
+	    return null;
+	}
+    }
+
+    public static function getDataRadio($tabla,$esquema,$codigo_loc=null)
+    {
+	    log::debug(' Radios de la Localidad: '.$codigo_loc);
+	    if(isset($codigo_loc)){ $filtro=" WHERE codprov||coddepto||codloc= '".$codigo_loc."'";
+	    }else{$filtro='';}
+        try {
+	    return (DB::select('SELECT codprov||coddepto||frac2020||radio2020 as codigo,
+		codprov||coddepto||codloc||frac2020||radio2020 as nombre,tiporad20 as tipo FROM
+                '.$esquema.'.'.$tabla.' '.$filtro.' group by 1,2,3 order by codprov||coddepto||codloc||frac2020||radio2020 asc, count(*) desc ;'));
+        }catch (\Illuminate\Database\QueryException $exception) {
+		Log::error('Error: '.$exception);
 		//
 	    return null;;
 	}

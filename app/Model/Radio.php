@@ -195,7 +195,7 @@ class Radio extends Model
         if (! $this->_esquema){
           $this->_esquema='foo';
           if ($this->aglomerado() != null){
-                if ($this->aglomerado()->codigo=='0001'){
+		  if ($this->aglomerado()->codigo=='0001'){
                     if ($this->fraccion->departamento->provincia->codigo == '02') {
                         $this->_esquema = 'e'.
                                     $this->fraccion->departamento->codigo.
@@ -207,6 +207,7 @@ class Radio extends Model
                 {
                     $this->_esquema = 'e'.$this->aglomerado()->codigo;
                     try{
+	                if(!$this->fraccion){dd($this);}
                         if ($this->fraccion->departamento->provincia->codigo == '06') {
                             $this->_esquema = 'e'.$this->fraccion->departamento->codigo;
 			}elseif ($this->localidades()->count() > 1) {
