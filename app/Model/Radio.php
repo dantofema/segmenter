@@ -207,17 +207,19 @@ class Radio extends Model
                 {
                     $this->_esquema = 'e'.$this->aglomerado()->codigo;
                     try{
-	                if(!$this->fraccion){dd($this);}
-                        if ($this->fraccion->departamento->provincia->codigo == '06') {
-                            $this->_esquema = 'e'.$this->fraccion->departamento->codigo;
-			}elseif ($this->localidades()->count() > 1) {
-				Log::warning('TODO: Implementar radio multilocalidades'.$this->localidades()->get()->toJson(
+			    if(!$this->fraccion){
+                         	    Log::error('Radio sin fracción? : '.collect($this)->toJson(JSON_PRETTY_PRINT));
+				    $this->_esquema='e'.$this->codigo;
+			    }elseif ($this->fraccion->departamento->provincia->codigo == '06') {
+                               $this->_esquema = 'e'.$this->fraccion->departamento->codigo;
+                               }elseif ($this->localidades()->count() > 1) {
+			           Log::warning('TODO: Implementar radio multilocalidades'.$this->localidades()->get()->toJson(
 					JSON_PRETTY_PRINT));
-				foreach($this->localidades()->get() as $localidad){
+				    foreach($this->localidades()->get() as $localidad){
 					Log::info('Posible esquema:'.($localidad->codigo));
-				}
-                           $this->_esquema = 'e'.$this->fraccion->departamento->codigo;
-                        }
+		                    }
+                                   $this->_esquema = 'e'.$this->fraccion->departamento->codigo;
+                              }
                     }catch (Exception $e){
                          Log::error('Algo muy raro paso: '.$e);
                     };
