@@ -10,8 +10,12 @@ class Fraccion extends Model
     protected $table='fraccion';
 
     protected $fillable = [
-        'id','codigo','nombre'
+        'codigo'
     ];
+
+    // Sin fecha de creación o modificación
+    //
+    public $timestamps = false;
 
      /**
       * Relación con Radios, una Fraccion tiene uno o varios radios.

@@ -21,6 +21,10 @@ class Aglomerado extends Model
     public $segmentadoListado;
     public $segmentadoLados;
 
+    // Sin fecha de creación o modificación
+    //
+    public $timestamps = false;
+
      /**
       * Relación con Localidades, un Aglomerados tiene una o varias localidad.
       *

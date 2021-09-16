@@ -297,6 +297,12 @@ class SegmenterController extends Controller
 	                Log::debug('Localidad: '.$oLocalidad->tojson(JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 //			$aLocalidades[]=Localidad::firstOrNew(collect($localidad)->toArray());
 
+			// Busco Aglomerado de la localidad y asigno localidad al aglomerado
+			$aglo_data=MyDB::getDataAglo($tabla,'public',$oLocalidad->codigo);
+			$oLocalidad->Aglomerado()->associate(Aglomerado::firstorCreate(['codigo'=>$aglo_data['codigo']],
+				collect($aglo_data)->toArray()));
+			$oLocalidad->save();
+
                         // Obtengo, recorro y cargo los radios
 	                $radio_data=MyDB::getDataRadio($tabla,'public',$oLocalidad->codigo);
 			foreach($radio_data as $radio){
