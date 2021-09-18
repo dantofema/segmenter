@@ -41,6 +41,16 @@ class Radio extends Model
 
 
      /**
+      * Relación con TipoRadio , un Radio tiene un tipo de radio.
+      *
+      */
+
+     public function tipo()
+     {
+         return $this->belongsTo('App\Model\TipoRadio','tipo_de_radio_id','id');
+     }
+
+     /**
       * Relación con Fraccion , un Radio pertenece a Una fracción.
       *
       */
