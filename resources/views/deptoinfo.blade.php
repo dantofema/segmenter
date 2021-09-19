@@ -5,14 +5,29 @@
     <b> {{ $provincia->nombre }} </b></a>
     </li>
     @endif
+    <div>
+    @if($departamento->denominacion)
+	{{ $departamento->denominacion }}
+     @else
+        Departamento / Partido / Comuna
+    @endif
+    </div><div>
     <h3> ({{ $departamento->codigo }}) {{ $departamento->nombre }} </h3>
     {{ $departamento->localidades_count }} localidades.
+    </div><div>
     @foreach ($departamento->localidades as $localidad)
+    <li class="btn  btn-outline-secondary" style="margin-bottom: 1px" >
         <a href="{{ url("/localidad/{$localidad->id}") }}" >({{ $localidad->codigo }})
     <b> {{ $localidad->nombre }} </b></a>
+    </li>
     @endforeach
-
-<div/>
+    </div>
+    @if($departamento->aglomerados_count)
+    <div>
+      {{ $departamento->aglomerados_count }} aglomerados.
+    </div>
+    @endif
+</div>
 @if($departamento->codigo =='30028')         
 <div>
 <svg id="C30" class="mapa" xmlns="http://www.w3.org/2000/svg" height="500" width="450" viewBox="0 0 450 500">
