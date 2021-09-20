@@ -278,7 +278,7 @@ class Radio extends Model
                 as svg ,20 as orden
                 FROM ".$this->esquema.".manzanas
                     WHERE  prov||dpto||frac||radio='".$this->codigo."' )";
-            }else{$mzas='';$mzas_labels='';}
+            }else{Log::debug('No se encontro grafica de manzanas. ');$mzas='';$mzas_labels='';}
 
             //dd($viewBox.'/n'.$this->viewBox($extent,$epsilon,$height,$width).'/n'.$x0." -".$y0." ".$x1." -".$y1);
             $svg=DB::select("
