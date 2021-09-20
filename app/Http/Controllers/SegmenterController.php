@@ -19,6 +19,7 @@ use App\Model\Departamento;
 use App\Model\Localidad;
 use App\Model\Radio;
 use App\Model\Fraccion;
+use App\Model\TipoRadio;
 use Illuminate\Support\Facades\Log;
 
 class SegmenterController extends Controller
@@ -314,6 +315,7 @@ class SegmenterController extends Controller
 				
 			    $estado=$oRadio->wasRecentlyCreated?' (nueva) ':' (guardada) ';
 			    $oRadio->Fraccion()->associate(Fraccion::where('codigo',substr($radio->codigo,0,7))->firstorFail());
+			    $oRadio->Tipo()->associate(TipoRadio::firstOrCreate(['nombre'=>$radio->tipo]));
                             $oRadio->save();
 
                             Log::debug('Radio: '.$estado.$oRadio->tojson(JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
