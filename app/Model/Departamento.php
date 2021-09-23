@@ -50,4 +50,20 @@ class Departamento extends Model
         return $this->hasManyThrough('App\Model\Radio','App\Model\Fraccion');
     }
 
+    /**
+     * Denominación según provincia: departamento, comuna o partido.
+     *
+     */
+    public function getDenominacionAttribute()
+    {
+	    if($this->provincia->codigo=='02')
+		    return 'Comuna';
+	    elseif($this->provincia->codigo=='06')
+		    return 'Partido';
+	    else{
+		    return 'Departamento';
+	    }
+    }
+
+
 }

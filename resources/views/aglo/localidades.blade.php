@@ -18,7 +18,12 @@
     <b> {{ $aglomerado->nombre }} </b></h3>
         @foreach($departamentos as $departamento)
           @if($loop->first)
-             En {{count($departamentos)}} Departamento:
+	     En {{count($departamentos)}}
+             @if($departamento->denominacion)
+                {{ $departamento->denominacion }}
+             @else
+                Departamento / Partido / Comuna
+             @endif
 	  @endif
 	 <a href="{{ url('/depto/'.$departamento->id) }}">
 ({{ $departamento->codigo }}) {{ $departamento->nombre }} </a>

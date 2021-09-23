@@ -139,10 +139,29 @@ FROM
                         GROUP BY 1,2,3,4,5,6,7,8;')); 
     }
 
-    public static function getAglo($tabla,$esquema)
+    public static function getAglo($tabla,$esquema,$filtro='')
     {
         return (DB::select('SELECT distinct codaglo FROM
-        '.$esquema.'.'.$tabla.';')[0]->codaglo);
+        '.$esquema.'.'.$tabla.$filtro.';')[0]->codaglo);
+    }
+
+    public static function getDataAglo($tabla,$esquema,$codloc)
+    {
+	    if(isset($codloc)){
+	        log::debug(' Aglomerado para la localidad : '.$codloc);
+                $filtro=" WHERE codprov||coddepto||codloc= '".$codloc."'";
+	    }else{$filtro='';}
+        try {
+            return (DB::select('SELECT codaglo as codigo, nombre FROM
+		    '.$esquema.'.'.$tabla.
+		    $filtro.
+		    ' group by 1,2 order by count(*) desc Limit 1;')[0]);
+        }catch (\Illuminate\Database\QueryException $exception) {
+		Log::error('Error: '.$exception);
+		//Supongo codprov sin Nombre
+		$codaglo=self::getAglo($tabla,$esquema,$filtro);
+	    return ['codigo'=>$codaglo,'nombre'=>'Sin Nombre'];
+	}
     }
 
     public static function getProv($tabla,$esquema)
@@ -159,7 +178,6 @@ FROM
         }catch (\Illuminate\Database\QueryException $exception) {
 		Log::error('Error: '.$exception);
 		//Supongo codprov sin Nombre
-		//
 		$codprov=self::getCodProv($tabla,$esquema);
 	    return ['codigo'=>$codprov,'nombre'=>'Sin Nombre'];
 	}
@@ -183,7 +201,39 @@ FROM
             '.$esquema.'.'.$tabla.' group by 1,2 order by codprov||coddepto asc,count(*) desc ;'));
         }catch (\Illuminate\Database\QueryException $exception) {
 		Log::error('Error: '.$exception);
-		//Supongo codprov sin Nombre
+		//
+	    return null;;
+	}
+    }
+
+    public static function getDataFrac($tabla,$esquema,$codigo_dpto=null)
+    {
+	    if(isset($codigo_dpto)){ 
+	        log::debug(' Fracciones del departamento: '.$codigo_dpto);   
+                $filtro=" WHERE codprov||coddepto= '".$codigo_dpto."'";
+	    }else{$filtro='';}
+        try {
+	    return (DB::select('SELECT codprov||coddepto||frac2020 as codigo,
+		codprov||coddepto||codloc||frac2020 as nombre FROM
+                '.$esquema.'.'.$tabla.' '.$filtro.' group by 1,2 order by codprov||coddepto||codloc||frac2020 asc, count(*) desc ;'));
+        }catch (\Illuminate\Database\QueryException $exception) {
+		Log::error('Error: '.$exception);
+		//
+	    return null;
+	}
+    }
+
+    public static function getDataRadio($tabla,$esquema,$codigo_loc=null)
+    {
+	    log::debug(' Radios de la Localidad: '.$codigo_loc);
+	    if(isset($codigo_loc)){ $filtro=" WHERE codprov||coddepto||codloc= '".$codigo_loc."'";
+	    }else{$filtro='';}
+        try {
+	    return (DB::select('SELECT codprov||coddepto||frac2020||radio2020 as codigo,
+		codprov||coddepto||codloc||frac2020||radio2020 as nombre,tiporad20 as tipo FROM
+                '.$esquema.'.'.$tabla.' '.$filtro.' group by 1,2,3 order by codprov||coddepto||codloc||frac2020||radio2020 asc, count(*) desc ;'));
+        }catch (\Illuminate\Database\QueryException $exception) {
+		Log::error('Error: '.$exception);
 		//
 	    return null;;
 	}
@@ -216,9 +266,9 @@ FROM
 	    try {
 		    $resumen = DB::select('SELECT * FROM 
                    '.$esquema.'.'.$tabla.' limit 1;');
-		    flash('Se pudo leer el registro en '.$tabla.' . Ejemplo : '.
+		    Log::debug('Se pudo leer el registro en '.$tabla.' . Ejemplo : '.
 			    (collect($resumen)->toJson(JSON_UNESCAPED_UNICODE))
-		    )->success()->important();
+		    );
             }catch (\Illuminate\Database\QueryException $exception) {
 		  Log::error('No se cargó correctamente la PxRad: '.$exception);
 		  flash( $resumen='NO se cargó correctamente la PxRad')->error()->important();
@@ -228,7 +278,7 @@ FROM
 		    frac2001, radio2001, 
                     frac2010, radio2010, tiporad10, 
                     tiporad20, frac2020, radio2020, tiporad20,
-                    nomloc, noment,total_pobl 
+                    nomloc, noment
                    FROM
 		   '.$esquema.'.'.$tabla.' ;');
 	    $resumen = DB::select('SELECT array_agg(distinct codprov) prov, 
@@ -238,7 +288,7 @@ FROM
 		    array_length( array_agg( distinct codprov|| coddepto|| frac2020 || radio2020),1) rad2020 FROM
                    '.$esquema.'.'.$tabla.' ;');
 
-	     flash(collect($resumen)->toJson());
+	     flash('Resumen de lo cargado: '.collect($resumen)->toJson());
             }catch (\Illuminate\Database\QueryException $exception) {
 		    Log::error('No se valido correctamente la PxRad: ('.collect($resumen)->toJson(JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE).' )' .$exception);
 		    flash('No se valido correctamente la PxRad ')->error()->important();

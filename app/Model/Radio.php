@@ -41,6 +41,16 @@ class Radio extends Model
 
 
      /**
+      * Relación con TipoRadio , un Radio tiene un tipo de radio.
+      *
+      */
+
+     public function tipo()
+     {
+         return $this->belongsTo('App\Model\TipoRadio','tipo_de_radio_id','id');
+     }
+
+     /**
       * Relación con Fraccion , un Radio pertenece a Una fracción.
       *
       */
@@ -195,7 +205,7 @@ class Radio extends Model
         if (! $this->_esquema){
           $this->_esquema='foo';
           if ($this->aglomerado() != null){
-                if ($this->aglomerado()->codigo=='0001'){
+		  if ($this->aglomerado()->codigo=='0001'){
                     if ($this->fraccion->departamento->provincia->codigo == '02') {
                         $this->_esquema = 'e'.
                                     $this->fraccion->departamento->codigo.
@@ -207,16 +217,19 @@ class Radio extends Model
                 {
                     $this->_esquema = 'e'.$this->aglomerado()->codigo;
                     try{
-                        if ($this->fraccion->departamento->provincia->codigo == '06') {
-                            $this->_esquema = 'e'.$this->fraccion->departamento->codigo;
-			}elseif ($this->localidades()->count() > 1) {
-				Log::warning('TODO: Implementar radio multilocalidades'.$this->localidades()->get()->toJson(
+			    if(!$this->fraccion){
+                         	    Log::error('Radio sin fracción? : '.collect($this)->toJson(JSON_PRETTY_PRINT));
+				    $this->_esquema='e'.$this->codigo;
+			    }elseif ($this->fraccion->departamento->provincia->codigo == '06') {
+                               $this->_esquema = 'e'.$this->fraccion->departamento->codigo;
+                               }elseif ($this->localidades()->count() > 1) {
+			           Log::warning('TODO: Implementar radio multilocalidades'.$this->localidades()->get()->toJson(
 					JSON_PRETTY_PRINT));
-				foreach($this->localidades()->get() as $localidad){
+				    foreach($this->localidades()->get() as $localidad){
 					Log::info('Posible esquema:'.($localidad->codigo));
-				}
-                           $this->_esquema = 'e'.$this->fraccion->departamento->codigo;
-                        }
+		                    }
+                                   $this->_esquema = 'e'.$this->fraccion->departamento->codigo;
+                              }
                     }catch (Exception $e){
                          Log::error('Algo muy raro paso: '.$e);
                     };
@@ -265,7 +278,7 @@ class Radio extends Model
                 as svg ,20 as orden
                 FROM ".$this->esquema.".manzanas
                     WHERE  prov||dpto||frac||radio='".$this->codigo."' )";
-            }else{$mzas='';$mzas_labels='';}
+            }else{Log::debug('No se encontro grafica de manzanas. ');$mzas='';$mzas_labels='';}
 
             //dd($viewBox.'/n'.$this->viewBox($extent,$epsilon,$height,$width).'/n'.$x0." -".$y0." ".$x1." -".$y1);
             $svg=DB::select("

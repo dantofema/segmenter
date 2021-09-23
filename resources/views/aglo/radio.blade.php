@@ -28,15 +28,16 @@
                 @csrf
   <div class="form-group">
     <div class="">
-        @foreach($radios as $radio)
-            <a class="panel panel-default @if($radio->isSegmentado) segmentado @endif "
-            href="{{ url('/grafo/'.$aglomerado->id.'/'.$radio->id) }}">
-            <div class="panel-body">
-                <h3> {{ trim($radio->codigo) }}: {{ trim($radio->nombre) }}</h3>
+    <ul class="nav">
+      @foreach($radios as $radio)
+       <li class="btn @if($radio->isSegmentado) segmentado @endif " >
+           <a href="{{ url('/grafo/'.$aglomerado->id.'/'.$radio->id) }}">
+	        {{ trim($radio->codigo) }}: {{ trim($radio->nombre) }} <br />
                 <p class="text-muted">Mzas: {{ trim($radio->CantMzas) }}</p>
-            </div>
-            </a>
-        @endforeach
+           </a>
+       </li>
+      @endforeach
+    </ul>
     </div>
   </div>
 </form>

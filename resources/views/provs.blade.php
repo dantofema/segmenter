@@ -117,7 +117,8 @@
                   { data: 'nombre', name: 'nombre' },
                   { searchable: false , data: 'departamentos_count', name: 'departamentos_count' },
                   { searchable: false , data: function ( row, type, val, meta ) {
-                                var html =  '<button type="button" class="btn_departamentos btn-sm btn-primary" >Ver</button>';
+                                var html =  '<button type="button" class="btn_departamentos btn-sm btn-primary" > Ver </button> ';
+                                 html +=  '<button type="button" class="btn_prov btn-sm btn-primary" > Ver 2 </button>';
                               return html;
                             }
                 }
@@ -141,6 +142,17 @@
   });
         console.log( 'You clicked on '+data.id+'\'s row' );
    });
+
+// Función de botón Ver 2.
+    table.on('click', '.btn_prov', function () {
+      var row = $(this).closest('tr');
+      var data = table.row( row ).data();
+      console.log('Ver Provincia: '+data.codigo);
+        if (typeof data !== 'undefined') {
+            url= "{{ url('prov') }}"+"/"+data.id;
+            $(location).attr('href',url);
+           };
+    });
 
 // Función de botón Departamentos.
     table.on('click', '.btn_departamentos', function () {

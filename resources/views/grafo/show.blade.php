@@ -13,6 +13,7 @@ $localidad->codigo}}) {{ $localidad->nombre}}</a>
 @endforeach
 </h5>
 <h3>Radio: {{ $radio->codigo}}</h3>
+@if($radio->tipo)	<p class="text-center">({{ $radio->tipo->nombre }}) {{ $radio->tipo->descripcion }}</p> @endif
 @if($radio->viviendas)	<p class="text-center">Con {{ $radio->viviendas }} viviendas.</p> @endif
 </div></div>
   <div class="row">
