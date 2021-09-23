@@ -284,7 +284,8 @@ class Radio extends Model
             $svg=DB::select("
 WITH shapes (geom, attribute, tipo) AS (
     ( SELECT st_buffer(CASE WHEN trim(lg.tipoviv) in ('','LSV') then lg.wkb_geometry_lado
-    else lg.wkb_geometry END,1) wkb_geometry, segmento_id::integer,
+    else lg.wkb_geometry END,1) wkb_geometry, 
+    rank() over (order by segmento_id::integer) as attribute,
     lg.tipoviv tipo
     FROM ".$this->esquema.".listado_geo lg JOIN ".$this->esquema.".segmentacion
     s ON s.listado_id=id_list
