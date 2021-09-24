@@ -1,6 +1,7 @@
 <div class="container">
     Información del aglomerado ({{ $aglomerado->codigo }}) 
     <b> {{ $aglomerado->nombre }} </b><br />
+    <p>
      @if($carto)
         La base geográfica está cargada.
      @else
@@ -13,7 +14,7 @@
         NO está cargado el listado de viviendas.
      @endif 
     <br />
-
+    </p>
 <div class="form-horizontal">
 <form action="/aglo-segmenta-run/{{ $aglomerado->id }}" method="POST" enctype="multipart/form-data">
                 @csrf
@@ -37,24 +38,12 @@
   </div>  
   <div class="form-group">
     <label class="control-label" for="radio">Método de segmentación:</label><br />
-    <label class="radio-inline"><input type="radio" name="optalgoritmo" value=listado>Manzanas independientes</label><br />
-    <label class="radio-inline"><input type="radio" name="optalgoritmo" value=lados>Lados Completos</label><br />
+    <label class="radio-inline"><input type="radio" name="optalgoritmo" value=listado>Manzanas independientes</label>
+    <label class="radio-inline"><input type="radio" name="optalgoritmo" value=lados>Lados Completos</label>
     <label class="radio-inline" title="Primero segmenta a lados completos, luego los lados excedidos son segmentados a lado independiente."
     alt="Primero segmenta a lados completos, luego los lados excedidos son segmentados a lado independiente."><input type="radio" name="optalgoritmo"
-    value=magic checked>Mixto</label><br />
+    value=magic checked>Mixto</label>
   </div>
-  <div class="form-group">
-   <label class="control-label" for="radio">Cuestionario: </label>
-   <div class="form-check form-check-inline">
-    <input class="form-check-input" type="radio" name="Cuestionario"
-    id="CuestionarioB" value="B" checked>
-    <label class="form-check-label" for="basico">Básico</label>
-   </div>
-   <div class="form-check">
-     <input class="form-check-input" type="radio" name="Cuestionario"
-     id="CuestionarioA" value="A">
-     <label class="form-check-label" for="basico">Ampliado</label>
-    </div>
   </div>
   <div class="form-group">
     <label class="control-label" for="radio">Parametros:</label><br />
@@ -74,7 +63,7 @@
     value="32"><br />
     </div>
     <div class="">
-    <label class="control-label " for="radio">Mantener manzana indivisible para manzanas con menos de:</label>
+    <label class="control-label " for="radio">Mantener manzana indivisible con menos de:</label>
     <input id="mzas_indivisibles" type="integer" maxlength=3 size=3
     name="mzas_indivisibles" value="9"> viviendas
     </div>
@@ -84,5 +73,3 @@
  </div>
 </form>
 </div>
-</div>
-<div>
