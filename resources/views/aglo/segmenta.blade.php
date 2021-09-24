@@ -18,7 +18,6 @@
 <div class="form-horizontal">
 <form action="/aglo-segmenta-run/{{ $aglomerado->id }}" method="POST" enctype="multipart/form-data">
                 @csrf
-
   <div class="form-group">
     <label class="control-label" for="radio">Seleccione el Radio a segmentar:</label>
     <div class="">
@@ -29,7 +28,7 @@
         </select>
     </div>
   </div>
-    <div class="form-group" style="display: none; visibility: hidden;"> 
+  <div class="form-group" style="display: none; visibility: hidden;"> 
     <label class="form-check-label">
       <input name=checkallradios type="checkbox" class="form-check-input"
       value=allradios>
@@ -44,32 +43,32 @@
     alt="Primero segmenta a lados completos, luego los lados excedidos son segmentados a lado independiente."><input type="radio" name="optalgoritmo"
     value=magic checked>Mixto</label>
   </div>
-  </div>
   <div class="form-group">
     <label class="control-label" for="radio">Parametros:</label><br />
     <div class="">
-    <label class="control-label " for="radio">Cantidad deseada de viviendas:</label>
-    <input id="vivs_deaseadas" type="integer" maxlength=3 size=3
-    name="vivs_deseadas" value="36"><br />
+     <label class="control-label " for="radio">Cantidad deseada de viviendas:</label>
+     <input id="vivs_deaseadas" type="integer" maxlength=3 size=3
+     name="vivs_deseadas" value="36"><br />
     </div>
     <div class="">
-    <label class="control-label " for="radio">Cantidad máxima deseada:</label>
-    <input id="vivs_max" type="integer" maxlength=3 size=3 name="vivs_max"
-    value="40"><br />
+     <label class="control-label " for="radio">Cantidad máxima deseada:</label>
+     <input id="vivs_max" type="integer" maxlength=3 size=3 name="vivs_max"
+     value="40"><br />
     </div>
     <div class="">
-    <label class="control-label " for="radio">Cantidad Mínima deseada:</label>
-    <input id="vivs_min" type="integer" maxlength=3 size=3 name="vivs_min"
-    value="32"><br />
+     <label class="control-label " for="radio">Cantidad Mínima deseada:</label>
+     <input id="vivs_min" type="integer" maxlength=3 size=3 name="vivs_min"
+     value="32"><br />
     </div>
     <div class="">
-    <label class="control-label " for="radio">Mantener manzana indivisible con menos de:</label>
-    <input id="mzas_indivisibles" type="integer" maxlength=3 size=3
-    name="mzas_indivisibles" value="9"> viviendas
+     <label class="control-label " for="radio">Mantener manzana indivisible con menos de:</label>
+     <input id="mzas_indivisibles" type="integer" maxlength=3 size=3
+     name="mzas_indivisibles" value="9"> viviendas
     </div>
- </div>
- <div class="mx-auto">
- <input type="submit" class="segmentar btn btn-primary" value="Segmentar">
- </div>
+  </div>
+  <div class="mx-auto">
+   <input type="submit" class="segmentar btn btn-primary" value="Segmentar">
+  </div>
 </form>
+</div>
 </div>
