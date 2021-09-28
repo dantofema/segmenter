@@ -250,16 +250,22 @@ class SegmenterController extends Controller
         if (!$process->isSuccessful()) {
             flash($data['file']['error']=$process->getErrorOutput())->important();
 	}else{
-	    flash($data['file_pxrad']['info']=$process->getOutput())->success()->important();	
+	    flash($data['file_pxrad']['info']= 'Resultado carga dbf: '.$process->getOutput())->success()->important();
 	    // Leo dentro de la tabla importada desde el dbf 
             
             $tabla = strtolower(
 	    substr($data['file_pxrad']['pxrad'],strrpos($data['file_pxrad']['pxrad'],'/')+1,-4) );    
-	    $procesar_result=MyDB::procesarPxRad($tabla,'public');
+	    try{
+            $procesar_result=MyDB::procesarPxRad($tabla,'public');
 	    // Busco provincia encontrada en pxrad:
 	    //
 	    //
 	    $prov=MyDB::getCodProv($tabla,'public');
+	    if($prov==0){
+		    flash('Error grave. Buscando provincia. NO SE PUDO PROCESAR PXRAD ? ')->error()->important();
+		    $data['file']['pxrad']='none';
+                    return view('segmenter/index', ['data' => $data,'epsgs'=> $this->epsgs]);
+	    }
 	    $oProvincia= Provincia::where('codigo', $prov)->first();
 	    if ($oProvincia==null){
 	    	$prov_data=MyDB::getDataProv($tabla,'public');
@@ -268,6 +274,11 @@ class SegmenterController extends Controller
 			flash('Se creó la provincia: '.$oProvincia->tojson(JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))->success()->important();
 		}
 
+	    }
+	    }catch (Illuminate\Database\QueryException $e){
+		    flash('Error grave. NO SE PUDO PROCESAR PXRAD '.$e)->error()->important();
+		    $data['file']['pxrad']='none';
+                    return view('segmenter/index', ['data' => $data,'epsgs'=> $this->epsgs]);
 	    }
 //	    Log::debug('Provincia: '.$oProvincia->tojson(JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 	    
