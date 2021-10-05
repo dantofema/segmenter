@@ -140,6 +140,7 @@ Route::get('aglo-segmenta/{aglomerado}','AglomeradoController@segmenta_post');
 Route::post('aglo-segmenta-run/{aglomerado}','AglomeradoController@run_segmentar');
 
 // --------- SEGMENTACION X AGLOMERADO --------- 
+Route::get('aglo/{aglomerado}/pxseg','AglomeradoController@ver_pxseg')->name('ver-segmentacion-pxseg');
 Route::get('ver-segmentacion/{aglomerado}','AglomeradoController@ver_segmentacion')->name('ver-segmentacion');
 Route::get('ver-segmentacion-lados/{aglomerado}','AglomeradoController@ver_segmentacion_lados')->name('ver-segmentacion-lados');
 Route::get('ver-segmentacion/grafico/{aglomerado}','AglomeradoController@ver_segmentacion_grafico')->name('ver-segmentacion-grafico');
