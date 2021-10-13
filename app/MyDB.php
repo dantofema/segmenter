@@ -1071,14 +1071,24 @@ FROM
             try{
                 DB::statement(" SELECT indec.cargarTopologia(
                 '".$esquema."','arc');");
+                DB::begin();
                 DB::statement(" DROP TABLE if exists ".$esquema.".manzanas;");
                 DB::statement(" CREATE TABLE ".$esquema.".manzanas AS SELECT * FROM
                 ".$esquema.".v_manzanas;");
-            }catch(QueryException $e){
+                DB::statement(" DROP TABLE if exists ".$esquema.".fracciones;");
+                DB::statement(" CREATE TABLE ".$esquema.".fracciones AS SELECT * FROM
+                ".$esquema.".v_fracciones;");
+                DB::statement(" DROP TABLE if exists ".$esquema.".radios;");
+                DB::statement(" CREATE TABLE ".$esquema.".radios AS SELECT * FROM
+		".$esquema.".v_radios;");
+                DB::commit();
+
+	    }catch(QueryException $e){
+		DB::Rollback();
                 Log::error('No se pudo cargar la topologia...'.$e);
                 return false;
             }
-            Log::debug('Se genraron fracciones, radios y manzanas ');
+            Log::debug('Se generaron fracciones, radios y manzanas ');
             return true;
         }
 
