@@ -846,14 +846,6 @@ FROM
 		
 	    $resultado= DB::select($query);
 
-            if (in_array($esquema,array ("e02014010","e02035010","e02021010")))
-            // Agrego las excpeciones para corregir corrimiento en Comuna 2 y 5
-            // para la prueba experimental. Yapa la comuna 3 para probar.
-            {
-                self::geo_translate($esquema);
-                Log::debug('Traslado CABA '.$esquema);
-            }
-
             }catch(QueryException $e){
                     Log::error('No se pudo georeferenciar el listado.'.$e);
                         flash('No se pudo georeferenciar el listado. 
