@@ -241,12 +241,21 @@ class Radio extends Model
 			    }elseif ($this->fraccion->departamento->provincia->codigo == '06') {
                                $this->_esquema = 'e'.$this->fraccion->departamento->codigo;
                                }elseif ($this->localidades()->count() > 1) {
-			           Log::warning('TODO: Implementar radio multilocalidades'.$this->localidades()->get()->toJson(
-					JSON_PRETTY_PRINT));
-				    foreach($this->localidades()->get() as $localidad){
-					Log::info('Posible esquema:'.($localidad->codigo));
-		                    }
-                                   $this->_esquema = 'e'.$this->fraccion->departamento->codigo;
+				   $loc_no_rural=$this->localidades()->whereHas('aglomerado', function($q) {
+                                              $q->where('codigo', 'not like', '%000%');
+                                               })->get();
+				   if ($loc_no_rural->count() > 1) {
+					   Log::warning('TODO: Implementar radio multilocalidades'.$this->localidades()->get()->toJson(
+					   JSON_PRETTY_PRINT));
+                                     foreach($loc_no_rural as $localidad){
+                                       Log::info('Posible esquema:'.($localidad->codigo));
+                                     }
+				      $this->_esquema = 'e'.$this->fraccion->departamento->codigo;
+				    }else{
+					    Log::info('Buscando parte Urbana del Radio en esquema:'.
+						    ($loc_no_rural->first()->aglomerado()->first()->codigo));
+                                      $this->_esquema = 'e'.$loc_no_rural->first()->aglomerado()->first()->codigo;
+				    }
                               }
                     }catch (Exception $e){
                          Log::error('Algo muy raro paso: '.$e);

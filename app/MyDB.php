@@ -846,14 +846,6 @@ FROM
 		
 	    $resultado= DB::select($query);
 
-            if (in_array($esquema,array ("e02014010","e02035010","e02021010")))
-            // Agrego las excpeciones para corregir corrimiento en Comuna 2 y 5
-            // para la prueba experimental. Yapa la comuna 3 para probar.
-            {
-                self::geo_translate($esquema);
-                Log::debug('Traslado CABA '.$esquema);
-            }
-
             }catch(QueryException $e){
                     Log::error('No se pudo georeferenciar el listado.'.$e);
                         flash('No se pudo georeferenciar el listado. 
@@ -1079,14 +1071,24 @@ FROM
             try{
                 DB::statement(" SELECT indec.cargarTopologia(
                 '".$esquema."','arc');");
+                DB::begin();
                 DB::statement(" DROP TABLE if exists ".$esquema.".manzanas;");
                 DB::statement(" CREATE TABLE ".$esquema.".manzanas AS SELECT * FROM
                 ".$esquema.".v_manzanas;");
-            }catch(QueryException $e){
+                DB::statement(" DROP TABLE if exists ".$esquema.".fracciones;");
+                DB::statement(" CREATE TABLE ".$esquema.".fracciones AS SELECT * FROM
+                ".$esquema.".v_fracciones;");
+                DB::statement(" DROP TABLE if exists ".$esquema.".radios;");
+                DB::statement(" CREATE TABLE ".$esquema.".radios AS SELECT * FROM
+		".$esquema.".v_radios;");
+                DB::commit();
+
+	    }catch(QueryException $e){
+		DB::Rollback();
                 Log::error('No se pudo cargar la topologia...'.$e);
                 return false;
             }
-            Log::debug('Se genraron fracciones, radios y manzanas ');
+            Log::debug('Se generaron fracciones, radios y manzanas ');
             return true;
         }
 
@@ -1204,5 +1206,33 @@ public static function addIndexId($tabla)
      Log::debug('Se creo indice en id para '.$tabla);
 }
 
+// Generar salida pxseg -> tabla.
+public static function getPxSeg($esquema)
+{
+    try{
+        return DB::select(
+               "select row_number() over() id,* FROM (
+		       select r3.prov::character(2),null::character(4) codmuni,null::character(4) catmuni,
+                       '1046'::character(4) codaglo,null::character(2) nroentidad, lpad(r3.dpto::text,3,'0')::character(3) depto,
+                       lpad(r3.codloc::text,3,'0')::character(3) codloc, lpad(r3.frac::text,2,'0'::text)::character(2) frac,
+                       lpad(r3.radio::text,2,'0'::text)::character(2) radio,'U'::character(1) tiporad,l.mza mza,
+		       l.lado lado,'P' tipoform,seg seg,
+		       string_agg(distinct case when tipoviv in ('VE','CC','BC','CA') then tipoviv 
+                                                when indec.contar_vivienda(tipoviv) is not null then null 
+                                                when tipoviv in ('LSV',null,'') then null 
+                                                else 'incluye' end
+                        ,' ') ve_cc_bc_ca, 1 rural,
+                       count(indec.contar_vivienda(tipoviv)) vivs
+                 from ".$esquema.".r3 JOIN ".$esquema.".segmentacion s On s.segmento_id=r3.segmento_id
+                               JOIN ".$esquema.".listado l ON l.id=s.listado_id
+                 group by 1,2,3,4,5,6,7,8,9,10,11,12,13,14
+                 order by frac,radio,seg,mza,lado) foo ;
+                ");
+
+       }catch(QueryException $e){
+            Log::error('Error al generar la PxSeg '.$esquema.$e);
+            return 'Sin pxseg';
+       }
+}
 }
 
