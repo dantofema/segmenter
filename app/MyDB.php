@@ -200,8 +200,14 @@ FROM
             return (DB::select('SELECT codprov||coddepto as codigo,nomdepto as nombre FROM
             '.$esquema.'.'.$tabla.' group by 1,2 order by codprov||coddepto asc,count(*) desc ;'));
         }catch (\Illuminate\Database\QueryException $exception) {
-		Log::error('Error: '.$exception);
-		//
+            if (Schema::hasColumn($esquema.'.'.$tabla , 'coddepto')){
+                DB::unprepared('ALTER TABLE '.$esquema.'.'.$tabla.' RENAME coddepto23 TO coddepto');
+                Log::warning('Cuidado!! Se utilizó coddepto23 cono coddepto : '.$exception);
+                return (DB::select('SELECT codprov||coddepto as codigo,nomdepto as nombre FROM
+	            '.$esquema.'.'.$tabla.' group by 1,2 order by codprov||coddepto asc,count(*) desc ;'));
+	    }
+	    Log::error('Error: '.$exception);
+		// Loguea error y devuelve null
 	    return null;;
 	}
     }
@@ -259,6 +265,20 @@ FROM
     {
         return (DB::select('SELECT distinct prov||dpto||codloc as link FROM
         '.$esquema.'.'.$tabla.' Limit 1;')[0]->link);
+    }
+
+    public static function getEntidades($tabla,$esquema,$localidad=null))
+    {
+	if(isset($localidad)){ $filtro=" WHERE codprov||coddepto||codloc= '".$localidad->codigo."'";
+	}else{$filtro='';}
+        try {
+            return (DB::select('SELECT distinct prov||dpto||codloc||codent as codigo, noment as nombre FROM
+		    '.$esquema.'.'.$tabla.' '.$filtro.' group by 1,2 
+		    order by codprov||coddepto||codloc||codent asc, count(*) desc ;'));
+        }catch (\Illuminate\Database\QueryException $exception) {
+            Log::error('Error: '.$exception);
+	    return null;
+	}
     }
 
     public static function procesarPxRad($tabla,$esquema)
