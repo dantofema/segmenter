@@ -110,10 +110,15 @@ class MyDB extends Model
 
         // Junta los segmentos con 0 vivendas al segmneto menor cercano.
         public static function juntar_segmentos($esquema)
-        {
-            $result = DB::statement("SELECT indec.juntar_segmentos('".$esquema."')");
-            Log::debug('Juntando segmentos del esquema-> '.$esquema);
-            return $result;
+	{
+            try{
+              $result = DB::statement("SELECT indec.juntar_segmentos('".$esquema."')");
+              Log::debug('Juntando segmentos del esquema-> '.$esquema);
+              return $result;
+            }catch(QueryException $e){
+              Log::error('ERROR Juntando segmentos del esquema-> '.$esquema);
+	      return false;
+	    }
         }
 
         //Crea el esquema si no existe y asigna los permisos.
@@ -239,9 +244,18 @@ FROM
 		codprov||coddepto||codloc||frac2020||radio2020 as nombre,tiporad20 as tipo FROM
                 '.$esquema.'.'.$tabla.' '.$filtro.' group by 1,2,3 order by codprov||coddepto||codloc||frac2020||radio2020 asc, count(*) desc ;'));
         }catch (\Illuminate\Database\QueryException $exception) {
-		Log::error('Error: '.$exception);
+	    Log::warning('Malabares : '.$exception);
+	    flash('Puede que no se haya encontrado el tipo de radio, se asúme todo Urbano')->important()->warning();
+	    // Se intenta asumiendo que es urbano y falta el tiporad20	
+            try {
+	       return (DB::select('SELECT codprov||coddepto||frac2020||radio2020 as codigo,
+		codprov||coddepto||codloc||frac2020||radio2020 as nombre,\'U\' as tipo FROM
+                '.$esquema.'.'.$tabla.' '.$filtro.' group by 1,2,3 order by codprov||coddepto||codloc||frac2020||radio2020 asc, count(*) desc ;'));
 		//
-	    return null;;
+            }catch (\Illuminate\Database\QueryException $exception) {
+	        Log::error('Error : '.$exception);
+	        return null;
+	    }
 	}
     }
 
@@ -267,9 +281,10 @@ FROM
         '.$esquema.'.'.$tabla.' Limit 1;')[0]->link);
     }
 
-    public static function getEntidades($tabla,$esquema,$localidad=null))
+    public static function getEntidades($tabla,$esquema,$localidad=null)
     {
-	if(isset($localidad)){ $filtro=" WHERE codprov||coddepto||codloc= '".$localidad->codigo."'";
+	if(isset($localidad)) {
+	    $filtro=" WHERE codprov||coddepto||codloc= '".$localidad->codigo."'";
 	}else{$filtro='';}
         try {
             return (DB::select('SELECT distinct prov||dpto||codloc||codent as codigo, noment as nombre FROM
@@ -317,7 +332,7 @@ FROM
 		    $resumen=DB::select('SELECT codprov,coddepto,codloc,count(*) as radios FROM
         '.$esquema.'.'.$tabla.' GROUP BY codprov,coddepto,codloc ;');
             }catch (\Illuminate\Database\QueryException $exception) {
-		    Log::error('No se cargó correctamente la PxRad: '.$resumen.'' .$exception);
+		    Log::error('No se cargó correctamente la PxRad: ('.collect($resumen)->toJson(JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE).') ' .$exception);
 		  flash( $resumen='NO se cargó correctamente la PxRad')->error()->important();
 	    }
 		return collect($resumen)->toJson();
@@ -596,11 +611,11 @@ FROM
                 self::addSequenceSegmentos('e'.$esquema,false);
                 self::generarSegmentacionNula('e'.$esquema);
                 if ( DB::statement("SELECT indec.segmentar_equilibrado('e".$esquema."',".$deseado.");") ){
-                	self::georeferenciar_segmentacion($esquema);
                 // llamar generar r3 como tabla resultado de function indec.r3(agl)
                 ( DB::statement("SELECT indec.r3('e".$esquema."');") );
                 ( DB::statement("SELECT indec.descripcion_segmentos('e".$esquema."');") );
                 ( DB::statement("SELECT indec.segmentos_desde_hasta('e".$esquema."');") );
+               	self::georeferenciar_segmentacion($esquema);
             // (?) crear 3 public static function distintas y correrlas desde arribo 
 		// como segmentar_equilibrado
 		//
@@ -612,7 +627,9 @@ FROM
                 }else{ 
                     return false; }
             }catch (QueryException $e){
-                dd($e);
+                  LOG::error('Se produjo algún error luego de segmentar equilibrado a manzanas independientes '.$e);
+		  flash('Se produjo algún error luego de segmentar equilibrado a manzanas independientes')->error()->important();
+                  return false;
             }
 
 
@@ -870,7 +887,6 @@ FROM
                     Log::error('No se pudo georeferenciar el listado.'.$e);
                         flash('No se pudo georeferenciar el listado. 
                         Reintente.')->error()->important();
-                        self::juntaListadoGeom($esquema);
                     return false;
             }
             try{
@@ -1091,7 +1107,7 @@ FROM
             try{
                 DB::statement(" SELECT indec.cargarTopologia(
                 '".$esquema."','arc');");
-                DB::begin();
+                DB::beginTransaction();
                 DB::statement(" DROP TABLE if exists ".$esquema.".manzanas;");
                 DB::statement(" CREATE TABLE ".$esquema.".manzanas AS SELECT * FROM
                 ".$esquema.".v_manzanas;");
@@ -1241,7 +1257,7 @@ public static function getPxSeg($esquema)
                                                 when indec.contar_vivienda(tipoviv) is not null then null 
                                                 when tipoviv in ('LSV',null,'') then null 
                                                 else 'incluye' end
-                        ,' ') ve_cc_bc_ca, 1 rural,
+                        ,' ') ve_cc_bc_ca, 0 rural,
                        count(indec.contar_vivienda(tipoviv)) vivs
                  from ".$esquema.".r3 JOIN ".$esquema.".segmentacion s On s.segmento_id=r3.segmento_id
                                JOIN ".$esquema.".listado l ON l.id=s.listado_id
@@ -1254,5 +1270,18 @@ public static function getPxSeg($esquema)
             return 'Sin pxseg';
        }
 }
+
+    public static function setSRID($esquema,$srid_id)
+    {
+    try{
+        DB::statement("UPDATE ".$esquema.".arc SET wkb_geometry=st_setsrid(wkb_geometry,".$srid_id.");");
+        DB::statement("UPDATE ".$esquema.".lab SET wkb_geometry=st_setsrid(wkb_geometry,".$srid_id.");");
+    }catch(QueryException $e){
+	    Log::warning('Problemas al establecer el SRS: '.$srid_id.' en '.$esquema.': '.$e);
+	    return;
+    }
+     Log::debug('Se estableció el SRS: '.$srid_id.' en '.$esquema);
+    }
+
 }
 
