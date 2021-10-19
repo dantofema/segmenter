@@ -50,37 +50,36 @@ $localidad->codigo}}) {{ $localidad->nombre}}</a>
 @endsection
 @section('content_main')
 <div class="container-xl" >
-    <div class="col no-gutters">
+    <div class="no-gutters row ">
     @forelse ($segmentacion_data_listado as $segmento)
       @if($loop->first)
-       Se encontraron {{ $loop->count }} segmentos.
-       <div class="row no-gutters">
-        <div class="col">
-        <div class="row text-center border">
-            <div class="col-sm-1 border" style="display:none" >id</div>
-            <div class="col-sm- border"> Seg </div>
-            <div class="col-sm-11 border"> Descripción </div>
-            <div class="col-sm- border"> Viviendas </div>
+        <div class="no-gutters row ">
+           Se encontraron {{ $loop->count }} segmentos.
+	</div>
+       <div class="">
+        <div class="row ">
+            <div class="col-sm-1 text-center border"> Seg </div>
+            <div class="col-sm-10 text-center border"> Descripción </div>
+            <div class="col-sm-1 text-center border"> Viviendas </div>
 	</div>
       @endif
         <div class="row border">
-        <div class="col-sm-1 " style="display:none" >{{ $segmento->segmento_id }}</div>
-        <div class="col-sm- ">{{ $segmento->seg }}</div>
-        <div class="col-sm-11 ">{!! str_replace(". Manzana ",".<br/>Manzana ",
+        <div class="col-sm-1 ">{{ $segmento->seg }}</div>
+        <div class="col-sm-10 ">{!! str_replace(". Manzana ",".<br/>Manzana ",
                                             str_replace(".  ",".<br/>",$segmento->detalle))  !!}</div>
-        <div class="col-sm- text-right "><p class="text-right">{{ $segmento->vivs }}</p></div>
+        <div class="col-sm-1 text-right "><p class="text-right">{{ $segmento->vivs }}</p></div>
 	</div>
        @if($loop->last)
-          </div>
+       </div>
        @endif
 
-        @empty
+       @empty
             <p>No hay segmentos</p>
-        @endforelse
+       @endforelse
       </div>
       <div class="row no-gutters">
-        <div class="col" title=MiniMap> {!! $radio->getSVG() !!}</div>
-        <div class="col ">
+        <div class="col-md-6 " title=MiniMap> {!! $radio->getSVG() !!}</div>
+        <div class="col-md-6 ">
             <div id=grafo_cy width= 400px; height= 500px
                title="Grafo de adyacencias" >
             </div>
