@@ -37,7 +37,7 @@
     <label class="control-label" for="localidad">
 	 {{$aglomerado->localidades->count()}} localidades: </label>
     <div class="">
-    <ul class="nav row justify-content-around">
+    <ul class="nav justify-content-around">
             @foreach($localidades as $localidad)
     <li class="btn  btn-outline-primary" style="margin-bottom: 5px" >
     <a href="{{ url('/localidad/'.$localidad->id) }}">
