@@ -30,9 +30,8 @@ class DatabaseSeeder extends Seeder
             SqlParajeSeeder::class,
             SqlOperativosSeeder::class,
             SqlFuenteSeeder::class,
-            SqlSubtipoViviendaSeeder::class
-]);
-
-
+            SqlSubtipoViviendaSeeder::class,
+            SqlRadioEntidadSeeder::class
+        ]);
     }
 }
