@@ -212,8 +212,8 @@ FROM
 	            '.$esquema.'.'.$tabla.' group by 1,2 order by codprov||coddepto asc,count(*) desc ;'));
 	    }
 	    Log::error('Error: '.$exception);
-		// Loguea error y devuelve null
-	    return null;;
+		// Loguea error y devuelve array nulo 
+	    return [];
 	}
     }
 
