@@ -401,7 +401,20 @@ FROM
                         DB::statement('ALTER TABLE '.$esquema.'.listado ADD
                             COLUMN piso text;');
                     }
-            }
+	    }elseif (Schema::hasColumn($esquema.'.listado' , 'pisoredef')){
+                  DB::statement('ALTER TABLE '.$esquema.'.listado ADD COLUMN
+                   piso_original text ;');
+
+                  DB::statement("UPDATE ".$esquema.".listado SET
+                  piso_original=piso,
+                    piso=COALESCE(nullif(trim(pisoredef),''),nullif(trim(piso),''));");
+                  Log::debug('Se encontró piso y pisoredef, se usa el pisoredef
+                    y si esta vacio se usa el piso');
+
+	    }
+
+
+
                 if (! Schema::hasColumn($esquema.'.listado' , 'nrocatastr')){
                         if (Schema::hasColumn($esquema.'.listado' , 'nro_catast')){
                         DB::unprepared('ALTER TABLE '.$esquema.'.listado RENAME
@@ -612,10 +625,10 @@ FROM
                 self::generarSegmentacionNula('e'.$esquema);
                 if ( DB::statement("SELECT indec.segmentar_equilibrado('e".$esquema."',".$deseado.");") ){
                 // llamar generar r3 como tabla resultado de function indec.r3(agl)
-                ( DB::statement("SELECT indec.r3('e".$esquema."');") );
+//                ( DB::statement("SELECT indec.r3('e".$esquema."');") );
                 ( DB::statement("SELECT indec.descripcion_segmentos('e".$esquema."');") );
                 ( DB::statement("SELECT indec.segmentos_desde_hasta('e".$esquema."');") );
-               	self::georeferenciar_segmentacion($esquema);
+//             	self::georeferenciar_segmentacion($esquema);
             // (?) crear 3 public static function distintas y correrlas desde arribo 
 		// como segmentar_equilibrado
 		//
