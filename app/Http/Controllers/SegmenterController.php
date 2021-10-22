@@ -50,6 +50,11 @@ class SegmenterController extends Controller
 
     public function store(Request $request)
     {
+    if (! Auth::check()) {
+        $mensaje='No tiene permiso para segmentar o no esta logueado';
+	flash($mensaje)->error()->important();
+        return $mensaje;
+    }else{
     $AppUser= Auth::user();
     $data = [];
     $segmenta_auto=false;
@@ -125,6 +130,47 @@ class SegmenterController extends Controller
        no esperado!')->error()->important();}
     }
 
+    if ($epsg_id=='sr-org:8333'){
+            // Log::debug('Proyeccion de CABA en '.$codaglo.', con SRID: '.$epsg_id);
+            // USO .prj 8333.prj
+            $prj_file='./app/developer_docs/8333.prj';
+            $epsg_def= $epsg_id;
+            $epsg_def='+proj=tmerc +lat_0=-34.6297166 +lon_0=-58.4627 +k=1 +x_0=100000 +y_0=100000 +ellps=intl +units=m +no_defs';
+	    $srs_name='sr-org:8333';
+            $processOGR2OGR =
+                Process::fromShellCommandline('(/usr/bin/ogr2ogr -f \
+                "PostgreSQL" PG:"dbname=$db host=$host user=$user port=$port \
+                active_schema=e$e00 password=$pass" --config PG_USE_COPY YES \
+                -lco OVERWRITE=YES --config OGR_TRUNCATE YES -dsco \
+                PRELUDE_STATEMENTS="SET client_encoding TO latin1;CREATE SCHEMA \
+                IF NOT EXISTS e$e00;" -dsco active_schema=e$e00 -lco \
+                PRECISION=NO -lco SCHEMA=e$e00 \
+                -nln $capa \
+                -skipfailures \
+                -overwrite $file )');
+            $processOGR2OGR->setTimeout(3600);
+    }
+    if ($request->hasFile('shp_lab')) {
+            $original_name = $request->shp_lab->getClientOriginalName();
+	    $original_extension = strtolower($request->shp_lab->getClientOriginalExtension());
+        if ($original_extension == 'shp'){
+            $random_name='t_'.$request->shp_lab->hashName();
+            $data['file']['shp_lab'] = $request->shp_lab->storeAs('segmentador', $random_name.'.shp');
+            if ($request->hasFile('shx_lab')) {
+                $data['file']['shx_lab'] = $request->shx_lab->storeAs('segmentador', $random_name.'.shx');
+            }
+            if ($request->hasFile('prj_lab')) {
+                $data['file']['prj_lab'] = $request->prj_lab->storeAs('segmentador', $random_name.'.prj');
+            }
+            if ($request->hasFile('dbf_lab')) {
+                $data['file']['dbf_lab'] = $request->dbf_lab->storeAs('segmentador', $random_name.'.dbf');
+	    }
+
+	    //Cargo etiquetas
+	    $processOGR2OGR->run(null, ['capa'=>'lab','epsg'=>$epsg_def,'file' => storage_path().'/app/'.$data['file']['shp_lab'],'e00'=>$codaglo,'db'=>Config::get('database.connections.pgsql.database'),'host'=>Config::get('database.connections.pgsql.host'),'user'=>Config::get('database.connections.pgsql.username'),'pass'=>Config::get('database.connections.pgsql.password'),'port'=>Config::get('database.connections.pgsql.port')]);
+
+        }
+    }
     if ($request->hasFile('shp')) {
         if ($request->file('shp')->isValid() or true) {
             $data['file']['shp_msg'] = "Subió una base geográfica ";
@@ -132,7 +178,7 @@ class SegmenterController extends Controller
             $data['file']['shp_msg'] .= " y nombre original: ".$original_name;
             $original_extension = strtolower($request->shp->getClientOriginalExtension());
             $data['file']['shp_msg'] .= ". Extension original: ".$original_extension;
-            flash($data['file']['shp_msg']);
+	    flash($data['file']['shp_msg']);
 
         if ($original_extension == 'shp'){
             $random_name='t_'.$request->shp->hashName();
@@ -157,31 +203,13 @@ class SegmenterController extends Controller
             MyDB::createSchema($codaglo);
 
             if ($epsg_id=='sr-org:8333'){
-                // Log::debug('Proyeccion de CABA en '.$codaglo.', con SRID: '.$epsg_id);
-                // USO .prj 8333.prj
-                $prj_file='./app/developer_docs/8333.prj';
-                    $epsg_def= $epsg_id;
-                    $epsg_def='+proj=tmerc +lat_0=-34.6297166 +lon_0=-58.4627 +k=1 +x_0=100000 +y_0=100000 +ellps=intl +units=m +no_defs';
-                    $srs_name='sr-org:8333';
-
-                $processOGR2OGR =
-                Process::fromShellCommandline('(/usr/bin/ogr2ogr -f \
-                "PostgreSQL" PG:"dbname=$db host=$host user=$user port=$port \
-                active_schema=e$e00 password=$pass" --config PG_USE_COPY YES \
-                -lco OVERWRITE=YES --config OGR_TRUNCATE YES -dsco \
-                PRELUDE_STATEMENTS="SET client_encoding TO latin1;CREATE SCHEMA \
-                IF NOT EXISTS e$e00;" -dsco active_schema=e$e00 -lco \
-                PRECISION=NO -lco SCHEMA=e$e00 \
-                -nln arc \
-                -skipfailures \
-                -overwrite $file )');
-                $processOGR2OGR->setTimeout(3600);
-		$processOGR2OGR->run(null, ['epsg'=>$epsg_def,'file' => storage_path().'/app/'.$data['file']['shp'],'e00'=>$codaglo,'db'=>Config::get('database.connections.pgsql.database'),'host'=>Config::get('database.connections.pgsql.host'),'user'=>Config::get('database.connections.pgsql.username'),'pass'=>Config::get('database.connections.pgsql.password'),'port'=>Config::get('database.connections.pgsql.port')]);
+		//Cargo arcos
+		$processOGR2OGR->run(null, ['capa'=>'arc','epsg'=>$epsg_def,'file' => storage_path().'/app/'.$data['file']['shp'],'e00'=>$codaglo,'db'=>Config::get('database.connections.pgsql.database'),'host'=>Config::get('database.connections.pgsql.host'),'user'=>Config::get('database.connections.pgsql.username'),'pass'=>Config::get('database.connections.pgsql.password'),'port'=>Config::get('database.connections.pgsql.port')]);
             }else{
                 $processOGR2OGR = Process::fromShellCommandline('/usr/bin/ogr2ogr -f "PostgreSQL" PG:"dbname=$db host=$host user=$user port=$port active_schema=e$e00 password=$pass" --config PG_USE_COPY YES -lco OVERWRITE=YES --config OGR_TRUNCATE YES -dsco PRELUDE_STATEMENTS="SET client_encoding TO latin1;CREATE SCHEMA IF NOT EXISTS e$e00;" -dsco active_schema=e$e00 -lco PRECISION=NO -lco SCHEMA=e$e00 -s_srs $epsg -t_srs $epsg -nln arc -overwrite $file ');
-                $processOGR2OGR->setTimeout(3600);
-                $processOGR2OGR->run(null, ['epsg' => $epsg_id, 'file' => storage_path().'/app/'.$data['file']['shp'],'e00'=>$codaglo,'db'=>Config::get('database.connections.pgsql.database'),'host'=>Config::get('database.connections.pgsql.host'),'user'=>Config::get('database.connections.pgsql.username'),'pass'=>Config::get('database.connections.pgsql.password'),'port'=>Config::get('database.connections.pgsql.port')]);
+                $processOGR2OGR->run(null, ['capa'=>'arc','epsg' => $epsg_id, 'file' => storage_path().'/app/'.$data['file']['shp'],'e00'=>$codaglo,'db'=>Config::get('database.connections.pgsql.database'),'host'=>Config::get('database.connections.pgsql.host'),'user'=>Config::get('database.connections.pgsql.username'),'pass'=>Config::get('database.connections.pgsql.password'),'port'=>Config::get('database.connections.pgsql.port')]);
 
+                $processOGR2OGR->run(null, ['capa'=>'lab','epsg' => $epsg_id, 'file' => storage_path().'/app/'.$data['file']['shp_lab'],'e00'=>$codaglo,'db'=>Config::get('database.connections.pgsql.database'),'host'=>Config::get('database.connections.pgsql.host'),'user'=>Config::get('database.connections.pgsql.username'),'pass'=>Config::get('database.connections.pgsql.password'),'port'=>Config::get('database.connections.pgsql.port')]);
             }
             if (!$processOGR2OGR->isSuccessful()) {
                 $epsg_def=isset($epsg_def)?$epsg_def:'No definido';
@@ -204,7 +232,7 @@ class SegmenterController extends Controller
             $codaglo=isset($codaglo)?$codaglo:$original_name;
             MyDB::createSchema($codaglo);
 
-	    if ($epsg_id=='sr-org:8333'){
+	    if ($epsg_id=='sr-org:8333'){ // Si es CABA cargo sin epsg
             $processOGR2OGR = Process::fromShellCommandline('/usr/bin/ogr2ogr -f "PostgreSQL" PG:"dbname=$db host=$host user=$user port=$port active_schema=e$e00 password=$pass port=$port" --config PG_USE_COPY YES -lco OVERWRITE=YES --config OGR_TRUNCATE YES -dsco PRELUDE_STATEMENTS="SET client_encoding TO latin1;CREATE SCHEMA IF NOT EXISTS e$e00;" -dsco active_schema=e$e00 -lco PRECISION=NO -lco SCHEMA=e$e00 -skipfailures -addfields -overwrite $file ARC');
             $processOGR2OGR->setTimeout(3600);
             $processOGR2OGR->run(null, ['epsg' => $epsg_id, 'file' => storage_path().'/app/'.$data['file']['shp'],'e00'=>$codaglo,'db'=>Config::get('database.connections.pgsql.database'),'host'=>Config::get('database.connections.pgsql.host'),'user'=>Config::get('database.connections.pgsql.username'),'pass'=>Config::get('database.connections.pgsql.password'),'port'=>Config::get('database.connections.pgsql.port')]);
@@ -215,12 +243,12 @@ class SegmenterController extends Controller
             //dd($processOGR2OGR_lab->getErrorOutput());
             flash($data['file']['ogr2ogr_lab'] = $processOGR2OGR_lab->getErrorOutput().'<br />'.$processOGR2OGR_lab->getOutput())->important();
 	    flash($data['file']['ogr2ogr'] = $processOGR2OGR->getErrorOutput().'<br />'.$processOGR2OGR->getOutput())->important();
-	    }else{
-            $processOGR2OGR = Process::fromShellCommandline('/usr/bin/ogr2ogr -f "PostgreSQL" PG:"dbname=$db host=$host user=$user port=$port active_schema=e$e00 password=$pass port=$port" --config PG_USE_COPY YES -lco OVERWRITE=YES --config OGR_TRUNCATE YES -dsco PRELUDE_STATEMENTS="SET client_encoding TO latin1;CREATE SCHEMA IF NOT EXISTS e$e00;" -dsco active_schema=e$e00 -lco PRECISION=NO -lco SCHEMA=e$e00 -skipfailures -addfields -overwrite $file ARC');
+	    }else{ // Cargo con epsg
+            $processOGR2OGR = Process::fromShellCommandline('/usr/bin/ogr2ogr -f "PostgreSQL" PG:"dbname=$db host=$host user=$user port=$port active_schema=e$e00 password=$pass port=$port" --config PG_USE_COPY YES -lco OVERWRITE=YES --config OGR_TRUNCATE YES -dsco PRELUDE_STATEMENTS="SET client_encoding TO latin1;CREATE SCHEMA IF NOT EXISTS e$e00;" -dsco active_schema=e$e00 -lco PRECISION=NO -lco SCHEMA=e$e00 -s_srs $epsg -t_srs $epsg -skipfailures -addfields -overwrite $file ARC');
             $processOGR2OGR->setTimeout(3600);
             $processOGR2OGR->run(null, ['epsg' => $epsg_id, 'file' => storage_path().'/app/'.$data['file']['shp'],'e00'=>$codaglo,'db'=>Config::get('database.connections.pgsql.database'),'host'=>Config::get('database.connections.pgsql.host'),'user'=>Config::get('database.connections.pgsql.username'),'pass'=>Config::get('database.connections.pgsql.password'),'port'=>Config::get('database.connections.pgsql.port')]);
             //          dd($processOGR2OGR);    
-            $processOGR2OGR_lab = Process::fromShellCommandline('/usr/bin/ogr2ogr -f "PostgreSQL" PG:"dbname=$db host=$host user=$user port=$port active_schema=e$e00 password=$pass" --config PG_USE_COPY YES -lco OVERWRITE=YES --config OGR_TRUNCATE YES -dsco PRELUDE_STATEMENTS="SET client_encoding TO latin1;CREATE SCHEMA IF NOT EXISTS e$e00;" -dsco active_schema=e$e00 -lco PRECISION=NO -lco SCHEMA=e$e00 -skipfailures -addfields -overwrite $file LAB');
+            $processOGR2OGR_lab = Process::fromShellCommandline('/usr/bin/ogr2ogr -f "PostgreSQL" PG:"dbname=$db host=$host user=$user port=$port active_schema=e$e00 password=$pass" --config PG_USE_COPY YES -lco OVERWRITE=YES --config OGR_TRUNCATE YES -dsco PRELUDE_STATEMENTS="SET client_encoding TO latin1;CREATE SCHEMA IF NOT EXISTS e$e00;" -dsco active_schema=e$e00 -lco PRECISION=NO -lco SCHEMA=e$e00 -s_srs $epsg -t_srs $epsg -skipfailures -addfields -overwrite $file LAB');
             $processOGR2OGR_lab->setTimeout(3600);
             $processOGR2OGR_lab->run(null, ['epsg' => $epsg_id, 'file' => storage_path().'/app/'.$data['file']['shp'],'e00'=>$codaglo,'db'=>Config::get('database.connections.pgsql.database'),'host'=>Config::get('database.connections.pgsql.host'),'user'=>Config::get('database.connections.pgsql.username'),'pass'=>Config::get('database.connections.pgsql.password'),'port'=>Config::get('database.connections.pgsql.port')]);
             //dd($processOGR2OGR_lab->getErrorOutput());
@@ -375,4 +403,5 @@ class SegmenterController extends Controller
         echo "Error en el modelo cargar";
      }
     }
+  }
 }
