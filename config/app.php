@@ -67,7 +67,7 @@ return [
     |
     */
 
-    'timezone' => 'UTC-3',
+    'timezone' => 'America/Argentina/Buenos_Aires',
 
     /*
     |--------------------------------------------------------------------------
