@@ -136,8 +136,10 @@ class MyDB extends Model
                 DB::statement("GRANT SELECT ON TABLE  ".$tabla." TO ".$rol);
             }catch(QueryException $e){
                 Log::error('No se pudo dar permiso a '.$rol.' sobre '.$tabla.'.'.$e);
+	        return false;
             }
-                Log::success('Se dió permiso a '.$rol.' sobre '.$tabla.'.');
+	    Log::info('Se dió permiso a '.$rol.' sobre '.$tabla.'.');
+	    return true;
 	}
 
         //Develve data del DBF subido.
@@ -1305,6 +1307,19 @@ public static function getPxSeg($esquema)
 	    return;
     }
      Log::debug('Se estableció el SRS: '.$srid_id.' en '.$esquema);
+    }
+
+    //Generar R3.
+    public static function generarR3Esquema($esquema)
+    {
+//        try{
+//		self::generarR3($esquema);
+//        }catch(QueryException $e){
+            Log::error('TODO Función sin definir, generar R3 del esquema completo para el equema'.$esquema);
+            return false;
+//        }
+//        Log::info('Se dió permiso a '.$rol.' sobre '.$tabla.'.');
+//        return true;
     }
 
 }
