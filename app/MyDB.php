@@ -129,6 +129,17 @@ class MyDB extends Model
             self::darPermisos('e'.$esquema);
         }
 
+        //Dar permisos a una tabla.
+        public static function darPermisosTabla($tabla,$rol='geoestadistica')
+        {
+            try{
+                DB::statement("GRANT SELECT ON TABLE  ".$tabla." TO ".$rol);
+            }catch(QueryException $e){
+                Log::error('No se pudo dar permiso a '.$rol.' sobre '.$tabla.'.'.$e);
+            }
+                Log::success('Se dió permiso a '.$rol.' sobre '.$tabla.'.');
+	}
+
         //Develve data del DBF subido.
         public static function infoDBF($tabla,$esquema)
         {

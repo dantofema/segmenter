@@ -82,6 +82,8 @@ Route::get('/setup/index/{esquema}/{tabla}/{cols}',
 'SetupController@createIndex')->name('setup.create.index');
 Route::get('/setup/grupogeoestadistica/{usuario}',
 'SetupController@grupoGeoestadistica')->name('setup.grupogeo');
+Route::get('/setup/grupogeoestadistica/tabla/{tabla}',
+'SetupController@grupoGeoestadisticaTabla')->name('setup.grupogeo.tabla');
 
 Route::get('/inicio', 'HomeController@index')->name('inicio');
 Route::resource('/listado', 'ListadoController',['only' => [
