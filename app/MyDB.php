@@ -1322,5 +1322,28 @@ public static function getPxSeg($esquema)
 //        return true;
     }
 
+    // Generar informe de avances del uso del segmentador.
+    public static function getAvances($filtro=null)
+    {
+        try{
+            return DB::select(
+           "SELECT l.codigo, l.nombre localidad,
+	    a.codigo codaglo,a.nombre aglomerado,
+            count(*) radios,
+            count(r.resultado) probados,
+            round((count(r.resultado)/(1.0*count(*)))*100,1) segmentado,
+             max(date(updated_at)) fecha
+        from localidad l JOIN aglomerados a ON a.id=l.aglomerado_id
+             JOIN radio_localidad ON l.id=localidad_id
+             JOIN radio r ON r.id=radio_localidad.radio_id
+        WHERE r.updated_at is not null
+        GROUP BY 1,2,3,4
+        ORDER BY count(r.resultado) desc,a.codigo,l.codigo;";
+       }catch(QueryException $e){
+            Log::error('Error al consultar avances en radios '.$filtro.$e);
+            return 'Sin resultados de avances';
+       }
+    }
+
 }
 
