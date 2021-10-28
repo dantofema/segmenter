@@ -1337,7 +1337,7 @@ public static function getPxSeg($esquema)
              JOIN radio r ON r.id=radio_localidad.radio_id
         WHERE r.updated_at is not null
         GROUP BY 1,2,3,4
-        ORDER BY count(r.resultado) desc,a.codigo,l.codigo;";
+        ORDER BY count(r.resultado) desc,a.codigo,l.codigo;");
        }catch(QueryException $e){
             Log::error('Error al consultar avances en radios '.$filtro.$e);
             return 'Sin resultados de avances';
