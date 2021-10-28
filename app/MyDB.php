@@ -502,12 +502,12 @@ FROM
                 DB::beginTransaction();
                     try {
                         DB::unprepared("Select indec.cargar_lados('".$esquema."')");
+                        DB::unprepared("Select indec.cargar_conteos('".$esquema."')");
+                        DB::unprepared("Select indec.generar_adyacencias('".$esquema."')");
                     }catch (\Illuminate\Database\QueryException $exception) {
                             Log::error('No se pudieron cargar lados '.$exception);
                             DB::Rollback();
                     };
-                    DB::unprepared("Select indec.cargar_conteos('".$esquema."')");
-                    DB::unprepared("Select indec.generar_adyacencias('".$esquema."')");
                 DB::commit();
                 // Comienzan posprocesos de carga
                 DB::beginTransaction();
@@ -1105,7 +1105,6 @@ FROM
                 DB::statement("GRANT SELECT ON ALL TABLES IN SCHEMA  ".$esquema." TO ".$grupo);
                 DB::statement("ALTER DEFAULT PRIVILEGES IN SCHEMA  ".$esquema." GRANT
         SELECT ON TABLES TO ".$grupo);
-            //GRANT geoestadistica TO manuel;
                     
                     } catch (QueryException $e)  { 
                         Log::Error('No se pudieron asignar permisos');
@@ -1116,12 +1115,12 @@ FROM
 
         public static function addUser($usuario,$grupo='geoestadistica'){
                 try {
-    //                return DB::select("GRANT USAGE ON ".$esquema." TO ".$grupo.";");
-                DB::unprepared("GRANT ".$grupo." TO ".$usuario.";");
+                        DB::unprepared("GRANT ".$grupo." TO ".$usuario.";");
                     
                     } catch (QueryException $e)  { 
                         Log::Debug('No se pudo agregar al grupo '.$grupo.' al '.$usuario);
-                        return false;}
+		        return false;
+		    }
                 Log::Debug('Se pudo agregar al grupo '.$grupo.' al '.$usuario);
                 return true;
         }
