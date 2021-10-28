@@ -56,7 +56,7 @@ $localidad->codigo}}) {{ $localidad->nombre}}</a>
         <div class="no-gutters row ">
            Se encontraron {{ $loop->count }} segmentos.
 	</div>
-       <div class="">
+       <div class="table">
         <div class="row ">
             <div class="col-sm-1 text-center border"> Seg </div>
             <div class="col-sm-10 text-center border"> Descripción </div>
