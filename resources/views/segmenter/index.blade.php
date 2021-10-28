@@ -41,55 +41,55 @@
 		   </div>
 		  @endif
 <br />
-                <div class="row border bg-warning ">
+                <div class="row border " style="background-color:lemonchiffon">
                  <div class="col-sm-6 border ">
                   <div class="form-group row border bg-info ">
-                    <label for="shp" class="col-sm-5 col-form-label ">Base geográfica (e00/SHP)</label>
-                    <div class="col-sm-4">
+                    <label for="shp" class="col-sm-4 col-form-label ">Base geográfica (e00/SHP)</label>
+                    <div class="col-sm-8">
                         <input type="file" class="form-control-file" id="shp" name="shp">
                     </div>
 		  </div>
                   <div class="form-group row">
-                    <label for="shx" class="col-sm-3 col-form-label ">SHX</label>
-                    <div class="col-sm-6">
+                    <label for="shx" class="col-sm-4 col-form-label ">SHX</label>
+                    <div class="col-sm-8">
                         <input type="file" class="form-control-file" id="shx" name="shx">
                     </div>
                   </div>
                   <div class="form-group row">
-                    <label for="dbf" class="col-sm-3 col-form-label ">DBF</label>
-                    <div class="col-sm-6">
+                    <label for="dbf" class="col-sm-4 col-form-label ">DBF</label>
+                    <div class="col-sm-8">
                         <input type="file" class="form-control-file" id="dbf" name="dbf">
                     </div>
                   </div>
                   <div class="form-group row">
-                    <label for="prj" class="col-sm-3 col-form-label ">PRJ</label>
-                    <div class="col-sm-6">
+                    <label for="prj" class="col-sm-4 col-form-label ">PRJ</label>
+                    <div class="col-sm-8">
                         <input type="file" class="form-control-file" id="prj" name="prj">
                     </div>
                   </div>
                  </div>
                  <div class="col-sm-6 border">
                   <div class="form-group row">
-                    <label for="shpi_lab" class="col-sm-3 col-form-label ">(Etiquetas) SHP</label>
-                    <div class="col-sm-6">
+                    <label for="shpi_lab" class="col-sm-4 col-form-label ">(Etiquetas) SHP</label>
+                    <div class="col-sm-8">
                         <input type="file" class="form-control-file" id="shpi_lab" name="shp_lab">
                     </div>
                   </div>
                   <div class="form-group row">
-                    <label for="shx_lab" class="col-sm-3 col-form-label ">(Etiquetas) SHX</label>
-                    <div class="col-sm-6">
+                    <label for="shx_lab" class="col-sm-4 col-form-label ">(Etiquetas) SHX</label>
+                    <div class="col-sm-8">
                         <input type="file" class="form-control-file" id="shx_lab" name="shx_lab">
                     </div>
                   </div>
                   <div class="form-group row">
-                    <label for="dbf_lab" class="col-sm-3 col-form-label ">(Etiquetas) DBF</label>
-                    <div class="col-sm-6">
+                    <label for="dbf_lab" class="col-sm-4 col-form-label ">(Etiquetas) DBF</label>
+                    <div class="col-sm-8">
                         <input type="file" class="form-control-file" id="dbf_lab" name="dbf_lab">
                     </div>
                   </div>
                   <div class="form-group row">
-                    <label for="prj_lab" class="col-sm-3 col-form-label ">(Etiquetas) PRJ</label>
-                    <div class="col-sm-6">
+                    <label for="prj_lab" class="col-sm-4 col-form-label ">(Etiquetas) PRJ</label>
+                    <div class="col-sm-8">
                         <input type="file" class="form-control-file" id="prj_lab" name="prj_lab">
                     </div>
                   </div>
@@ -110,7 +110,7 @@
                     </div>
 		</div>
 		<div class="form-group">
-		  <div class="col-sm-offset-10 col-sm-2">
+		  <div class="text-center">
                      <button type="submit" class="btn btn-primary">Enviar</button>
                     </div>
 		</div>
