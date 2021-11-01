@@ -86,6 +86,16 @@ class Radio extends Model
      }
 
      /**
+      * Relación con Entidad, un Radio puede estar en varias entidades de varias localidades.
+      *
+      */
+
+     public function entidades()
+     {
+        return $this->belongsToMany('App\Model\Entidad', 'radio_entidad');
+     }
+
+     /**
       * Relación con Aglomerado, un Radio puede pertenecer a varios aglomerado? Espero que solo este en 1.
       *
       */
@@ -158,8 +168,13 @@ class Radio extends Model
 
         $segmenta->vista_segmentos_lados_completos($esquema);
         $segmenta->lados_completos_a_tabla_segmentacion_ffrr($esquema,$frac,$radio);
-        $segmenta->segmentar_excedidos_ffrr($esquema,$frac,$radio,$max,$deseadas);
 
+        // Calculo de umbral ...
+	// Según primer aproximación charlada con -h ...
+	// Valor mayor entre el máximo y el doble del mínimo.
+	$umbral=max($min*2,$max);
+
+        $segmenta->segmentar_excedidos_ffrr($esquema,$frac,$radio,$umbral,$deseadas);
         $this->resultado = $segmenta->ver_segmentacion().'
         x '.$AppUser->name.' ('.$AppUser->email.') en '.date("Y-m-d H:i:s").
 	'
