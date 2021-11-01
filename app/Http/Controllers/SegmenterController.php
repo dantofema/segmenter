@@ -397,8 +397,14 @@ class SegmenterController extends Controller
 	    $data['file']['pxrad']='none';
     }
 
-     if (Archivo::cargar($request, Auth::user())) {
-        return view('segmenter/index', ['data' => $data,'epsgs'=> $this->epsgs]);
+    if (Archivo::cargar($request, Auth::user())) {
+	    if($oDepto){
+		    //return redirect('/depto/'.$oDepto->id);
+		    return view('deptoview',['departamento' =>
+                           $oDepto->loadCount('localidades')]);
+	    }else{
+	        return view('segmenter/index', ['data' => $data,'epsgs'=> $this->epsgs]);
+	    }
      } else {
         echo "Error en el modelo cargar";
      }
