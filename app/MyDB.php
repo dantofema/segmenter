@@ -33,22 +33,22 @@ class MyDB extends Model
             return $result;
         }
 
-        // Segmenta a listado lso lados excedidos segun umbral
+        // Segmenta a listado los lados excedidos segun umbral
         // 
         public static function 
         segmentar_excedidos_ffrr($esquema,$frac,$radio,$umbral=20,$deseado=20)
         {
             try{
-                Log::debug('Resegmentando segmentos excedidos de fraccion
+                Log::info('Resegmentando segmentos excedidos de fraccion
                 '.$frac.', radio '.$radio);
-                DB::statement(" SELECT indec.segmentar_excedidos_ffrr(
+                return DB::statement(" SELECT indec.segmentar_excedidos_ffrr(
                 'e".$esquema."',".$frac.",".$radio.",".$umbral.",".$deseado.");");
             }catch(QueryException $e){
                 Log::warning('No se pudo segmentar segmentos excedidos, reintentando...');
                 self::cambiarSegmentarBigInt($esquema);
                 self::recrea_vista_segmentos_lados_completos($esquema);
                 try{
-                    DB::statement(" SELECT indec.segmentar_excedidos_ffrr(
+                    return DB::statement(" SELECT indec.segmentar_excedidos_ffrr(
                     'e".$esquema."',".$frac.",".$radio.",".$umbral.",".$deseado.");");
                 }catch(QueryException $e){
                     Log::error('No se pudo segmentar segmentos excedidos'.$e);
