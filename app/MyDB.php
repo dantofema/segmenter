@@ -175,8 +175,8 @@ FROM
 		    $filtro.
 		    ' group by 1,2 order by count(*) desc Limit 1;')[0]);
         }catch (\Illuminate\Database\QueryException $exception) {
-		Log::error('Error: '.$exception);
-		//Supongo codprov sin Nombre
+		Log::warning('Aglomerado Sin Nombre: '.$exception);
+		//Supongo sin Nombre
 		$codaglo=self::getAglo($tabla,$esquema,$filtro);
 	    return ['codigo'=>$codaglo,'nombre'=>'Sin Nombre'];
 	}
