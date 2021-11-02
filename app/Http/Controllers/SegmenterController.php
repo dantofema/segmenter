@@ -398,7 +398,7 @@ class SegmenterController extends Controller
     }
 
     if (Archivo::cargar($request, Auth::user())) {
-	    if($oDepto){
+	    if(isset($oDepto)){
 		    //return redirect('/depto/'.$oDepto->id);
 		    return view('deptoview',['departamento' =>
                            $oDepto->loadCount('localidades')]);
