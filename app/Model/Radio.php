@@ -41,6 +41,16 @@ class Radio extends Model
 
 
      /**
+      * Relación con TipoRadio , un Radio tiene un tipo de radio.
+      *
+      */
+
+     public function tipo()
+     {
+         return $this->belongsTo('App\Model\TipoRadio','tipo_de_radio_id','id');
+     }
+
+     /**
       * Relación con Fraccion , un Radio pertenece a Una fracción.
       *
       */
@@ -76,6 +86,16 @@ class Radio extends Model
      }
 
      /**
+      * Relación con Entidad, un Radio puede estar en varias entidades de varias localidades.
+      *
+      */
+
+     public function entidades()
+     {
+        return $this->belongsToMany('App\Model\Entidad', 'radio_entidad');
+     }
+
+     /**
       * Relación con Aglomerado, un Radio puede pertenecer a varios aglomerado? Espero que solo este en 1.
       *
       */
@@ -104,6 +124,7 @@ class Radio extends Model
      */
     public function segmentar($esquema,$deseadas,$max,$min,$indivisible)
     {
+      if (Auth::check()) {
         $AppUser= Auth::user();
         $prov= substr(trim($this->codigo), 0, 2);
         $dpto= substr(trim($this->codigo), 2, 3);
@@ -116,9 +137,17 @@ class Radio extends Model
         $segmenta->vista_segmentos_lados_completos($esquema);
         $segmenta->lados_completos_a_tabla_segmentacion_ffrr($esquema,$frac,$radio);
         $this->resultado = $segmenta->ver_segmentacion().'
-        x '.$AppUser.' en '.date("Y-m-d H:i:s");
+	x '.$AppUser->name.' ('.$AppUser->email.') en '.date("Y-m-d H:i:s").
+	'
+	----------------------- LOG ----------------------------
+	'.$this->resultado;
         $this->save();
-        return $this->resultado;
+	return $this->resultado;
+      }else{
+        $mensaje='No tiene permiso para segmentar o no esta logueado';
+	flash($mensaje)->error()->important();
+        return $mensaje;
+      }
     }
 
     /**
@@ -127,6 +156,7 @@ class Radio extends Model
      */
     public function segmentarLucky($esquema,$deseadas,$max,$min,$indivisible)
     {
+      if (Auth::check()) {
         $AppUser= Auth::user();
         $prov= substr(trim($this->codigo), 0, 2);
         $dpto= substr(trim($this->codigo), 2, 3);
@@ -138,12 +168,25 @@ class Radio extends Model
 
         $segmenta->vista_segmentos_lados_completos($esquema);
         $segmenta->lados_completos_a_tabla_segmentacion_ffrr($esquema,$frac,$radio);
-        $segmenta->segmentar_excedidos_ffrr($esquema,$frac,$radio,$max,$deseadas);
 
+        // Calculo de umbral ...
+	// Según primer aproximación charlada con -h ...
+	// Valor mayor entre el máximo y el doble del mínimo.
+	$umbral=max($min*2,$max);
+
+        $segmenta->segmentar_excedidos_ffrr($esquema,$frac,$radio,$umbral,$deseadas);
         $this->resultado = $segmenta->ver_segmentacion().'
-        x '.$AppUser.' en '.date("Y-m-d H:i:s");
+        x '.$AppUser->name.' ('.$AppUser->email.') en '.date("Y-m-d H:i:s").
+	'
+	----------------------- LOG ----------------------------
+	'.$this->resultado;
         $this->save();
         return $this->resultado;
+      }else{
+        $mensaje='No tiene permiso para segmentar o no esta logueado';
+	flash($mensaje)->error()->important();
+        return $mensaje;
+      }
     }
 
      /**
@@ -195,7 +238,7 @@ class Radio extends Model
         if (! $this->_esquema){
           $this->_esquema='foo';
           if ($this->aglomerado() != null){
-                if ($this->aglomerado()->codigo=='0001'){
+		  if ($this->aglomerado()->codigo=='0001'){
                     if ($this->fraccion->departamento->provincia->codigo == '02') {
                         $this->_esquema = 'e'.
                                     $this->fraccion->departamento->codigo.
@@ -207,16 +250,28 @@ class Radio extends Model
                 {
                     $this->_esquema = 'e'.$this->aglomerado()->codigo;
                     try{
-                        if ($this->fraccion->departamento->provincia->codigo == '06') {
-                            $this->_esquema = 'e'.$this->fraccion->departamento->codigo;
-			}elseif ($this->localidades()->count() > 1) {
-				Log::warning('TODO: Implementar radio multilocalidades'.$this->localidades()->get()->toJson(
-					JSON_PRETTY_PRINT));
-				foreach($this->localidades()->get() as $localidad){
-					Log::info('Posible esquema:'.($localidad->codigo));
-				}
-                           $this->_esquema = 'e'.$this->fraccion->departamento->codigo;
-                        }
+			    if(!$this->fraccion){
+                         	    Log::error('Radio sin fracción? : '.collect($this)->toJson(JSON_PRETTY_PRINT));
+				    $this->_esquema='e'.$this->codigo;
+			    }elseif ($this->fraccion->departamento->provincia->codigo == '06') {
+                               $this->_esquema = 'e'.$this->fraccion->departamento->codigo;
+                               }elseif ($this->localidades()->count() > 1) {
+				   $loc_no_rural=$this->localidades()->whereHas('aglomerado', function($q) {
+                                              $q->where('codigo', 'not like', '%000%');
+                                               })->get();
+				   if ($loc_no_rural->count() > 1) {
+					   Log::warning('TODO: Implementar radio multilocalidades'.$this->localidades()->get()->toJson(
+					   JSON_PRETTY_PRINT));
+                                     foreach($loc_no_rural as $localidad){
+                                       Log::info('Posible esquema:'.($localidad->codigo));
+                                     }
+				      $this->_esquema = 'e'.$this->fraccion->departamento->codigo;
+				    }else{
+					    Log::info('Buscando parte Urbana del Radio en esquema:'.
+						    ($loc_no_rural->first()->aglomerado()->first()->codigo));
+                                      $this->_esquema = 'e'.$loc_no_rural->first()->aglomerado()->first()->codigo;
+				    }
+                              }
                     }catch (Exception $e){
                          Log::error('Algo muy raro paso: '.$e);
                     };
@@ -265,13 +320,14 @@ class Radio extends Model
                 as svg ,20 as orden
                 FROM ".$this->esquema.".manzanas
                     WHERE  prov||dpto||frac||radio='".$this->codigo."' )";
-            }else{$mzas='';$mzas_labels='';}
+            }else{Log::debug('No se encontro grafica de manzanas. ');$mzas='';$mzas_labels='';}
 
             //dd($viewBox.'/n'.$this->viewBox($extent,$epsilon,$height,$width).'/n'.$x0." -".$y0." ".$x1." -".$y1);
             $svg=DB::select("
 WITH shapes (geom, attribute, tipo) AS (
     ( SELECT st_buffer(CASE WHEN trim(lg.tipoviv) in ('','LSV') then lg.wkb_geometry_lado
-    else lg.wkb_geometry END,1) wkb_geometry, segmento_id::integer,
+    else lg.wkb_geometry END,1) wkb_geometry, 
+    rank() over (order by segmento_id::integer) as attribute,
     lg.tipoviv tipo
     FROM ".$this->esquema.".listado_geo lg JOIN ".$this->esquema.".segmentacion
     s ON s.listado_id=id_list

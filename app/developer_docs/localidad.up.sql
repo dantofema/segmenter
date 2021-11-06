@@ -65,6 +65,11 @@ ALTER SEQUENCE public.localidad_id_seq OWNED BY public.localidad.id;
 
 ALTER TABLE ONLY public.localidad ALTER COLUMN id SET DEFAULT nextval('public.localidad_id_seq'::regclass);
 
+--
+-- Name: localidad_id_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX localidad_id_index ON public.localidad USING btree (id);
 
 --
 -- PostgreSQL database dump complete

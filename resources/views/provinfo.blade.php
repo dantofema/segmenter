@@ -1,13 +1,22 @@
-<div class="container">
-    código {{ $provincia->codigo }} <br />
-    provincia {{ $provincia->nombre }} <br />
+<div>
+    @if ($provincia)
+      @if ($provincia->codigo!='02')
+        <b>Provincia: </b>
+      @endif
+    <li class="btn  btn-outline-primary" style="margin-bottom: 2px" >
+        <a href="{{ url("/prov/{$provincia->id}") }}" ><h2> {{ $provincia->codigo }} -
+    <b> {{ $provincia->nombre }} </b></h2></a>
+    </li>
+<p>
     con {{ $provincia->departamentos_count }} divisiones de segundo orden (comunas/partidos/departamentos)
+</p>
             	@foreach($provincia->departamentos as $departamento)
     		<li class="btn  btn-outline-secondary" style="margin-bottom: 1px" >
 		 <a href="{{ url('/depto/'.$departamento->id) }}">
 ({{ $departamento->codigo }}) {{ $departamento->nombre }} </a>
                </li>
 		@endforeach
+    @endif
 <div/>
 @if($provincia->codigo =='30')         
 <div>

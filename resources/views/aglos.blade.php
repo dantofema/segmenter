@@ -1,3 +1,4 @@
+<?php /*
 <!DOCTYPE html>
  
 <html lang="es">
@@ -15,6 +16,9 @@
 </head>
 <body>
  <div class="container">
+ */ ?>
+@extends('layouts.app')
+@section ('content_main') 
    <!-- Modal -->
    <div class="modal fade" id="agloModal" role="dialog">
     <div class="modal-dialog">
@@ -61,15 +65,18 @@
    <div class="row">
     <div class="form-group col-md-6">
     <h5>Código<span class="text-danger"></span></h5>
-    <div class="controls">
-        <input type="numeric" name="codigo" id="codigo" class="form-control " placeholder="Por favor introduzca un código"> <div class="help-block"></div></div>
+     <div class="controls">
+	<input type="numeric" name="codigo" id="codigo" class="form-control " placeholder="Por favor introduzca un código"> 
+        <div class="help-block"></div>
+     </div>
     </div>
     <div class="text-left" style="margin-left: 15px;">
-    <button type="text" id="btnFiterSubmitSearch" class="btn btn-info">Buscar</button>
+     <button type="text" id="btnFiterSubmitSearch" class="btn btn-info">Buscar</button>
     </div>
-    </div>
-    <br>
-    <table class="table table-bordered  stripe hover order-column" id="laravel_datatable_aglos">
+   </div>
+   <div class="row">
+   <div class="col-sm-12">
+    <table class="table table-striped table-bordered dataTable hover order-column " id="laravel_datatable_aglos">
        <thead>
           <tr>
              <th>Id</th>
@@ -82,7 +89,11 @@
           </tr>
        </thead>
     </table>
+   </div>
+   </div>
  </div>
+ @endsection
+ @section('footer_scripts')
  <script>
  $(document).ready( function () {
      $.ajaxSetup({
@@ -134,9 +145,9 @@
                   { data: 'codigo', name: 'codigo' },
                   { data: 'nombre', name: 'nombre' },
                   { searchable: false, data: 'localidades_count', name: 'localidades_count' },
-                  { searchable: false , data: function ( row, type, val, meta ) {if (row.carto==1) { return '<img width=15 height=15 src=images/ok.png alt=OK>'}else{return '<img width=15 height=15 src=images/no.png alt=NO>'}}, name: 'carto' },
-                  { searchable: false , data: function ( row, type, val, meta ) {if (row.listado==1) { return '<img width=15 height=15 src=images/ok.png alt=OK>'}else{return '<img width=15 height=15 src=images/no.png alt=NO>'}}, name: 'listado' },
-                  { searchable: false , data: function ( row, type, val, meta ) {
+                  { orderable: false, searchable: false , data: function ( row, type, val, meta ) {if (row.carto==1) { return '<img width=15 height=15 src=images/ok.png alt=OK>'}else{return '<img width=15 height=15 src=images/no.png alt=NO>'}}, name: 'carto' },
+                  { orderable: false, searchable: false , data: function ( row, type, val, meta ) {if (row.listado==1) { return '<img width=15 height=15 src=images/ok.png alt=OK>'}else{return '<img width=15 height=15 src=images/no.png alt=NO>'}}, name: 'listado' },
+                  { orderable: false, searchable: false , data: function ( row, type, val, meta ) {
                                 var botones='';
                                 if ((row.carto==1) && (row.listado == 1)) {
                                     botones =  '<button type="button" class="segmentar btn-sm btn-primary" value="Segmentar"/>Segmentar</button>';
@@ -278,5 +289,5 @@ function changeAllRadios(_this, id) {
     
 }
 </script>
-</body>
-</html>
+ @endsection
+<?php // </body> </html> ?>

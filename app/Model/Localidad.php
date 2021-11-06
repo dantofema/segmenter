@@ -9,6 +9,14 @@ class Localidad extends Model
     //
     protected $table = 'localidad';
 
+    protected $fillable = [
+        'codigo','nombre'
+    ];
+
+    // Sin fecha de creación o modificación
+    //
+    public $timestamps = false;
+
     /**
      * Relación con Departamento, una localidad puede estar en muchos departamentos (caso CABA).
      */

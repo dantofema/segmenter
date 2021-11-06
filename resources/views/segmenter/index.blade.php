@@ -2,9 +2,9 @@
 
 @section('content')
 <div class="container">
-   <h4 class="center"> Carga de base geógrafica y listado de viviendas.</h4>
+   <h4 class="center"> Carga de base geógrafica, listado de viviendas y PxRad.</h4>
     <div class="row justify-content-center">
-        <div class="col-md-12">
+        <div class="center-block">
             @isset($data)
                 <div class="alert alert-primary" role="alert">
                     <ul>
@@ -25,55 +25,95 @@
                     </ul>
                 </div>
             @endisset
-            <form action="/segmentador/guardar" method="POST" enctype="multipart/form-data">
+            <form action="/segmentador/guardar" method="POST" enctype="multipart/form-data" class="form-horizontal ">
                 @csrf
-                <div class="form-group row">
-                    <label for="shp" class="col-sm-2 col-form-label ">Base geográfica (e00/SHP)</label>
-                    <div class="col-sm-10">
-                        <input type="file" class="form-control-file" id="shp" name="shp">
-                    </div>
-		     @if (isset($epsgs))
-                    <div class="col-sm-10">
-                	<select name="epsg_id" class="form-control">
-			     <option></option>
+		  @if (isset($epsgs))
+                   <div class="form-group row">
+                    <label for="epsg" class="col-sm-2 control-label">Sistema de Referencia:</label>
+                    <div class="col-sm-10 ">
+                            <select id="epsg" name="epsg_id" class="form-control " >
+			     <option disabled selected value>-- Seleccione el Sistema de Referencia de los datos --</option>
 			        @foreach($epsgs as $id => $epsg)
 					<option value="{{$id}}"> {{$epsg}} </option>
 			        @endforeach
 			    </select>
 		    </div>
-		     @endif
-                </div>
-                <div class="form-group row">
-                    <label for="shx" class="col-sm-2 col-form-label ">SHX</label>
-                    <div class="col-sm-10">
+		   </div>
+		  @endif
+<br />
+                <div class="row border " style="background-color:lemonchiffon">
+                 <div class="col-sm-6 border ">
+                  <div class="form-group row border bg-info ">
+                    <label for="shp" class="col-sm-4 col-form-label ">Base geográfica (e00/SHP)</label>
+                    <div class="col-sm-8">
+                        <input type="file" class="form-control-file" id="shp" name="shp">
+                    </div>
+		  </div>
+                  <div class="form-group row">
+                    <label for="shx" class="col-sm-4 col-form-label ">SHX</label>
+                    <div class="col-sm-8">
                         <input type="file" class="form-control-file" id="shx" name="shx">
                     </div>
-                </div>
-                <div class="form-group row">
-                    <label for="dbf" class="col-sm-2 col-form-label ">DBF</label>
-                    <div class="col-sm-10">
+                  </div>
+                  <div class="form-group row">
+                    <label for="dbf" class="col-sm-4 col-form-label ">DBF</label>
+                    <div class="col-sm-8">
                         <input type="file" class="form-control-file" id="dbf" name="dbf">
                     </div>
-                </div>
-                <div class="form-group row">
-                    <label for="prj" class="col-sm-2 col-form-label ">PRJ</label>
-                    <div class="col-sm-10">
+                  </div>
+                  <div class="form-group row">
+                    <label for="prj" class="col-sm-4 col-form-label ">PRJ</label>
+                    <div class="col-sm-8">
                         <input type="file" class="form-control-file" id="prj" name="prj">
                     </div>
+                  </div>
+                 </div>
+                 <div class="col-sm-6 border">
+                  <div class="form-group row">
+                    <label for="shpi_lab" class="col-sm-4 col-form-label ">(Etiquetas) SHP</label>
+                    <div class="col-sm-8">
+                        <input type="file" class="form-control-file" id="shpi_lab" name="shp_lab">
+                    </div>
+                  </div>
+                  <div class="form-group row">
+                    <label for="shx_lab" class="col-sm-4 col-form-label ">(Etiquetas) SHX</label>
+                    <div class="col-sm-8">
+                        <input type="file" class="form-control-file" id="shx_lab" name="shx_lab">
+                    </div>
+                  </div>
+                  <div class="form-group row">
+                    <label for="dbf_lab" class="col-sm-4 col-form-label ">(Etiquetas) DBF</label>
+                    <div class="col-sm-8">
+                        <input type="file" class="form-control-file" id="dbf_lab" name="dbf_lab">
+                    </div>
+                  </div>
+                  <div class="form-group row">
+                    <label for="prj_lab" class="col-sm-4 col-form-label ">(Etiquetas) PRJ</label>
+                    <div class="col-sm-8">
+                        <input type="file" class="form-control-file" id="prj_lab" name="prj_lab">
+                    </div>
+                  </div>
+                 </div>
                 </div>
-                <div class="form-group row">
-                    <label for="c1" class="col-sm-2 col-form-label ">C1</label>
-                    <div class="col-sm-10">
-                        <input type="file" class="form-control-file" id="c1" name="c1">
+<br />
+                <div class="form-group row bg-info ">
+                    <label for="c1" class="col-sm-4 col-form-label text-rigth">C1</label>
+                    <div class="col-sm-8">
+                        <input type="file" class="form-control-file text-left" id="c1" name="c1">
                     </div>
                 </div>
-                <div class="form-group row">
-                    <label for="pxrad" class="col-sm-2 col-form-label ">PxxRad (del departamento)</label>
-                    <div class="col-sm-10">
+<br />
+                <div class="form-group row bg-info ">
+                    <label for="pxrad" class="col-sm-4 col-form-label ">PxxRad (del departamento)</label>
+                    <div class="col-sm-8">
                         <input type="file" class="form-control-file" id="pxrad" name="pxrad">
                     </div>
-                </div>
-                <button type="submit" class="btn btn-primary">Enviar</button>
+		</div>
+		<div class="form-group">
+		  <div class="text-center">
+                     <button type="submit" class="btn btn-primary">Enviar</button>
+                    </div>
+		</div>
             </form>
         </div>
     </div>

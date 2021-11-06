@@ -10,7 +10,7 @@
     <title>{{ config('app.name', 'Mandarina') }}</title>
 
     <!-- Scripts -->
-    <script src="{{ asset('js/app.js') }}" defer></script>
+    <script src="{{ asset('js/app.js') }}" ></script>
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
@@ -28,10 +28,13 @@
     <div id="app">
             <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
             <div class="container">
+                <div class="m-0 p-0 text-center" >
                 <a class="navbar-brand text-uppercase" href="{{ url('/') }}">
                 <img src="/images/mandarina.svg" width="30" height="30" class="d-inline-block align-top" alt="">
                     {{ config('app.name', 'App sin nombre') }}
                 </a>
+                <div style="position: relative; top: -15px; height:0px;">{{ Git::branch() }}</div>
+                </div>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
                     <span class="navbar-toggler-icon"></span>
                 </button>
@@ -40,6 +43,7 @@
                     <!-- Left Side Of Navbar -->
                     <ul class="navbar-nav mr-auto btn">
                     @auth
+                        <li class="nav-item"><a class="nav-link" href="{{ url('/home') }}"> Inicio </a> </li>
                         <li class="nav-item"><a class="nav-link" href="{{ url('/provs') }}"> Provincias </a> </li>
                         <li class="nav-item"><a class="nav-link" href="{{ url('/aglos') }}"> Aglomerados </a> </li>
                         <li class="nav-item"><a class="nav-link" href="{{ url('/segmentador') }}"> Cargar </a> </li>
@@ -95,11 +99,11 @@
             @yield('content_main')
         <div id="copyright" class="text-center justify-content-center"
             style="display:block"><hr />© Copyright 2021 INDEC - Geoestadística
-            <div>{{ Git::version() }} -  {{ Git::lastCommitDate() }}</div>
+            <div>{{ Git::branch() }} - {{ Git::version() }} -  {{ Git::lastCommitDate() }}</div>
             </div>
 <!-- If using flash()->important() or flash()->overlay(), you'll need to pull in the JS for Twitter Bootstrap. -->
-<script src="//code.jquery.com/jquery.js"></script>
-<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+<!--script src="//code.jquery.com/jquery.js"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script -->
 <script>
    $(document).ready( function () {
     $('#flash-overlay-modal').modal();

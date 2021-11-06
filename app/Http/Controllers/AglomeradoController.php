@@ -233,6 +233,13 @@ use Illuminate\Support\Facades\Log;
         
     }
 
+    public function ver_pxseg(Aglomerado $aglomerado)
+    {
+            $pxseg=MyDB::getPxSeg('e'.$aglomerado->codigo);
+            $data = collect($pxseg); //json_encode ($pxseg);
+            return view('segmentacion.pxseg',['pxseg'=>$data,'aglomerado'=>$aglomerado]);
+    }
+
     /**
      * Show the form for editing the specified resource.
      *

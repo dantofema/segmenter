@@ -88,7 +88,7 @@
             </div>
         </div>
         <div id="copyright" class="text-center justify-content-center"
-        style="display:block"><hr />© Copyright 2020 INDEC - Geoestadística - {{ Git::version() }}</div>
+        style="display:block"><hr />© Copyright 2021 INDEC - Geoestadística</div>
         </div>
     </body>
 </html>

@@ -21,6 +21,10 @@ class Aglomerado extends Model
     public $segmentadoListado;
     public $segmentadoLados;
 
+    // Sin fecha de creación o modificación
+    //
+    public $timestamps = false;
+
      /**
       * Relación con Localidades, un Aglomerados tiene una o varias localidad.
       *
@@ -146,13 +150,15 @@ class Aglomerado extends Model
                                $links[]=$radio->link;
                 }else{
                     $new_radios[]=new Radio (['codigo'=>$radio->link,'nombre'=>'Nuevo: '.$radio->link]);
-                    $nuevos_radios++;
+		    $nuevos_radios++;
+		    flash('No se encontró radio  -> '.$radio->link)->error()->important();
                 }
 //            $links[]=$radio->link; };
             }
         }
         if (count($links)>0){
             $objRadios=Radio::whereIn('codigo',$links)->get();
+	    flash('Radios verificados -> '.$objRadios->count())->success();
         }
             //dd($new_radios,$nuevos_radios);
             $objs=$objRadios->union(Collect ($new_radios));

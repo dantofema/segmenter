@@ -61,6 +61,20 @@ class SetupController extends Controller
         return view('home');
     }
 
+
+    public function grupoGeoestadistica($usuario)
+    {
+        MyDB::addUser($usuario);
+        flash('Se agrego al grupo geoestadistica al usuario '.$usuario);
+        return view('home');
+    }
+
+    public function grupoGeoestadisticaTabla($tabla)
+    {
+        MyDB::darPermisosTabla($tabla);
+        return view('home');
+    }
+
     public function cargarTopologia($schema)
     {
         MyDB::cargarTopologia($schema);

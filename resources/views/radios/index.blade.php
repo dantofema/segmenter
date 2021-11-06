@@ -4,7 +4,12 @@
     <b> {{ $aglomerado->nombre }} </b></a><br />
     Localidad <a href="{{ url("/localidad/{$localidad->id}") }}" >({{ $localidad->codigo }}) 
     <b> {{ $localidad->nombre }} </b></a><br />
-    Departamento/Partido/Comuna </b>
+    @if($departamento->denominacion)
+	{{ $departamento->denominacion }}
+     @else
+        Departamento / Partido / Comuna
+    @endif
+    </b>
     <a href="{{ url("/depto/{$departamento->id}") }}" >
     ({{ $departamento->codigo }})
     <b> {{ $departamento->nombre }}  </b></a><br />

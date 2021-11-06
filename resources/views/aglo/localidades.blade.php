@@ -3,6 +3,7 @@
     @foreach($aglomerado->localidades as $localidad)
       	@foreach($localidad->departamentos as $departamento)
 	    @php ($provincias[$departamento->provincia->codigo]=$departamento->provincia)
+	    @php ($departamentos[$departamento->codigo]=$departamento)
 	@endforeach
     @endforeach
     @foreach($provincias as $provincia)
@@ -15,23 +16,28 @@
     @endforeach
     <h3>Aglomerado ({{ $aglomerado->codigo }}) 
     <b> {{ $aglomerado->nombre }} </b></h3>
-	 {{$aglomerado->localidades->count()}} localidades.
-            En Departamento:
-	    @foreach($aglomerado->localidades as $localidad)
-            	@foreach($localidad->departamentos as $departamento)
-		 <a href="{{ url('/depto/'.$departamento->id) }}">
+        @foreach($departamentos as $departamento)
+          @if($loop->first)
+	     En {{count($departamentos)}}
+             @if($departamento->denominacion)
+                {{ $departamento->denominacion }}
+             @else
+                Departamento / Partido / Comuna
+             @endif
+	  @endif
+	 <a href="{{ url('/depto/'.$departamento->id) }}">
 ({{ $departamento->codigo }}) {{ $departamento->nombre }} </a>
-		@endforeach
-            @endforeach
+       @endforeach
 
 <div class="form-horizontal">
 <form action="/grafo/{{ $aglomerado->id }}" method="GET" enctype="multipart/form-data">
                 @csrf
 
   <div class="form-group">
-    <label class="control-label" for="localidad">Seleccione una Localidad:</label>
+    <label class="control-label" for="localidad">
+	 {{$aglomerado->localidades->count()}} localidades: </label>
     <div class="">
-    <ul class="nav row justify-content-around">
+    <ul class="nav justify-content-around">
             @foreach($localidades as $localidad)
     <li class="btn  btn-outline-primary" style="margin-bottom: 5px" >
     <a href="{{ url('/localidad/'.$localidad->id) }}">

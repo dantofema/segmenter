@@ -16,7 +16,8 @@ class Segmentador extends Model
     
     public function segmentar_a_lado_completo($aglo,$prov,$dpto,$frac,$radio,$vivs_deseada,$vivs_max,$vivs_min,$mza_indivisible)
 	{
-        $AppUser= Auth::user();
+	if (Auth::check()) {
+	$AppUser= Auth::user();
         // Set the limit to 500 MB.
         // Varios intentos para aumentar la memoria.
         /*
@@ -53,7 +54,10 @@ class Segmentador extends Model
                             MyDB::lados_completos_a_tabla_segmentacion_ffrr($aglo,$frac,$radio);
                             return $this->resultado=$process->getOutput();
                         }
-            // e0777.arc 50 084 1 4 20 30 10 1');
+	// e0777.arc 50 084 1 4 20 30 10 1');
+	}else{
+	   return 'No tiene permisos para segmentar o no está logueado';
+	}
      }
 
     public function ver_segmentacion()
@@ -72,6 +76,7 @@ class Segmentador extends Model
     lados_completos_a_tabla_segmentacion_ffrr($esquema,$frac,$radio)
     {
        MyDB::lados_completos_a_tabla_segmentacion_ffrr($esquema,$frac,$radio);
+       MyDB::grabarSegmentacion($esquema,$frac,$radio);
         
     }
 
@@ -79,7 +84,7 @@ class Segmentador extends Model
     segmentar_excedidos_ffrr($esquema,$frac,$radio,$umbral,$desado)
     {
         MyDB::segmentar_excedidos_ffrr($esquema,$frac,$radio,$umbral,$desado);
-        
+	MyDB::grabarSegmentacion($esquema,$frac,$radio);
     }
 
 }

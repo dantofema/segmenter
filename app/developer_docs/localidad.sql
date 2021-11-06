@@ -3467,7 +3467,7 @@ INSERT INTO public.localidad VALUES (5827, '90014050', 'Colonia Mayo - Barrio La
 INSERT INTO public.localidad VALUES (5829, '90014070', 'El Bracho', 2624, 1, 2, NULL, NULL, NULL, 7839, 1, 1, 1, 2);
 INSERT INTO public.localidad VALUES (5806, '86175040', 'Villa Nueva', 2579, 1, 2, NULL, NULL, NULL, 7792, 1, 1, 1, 1);
 INSERT INTO public.localidad VALUES (5836, '90021010', 'Alpachiri', 1604, 1, 2, NULL, NULL, NULL, 7821, 1, 1, 1, 2);
-INSERT INTO public.localidad VALUES (2388, '02002010', 'Ciudad de Buenos Aires', 72, 2, NULL, NULL, NULL, 7551, 7952, 2, 1, 1, 1);
+INSERT INTO public.localidad VALUES (2388, '02002010', 'Ciudad Autónoma de Buenos Aires', 72, 2, NULL, NULL, NULL, 7551, 7952, 2, 1, 1, 1);
 INSERT INTO public.localidad VALUES (5864, '90063010', 'Barrio San Felipe', 77, 2, 1, NULL, NULL, NULL, 7882, 1, 1, 1, 2);
 INSERT INTO public.localidad VALUES (5862, '90056080', 'Villa Fiad - Ingenio Leales', 827, 1, 1, NULL, NULL, NULL, 7874, 1, 1, 1, 2);
 INSERT INTO public.localidad VALUES (2418, '06049030', 'Cacharí', 664, 1, 1, NULL, NULL, NULL, 4855, 1, 1, 1, 1);
