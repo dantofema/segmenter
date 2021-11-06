@@ -22,25 +22,6 @@
 
  <div class="container">
    <h2>Listado de Departamentos de {{ $provincia->nombre ?? ' *todas* ' }}</h2>
-   <br>
-   <div class="row">
-    <div class="form-group col-md-6">
-    <h5>Codigo<span class="text-danger"></span></h5>
-    <div class="controls">
-        <input type="numeric" name="codigo" id="codigo" class="form-control " placeholder="Por favor introduzca un código"> <div class="help-block"></div></div>
-    </div>
-    <!--div class="form-group col-md-6">
-    <h5>End Date <span class="text-danger"></span></h5>
-    <div class="controls">
-        <input type="date" name="end_date" id="end_date" class="form-control datepicker-autoclose" placeholder="Please select end date"> <div class="help-block"></div></div>
-    </div-->
-    <div class="text-left" style="
-    margin-left: 15px;
-    ">
-    <button type="text" id="btnFiterSubmitSearch" class="btn btn-info">Submit</button>
-    </div>
-    </div>
-    <br>
     <table class="table table-bordered  stripe hover order-column" id="laravel_datatable">
        <thead>
           <tr>
