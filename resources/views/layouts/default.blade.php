@@ -103,8 +103,6 @@
             <div>{{ Git::branch() }} - {{ Git::version() }} -  {{ Git::lastCommitDate() }}</div>
             </div>
 <!-- If using flash()->important() or flash()->overlay(), you'll need to pull in the JS for Twitter Bootstrap. -->
-<script src="//code.jquery.com/jquery.js"></script>
-<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
 <script>
    $(document).ready( function () {
     $('#flash-overlay-modal').modal();
