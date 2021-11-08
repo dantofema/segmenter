@@ -178,7 +178,7 @@ FROM
 		Log::warning('Aglomerado Sin Nombre: '.$exception);
 		//Supongo sin Nombre
 		$codaglo=self::getAglo($tabla,$esquema,$filtro);
-	    return ['codigo'=>$codaglo,'nombre'=>'Sin Nombre'];
+	    return (object) ['codigo'=>$codaglo,'nombre'=>'Sin Nombre'];
 	}
     }
 
@@ -638,16 +638,16 @@ FROM
                 self::generarSegmentacionNula('e'.$esquema);
                 if ( DB::statement("SELECT indec.segmentar_equilibrado('e".$esquema."',".$deseado.");") ){
                 // llamar generar r3 como tabla resultado de function indec.r3(agl)
-//                ( DB::statement("SELECT indec.r3('e".$esquema."');") );
                 ( DB::statement("SELECT indec.descripcion_segmentos('e".$esquema."');") );
                 ( DB::statement("SELECT indec.segmentos_desde_hasta('e".$esquema."');") );
 //             	self::georeferenciar_segmentacion($esquema);
             // (?) crear 3 public static function distintas y correrlas desde arribo 
 		// como segmentar_equilibrado
 		//
-		// TODO: Llamar a función guardar segmentación para actualizar la r3 con los resultados...
+		// Llamar a función guardar segmentación para actualizar la r3 con los resultados...
 		// $esquema,$frac,$radio
 		// self::grabarSegmentacion($esquema,$frac,$radio)
+                ( DB::statement("SELECT indec.sincro_r3('e".$esquema."');") );
 
                     return true;
                 }else{ 
