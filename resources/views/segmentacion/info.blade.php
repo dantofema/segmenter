@@ -1,17 +1,5 @@
-<!DOCTYPE html>
- 
-<html lang="es">
-<head>
-<meta name="csrf-token" content="{{ csrf_token() }}">
-<title>{{ config('app.name', 'Laravel') }}</title>
-<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">  
-<link  href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css" rel="stylesheet">
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.js"></script>  
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-<script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
-</head>
-<body>
- <div class="container">
+@extends('layouts.app')
+@section ('content_main')
    <!-- Modal -->
    <div class="modal fade" id="empModal" role="dialog">
     <div class="modal-dialog">
@@ -32,6 +20,7 @@
     </div>
    </div>
 
+   <div class="container">
    <h3 class="text-center">
 ({{ $aglomerado->codigo }} )
 {{ $aglomerado->nombre }} 
@@ -46,7 +35,7 @@
     </div>
     </div>
     <br>
-    <table class="table table-bordered  stripe hover order-column" id="laravel_datatable">
+    <table class="table table-bordered  table-striped hover order-column" id="laravel_datatable">
        <thead>
           <tr>
              <th>Id</th>
@@ -59,6 +48,8 @@
        </thead>
     </table>
  </div>
+@endsection
+@section('footer_scripts')
  <script>
  $(document).ready( function () {
      $.ajaxSetup({
@@ -144,5 +135,4 @@
 } );
 
 </script>
-</body>
-</html>
+@endsection

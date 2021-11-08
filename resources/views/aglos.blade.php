@@ -76,7 +76,7 @@
    </div>
    <div class="row">
    <div class="col-sm-12">
-    <table class="table table-striped table-bordered dataTable hover order-column " id="laravel_datatable_aglos">
+    <table class="table table-striped table-bordered dataTable table-hover order-column " id="laravel_datatable_aglos">
        <thead>
           <tr>
              <th>Id</th>

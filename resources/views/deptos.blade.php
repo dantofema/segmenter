@@ -22,7 +22,7 @@
 
  <div class="container">
    <h2>Listado de Departamentos de {{ $provincia->nombre ?? ' *todas* ' }}</h2>
-    <table class="table table-bordered  stripe hover order-column" id="laravel_datatable">
+    <table class="table table-bordered table-striped table-hover order-column" id="laravel_datatable">
        <thead>
           <tr>
              <th>Id</th>
