@@ -698,7 +698,7 @@ FROM
                     Log::warning($e);
                     flash('Se detecto una carga medio antigua. Se encontro tabla de
                     "segmentos desde hasta". Pero sin vivendas... Se hace lo
-                    que se puede.');
+                    que se puede.')->warning();
                     try{
                         return DB::select("SELECT segmento_id, frac, radio, mza, lado,
                             CASE  WHEN completo THEN 'Lado Completo'
@@ -717,7 +717,7 @@ FROM
                         Log::error($e);
                 
                         flash('Se detecto una carga antigua. No se encontro tabla de
-                            "segmentos desde hasta". Se hace lo que se puede.');
+                            "segmentos desde hasta". Se hace lo que se puede.')->error();
                         try{
                         return DB::select('
                             SELECT segmento_id,l.frac,l.radio,count(*)
@@ -734,7 +734,7 @@ FROM
                             ORDER BY count(*) asc, array_agg(mza), segmento_id 
                             LIMIT '.$max.';');
                         }catch(QueryException $e){
-                            Log::error('No hubo modo de encontrar una segmentación!');
+                            Log::error('No hubo modo de encontrar una segmentación!')->error();
                             return [];
                         }
                 }
@@ -1314,7 +1314,7 @@ public static function getPxSeg($esquema)
 //        try{
 //		self::generarR3($esquema);
 //        }catch(QueryException $e){
-            Log::error('TODO Función sin definir, generar R3 del esquema completo para el equema'.$esquema);
+            Log::error('TODO Función sin definir, generar R3 del esquema completo para el equema '.$esquema);
             return false;
 //        }
 //        Log::info('Se dió permiso a '.$rol.' sobre '.$tabla.'.');
