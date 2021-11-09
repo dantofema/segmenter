@@ -98,7 +98,7 @@
          data: {!! $segmentacion !!}
          ,
          columns: [
-                  { data: 'segmento_id', name: 'id' },
+                  { visible: false, data: 'segmento_id', name: 'id' },
                   { data: 'frac', name: 'frac' },
                   { data: 'radio', name: 'radio' },
                   { data: 'seg', name: 'seg' },
