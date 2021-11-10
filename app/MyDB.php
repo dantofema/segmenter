@@ -504,6 +504,7 @@ FROM
                         DB::unprepared("Select indec.cargar_lados('".$esquema."')");
                         DB::unprepared("Select indec.cargar_conteos('".$esquema."')");
                         DB::unprepared("Select indec.generar_adyacencias('".$esquema."')");
+                        Log::info('Se procesaron lados, conteos y adyacencias!');
                     }catch (\Illuminate\Database\QueryException $exception) {
                             Log::error('No se pudieron cargar lados '.$exception);
                             DB::Rollback();
@@ -611,16 +612,16 @@ FROM
             }
         }
 
-        public static function grabarSegmentacion($esquema,$frac,$radio)
+        public static function grabarSegmentacion($esquema,$frac=null,$radio=null)
         {
-            if (Schema::hasTable('e'.$esquema.'.r3')) {
-            DB::statement("select indec.sincro_r3_ffrr('e".$esquema."', $frac, $radio)
-                ;"); // guarda indec.describe_segmentos_con_direcciones_ffrr en esquema.r3 (hace delete & insert)
+            if ($frac==null) {
+              DB::statement("select indec.sincro_r3_ffrr('e".$esquema."', $frac, $radio);");
+	      // guarda indec.describe_segmentos_con_direcciones_ffrr en esquema.r3 (hace delete & insert)a
+	    }else{
+	      DB::statement("SELECT indec.sincro_r3('e".$esquema."');");
+            }
+            Log::info('Se actualizó la R3!');
             return true;
-            }
-            else{
-            return false;
-            }
         }
 
 
@@ -638,17 +639,13 @@ FROM
                 self::generarSegmentacionNula('e'.$esquema);
                 if ( DB::statement("SELECT indec.segmentar_equilibrado('e".$esquema."',".$deseado.");") ){
                 // llamar generar r3 como tabla resultado de function indec.r3(agl)
-                ( DB::statement("SELECT indec.descripcion_segmentos('e".$esquema."');") );
-                ( DB::statement("SELECT indec.segmentos_desde_hasta('e".$esquema."');") );
+                    ( DB::statement("SELECT indec.descripcion_segmentos('e".$esquema."');") );
+                    ( DB::statement("SELECT indec.segmentos_desde_hasta('e".$esquema."');") );
 //             	self::georeferenciar_segmentacion($esquema);
-            // (?) crear 3 public static function distintas y correrlas desde arribo 
-		// como segmentar_equilibrado
 		//
 		// Llamar a función guardar segmentación para actualizar la r3 con los resultados...
-		// $esquema,$frac,$radio
-		// self::grabarSegmentacion($esquema,$frac,$radio)
-                ( DB::statement("SELECT indec.sincro_r3('e".$esquema."');") );
-
+		// $esquema para el esquema completo.
+		    self::grabarSegmentacion($esquema);
                     return true;
                 }else{ 
                     return false; }
