@@ -800,7 +800,7 @@ FROM
                 DB::statement("DROP TABLE IF EXISTS ".$esquema.".listado_geo;");
 			$query="
                 WITH listado as (
-            SELECT id, l.prov, nom_provin, ups, nro_area, l.dpto, nom_dpto, l.codaglo, l.codloc, 
+            SELECT id, l.prov, nom_provin, l.dpto, nom_dpto, l.codaglo, l.codloc, 
                 nom_loc, codent, nom_ent, l.frac, l.radio, l.mza, l.lado, 
                 CASE WHEN nro_inicia='' THEN 0 ELSE nro_inicia::integer END
                 ::integer as nro_inicia,
@@ -814,7 +814,7 @@ FROM
             row_number() over w_lado as nro_en_lado,
             count(*) over w_lado as cant_en_lado,
             count(*) over w as conteo,
-            conteo as conteo_vivs, accion,
+            conteo as conteo_vivs, 
             row_number() over w_nrocatastr as nro_en_numero
 
             FROM
@@ -833,15 +833,18 @@ FROM
 
         ), 
         arcos as (
-            SELECT min(ogc_fid) ogc_fid, st_LineMerge(st_union(wkb_geometry)) wkb_geometry,nomencla,codigo20,array_agg(distinct codigo10) codigo10, tipo, nombre,lado,min(desde) desde,
+	    SELECT min(ogc_fid) ogc_fid, st_LineMerge(st_union(wkb_geometry)) wkb_geometry,
+                   nomencla,codigo20,array_agg(distinct codigo10) codigo10, tipo, nombre,lado,min(desde) desde,
             max(hasta) hasta,mza 
             FROM 
-            (SELECT ogc_fid,st_reverse(wkb_geometry) wkb_geometry,nomencla10 nomencla,codigo20,codigo10,tipo, nombre, ancho, anchomed, ladoi lado,desdei desde,
+	    (SELECT ogc_fid,st_reverse(wkb_geometry) wkb_geometry,nomencla10 nomencla,codigo20,codigo10,
+             tipo, nombre, ancho, anchomed, ladoi lado,desdei desde,
         hastai hasta,mzai mza, nomencla10,nomenclai nomenclax, codinomb, segi seg 
         FROM ".$esquema.".arc
         UNION
-        SELECT ogc_fid,wkb_geometry,nomencla10 nomencla,codigo20,codigo10,tipo, nombre, ancho, anchomed, ladod lado,desded desde,
-        hastad hasta,mzad mza, nomencla10,nomenclad nomenclax, codinomb, segd seg 
+	SELECT ogc_fid,wkb_geometry,nomencla10 nomencla,codigo20,codigo10,tipo, nombre, 
+               ancho, anchomed, ladod lado,desded desde,
+               hastad hasta,mzad mza, nomencla10,nomenclad nomenclax, codinomb, segd seg 
         FROM ".$esquema.".arc
         ) arcos_juntados
         GROUP BY nomencla,codigo20,tipo, nombre,lado,mza
@@ -890,7 +893,7 @@ FROM
                     codigo10, nomencla, codigo20, 
                     tipo, nombre, e.lado ladoe, desde, hasta,e.mza mzae, 
                     frac, radio, l.mza, l.lado, ccalle, ncalle, l.nrocatastr, piso,casa,dpto_habit,sector,edificio,entrada,tipoviv, 
-                    descripcio,descripci2 , accion,
+                    descripcio,descripci2,
                     cant_en_lado
         INTO ".$esquema.".listado_geo
         FROM arcos e JOIN listado l ON 
@@ -949,7 +952,7 @@ FROM
             CASE WHEN l.nrocatastr='' or l.nrocatastr='S/N' THEN null::integer ELSE
             l.nrocatastr::integer END as nrocatastr, 
             piso, casa, dpto_habit, sector, edificio, entrada, tipoviv, descripcio, descripci2 , 
-            row_number() over(partition by l.frac, l.radio, l.mza, l.lado order by l.lado, orden_reco asc) nro_en_lado, conteo, accion
+            row_number() over(partition by l.frac, l.radio, l.mza, l.lado order by l.lado, orden_reco asc) nro_en_lado, conteo, 
             FROM
             ".$esquema.".listado l
             JOIN ".$esquema.".segmentacion s ON s.listado_id=l.id
@@ -985,7 +988,7 @@ FROM
                     codigo10, nomencla, codigo20, 
                         tipo, nombre, e.lado ladoe, desde, hasta,e.mza mzae,
                         frac, radio, l.mza, l.lado, ccalle, ncalle, l.nrocatastr, piso,casa,dpto_habit,sector,edificio,entrada,tipoviv, 
-                    descripcio,descripci2 , accion
+                    descripcio,descripci2 , 
         INTO ".$esquema.".listado_segmentado_geo
         FROM arcos e JOIN listado l ON l.ccalle::integer=e.codigo20 
         and
