@@ -614,7 +614,7 @@ FROM
 
         public static function grabarSegmentacion($esquema,$frac=null,$radio=null)
         {
-            if ($frac==null) {
+            if ($frac!=null) {
               DB::statement("select indec.sincro_r3_ffrr('e".$esquema."', $frac, $radio);");
 	      // guarda indec.describe_segmentos_con_direcciones_ffrr en esquema.r3 (hace delete & insert)a
 	    }else{
