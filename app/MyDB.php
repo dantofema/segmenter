@@ -681,7 +681,7 @@ FROM
                             indec.describe_despues_de_muestreo('".$esquema."')
                             ".$filtro." ;");
                 }catch(QueryException $e){
-                    Log::debug('Sin muestreo...');
+                    Log::info('Sin muestreo...');
             try{
                 return DB::select("
                         SELECT segmento_id, lpad(frac::text,2,'0') frac,
@@ -692,10 +692,9 @@ FROM
                             order by frac,radio,seg,segmento_id
                             LIMIT ".$max.";");
                 }catch(QueryException $e){
-                    Log::warning($e);
-                    flash('Se detecto una carga medio antigua. Se encontro tabla de
+                    Log::warning('Se detecto una carga medio antigua. Se encontro tabla de
                     "segmentos desde hasta". Pero sin vivendas... Se hace lo
-                    que se puede.')->warning();
+                    que se puede.');
                     try{
                         return DB::select("SELECT segmento_id, frac, radio, mza, lado,
                             CASE  WHEN completo THEN 'Lado Completo'
@@ -711,10 +710,8 @@ FROM
                             LIMIT ".$max.";");
                     }catch(QueryException $e){
 
-                        Log::error($e);
-                
-                        flash('Se detecto una carga antigua. No se encontro tabla de
-                            "segmentos desde hasta". Se hace lo que se puede.')->error();
+                        Log::warning('Se detecto una carga antigua. No se encontro tabla de
+                            "segmentos desde hasta". Se hace lo que se puede.');
                         try{
                         return DB::select('
                             SELECT segmento_id,l.frac,l.radio,count(*)
@@ -731,7 +728,7 @@ FROM
                             ORDER BY count(*) asc, array_agg(mza), segmento_id 
                             LIMIT '.$max.';');
                         }catch(QueryException $e){
-                            Log::error('No hubo modo de encontrar una segmentación!')->error();
+                            Log::error('No hubo modo de encontrar una segmentación! '.$e);
                             return [];
                         }
                 }
