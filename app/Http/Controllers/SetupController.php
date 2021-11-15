@@ -132,6 +132,7 @@ class SetupController extends Controller
     {
         MyDB::segmentar_equilibrado($schema,36);
         flash('Se segmento el listado del esquema '.$schema);
+        MyDB::grabarSegmentacion($schema);
         return view('home');
     }
 
