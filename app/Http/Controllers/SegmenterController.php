@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Archivo;
+use App\Model\Archivo;
 use Illuminate\Http\Request;
 use Auth;
 use Symfony\Component\Process\Process;
@@ -63,14 +63,19 @@ class SegmenterController extends Controller
     flash('SRS: '.$data['epsg']['id']);
 
     if ($request->hasFile('c1')) {
+     if($c1_file = Archivo::cargar($request->c1, Auth::user())) {
+         flash("Archivo C1 ")->info();
+        } else {
+         flash("Error en el modelo cargar archivo")->error();
+     }
         $random_name='t_'.$request->c1->hashName();
         $data['file']['c1'] = $request->c1->storeAs('segmentador', $random_name); //.'.'.$request->c1->getClientOriginalExtension());
         $original_extension = strtolower($request->c1->getClientOriginalExtension());
         $original_name = $request->c1->getClientOriginalName();
 
-        //Si no se cargo geometria tomo del nombre del listado los utilmos 8
+        //Si no se cargo geometria tomo del nombre del listado  el nombre sin extension
         //caracteres del nombre, puede ser fecha
-        $codaglo=isset($codaglo)?$codaglo:substr($original_name,-13,9);
+        $codaglo=isset($codaglo)?$codaglo:substr($original_name,1,-3);
 
 	     if ($original_extension == 'csv'){
 		    $data['file']['csv_info'] = 'Se Cargo un csv.';
@@ -137,6 +142,10 @@ class SegmenterController extends Controller
             $epsg_def= $epsg_id;
             $epsg_def='+proj=tmerc +lat_0=-34.6297166 +lon_0=-58.4627 +k=1 +x_0=100000 +y_0=100000 +ellps=intl +units=m +no_defs';
 	    $srs_name='sr-org:8333';
+    }else {
+            $epsg_def= '';
+    }
+        $codaglo=isset($codaglo)?$codaglo:'temporal';
             $processOGR2OGR =
                 Process::fromShellCommandline('(/usr/bin/ogr2ogr -f \
                 "PostgreSQL" PG:"dbname=$db host=$host user=$user port=$port \
@@ -149,7 +158,6 @@ class SegmenterController extends Controller
                 -skipfailures \
                 -overwrite $file )');
             $processOGR2OGR->setTimeout(3600);
-    }
     if ($request->hasFile('shp_lab')) {
             $original_name = $request->shp_lab->getClientOriginalName();
 	    $original_extension = strtolower($request->shp_lab->getClientOriginalExtension());
@@ -172,6 +180,11 @@ class SegmenterController extends Controller
         }
     }
     if ($request->hasFile('shp')) {
+     if($shp_file = Archivo::cargar($request->shp, Auth::user())) {
+         flash("Archivo Shp/E00 ")->info();
+        } else {
+         flash("Error en el modelo cargar archivo al procesar SHP/E00")->error();
+     }
         if ($request->file('shp')->isValid() or true) {
             $data['file']['shp_msg'] = "Subió una base geográfica ";
             $original_name = $request->shp->getClientOriginalName();
@@ -275,6 +288,11 @@ class SegmenterController extends Controller
       }
     }
     if ($request->hasFile('pxrad')) {
+     if($pxrad_file = Archivo::cargar($request->pxrad, Auth::user())) {
+         flash("Archivo PxRad ")->info();
+        } else {
+         flash("Error en el modelo cargar archivo")->error();
+     }
         $random_name='t_'.$request->pxrad->hashName();
         $data['file_pxrad']['pxrad'] = $request->pxrad->storeAs('segmentador', $random_name); //.'.'.$request->c1->getClientOriginalExtension());
         $original_extension = strtolower($request->pxrad->getClientOriginalExtension());
@@ -397,7 +415,6 @@ class SegmenterController extends Controller
 	    $data['file']['pxrad']='none';
     }
 
-    if (Archivo::cargar($request, Auth::user())) {
 	    if(isset($oDepto)){
 		    //return redirect('/depto/'.$oDepto->id);
 		    return view('deptoview',['departamento' =>
@@ -405,9 +422,6 @@ class SegmenterController extends Controller
 	    }else{
 	        return view('segmenter/index', ['data' => $data,'epsgs'=> $this->epsgs]);
 	    }
-     } else {
-        echo "Error en el modelo cargar";
-     }
     }
   }
 }
