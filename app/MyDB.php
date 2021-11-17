@@ -254,7 +254,7 @@ FROM
 	    }else{$filtro='';}
         try {
 	    return (DB::select('SELECT codprov||coddepto||frac2020||radio2020 as codigo,
-		codprov||coddepto||codloc||frac2020||radio2020 as nombre,tiporad20 as tipo FROM
+		codprov||coddepto||codloc||frac2020||radio2020 as nombre,upper(tiporad20) as tipo FROM
                 '.$esquema.'.'.$tabla.' '.$filtro.' group by 1,2,3 order by codprov||coddepto||codloc||frac2020||radio2020 asc, count(*) desc ;'));
         }catch (\Illuminate\Database\QueryException $exception) {
 	    Log::warning('Malabares : '.$exception);
