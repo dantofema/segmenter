@@ -68,16 +68,17 @@ class SegmenterController extends Controller
         } else {
          flash("Error en el modelo cargar archivo")->error();
      }
-        $random_name='t_'.$request->c1->hashName();
-        $data['file']['c1'] = $request->c1->storeAs('segmentador', $random_name); //.'.'.$request->c1->getClientOriginalExtension());
-        $original_extension = strtolower($request->c1->getClientOriginalExtension());
-        $original_name = $request->c1->getClientOriginalName();
+//        $random_name='t_'.$request->c1->hashName();
+//        $data['file']['c1'] = $request->c1->storeAs('segmentador', $random_name); //.'.'.$request->c1->getClientOriginalExtension());
+//        $original_extension = strtolower($request->c1->getClientOriginalExtension());
+//        $original_name = $request->c1->getClientOriginalName();
 
         //Si no se cargo geometria tomo del nombre del listado  el nombre sin extension
         //caracteres del nombre, puede ser fecha
-        $codaglo=isset($codaglo)?$codaglo:substr($original_name,1,-3);
+//        $codaglo=isset($codaglo)?$codaglo:substr($original_name,1,-3);
 
-	     if ($original_extension == 'csv'){
+       $c1_file->procesar();
+/*	     if ($original_extension == 'csv'){
 		    $data['file']['csv_info'] = 'Se Cargo un csv.';
             $process = Process::fromShellCommandline('echo "C1 CSV: $name" >> archivos.log');
 		    $process->run(null, ['name' => "Archivo: ".$original_name." subido como: ".$data['file']['c1']]);
@@ -85,7 +86,7 @@ class SegmenterController extends Controller
 		    $data['file']['csv_detail'] = Listado::cargar_csv( storage_path().'/app/'.$data['file']['c1']);
 		     return view('listado/all', ['listado' => $data['file']['csv_detail'],'epsgs'=> $epsgs]);
     */
-		    $import = new CsvImport;
+/*		    $import = new CsvImport;
 		    Excel::import($import, storage_path().'/app/'.$data['file']['c1']);
 	    //	dd('Row count: ' . $import->getRowCount()); 
 		    return view('listado/all', ['listado' => $data['file']['csv_detail'],'epsgs'=> $epsgs]);
@@ -100,10 +101,12 @@ class SegmenterController extends Controller
             $process = Process::fromShellCommandline('pgdbf -s latin1 $c1_dbf_file | psql -h $host -p $port -U $user $db');
 		    $process->run(null, ['c1_dbf_file' => storage_path().'/app/'.$data['file']['c1'],'db'=>Config::get('database.connections.pgsql.database'),'host'=>Config::get('database.connections.pgsql.host'),'user'=>Config::get('database.connections.pgsql.username'),'port'=>Config::get('database.connections.pgsql.port'),'PGPASSWORD'=>Config::get('database.connections.pgsql.password')]);
         // executes after the command finishes
-        if (!$process->isSuccessful()) {
-            flash($data['file']['error']=$process->getErrorOutput())->important();
-        }else{
-            // Leo dentro del csv que aglo/s viene/n o localidad depto CABA
+ */
+     if (!$c1_file->procesado) {
+            flash($data['file']['error']='Archivo sin Procesar por error')->important();
+     }else{
+            $c1_file->moverData();    
+/*            // Leo dentro del csv que aglo/s viene/n o localidad depto CABA
 
             $tabla = strtolower(
             substr($data['file']['c1'],strrpos($data['file']['c1'],'/')+1,-4) );
@@ -129,12 +132,14 @@ class SegmenterController extends Controller
             flash('Subido:'.$data['file']['info_dbf'])->important();
 //            $aglo= Aglomerado::where('codigo', $codaglo)->first();
             $data['file']['codigo_usado']=$codaglo;
-        }
+
+       }
       
        }else{flash($data['file']['csv_info'] = 'Se Cargo un archivo de formato
        no esperado!')->error()->important();}
+ */  }
     }
-
+ 
     if ($epsg_id=='sr-org:8333'){
             // Log::debug('Proyeccion de CABA en '.$codaglo.', con SRID: '.$epsg_id);
             // USO .prj 8333.prj
@@ -182,7 +187,7 @@ class SegmenterController extends Controller
     if ($request->hasFile('shp')) {
      if($shp_file = Archivo::cargar($request->shp, Auth::user())) {
 	     flash("Archivo Shp/E00 ")->info();
-	     $shp_file->descargar();
+	     //$shp_file->descargar();
         } else {
          flash("Error en el modelo cargar archivo al procesar SHP/E00")->error();
      }

@@ -22,6 +22,8 @@ class CreateArchivosTable extends Migration
             $table->string('checksum');
             $table->string('size');
             $table->string('mime');
+            $table->boolean('procesado');
+            $table->string('tabla')->nullable();
             $table->timestamps();
         });
     }
