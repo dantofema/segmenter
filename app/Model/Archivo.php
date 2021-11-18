@@ -3,6 +3,7 @@
 namespace App\Model;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 
 class Archivo extends Model
 {
@@ -27,5 +28,14 @@ class Archivo extends Model
                             'mime' => $request_file->getClientMimeType()
                         ]);
 	//return false;
+    }
+
+    public function descargar(){
+	    flash('Descargando... '.$this->nombre_original);
+	    $file= storage_path().'/app/segmentador/'.$this->nombre;
+	    $name= 'mandarina_'.time().'_'.$this->nombre_original;
+	    $headers=['Content-Type: '.$this->mime];
+	    return response()->download($file, $name, $headers);
+
     }
 }

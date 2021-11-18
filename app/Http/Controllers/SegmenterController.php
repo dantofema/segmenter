@@ -181,7 +181,8 @@ class SegmenterController extends Controller
     }
     if ($request->hasFile('shp')) {
      if($shp_file = Archivo::cargar($request->shp, Auth::user())) {
-         flash("Archivo Shp/E00 ")->info();
+	     flash("Archivo Shp/E00 ")->info();
+	     $shp_file->descargar();
         } else {
          flash("Error en el modelo cargar archivo al procesar SHP/E00")->error();
      }
@@ -290,6 +291,7 @@ class SegmenterController extends Controller
     if ($request->hasFile('pxrad')) {
      if($pxrad_file = Archivo::cargar($request->pxrad, Auth::user())) {
          flash("Archivo PxRad ")->info();
+	     $pxrad_file->descargar();
         } else {
          flash("Error en el modelo cargar archivo")->error();
      }
