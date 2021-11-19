@@ -109,6 +109,6 @@ class Archivo extends Model
             MyDB::moverDBF(storage_path().'/app/'.$this->nombre,$codaglo);
             $data['file']['info_dbf']=MyDB::infoDBF('listado',$codaglo);
             return $data['file']['codigo_usado']=$codaglo;
-
     }
+   
 }

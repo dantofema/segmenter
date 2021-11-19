@@ -167,7 +167,7 @@ Route::get('grafo/{aglomerado}/{radio}/','SegmentacionController@ver_grafo')->na
 Route::post('archivos','ArchivoController@index');
 Route::get('archivos','ArchivoController@index');
 Route::get('archivo/{archivo}','ArchivoController@show');
-Route::delete('archivo/{archivo}','ArchivoController@delete');
+Route::delete('archivo/{archivo}','ArchivoController@destroy');
 Route::get('archivo/{archivo}/descargar','ArchivoController@descargar');
 
 //Route::get('mail', 'MailCsvController@index');

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Model\Archivo;
 use Illuminate\Http\Request;
 use DataTables;
+use Illuminate\Support\Facades\Storage;
 
 class ArchivoController extends Controller
 {
@@ -92,8 +93,12 @@ class ArchivoController extends Controller
      */
     public function destroy(Archivo $archivo)
     {
-	    //
-	    //
+	    // Borro el archivo del storage
+	    // 
+            $file= storage_path().'/app/'.$archivo->nombre;
+            Storage::delete($file);
+            $archivo->delete();
+
     }
 
     /**

@@ -110,8 +110,8 @@
          columns: [
                   { visible: false, data: 'id', name: 'id' },
                   { data: 'nombre_original', name: 'nombre' },
-                  { data: 'nombre', name: 'nombre_interno' },
-                  { data: 'user_id', name: 'user_id' },
+                  { visible: false, data: 'nombre', name: 'nombre_interno' },
+                  { visible: false, data: 'user_id', name: 'user_id' },
                   { data: 'tipo', name: 'tipo' },
                   { data: 'mime', name: 'mime' },
                   { data: 'checksum', name: 'checksum' },
@@ -119,6 +119,7 @@
                   { orderable: false, searchable: false , data: function ( row, type, val, meta ) {
                                 var html =  '<button type="button" class="btn_descarga btn-sm btn-primary" > Descargar </button> ';
                                  html +=  '<button type="button" class="btn_arch btn-sm btn-primary" > Ver </button>';
+                                 html +=  '<button type="button" class="btn_arch_delete btn-sm btn-delete " > Borrar </button>';
                               return html;
                             }
                 }
@@ -153,7 +154,7 @@
            };
     });
 
-// Función de botón Departamentos.
+// Función de botón Descarga.
     table.on('click', '.btn_descarga', function () {
       var row = $(this).closest('tr');
       var data = table.row( row ).data();
@@ -162,6 +163,38 @@
             url= "{{ url('archivo/') }}"+"/"+data.id+"/descargar";
             $(location).attr('href',url);
            };
+    });
+  
+// Función de botón Borrar.
+    table.on('click', '.btn_arch_delete', function () {
+      var $ele = $(this).parent().parent();
+      var row = $(this).closest('tr');
+      var data = table.row( row ).data();
+      if (typeof data !== 'undefined') {
+      $.ajax({
+         url: "{{ url('archivo') }}"+"\\"+data.id,
+         type: "DELETE",
+	 data: {id: data.id,
+                _token:'{{ csrf_token() }}'},
+         success: function(response){ 
+	     // Add response in Modal body
+	     if(response.statusCode==200){
+	          row.fadeOut().remove();
+	     }
+	     if(response.statusCode==405){
+	          alert("Error al intentar borrar");
+	     }
+            if(response.statusCode==500){
+                  alert("Error al intentar borrar. En el servidor");
+             }
+
+	     alert("Se elimino el registro del archivo");
+	     row.fadeOut().remove();
+	     $('.modal-body').html(response);
+
+           }
+      });
+      };
     });
   
   $('#btnFiterSubmitSearch').click(function(){

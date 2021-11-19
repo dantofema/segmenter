@@ -296,7 +296,6 @@ class SegmenterController extends Controller
     if ($request->hasFile('pxrad')) {
      if($pxrad_file = Archivo::cargar($request->pxrad, Auth::user())) {
          flash("Archivo PxRad ")->info();
-	     $pxrad_file->descargar();
         } else {
          flash("Error en el modelo cargar archivo")->error();
      }
