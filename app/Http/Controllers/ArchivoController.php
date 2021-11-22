@@ -6,6 +6,7 @@ use App\Model\Archivo;
 use Illuminate\Http\Request;
 use DataTables;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class ArchivoController extends Controller
 {
@@ -95,9 +96,14 @@ class ArchivoController extends Controller
     {
 	    // Borro el archivo del storage
 	    // 
-            $file= storage_path().'/app/'.$archivo->nombre;
-            Storage::delete($file);
-            $archivo->delete();
+            $file= $archivo->nombre;
+            if(Storage::delete($file)){
+		    Log::info('Se borró el archivo: '.$archivo->nombre_original);
+	    }else{
+		    Log::error('NO se borró el archivo: '.$file);
+	    }
+	    $archivo->delete();
+	    return 'ok';
 
     }
 
