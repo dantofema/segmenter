@@ -643,9 +643,10 @@ FROM
                     ( DB::statement("SELECT indec.segmentos_desde_hasta('e".$esquema."');") );
 //             	self::georeferenciar_segmentacion($esquema);
 		//
-		// Llamar a función guardar segmentación para actualizar la r3 con los resultados...
-		// $esquema para el esquema completo.
-		    self::grabarSegmentacion($esquema);
+                 flash('Resultado: '.self::juntar_segmentos('e'.$esquema));
+		         // Llamar a función guardar segmentación para actualizar la r3 con los resultados...
+                 // $esquema para el esquema completo.
+		         self::grabarSegmentacion($esquema);
                     return true;
                 }else{ 
                     return false; }
