@@ -22,6 +22,7 @@ use App\Model\Radio;
 use App\Model\Fraccion;
 use App\Model\TipoRadio;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class SegmenterController extends Controller
 {
@@ -270,9 +271,20 @@ class SegmenterController extends Controller
             $processOGR2OGR_lab = Process::fromShellCommandline('/usr/bin/ogr2ogr -f "PostgreSQL" PG:"dbname=$db host=$host user=$user port=$port active_schema=e$e00 password=$pass" --config PG_USE_COPY YES -lco OVERWRITE=YES --config OGR_TRUNCATE YES -dsco PRELUDE_STATEMENTS="SET client_encoding TO latin1;CREATE SCHEMA IF NOT EXISTS e$e00;" -dsco active_schema=e$e00 -lco PRECISION=NO -lco SCHEMA=e$e00 -s_srs $epsg -t_srs $epsg -skipfailures -addfields -overwrite $file LAB');
             $processOGR2OGR_lab->setTimeout(3600);
             $processOGR2OGR_lab->run(null, ['epsg' => $epsg_id, 'file' => storage_path().'/app/'.$data['file']['shp'],'e00'=>$codaglo,'db'=>Config::get('database.connections.pgsql.database'),'host'=>Config::get('database.connections.pgsql.host'),'user'=>Config::get('database.connections.pgsql.username'),'pass'=>Config::get('database.connections.pgsql.password'),'port'=>Config::get('database.connections.pgsql.port')]);
-            //dd($processOGR2OGR_lab->getErrorOutput());
-            flash($data['file']['ogr2ogr_lab'] = $processOGR2OGR_lab->getErrorOutput().'<br />'.$processOGR2OGR_lab->getOutput())->important();
-            flash($data['file']['ogr2ogr'] = $processOGR2OGR->getErrorOutput().'<br />'.$processOGR2OGR->getOutput())->important();
+	    //dd($processOGR2OGR_lab->getErrorOutput());
+	    //
+            $mensaje=$data['file']['ogr2ogr_lab'] = $processOGR2OGR_lab->getErrorOutput().'<br />'.$processOGR2OGR_lab->getOutput();
+	    if (!Str::contains($mensaje,['ERROR'])){
+	    	flash('Se cargaron las Etiquetas con éxito. ')->important()->success();
+	    }else{
+	    	flash($mensaje)->important()->error();
+	    }
+            $mensaje=$data['file']['ogr2ogr'] = $processOGR2OGR->getErrorOutput().'<br />'.$processOGR2OGR->getOutput();
+	    if (!Str::contains($mensaje,['ERROR'])){
+	    	flash('Se cargaron los Arcos con éxito. ')->important()->success();
+	    }else{
+	    	flash($mensaje)->important()->error();
+	    }
 
 	    }
 
