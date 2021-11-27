@@ -22,6 +22,13 @@ class Archivo extends Model
 	    'tabla' => null
     ];
 
+    //Relación con usuario que subió el archivo.
+    public function user()
+    {
+        return $this->belongsTo('App\User');
+    }
+
+
     // Funcion para cargar información de archivo en la base de datos.
     public static function cargar($request_file, $user, $tipo=null){
 		$original_extension = strtolower($request_file->getClientOriginalExtension());

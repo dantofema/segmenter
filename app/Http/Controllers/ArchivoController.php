@@ -60,7 +60,8 @@ class ArchivoController extends Controller
      */
     public function show(Archivo $archivo)
     {
-        //
+	//
+	return $archivo->load('user');
     }
 
     /**
