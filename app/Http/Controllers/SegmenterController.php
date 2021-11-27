@@ -106,7 +106,7 @@ class SegmenterController extends Controller
      if (!$c1_file->procesado) {
             flash($data['file']['error']='Archivo sin Procesar por error')->important();
      }else{
-            $c1_file->moverData();    
+            $codaglo=$c1_file->moverData();
 /*            // Leo dentro del csv que aglo/s viene/n o localidad depto CABA
 
             $tabla = strtolower(
