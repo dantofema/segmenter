@@ -28,15 +28,16 @@
             <form action="/segmentador/guardar" method="POST" enctype="multipart/form-data" class="form-horizontal ">
                 @csrf
 		  @if (isset($epsgs))
-                   <div class="form-group row">
+                   <div class="form-group row bg-info" >
                     <label for="epsg" class="col-sm-2 control-label">Sistema de Referencia:</label>
-                    <div class="col-sm-10 ">
+                    <div class="col-sm-10 " style="padding-top:5px;">
                             <select id="epsg" name="epsg_id" class="form-control " >
 			     <option disabled selected value>-- Seleccione el Sistema de Referencia de los datos --</option>
 			        @foreach($epsgs as $id => $epsg)
 					<option value="{{$id}}"> {{$epsg}} </option>
 			        @endforeach
 			    </select>
+                      <span style="color: red;">@error ('epsg'){{$message}} @enderror</span>
 		    </div>
 		   </div>
 		  @endif
