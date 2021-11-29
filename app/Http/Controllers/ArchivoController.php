@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use DataTables;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use Auth;
 
 class ArchivoController extends Controller
 {
@@ -18,7 +19,9 @@ class ArchivoController extends Controller
     public function index(Request $request)
     {
 	    //
-            $archivos=Archivo::all();
+      if (Auth::check()) {
+            $AppUser=Auth::user();
+	    $archivos=Archivo::where('user_id',$AppUser->id);
 	    if ($request->ajax()) {
 	        return Datatables::of($archivos)->addIndexColumn()
 	                ->addColumn('action', function($row){
@@ -28,6 +31,9 @@ class ArchivoController extends Controller
 			->rawColumns(['action'])
 			->make(true);
 	    }
+      }else{
+	      $archivos= null;
+      }
             return view('archivo.list')->with(['data'=>$archivos]);
     }
 

@@ -37,16 +37,15 @@ class Archivo extends Model
 		$random_name = substr($random_name,0,strpos($random_name,'.'));
 		$file_storage = $request_file->storeAs('segmentador', $random_name.'.'.$request_file->getClientOriginalExtension());
 		return self::create([
-                            'user_id' => $user->id,
+                           'user_id' => $user->id,
 			    'nombre_original' => $original_name,
 			    'nombre' => $file_storage,
 			    'tabla' => $random_name,
 			    'tipo' => $request_file->guessClientExtension()?$request_file->guessClientExtension():$original_extension,
 			    'checksum'=> md5_file($request_file->getRealPath()),
-                            'size' => $request_file->getClientSize(),
-                            'mime' => $request_file->getClientMimeType()
+                           'size' => $request_file->getClientSize(),
+                           'mime' => $request_file->getClientMimeType()
                         ]);
-	//return false;
     }
 
     public function descargar(){
@@ -60,26 +59,23 @@ class Archivo extends Model
 
     public function procesar(){
        if ($this->tipo == 'csv'){
-            //$data['file']['csv_info'] = 'Se Cargo un csv.';
-            //$process = Process::fromShellCommandline('echo "C1 CSV: $name" >> archivos.log');
-            //$process->run(null, ['name' => "Archivo: ".$original_name." subido como: ".$data['file']['c1']]);
-    /*
-                    $data['file']['csv_detail'] = Listado::cargar_csv( storage_path().'/app/'.$data['file']['c1']);
-                     return view('listado/all', ['listado' => $data['file']['csv_detail'],'epsgs'=> $epsgs]);
-    */
-             $import = new CsvImport;
-             Excel::import($import, storage_path().'/app/'.$data['file']['c1']);
-            //  dd('Row count: ' . $import->getRowCount());
-             return view('listado/all', ['listado' => $data['file']['csv_detail'],'epsgs'=> $epsgs]);
+            $mensaje = 'Se Cargo un csv.';
+            $import = new CsvImport;
+            Excel::import($import, storage_path().'/app/'.$this->nombre);
+	    $this->procesado=true;
+	    return true;
         }elseif ($this->tipo == 'dbf'){
-            // Mensaje de subida de DBF y logeo en archivo.
-            flash($data['file']['csv_info'] = 'Se Cargo un DBF.');
-//            $processLog = Process::fromShellCommandline('echo "C1 DBF: $name" >> archivos.log');
-//            $processLog->run(null, ['name' => "Archivo: ".$original_name." subido como: ".$data['file']['c1']]);
+            // Mensaje de subida de DBF.
+            flash('Procesando DBF.')->info();
 
             // Subo DBF con pgdbf a una tabla temporal.
             $process = Process::fromShellCommandline('pgdbf -s latin1 $c1_dbf_file | psql -h $host -p $port -U $user $db');
-            $process->run(null, ['c1_dbf_file' => storage_path().'/app/'.$this->nombre,'db'=>Config::get('database.connections.pgsql.database'),'host'=>Config::get('database.connections.pgsql.host'),'user'=>Config::get('database.connections.pgsql.username'),'port'=>Config::get('database.connections.pgsql.port'),'PGPASSWORD'=>Config::get('database.connections.pgsql.password')]);
+            $process->run(null, ['c1_dbf_file' => storage_path().'/app/'.
+                      $this->nombre,'db'=>Config::get('database.connections.pgsql.database'),
+                    'host'=>Config::get('database.connections.pgsql.host'),
+                    'user'=>Config::get('database.connections.pgsql.username'),
+                    'port'=>Config::get('database.connections.pgsql.port'),
+                    'PGPASSWORD'=>Config::get('database.connections.pgsql.password')]);
 	    // executes after the command finishes
 	    $this->procesado=true;
 	    return true;
@@ -89,30 +85,25 @@ class Archivo extends Model
             $this->procesado=false;
             return false;
         }
-	    
     }
    
     public function moverData(){
             // Leo dentro del csv que aglo/s viene/n o localidad depto CABA
-
             $tabla =  $this->tabla;
             $aglo_interno=MyDB::getAglo($tabla,'public');
             $codprov=MyDB::getProv($tabla,'public');
+            $ppdddlll=MyDB::getLoc($tabla,'public');
             if ($codprov=='02'){
-                $ppdddlll=MyDB::getLoc($tabla,'public');
                 flash($data['file']['caba']='Se detecto CABA: '.$ppdddlll);
                 $codaglo=$ppdddlll;
                 $segmenta_auto=true;
             }elseif ($codprov=='06'){
-                $ppdddlll=MyDB::getLoc($tabla,'public');
                 flash($data['file']['data']='Se detecto PBA: '.$ppdddlll);
                 $codaglo=substr($ppdddlll,0,5);
             }else{
                 $codaglo=$aglo_interno;
             }
-
             MyDB::createSchema($codaglo);
-
             MyDB::moverDBF(storage_path().'/app/'.$this->nombre,$codaglo);
             $data['file']['info_dbf']=MyDB::infoDBF('listado',$codaglo);
             return $data['file']['codigo_usado']=$codaglo;
