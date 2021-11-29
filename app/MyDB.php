@@ -254,7 +254,7 @@ FROM
 	    }else{$filtro='';}
         try {
 	    return (DB::select('SELECT codprov||coddepto||frac2020||radio2020 as codigo,
-		codprov||coddepto||codloc||frac2020||radio2020 as nombre,tiporad20 as tipo FROM
+		codprov||coddepto||codloc||frac2020||radio2020 as nombre,upper(tiporad20) as tipo FROM
                 '.$esquema.'.'.$tabla.' '.$filtro.' group by 1,2,3 order by codprov||coddepto||codloc||frac2020||radio2020 asc, count(*) desc ;'));
         }catch (\Illuminate\Database\QueryException $exception) {
 	    Log::warning('Malabares : '.$exception);
@@ -643,9 +643,10 @@ FROM
                     ( DB::statement("SELECT indec.segmentos_desde_hasta('e".$esquema."');") );
 //             	self::georeferenciar_segmentacion($esquema);
 		//
-		// Llamar a función guardar segmentación para actualizar la r3 con los resultados...
-		// $esquema para el esquema completo.
-		    self::grabarSegmentacion($esquema);
+                 flash('Resultado: '.self::juntar_segmentos('e'.$esquema));
+		         // Llamar a función guardar segmentación para actualizar la r3 con los resultados...
+                 // $esquema para el esquema completo.
+		         self::grabarSegmentacion($esquema);
                     return true;
                 }else{ 
                     return false; }
