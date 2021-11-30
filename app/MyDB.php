@@ -288,10 +288,16 @@ FROM
 	}
     }
 
-    public static function getLoc($tabla,$esquema)
+    // Devuelve el link de localidad de mayor ocurrencia
+    public static function getLoc($tabla,$esquema){
+	    return self::getLocs($tabla,$esquema)[0]->link;
+    }
+
+    // Devuelve link de localidad y cantidad de ocurrencias
+    public static function getLocs($tabla,$esquema)
     {
-        return (DB::select('SELECT distinct prov||dpto||codloc as link FROM
-        '.$esquema.'.'.$tabla.' Limit 1;')[0]->link);
+        return (DB::select('SELECT prov||dpto||codloc as link,count(*) FROM
+        '.$esquema.'.'.$tabla.' group by prov||dpto||codloc order by count(*);'));
     }
 
     public static function getEntidades($tabla,$esquema,$localidad=null)
@@ -1062,7 +1068,7 @@ FROM
             }
 
             public static function getCantMzas(Radio $radio){
-                $esquema=$radio->esquema;
+                $esquema=$radio->esquemas;
                 $prov=substr($radio->codigo,0,2);
                 $dpto=substr($radio->codigo,2,3);
                 $frac=substr($radio->codigo,5,2);
@@ -1081,7 +1087,7 @@ FROM
             }
 
             public static function isSegmentado(Radio $radio=null){
-            $esquema=$radio->esquema;
+            $esquema=$radio->esquemas;
             if ($radio){
                 $filtro= " and (frac,radio) =
                     ('".$radio->CodigoFrac."','".$radio->CodigoRad."') ";

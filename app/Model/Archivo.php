@@ -58,7 +58,18 @@ class Archivo extends Model
     }
 
     public function procesar(){
-       if ($this->tipo == 'csv'){
+       if ($this->tipo == 'csv' or $this->tipo== 'dbf'){
+            return $this->procesarC1();
+        }elseif($this->tipo='e00') {
+            return $this->procesarGeom();
+        }else{
+            flash('No se encontro que hacer para procesar '.$this->nombre_original )->warning();
+            return false;
+        }
+    }
+
+    public function procesarC1(){
+        if ($this->tipo == 'csv'){
             $mensaje = 'Se Cargo un csv.';
             $import = new CsvImport;
             Excel::import($import, storage_path().'/app/'.$this->nombre);
@@ -86,27 +97,29 @@ class Archivo extends Model
             return false;
         }
     }
-   
+
+    public function procesarGeom(){
+                flash('Procesando Geom .')->info();
+                return false;
+    }
+
     public function moverData(){
             // Leo dentro del csv que aglo/s viene/n o localidad depto CABA
-            $tabla =  $this->tabla;
-            $aglo_interno=MyDB::getAglo($tabla,'public');
-            $codprov=MyDB::getProv($tabla,'public');
-            $ppdddlll=MyDB::getLoc($tabla,'public');
-            if ($codprov=='02'){
+            $ppdddlll=MyDB::getLoc($this->tabla,'public');
+            if (substr($ppdddlll,0,2)=='02'){
                 flash($data['file']['caba']='Se detecto CABA: '.$ppdddlll);
-                $codaglo=$ppdddlll;
+                $esquema=$ppdddlll;
                 $segmenta_auto=true;
-            }elseif ($codprov=='06'){
+            }elseif (substr($ppdddlll,0,2)=='06'){
                 flash($data['file']['data']='Se detecto PBA: '.$ppdddlll);
-                $codaglo=substr($ppdddlll,0,5);
+                $esquema=substr($ppdddlll,0,5);
             }else{
-                $codaglo=$aglo_interno;
+                $esquema=$ppdddlll;
             }
-            MyDB::createSchema($codaglo);
-            MyDB::moverDBF(storage_path().'/app/'.$this->nombre,$codaglo);
-            $data['file']['info_dbf']=MyDB::infoDBF('listado',$codaglo);
-            return $data['file']['codigo_usado']=$codaglo;
+            MyDB::createSchema($esquema);
+            MyDB::moverDBF(storage_path().'/app/'.$this->nombre,$esquema);
+            $data['file']['info_dbf']=MyDB::infoDBF('listado',$esquema);
+            return $data['file']['codigo_usado']=$esquema;
     }
    
 }

@@ -69,76 +69,12 @@ class SegmenterController extends Controller
         } else {
          flash("Error en el modelo cargar archivo")->error();
      }
-//        $random_name='t_'.$request->c1->hashName();
-//        $data['file']['c1'] = $request->c1->storeAs('segmentador', $random_name); //.'.'.$request->c1->getClientOriginalExtension());
-//        $original_extension = strtolower($request->c1->getClientOriginalExtension());
-//        $original_name = $request->c1->getClientOriginalName();
-
-        //Si no se cargo geometria tomo del nombre del listado  el nombre sin extension
-        //caracteres del nombre, puede ser fecha
-//        $codaglo=isset($codaglo)?$codaglo:substr($original_name,1,-3);
-
        $c1_file->procesar();
-/*	     if ($original_extension == 'csv'){
-		    $data['file']['csv_info'] = 'Se Cargo un csv.';
-            $process = Process::fromShellCommandline('echo "C1 CSV: $name" >> archivos.log');
-		    $process->run(null, ['name' => "Archivo: ".$original_name." subido como: ".$data['file']['c1']]);
-    /*
-		    $data['file']['csv_detail'] = Listado::cargar_csv( storage_path().'/app/'.$data['file']['c1']);
-		     return view('listado/all', ['listado' => $data['file']['csv_detail'],'epsgs'=> $epsgs]);
-    */
-/*		    $import = new CsvImport;
-		    Excel::import($import, storage_path().'/app/'.$data['file']['c1']);
-	    //	dd('Row count: ' . $import->getRowCount()); 
-		    return view('listado/all', ['listado' => $data['file']['csv_detail'],'epsgs'=> $epsgs]);
-
-	      }elseif ($original_extension == 'dbf'){
-            // Mensaje de subida de DBF y logeo en archivo.
-            flash($data['file']['csv_info'] = 'Se Cargo un DBF.');
-		    $processLog = Process::fromShellCommandline('echo "C1 DBF: $name" >> archivos.log');
-		    $processLog->run(null, ['name' => "Archivo: ".$original_name." subido como: ".$data['file']['c1']]);
-
-		    // Subo DBF con pgdbf a una tabla temporal.
-            $process = Process::fromShellCommandline('pgdbf -s latin1 $c1_dbf_file | psql -h $host -p $port -U $user $db');
-		    $process->run(null, ['c1_dbf_file' => storage_path().'/app/'.$data['file']['c1'],'db'=>Config::get('database.connections.pgsql.database'),'host'=>Config::get('database.connections.pgsql.host'),'user'=>Config::get('database.connections.pgsql.username'),'port'=>Config::get('database.connections.pgsql.port'),'PGPASSWORD'=>Config::get('database.connections.pgsql.password')]);
-        // executes after the command finishes
- */
      if (!$c1_file->procesado) {
-            flash($data['file']['error']='Archivo sin Procesar por error')->important();
+            flash($data['file']['error']='Archivo '.$c1_file->nombre_original.' sin Procesar por error')->important();
      }else{
             $codaglo=$c1_file->moverData();
-/*            // Leo dentro del csv que aglo/s viene/n o localidad depto CABA
-
-            $tabla = strtolower(
-            substr($data['file']['c1'],strrpos($data['file']['c1'],'/')+1,-4) );
-            $aglo_interno=MyDB::getAglo($tabla,'public');
-            $codprov=MyDB::getProv($tabla,'public');
-            if ($codprov=='02'){
-                $ppdddlll=MyDB::getLoc($tabla,'public');
-                flash($data['file']['caba']='Se detecto CABA: '.$ppdddlll);
-                $codaglo=$ppdddlll;
-                $segmenta_auto=true;
-            }elseif ($codprov=='06'){
-                $ppdddlll=MyDB::getLoc($tabla,'public');
-                flash($data['file']['data']='Se detecto PBA: '.$ppdddlll);
-                $codaglo=substr($ppdddlll,0,5);
-            }else{
-                $codaglo=$aglo_interno;
-            }
-
-		    MyDB::createSchema($codaglo);
-
-            MyDB::moverDBF(storage_path().'/app/'.$data['file']['c1'],$codaglo);
-            $data['file']['info_dbf']=MyDB::infoDBF('listado',$codaglo);
-            flash('Subido:'.$data['file']['info_dbf'])->important();
-//            $aglo= Aglomerado::where('codigo', $codaglo)->first();
-            $data['file']['codigo_usado']=$codaglo;
-
-       }
-      
-       }else{flash($data['file']['csv_info'] = 'Se Cargo un archivo de formato
-       no esperado!')->error()->important();}
- */  }
+     }
     }
  
     if ($epsg_id=='sr-org:8333'){
