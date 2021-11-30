@@ -1,5 +1,6 @@
 <div class="container">
     {{$provincias[]=null}}
+    {{$departamentos[]=null}}
     @foreach($aglomerado->localidades as $localidad)
       	@foreach($localidad->departamentos as $departamento)
 	    @php ($provincias[$departamento->provincia->codigo]=$departamento->provincia)
