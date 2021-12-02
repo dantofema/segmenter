@@ -124,8 +124,8 @@ class MyDB extends Model
         //Crea el esquema si no existe y asigna los permisos.
         public static function createSchema($esquema)
         {
-            DB::statement('CREATE SCHEMA IF NOT EXISTS e'.$esquema);
-            Log::debug('Creando esquema-> '.$esquema);
+            DB::statement('CREATE SCHEMA IF NOT EXISTS "e'.$esquema.'"');
+            Log::debug('Creando esquema-> e'.$esquema);
             self::darPermisos('e'.$esquema);
         }
 
@@ -296,8 +296,27 @@ FROM
     // Devuelve link de localidad y cantidad de ocurrencias
     public static function getLocs($tabla,$esquema)
     {
-        return (DB::select('SELECT prov||dpto||codloc as link,count(*) FROM
-        '.$esquema.'.'.$tabla.' group by prov||dpto||codloc order by count(*);'));
+        try {
+            return (DB::select('SELECT prov||dpto||codloc as link,count(*) FROM
+                    "'.$esquema.'".'.$tabla.' group by prov||dpto||codloc order by count(*);'));
+        }catch (QueryException $exception) {
+            return (DB::select('SELECT prov||depto||codloc as link,count(*) FROM
+		    "'.$esquema.'".'.$tabla.' group by prov||depto||codloc order by count(*);'));
+	}
+    }
+
+    // Mueve de esquema temporal a otro 
+    public static function moverEsquema($de_esquema,$a_esquema)
+    {
+        try {
+		return (DB::unprepared('ALTER SCHEMA  "'.$de_esquema.'" RENAME TO "'.$a_esquema.'"'));
+	}catch (QueryException $exception) {
+		if ($exception->getCode() == '42P06'){
+		    Log::warning('Esquema duplicado. llamar a comparar');
+		}else{
+	            Log::error('Error: '.$exception);
+		}
+	}
     }
 
     public static function getEntidades($tabla,$esquema,$localidad=null)

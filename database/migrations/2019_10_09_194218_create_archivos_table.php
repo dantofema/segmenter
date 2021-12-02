@@ -24,6 +24,7 @@ class CreateArchivosTable extends Migration
             $table->string('mime');
             $table->boolean('procesado');
             $table->string('tabla')->nullable();
+            $table->string('epsg_def')->nullable();
             $table->timestamps();
         });
     }

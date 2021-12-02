@@ -19,7 +19,8 @@ class Archivo extends Model
     ];
     protected $attributes = [
 	    'procesado' => false,
-	    'tabla' => null
+	    'tabla' => null,
+	    'epsg_def' => 'epsg:22195'
     ];
 
     //Relación con usuario que subió el archivo.
@@ -58,12 +59,12 @@ class Archivo extends Model
     }
 
     public function procesar(){
-       if ($this->tipo == 'csv' or $this->tipo== 'dbf'){
+       if ($this->tipo == 'csv' or $this->tipo == 'dbf'){
             return $this->procesarC1();
-        }elseif($this->tipo='e00') {
-            return $this->procesarGeom();
+        }elseif($this->tipo == 'e00' or $this->tipo == 'bin') {
+            return $this->procesarGeomE00();
         }else{
-            flash('No se encontro que hacer para procesar '.$this->nombre_original )->warning();
+            flash('No se encontro qué hacer para procesar '.$this->nombre_original )->warning();
             return false;
         }
     }
@@ -74,6 +75,7 @@ class Archivo extends Model
             $import = new CsvImport;
             Excel::import($import, storage_path().'/app/'.$this->nombre);
 	    $this->procesado=true;
+	    $this->save();	    
 	    return true;
         }elseif ($this->tipo == 'dbf'){
             // Mensaje de subida de DBF.
@@ -81,14 +83,16 @@ class Archivo extends Model
 
             // Subo DBF con pgdbf a una tabla temporal.
             $process = Process::fromShellCommandline('pgdbf -s latin1 $c1_dbf_file | psql -h $host -p $port -U $user $db');
-            $process->run(null, ['c1_dbf_file' => storage_path().'/app/'.
-                      $this->nombre,'db'=>Config::get('database.connections.pgsql.database'),
+            $process->run(null, [
+                    'c1_dbf_file' => storage_path().'/app/'.$this->nombre,
+                    'db'=>Config::get('database.connections.pgsql.database'),
                     'host'=>Config::get('database.connections.pgsql.host'),
                     'user'=>Config::get('database.connections.pgsql.username'),
                     'port'=>Config::get('database.connections.pgsql.port'),
                     'PGPASSWORD'=>Config::get('database.connections.pgsql.password')]);
 	    // executes after the command finishes
 	    $this->procesado=true;
+	    $this->save();
 	    return true;
 	}else{
 	     flash($data['file']['csv_info'] = 'Se Cargo un archivo de formato
@@ -98,9 +102,67 @@ class Archivo extends Model
         }
     }
 
-    public function procesarGeom(){
-                flash('Procesando Geom .')->info();
-                return false;
+    public function procesarGeomSHP(){
+          flash('Procesando Geom .')->info();
+                
+          $processOGR2OGR =
+                Process::fromShellCommandline('(/usr/bin/ogr2ogr -f \
+                "PostgreSQL" PG:"dbname=$db host=$host user=$user port=$port \
+                active_schema=e$e00 password=$pass" --config PG_USE_COPY YES \
+                -lco OVERWRITE=YES --config OGR_TRUNCATE YES -dsco \
+                PRELUDE_STATEMENTS="SET client_encoding TO latin1;CREATE SCHEMA \
+                IF NOT EXISTS e$e00;" -dsco active_schema=e$e00 -lco \
+                PRECISION=NO -lco SCHEMA=e$e00 \
+                -nln $capa \
+                -skipfailures \
+                -overwrite $file )');
+           $processOGR2OGR->setTimeout(3600);
+	    $this->procesado=false;
+	    $this->save();	    
+           
+           }
+    public function procesarGeomE00(){
+          flash('Procesando Geom Import E00.')->info();
+          MyDB::createSchema('_'.$this->tabla);
+          $processOGR2OGR = Process::fromShellCommandline('/usr/bin/ogr2ogr -f "PostgreSQL" \
+                     PG:"dbname=$db host=$host user=$user port=$port active_schema=e_$esquema \
+                     password=$pass" --config PG_USE_COPY YES -lco OVERWRITE=YES \
+                     --config OGR_TRUNCATE YES -dsco PRELUDE_STATEMENTS="SET client_encoding TO $encoding; \
+                     CREATE SCHEMA IF NOT EXISTS e_$esquema;" -dsco active_schema=e_$esquema \
+                     -lco PRECISION=NO -lco SCHEMA=e_$esquema -s_srs $epsg -t_srs $epsg \
+                     -nln $capa -addfields -overwrite $file $capa');
+           $processOGR2OGR->setTimeout(3600);
+                     // -skipfailures           
+       //Cargo arcos
+           $processOGR2OGR->run(null, 
+            ['capa'=>'arc',
+             'epsg'=> $this->epsg_def,
+             'file' => storage_path().'/app/'.$this->nombre,
+             'esquema'=>$this->tabla,
+             'encoding'=>'latin1',
+             'db'=>Config::get('database.connections.pgsql.database'),
+             'host'=>Config::get('database.connections.pgsql.host'),
+             'user'=>Config::get('database.connections.pgsql.username'),
+             'pass'=>Config::get('database.connections.pgsql.password'),
+             'port'=>Config::get('database.connections.pgsql.port')]);
+            $mensajes=$processOGR2OGR->getErrorOutput().'<br />'.$processOGR2OGR->getOutput();
+      //Cargo etiquetas
+           $processOGR2OGR->run(null, 
+            ['capa'=>'lab',
+             'epsg'=> $this->epsg_def,
+             'file' => storage_path().'/app/'.$this->nombre,
+             'esquema'=>$this->tabla,
+             'encoding'=>'latin1',
+             'db'=>Config::get('database.connections.pgsql.database'),
+             'host'=>Config::get('database.connections.pgsql.host'),
+             'user'=>Config::get('database.connections.pgsql.username'),
+             'pass'=>Config::get('database.connections.pgsql.password'),
+             'port'=>Config::get('database.connections.pgsql.port')]);
+              $mensajes.='<br />'.$processOGR2OGR->getErrorOutput().'<br />'.$processOGR2OGR->getOutput();
+	    $this->procesado=true;
+	    $this->save();	    
+                
+        return $mensajes;
     }
 
     public function moverData(){
@@ -121,5 +183,14 @@ class Archivo extends Model
             $data['file']['info_dbf']=MyDB::infoDBF('listado',$esquema);
             return $data['file']['codigo_usado']=$esquema;
     }
+ 
+    public function pasarData(){
+             // Leo dentro de la tabla de etiquetas la/s localidades
+            $ppdddllls=MyDB::getLocs('lab','e_'.$this->tabla);
+            foreach ($ppdddllls as $ppdddlll){
+            	flash('Se encontró loc: '.$ppdddlll->link);
+            	MyDB::moverEsquema('e_'.$this->tabla,'e'.$ppdddlll->link);
+            }
    
+    }  
 }

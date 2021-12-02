@@ -155,18 +155,22 @@ class SegmenterController extends Controller
                                  'usuario_name' => $AppUser->name,
                                  'tiempo' => date('Y-m-d H:i:s')]);
                         
-            $codaglo=isset($codaglo)?$codaglo:'test'; //$random_name;
+/*            $codaglo=isset($codaglo)?$codaglo:'test'; //$random_name;
             MyDB::createSchema($codaglo);
-
+ */
             if ($epsg_id=='sr-org:8333'){
 		//Cargo arcos
 		$processOGR2OGR->run(null, ['capa'=>'arc','epsg'=>$epsg_def,'file' => storage_path().'/app/'.$data['file']['shp'],'e00'=>$codaglo,'db'=>Config::get('database.connections.pgsql.database'),'host'=>Config::get('database.connections.pgsql.host'),'user'=>Config::get('database.connections.pgsql.username'),'pass'=>Config::get('database.connections.pgsql.password'),'port'=>Config::get('database.connections.pgsql.port')]);
             }else{
-                $processOGR2OGR = Process::fromShellCommandline('/usr/bin/ogr2ogr -f "PostgreSQL" PG:"dbname=$db host=$host user=$user port=$port active_schema=e$e00 password=$pass" --config PG_USE_COPY YES -lco OVERWRITE=YES --config OGR_TRUNCATE YES -dsco PRELUDE_STATEMENTS="SET client_encoding TO latin1;CREATE SCHEMA IF NOT EXISTS e$e00;" -dsco active_schema=e$e00 -lco PRECISION=NO -lco SCHEMA=e$e00 -s_srs $epsg -t_srs $epsg -nln arc -overwrite $file ');
+/*                $processOGR2OGR = Process::fromShellCommandline('/usr/bin/ogr2ogr -f "PostgreSQL" PG:"dbname=$db host=$host user=$user port=$port active_schema=e$e00 password=$pass" --config PG_USE_COPY YES -lco OVERWRITE=YES --config OGR_TRUNCATE YES -dsco PRELUDE_STATEMENTS="SET client_encoding TO latin1;CREATE SCHEMA IF NOT EXISTS e$e00;" -dsco active_schema=e$e00 -lco PRECISION=NO -lco SCHEMA=e$e00 -s_srs $epsg -t_srs $epsg -nln arc -overwrite $file ');
                 $processOGR2OGR->run(null, ['capa'=>'arc','epsg' => $epsg_id, 'file' => storage_path().'/app/'.$data['file']['shp'],'e00'=>$codaglo,'db'=>Config::get('database.connections.pgsql.database'),'host'=>Config::get('database.connections.pgsql.host'),'user'=>Config::get('database.connections.pgsql.username'),'pass'=>Config::get('database.connections.pgsql.password'),'port'=>Config::get('database.connections.pgsql.port')]);
 
                 $processOGR2OGR->run(null, ['capa'=>'lab','epsg' => $epsg_id, 'file' => storage_path().'/app/'.$data['file']['shp_lab'],'e00'=>$codaglo,'db'=>Config::get('database.connections.pgsql.database'),'host'=>Config::get('database.connections.pgsql.host'),'user'=>Config::get('database.connections.pgsql.username'),'pass'=>Config::get('database.connections.pgsql.password'),'port'=>Config::get('database.connections.pgsql.port')]);
-            }
+ */
+                $shp_file->epsg_def = $epsg_id;
+		    if( $shp_file->procesar() ) {flash('Proceso');}else{flash('la cago')->error();
+		    }
+  	    }
             if (!$processOGR2OGR->isSuccessful()) {
                 $epsg_def=isset($epsg_def)?$epsg_def:'No definido';
                 dd($processOGR2OGR,'epsg '.$epsg_id,'epsg_def '.$epsg_def.
@@ -176,18 +180,26 @@ class SegmenterController extends Controller
             MyDB::agregarsegisegd($codaglo);
 
         }elseif ($original_extension == 'e00'){
-            $random_name='t_'.$request->shp->hashName();
+		$shp_file->epsg_def = $epsg_id;
+		$shp_file->save();
+		if( $mensajes=$shp_file->procesar() ) {
+			flash('Procesó e00')->important()->success();
+			$shp_file->pasarData();
+		}else{flash('la cago')->error();
+		    }
+/*            $random_name='t_'.$request->shp->hashName();
             $data['file']['shp'] = $request->shp->storeAs('segmentador', $random_name.'.'.$request->shp->getClientOriginalExtension());
             $process = Process::fromShellCommandline('echo "E00: $name" >> archivos.log');
-            $process->run(null, ['name' => "Archivo: ".$original_name." subido como: ".$data['file']['shp']]);
-            $processOGR = Process::fromShellCommandline('/usr/bin/ogrinfo -so $file ARC');
-            $processOGR->run(null, ['file' => storage_path().'/app/'.$data['file']['shp']]);
-            $data['file']['e00_info'] = $processOGR->getOutput();
-
+	    $process->run(null, ['name' => "Archivo: ".$original_name." subido como: ".$data['file']['shp']]);
+ */
+//            $processOGR = Process::fromShellCommandline('/usr/bin/ogrinfo -so $file ARC');
+//            $processOGR->run(null, ['file' => storage_path().'/app/'.$data['file']['shp']]);
+//            $data['file']['e00_info'] = $processOGR->getOutput();
+/*
             $original_name = substr($original_name,1,4);
             $codaglo=isset($codaglo)?$codaglo:$original_name;
             MyDB::createSchema($codaglo);
-
+ */
 	    if ($epsg_id=='sr-org:8333'){ // Si es CABA cargo sin epsg
             $processOGR2OGR = Process::fromShellCommandline('/usr/bin/ogr2ogr -f "PostgreSQL" PG:"dbname=$db host=$host user=$user port=$port active_schema=e$e00 password=$pass port=$port" --config PG_USE_COPY YES -lco OVERWRITE=YES --config OGR_TRUNCATE YES -dsco PRELUDE_STATEMENTS="SET client_encoding TO latin1;CREATE SCHEMA IF NOT EXISTS e$e00;" -dsco active_schema=e$e00 -lco PRECISION=NO -lco SCHEMA=e$e00 -skipfailures -addfields -overwrite $file ARC');
             $processOGR2OGR->setTimeout(3600);
@@ -200,6 +212,12 @@ class SegmenterController extends Controller
             flash($data['file']['ogr2ogr_lab'] = $processOGR2OGR_lab->getErrorOutput().'<br />'.$processOGR2OGR_lab->getOutput())->important();
 	    flash($data['file']['ogr2ogr'] = $processOGR2OGR->getErrorOutput().'<br />'.$processOGR2OGR->getOutput())->important();
 	    }else{ // Cargo con epsg
+	
+		    $shp_file->epsg_def = $epsg_id;
+		    $shp_file->save();
+	    if( $mensaje=$shp_file->procesar() ) {flash('Proceso');}else{flash('la cago')->error();
+	    }
+/*		    
             $processOGR2OGR = Process::fromShellCommandline('/usr/bin/ogr2ogr -f "PostgreSQL" PG:"dbname=$db host=$host user=$user port=$port active_schema=e$e00 password=$pass port=$port" --config PG_USE_COPY YES -lco OVERWRITE=YES --config OGR_TRUNCATE YES -dsco PRELUDE_STATEMENTS="SET client_encoding TO latin1;CREATE SCHEMA IF NOT EXISTS e$e00;" -dsco active_schema=e$e00 -lco PRECISION=NO -lco SCHEMA=e$e00 -s_srs $epsg -t_srs $epsg -skipfailures -addfields -overwrite $file ARC');
             $processOGR2OGR->setTimeout(3600);
             $processOGR2OGR->run(null, ['epsg' => $epsg_id, 'file' => storage_path().'/app/'.$data['file']['shp'],'e00'=>$codaglo,'db'=>Config::get('database.connections.pgsql.database'),'host'=>Config::get('database.connections.pgsql.host'),'user'=>Config::get('database.connections.pgsql.username'),'pass'=>Config::get('database.connections.pgsql.password'),'port'=>Config::get('database.connections.pgsql.port')]);
@@ -209,14 +227,15 @@ class SegmenterController extends Controller
             $processOGR2OGR_lab->run(null, ['epsg' => $epsg_id, 'file' => storage_path().'/app/'.$data['file']['shp'],'e00'=>$codaglo,'db'=>Config::get('database.connections.pgsql.database'),'host'=>Config::get('database.connections.pgsql.host'),'user'=>Config::get('database.connections.pgsql.username'),'pass'=>Config::get('database.connections.pgsql.password'),'port'=>Config::get('database.connections.pgsql.port')]);
 	    //dd($processOGR2OGR_lab->getErrorOutput());
 	    //
-            $mensaje=$data['file']['ogr2ogr_lab'] = $processOGR2OGR_lab->getErrorOutput().'<br />'.$processOGR2OGR_lab->getOutput();
-	    if (!Str::contains($mensaje,['ERROR'])){
+	    $mensaje=$data['file']['ogr2ogr_lab'] = $processOGR2OGR_lab->getErrorOutput().'<br />'.$processOGR2OGR_lab->getOutput();
+ */
+	    if (!Str::contains($mensajes,['ERROR'])){
 	    	flash('Se cargaron las Etiquetas con éxito. ')->important()->success();
 	    }else{
 	    	flash($mensaje)->important()->error();
 	    }
-            $mensaje=$data['file']['ogr2ogr'] = $processOGR2OGR->getErrorOutput().'<br />'.$processOGR2OGR->getOutput();
-	    if (!Str::contains($mensaje,['ERROR'])){
+            //$mensaje=$data['file']['ogr2ogr'] = $processOGR2OGR->getErrorOutput().'<br />'.$processOGR2OGR->getOutput();
+	    if (!Str::contains($mensajes,['ERROR'])){
 	    	flash('Se cargaron los Arcos con éxito. ')->important()->success();
 	    }else{
 	    	flash($mensaje)->important()->error();
