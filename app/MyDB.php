@@ -301,7 +301,7 @@ FROM
                     "'.$esquema.'".'.$tabla.' group by prov||dpto||codloc order by count(*);'));
         }catch (QueryException $exception) {
             return (DB::select('SELECT prov||depto||codloc as link,count(*) FROM
-		    "'.$esquema.'".'.$tabla.' group by prov||depto||codloc order by count(*);'));
+		    "'.$esquema.'"."'.$tabla.'" group by prov||depto||codloc order by count(*);'));
 	}
     }
 
