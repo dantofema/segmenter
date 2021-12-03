@@ -32,7 +32,8 @@ class ArchivoController extends Controller
 			->make(true);
 	    }
       }else{
-	      $archivos= null;
+             $archivos= null;
+             return route('login');
       }
             return view('archivo.list')->with(['data'=>$archivos]);
     }
