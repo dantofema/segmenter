@@ -33,7 +33,7 @@ class ArchivoController extends Controller
 	    }
       }else{
              $archivos= null;
-             return route('login');
+             return redirect()->route('login');
       }
             return view('archivo.list')->with(['data'=>$archivos]);
     }
