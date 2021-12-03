@@ -51,17 +51,13 @@ class LocalidadController extends Controller
         //p
             if ($localidad->departamentos()->count()>1) {
                 flash($localidad->nombre.' MULTIDEPARTAMENTAL ')->success();
-            return view('localidad.deptos_view',[
+                return view('localidad.deptos_view',[
                         'localidad'=>$localidad,
                         'deptos'=>$localidad->departamentos()->get(),
                         'carto'=>null,'listado'=>null
                         ]);
 
-                return($localidad->departamentos()->get( 
-                        //['codigo','nombre']
-                        ));
             }
-//            dd($localidad->radios->count());
             return view('localidad.radios',[
                         'localidad'=>$localidad,
                         'aglomerado'=>$localidad->aglomerado,

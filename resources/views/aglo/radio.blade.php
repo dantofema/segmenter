@@ -1,13 +1,42 @@
+    @foreach($aglomerado->localidades as $localidad)
+        @foreach($localidad->departamentos as $departamento)
+            @php ($provincias[$departamento->provincia->codigo]=$departamento->provincia)
+            @php ($departamentos[$departamento->codigo]=$departamento)
+            @php ($localidades[$localidad->codigo]=$localidad)
+        @endforeach
+    @endforeach
+
 <div class="container">
-    Información del aglomerado ({{ $aglomerado->codigo }}) 
-    <b> {{ $aglomerado->nombre }} </b><br />
-            @foreach($aglomerado->localidades as $localidad)
+    <h3>Aglomerado ({{ $aglomerado->codigo }}) 
+    <b> {{ $aglomerado->nombre }} </b></h3>
+
+
+	    @foreach($aglomerado->localidades as $localidad)
             	@foreach($localidad->departamentos as $departamento)
 		  En Departamento: <a href="{{ url('/depto/'.$departamento->id) }}">
 ({{ $departamento->codigo }}) {{ $departamento->nombre }} </a>
 		<br />
                 @endforeach
             @endforeach
+
+	    @if ( isset($localidades) )
+	    @foreach ($localidades as $localidad)
+	    	 @if($loop->first)
+                   @if( $loop->count>1) 
+			Conformado por las localidades:
+		   @else
+			Siendo la localidad de 
+                   @endif
+                 @endif
+                @if ($localidad)
+                  <li class="btn  btn-outline-secondary" style="margin-bottom: 2px" >
+                     <a href="{{ url("/localidad/{$localidad->id}") }}" >({{ $localidad->codigo }})
+                     <b> {{ $localidad->nombre }} </b></a>
+                 </li>
+               @endif
+       @endforeach
+    @endif
+	    
     <div class="">
      @if($carto)
         La base geográfica está cargada.

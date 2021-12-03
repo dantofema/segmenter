@@ -45,7 +45,7 @@
    </div>
    <div class="row">
    <div class="col-lg-12">
-    <table class="table table-striped table-bordered dataTable hover order-column" id="laravel_datatable">
+    <table class="table table-striped table-bordered dataTable table-hover order-column" id="laravel_datatable">
        <thead>
           <tr>
              <th>Id</th>

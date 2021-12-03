@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Archivo;
 use Illuminate\Http\Request;
 use Auth;
 use App\MyDB;

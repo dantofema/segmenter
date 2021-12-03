@@ -163,6 +163,13 @@ Route::get('radio/{radio}','RadioController@show');
 Route::get('grafo/{aglomerado}','SegmentacionController@index')->name('index');
 Route::get('grafo/{aglomerado}/{radio}/','SegmentacionController@ver_grafo')->name('ver-grafo');
 
+// ---------- ARCHIVOS --------
+Route::post('archivos','ArchivoController@index');
+Route::get('archivos','ArchivoController@index');
+Route::get('archivo/{archivo}','ArchivoController@show');
+Route::delete('archivo/{archivo}','ArchivoController@destroy');
+Route::get('archivo/{archivo}/descargar','ArchivoController@descargar');
+
 //Route::get('mail', 'MailCsvController@index');
 
 /* Logout via GET */
