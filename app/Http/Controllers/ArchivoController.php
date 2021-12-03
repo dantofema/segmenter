@@ -24,11 +24,6 @@ class ArchivoController extends Controller
 	    $archivos=Archivo::where('user_id',$AppUser->id);
 	    if ($request->ajax()) {
 	        return Datatables::of($archivos)->addIndexColumn()
-	                ->addColumn('action', function($row){
-                          $btn = '<a href="javascript:void(0)" class="btn btn-primary btn-sm">Ver</a>';
-                         return $btn;
-                        })
-			->rawColumns(['action'])
 			->make(true);
 	    }
       }else{
