@@ -22,7 +22,7 @@
         @foreach($departamentos as $departamento)
           @if($loop->first)
 	     En {{count($departamentos)}}
-             @if($departamento->denominacion)
+             @if ($departamento->denominacion)
                 {{ $departamento->denominacion }}
              @else
                 Departamento / Partido / Comuna
