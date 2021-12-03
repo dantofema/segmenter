@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Config;
 //use App\Imports\CsvImport;
 use Maatwebsite\Excel;
 use App\MyDB;
+use Illuminate\Support\Facades\Log;
+
 
 class Archivo extends Model
 {
@@ -33,20 +35,21 @@ class Archivo extends Model
     // Funcion para cargar información de archivo en la base de datos.
     public static function cargar($request_file, $user, $tipo=null){
 		$original_extension = strtolower($request_file->getClientOriginalExtension());
+        $guess_extension = strtolower($request_file->guessClientExtension());
 		$original_name = $request_file->getClientOriginalName();
 		$random_name= 't_'.$request_file->hashName();
 		$random_name = substr($random_name,0,strpos($random_name,'.'));
 		$file_storage = $request_file->storeAs('segmentador', $random_name.'.'.$request_file->getClientOriginalExtension());
 		return self::create([
-                           'user_id' => $user->id,
+                'user_id' => $user->id,
 			    'nombre_original' => $original_name,
 			    'nombre' => $file_storage,
 			    'tabla' => $random_name,
-			    'tipo' => $request_file->guessClientExtension()?$request_file->guessClientExtension():$original_extension,
+			    'tipo' => $guess_extension!='bin'?$guess_extension:$original_extension,
 			    'checksum'=> md5_file($request_file->getRealPath()),
-                           'size' => $request_file->getClientSize(),
-                           'mime' => $request_file->getClientMimeType()
-                        ]);
+                'size' => $request_file->getClientSize(),
+                'mime' => $request_file->getClientMimeType()
+                ]);
     }
 
     public function descargar(){
@@ -90,11 +93,12 @@ class Archivo extends Model
                     'user'=>Config::get('database.connections.pgsql.username'),
                     'port'=>Config::get('database.connections.pgsql.port'),
                     'PGPASSWORD'=>Config::get('database.connections.pgsql.password')]);
+
 	    // executes after the command finishes
 	    $this->procesado=true;
 	    $this->save();
 	    return true;
-	}else{
+	    }else{
 	     flash($data['file']['csv_info'] = 'Se Cargo un archivo de formato
 		     no esperado!')->error()->important();
             $this->procesado=false;
