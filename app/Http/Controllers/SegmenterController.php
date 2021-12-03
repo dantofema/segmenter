@@ -330,7 +330,7 @@ class SegmenterController extends Controller
 		    //:dd($depto);
 		    $oProvincia->Departamentos()->save($oDepto = Departamento::firstOrCreate(['codigo'=>$depto->codigo
 		    ],collect($depto)->toArray()));
-		    Log::debug('Depto: '.$oDepto->tojson(JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+//		    Log::debug('Depto: '.$oDepto->tojson(JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 
                     // Recorro Fracciones leídas del departamento
 		    $frac_data=MyDB::getDataFrac($tabla,'public',$oDepto->codigo);
@@ -348,7 +348,7 @@ class SegmenterController extends Controller
 		        $oDepto->Localidades()->sync($oLocalidad = Localidad::firstOrCreate(['codigo'=>$localidad->codigo
 			],collect($localidad)->toArray()),false);
 			$estado=$oLocalidad->wasRecentlyCreated?' (nueva) ':' (guardada) ';
-	                Log::debug('Localidad: '.$estado.$oLocalidad->tojson(JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+//	                Log::debug('Localidad: '.$estado.$oLocalidad->tojson(JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 //			$aLocalidades[]=Localidad::firstOrNew(collect($localidad)->toArray());
 
 			// Busco Aglomerado de la localidad y asigno localidad al aglomerado
@@ -370,13 +370,13 @@ class SegmenterController extends Controller
 			    $oRadio->Tipo()->associate(TipoRadio::firstOrCreate(['nombre'=>$radio->tipo]));
                             $oRadio->save();
 
-                            Log::debug('Radio: '.$estado.$oRadio->tojson(JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+  //                          Log::debug('Radio: '.$estado.$oRadio->tojson(JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 
                         }
 		    }
 	    }
 	    
-	    Log::debug('Provincia: '.$oProvincia->tojson(JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+//	    Log::debug('Provincia: '.$oProvincia->tojson(JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 
 	}
 

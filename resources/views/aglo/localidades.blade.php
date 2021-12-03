@@ -1,21 +1,24 @@
 <div class="container">
-    {{$provincias[]=null}}
     @foreach($aglomerado->localidades as $localidad)
       	@foreach($localidad->departamentos as $departamento)
 	    @php ($provincias[$departamento->provincia->codigo]=$departamento->provincia)
 	    @php ($departamentos[$departamento->codigo]=$departamento)
+	    @php ($localidades[$localidad->codigo]=$localidad)
 	@endforeach
     @endforeach
-    @foreach($provincias as $provincia)
+    @if ( isset($provincias) )
+      @foreach ($provincias as $provincia)
 		@if ($provincia)
                   <li class="btn  btn-outline-secondary" style="margin-bottom: 2px" >
                      <a href="{{ url("/prov/{$provincia->id}") }}" >({{ $provincia->codigo }})
                      <b> {{ $provincia->nombre }} </b></a>
                  </li>
                @endif
-    @endforeach
+       @endforeach
+    @endif
     <h3>Aglomerado ({{ $aglomerado->codigo }}) 
     <b> {{ $aglomerado->nombre }} </b></h3>
+    @if ( isset($departamentos) )
         @foreach($departamentos as $departamento)
           @if($loop->first)
 	     En {{count($departamentos)}}
@@ -28,6 +31,7 @@
 	 <a href="{{ url('/depto/'.$departamento->id) }}">
 ({{ $departamento->codigo }}) {{ $departamento->nombre }} </a>
        @endforeach
+    @endif
 
 <div class="form-horizontal">
 <form action="/grafo/{{ $aglomerado->id }}" method="GET" enctype="multipart/form-data">

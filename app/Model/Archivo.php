@@ -191,6 +191,5 @@ class Archivo extends Model
             	flash('Se encontró loc: '.$ppdddlll->link);
             	MyDB::moverEsquema('e_'.$this->tabla,'e'.$ppdddlll->link);
             }
-   
     }  
 }

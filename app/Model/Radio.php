@@ -189,9 +189,6 @@ class Radio extends Model
      public function getCantMzasAttribute($value)
      {
           $cant_mzas = MyDB::getCantMzas($this);
-          if ($cant_mzas!=0){
-            $cant_mzas = $cant_mzas;
-            }else{$cant_mzas=-1;}
           return $cant_mzas;
      }
 
@@ -228,11 +225,21 @@ class Radio extends Model
     }
 
     public function getEsquemaAttribute($value){
+        if ($this->_esquema){
+	    return $this->_esquema;
+	}else{
+	    $this->_esquema='cualca';
+	    $posibles_esquemas=$this->esquemas;
+	    return $this->_esquema;
+	}
+    }
+
+    public function getEsquemasAttribute($value){
 	$esquemas=[];
-        if (! $this->_esquema){
+        if (! $this->_esquema or $this->_esquema=='cualca'){
           $this->_esquema='foo';
-          if ($this->aglomerado() != null){
-		  if ($this->aglomerado()->codigo=='0001'){
+          if ($this->aglomerados() != null){
+		  if ($this->aglomerados()[0]->codigo=='0001'){
                     if ($this->fraccion->departamento->provincia->codigo == '02') {
                         $this->_esquema = 'e'.
                                     $this->fraccion->departamento->codigo.
@@ -241,8 +248,10 @@ class Radio extends Model
                         $esquemas[]=$this->_esquema = 'e'.$this->fraccion->departamento->codigo;
                     }
                 }else // Si no es GBA
-                {
-                    $esquemas[]=$this->_esquema = 'e'.$this->aglomerado()->codigo;
+		{
+			foreach ($this->aglomerados() as $aglo){
+	                    $esquemas[]=$this->_esquema = 'e'.$aglo->codigo;
+			}
                     try{
 			    if(!$this->fraccion){
                          	    Log::error('Radio sin fracción? : '.collect($this)->toJson(JSON_PRETTY_PRINT));
@@ -264,9 +273,11 @@ class Radio extends Model
 				    }else{
 					    Log::info('Buscando parte Urbana del Radio en esquema:'.
 						    ($loc_no_rural->first()->aglomerado()->first()->codigo));
-                                      $esquemas[]=$this->_esquema = 'e'.$loc_no_rural->first()->aglomerado()->first()->codigo;
+                                      $esquemas[]=$this->_esquema = 'e'.$loc_no_rural->first()->codigo;
 				    }
-                              }
+			       }else{
+                                   $esquemas[]=$this->_esquema = 'e'.$this->localidades()->first()->codigo;
+			       }
                     }catch (Exception $e){
                          Log::error('Algo muy raro paso: '.$e);
                     };
@@ -277,7 +288,7 @@ class Radio extends Model
         Log::debug('Radio '.$this->codigo.' esperado en esquema: '.$this->_esquema.' o => '.collect($esquemas)->toJson(
                                            JSON_PRETTY_PRINT));
         }
-        return $this->_esquema;
+        return $esquemas; //$this->_esquema;
     }
 
     public function getSVG()

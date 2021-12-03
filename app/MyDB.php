@@ -312,7 +312,28 @@ FROM
 		return (DB::unprepared('ALTER SCHEMA  "'.$de_esquema.'" RENAME TO "'.$a_esquema.'"'));
 	}catch (QueryException $exception) {
 		if ($exception->getCode() == '42P06'){
-		    Log::warning('Esquema duplicado. llamar a comparar');
+			Log::debug('Ya existe el Esquema. Intento mover tablas ARC y LAB');
+			try{
+                            (DB::unprepared('ALTER TABLE  "'.$de_esquema.'".arc SET SCHEMA "'.$a_esquema.'" '));
+                            (DB::unprepared('ALTER TABLE  "'.$de_esquema.'".lab SET SCHEMA "'.$a_esquema.'" '));
+                        }catch (QueryException $exception) {
+		            if ($exception->getCode() == '42P07'){
+			       Log::warning('Ya hay tablas cargadas, se pisarán los datos! ');
+			       try{
+                                  DB::beginTransaction();
+                                  DB::unprepared('DROP TABLE IF EXISTS '.$a_esquema.'.arc CASCADE');
+                                  DB::unprepared('DROP TABLE IF EXISTS '.$a_esquema.'.lab CASCADE');
+                                  DB::unprepared('ALTER TABLE  "'.$de_esquema.'".arc SET SCHEMA "'.$a_esquema.'" ');
+				  DB::unprepared('ALTER TABLE  "'.$de_esquema.'".lab SET SCHEMA "'.$a_esquema.'" ');
+				  DB::unprepared('DROP SCHEMA "'.$de_esquema.'"');
+                                  DB::commit();
+			          Log::info('Se movieron tablas ARC Y LAB a '.$a_esquema.' y se borro el esquema '.$de_esquema);
+                             }catch (QueryException $exception) {
+	                            Log::error('Error: '.$exception);
+			     }
+			    }
+		        }
+
 		}else{
 	            Log::error('Error: '.$exception);
 		}
@@ -1048,7 +1069,7 @@ FROM
 
                                 ',['radio'=>$radio.'%','radio2'=>$radio.'%']);
                 }catch(QueryException $e){
-                    Log::error('No se pudieron obtener los nodos');
+                    Log::error('No se pudieron obtener los nodos en '.$esquema);
                 }
             }
 
@@ -1087,39 +1108,45 @@ FROM
             }
 
             public static function getCantMzas(Radio $radio){
-                $esquema=$radio->esquemas;
+                $esquemas=$radio->esquemas;
                 $prov=substr($radio->codigo,0,2);
                 $dpto=substr($radio->codigo,2,3);
                 $frac=substr($radio->codigo,5,2);
-                $rad=substr($radio->codigo,7,2);
-                try{
-                    return DB::select("
-        SELECT count( distinct mza)  cant_mzas 
-        FROM ".$esquema.".conteos WHERE prov=".$prov." and dpto = ".$dpto." and
-        frac=".$frac." and radio=".$rad." ;")[0]->cant_mzas;
-
-                }catch(QueryException $e){
-                    Log::debug('No se encontro conteo manzanas para radio '.$radio);
-                    return -2;
-                }
-                    return -3;
+		$rad=substr($radio->codigo,7,2);
+		$mzas=0;
+                foreach($esquemas as $esquema){
+		try{
+                    $mzas += DB::select("
+                               SELECT count( distinct mza)  cant_mzas 
+                               FROM ".$esquema.".conteos WHERE prov=".$prov." and dpto = ".$dpto." and
+                               frac=".$frac." and radio=".$rad." ;")[0]->cant_mzas;
+                 }catch(QueryException $e){
+                    Log::error('No se encontro conteo manzanas para radio '.$radio.$e);
+                 }
+		}
+		    return $mzas;
             }
 
             public static function isSegmentado(Radio $radio=null){
-            $esquema=$radio->esquemas;
-            if ($radio){
-                $filtro= " and (frac,radio) =
-                    ('".$radio->CodigoFrac."','".$radio->CodigoRad."') ";
-            } else
-            { $filtro = '';}
-                try {
-                    return DB::select("SELECT true FROM ".$esquema.".segmentacion s JOIN
-                            ".$esquema.".listado l ON s.listado_id=l.id
-                            WHERE segmento_id is not null
-                            ".$filtro."
-                        limit 1;");
-                    } catch (QueryException $e)  { return null;}
-                return null;
+              $esquemas=$radio->esquemas;
+              if ($radio){
+                $filtro = " and (frac,radio) = ('".$radio->CodigoFrac."','".$radio->CodigoRad."') ";
+              } else
+	      { $filtro = '';}
+	      $count=0;
+                foreach($esquemas as $esquema){
+                  try {
+                     $count += (int) DB::select("SELECT 1 FROM ".$esquema.".segmentacion s JOIN
+			     ".$esquema.".listado l ON s.listado_id=l.id WHERE segmento_id is not null ".
+			     ($filtro)
+			     ." limit 1;");
+		  } catch (QueryException $e)  { 
+			if ($e->getCode() == '42P01'){
+				Log::debug('No existe o hay problemas con esquema: '.$esquema);
+			}
+		  }
+		}
+                return ($count>0);
         }
 
         public static function darPermisos($esquema,$grupo='geoestadistica'){
