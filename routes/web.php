@@ -129,6 +129,9 @@ Route::post('depto/{departamento}','DepartamentoController@show_post');
 // ---------- LOCALIDADES --------
 Route::get('localidades','LocalidadController@index');
 Route::get('localidad/{localidad}','LocalidadController@show');
+Route::post('localidad-segmenta/{localidad}','LocalidadController@segmenta_post');
+Route::get('localidad-segmenta/{localidad}','LocalidadController@segmenta_post');
+Route::post('localidad-segmenta-run/{localidad}','LocalidadController@run_segmentar');
 //Route::post('localidad/{localidad}','LocalidadController@show_post');
 
 // ---------- AGLOMERADOS --------
