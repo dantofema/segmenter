@@ -123,10 +123,17 @@ class MyDB extends Model
 
         //Crea el esquema si no existe y asigna los permisos.
         public static function createSchema($esquema)
-        {
-            DB::statement('CREATE SCHEMA IF NOT EXISTS "e'.$esquema.'"');
-            Log::debug('Creando esquema-> e'.$esquema);
-            self::darPermisos('e'.$esquema);
+	      {
+            if (!DB::select('SELECT 1 from information_schema.schemata where schema_name = ?',['e'.$esquema])){
+              DB::statement('CREATE SCHEMA IF NOT EXISTS "e'.$esquema.'"');
+              Log::debug('Creando esquema-> e'.$esquema);
+              self::darPermisos('e'.$esquema);
+              return true;
+            }else{
+              Log::debug('Encontrado esquema-> e'.$esquema);
+              return true;
+            }
+            return false;
         }
 
         //Dar permisos a una tabla.
@@ -171,9 +178,9 @@ FROM
 	    }else{$filtro='';}
         try {
             return (DB::select('SELECT codaglo as codigo, nombre FROM
-		    '.$esquema.'.'.$tabla.
-		    $filtro.
-		    ' group by 1,2 order by count(*) desc Limit 1;')[0]);
+		                     '.$esquema.'.'.$tabla.
+		                     $filtro.
+		                     ' group by 1,2 order by count(*) desc Limit 1;')[0]);
         }catch (\Illuminate\Database\QueryException $exception) {
 		Log::warning('Aglomerado Sin Nombre: '.$exception);
 		//Supongo sin Nombre
@@ -300,44 +307,70 @@ FROM
             return (DB::select('SELECT prov||dpto||codloc as link,count(*) FROM
                     "'.$esquema.'".'.$tabla.' group by prov||dpto||codloc order by count(*);'));
         }catch (QueryException $exception) {
-            return (DB::select('SELECT prov||depto||codloc as link,count(*) FROM
-		    "'.$esquema.'"."'.$tabla.'" group by prov||depto||codloc order by count(*);'));
-	}
+           try {
+               return (DB::select('SELECT prov||depto||codloc as link,count(*) FROM
+                       "'.$esquema.'".'.$tabla.' group by prov||depto||codloc order by count(*);'));
+           }catch (QueryException $exception) {
+               Log::error('No se pudo encontrar localidades: '.$exception);
+               return [];
+           }
+     	  }
     }
 
     // Mueve de esquema temporal a otro 
     public static function moverEsquema($de_esquema,$a_esquema)
     {
-        try {
-		return (DB::unprepared('ALTER SCHEMA  "'.$de_esquema.'" RENAME TO "'.$a_esquema.'"'));
-	}catch (QueryException $exception) {
+    try {
+	  	return (DB::unprepared('ALTER SCHEMA  "'.$de_esquema.'" RENAME TO "'.$a_esquema.'"'));
+	  }catch (QueryException $exception) {
 		if ($exception->getCode() == '42P06'){
 			Log::debug('Ya existe el Esquema. Intento mover tablas ARC y LAB');
 			try{
-                            (DB::unprepared('ALTER TABLE  "'.$de_esquema.'".arc SET SCHEMA "'.$a_esquema.'" '));
-                            (DB::unprepared('ALTER TABLE  "'.$de_esquema.'".lab SET SCHEMA "'.$a_esquema.'" '));
-                        }catch (QueryException $exception) {
-		            if ($exception->getCode() == '42P07'){
+          DB::beginTransaction();
+          (DB::unprepared('ALTER TABLE  "'.$de_esquema.'".arc SET SCHEMA "'.$a_esquema.'" '));
+          (DB::unprepared('ALTER TABLE  "'.$de_esquema.'".lab SET SCHEMA "'.$a_esquema.'" '));
+          DB::commit();
+      }catch (QueryException $exception) {
+		       if ($exception->getCode() == '42P07'){
 			       Log::warning('Ya hay tablas cargadas, se pisarán los datos! ');
+             DB::Rollback();
 			       try{
-                                  DB::beginTransaction();
-                                  DB::unprepared('DROP TABLE IF EXISTS '.$a_esquema.'.arc CASCADE');
-                                  DB::unprepared('DROP TABLE IF EXISTS '.$a_esquema.'.lab CASCADE');
-                                  DB::unprepared('ALTER TABLE  "'.$de_esquema.'".arc SET SCHEMA "'.$a_esquema.'" ');
-				  DB::unprepared('ALTER TABLE  "'.$de_esquema.'".lab SET SCHEMA "'.$a_esquema.'" ');
-				  DB::unprepared('DROP SCHEMA "'.$de_esquema.'"');
-                                  DB::commit();
-			          Log::info('Se movieron tablas ARC Y LAB a '.$a_esquema.' y se borro el esquema '.$de_esquema);
-                             }catch (QueryException $exception) {
-	                            Log::error('Error: '.$exception);
-			     }
+                    DB::beginTransaction();
+                    DB::unprepared('DROP TABLE IF EXISTS '.$a_esquema.'.arc CASCADE');
+                    DB::unprepared('DROP TABLE IF EXISTS '.$a_esquema.'.lab CASCADE');
+                    DB::unprepared('ALTER TABLE  "'.$de_esquema.'".arc SET SCHEMA "'.$a_esquema.'" ');
+				            DB::unprepared('ALTER TABLE  "'.$de_esquema.'".lab SET SCHEMA "'.$a_esquema.'" ');
+          				  DB::unprepared('DROP SCHEMA "'.$de_esquema.'"');
+                    DB::commit();
+			            Log::info('Se movieron tablas ARC Y LAB a '.$a_esquema.' y se borro el esquema '.$de_esquema);
+              }catch (QueryException $exception) {
+	              Log::error('Error: '.$exception);
+                DB::Rollback();
+			        }
 			    }
-		        }
+		  }
 
 		}else{
 	            Log::error('Error: '.$exception);
 		}
-	}
+   }
+  }
+
+    // Copia de esquema temporal a otro 
+    //
+    public static function copiaraEsquema($de_esquema,$a_esquema)
+    {
+        try {
+             DB::beginTransaction();
+             DB::unprepared('DROP TABLE IF EXISTS '.$a_esquema.'.arc CASCADE');
+             DB::unprepared('DROP TABLE IF EXISTS '.$a_esquema.'.lab CASCADE');
+             DB::unprepared('CREATE TABLE "'.$a_esquema.'".arc AS SELECT * FROM "'.$de_esquema.'".arc ');
+             DB::unprepared('CREATE TABLE "'.$a_esquema.'".lab AS SELECT * FROM "'.$de_esquema.'".lab ');
+             DB::commit();
+         }catch (QueryException $exception) {
+             DB::Rollback();
+             Log::error('Error: '.$exception);
+        }
     }
 
     public static function getEntidades($tabla,$esquema,$localidad=null)
@@ -400,14 +433,16 @@ FROM
 //         $tabla = strtolower( substr($file_name,strrpos($file_name,'/')+1,-4) );
     public static function moverDBF($file_name,$esquema)
     {
-        Log::debug('Cargando dbf en esquema-> '.$esquema);
+        self::createSchema($esquema);
         $tabla = strtolower( substr($file_name,strrpos($file_name,'/')+1,-4) );
         $esquema = 'e'.$esquema;
+        Log::debug('Cargando dbf en esquema-> '.$esquema);
             DB::beginTransaction();
-            DB::unprepared('ALTER TABLE '.$tabla.' SET SCHEMA '.$esquema);
+//            DB::unprepared('ALTER TABLE "'.$tabla.'" SET SCHEMA '.$esquema);
+            DB::unprepared('CREATE TABLE "'.$esquema.'"."'.$tabla.'" AS SELECT * FROM "'.$tabla.'"');
             DB::unprepared('DROP TABLE IF EXISTS '.$esquema.'.listado CASCADE');
-            DB::unprepared('ALTER TABLE '.$esquema.'.'.$tabla.' RENAME TO listado');
-            DB::unprepared('ALTER TABLE '.$esquema.'.listado ADD COLUMN id serial');
+            DB::unprepared('ALTER TABLE "'.$esquema.'"."'.$tabla.'" RENAME TO listado');
+            DB::unprepared('ALTER TABLE "'.$esquema.'".listado ADD COLUMN id serial');
             if (! Schema::hasColumn($esquema.'.listado' , 'tipoviv')){
                 if (Schema::hasColumn($esquema.'.listado' , 'cod_tipo_2')){
                     DB::unprepared('ALTER TABLE '.$esquema.'.listado RENAME cod_tipo_2 TO tipoviv');
@@ -589,14 +624,30 @@ FROM
             }
         }
 
+        public static function borrarTabla($tabla)
+        {
+        // Borrar tabla "temporal"
+        try {
+         	    DB::beginTransaction();
+              DB::statement('DROP TABLE "'.$tabla.'" CASCADE;');
+		          DB::commit();
+       		    Log::info('Se eliminó el tabla '.$tabla);
+	            return true;
+                }catch (\Illuminate\Database\QueryException $exception) {
+                    Log::error('No se pudo borrar la tabla: '.$exception);
+                    DB::Rollback();
+        	    return false;
+                }
+        }
+
         public static function limpiar_esquema($esquema)
         {
-           // Comienzan limíeza de esquema
-               try {
-           	    DB::beginTransaction();
-                    DB::statement('DROP SCHEMA '.$esquema.' CASCADE;');
-		    DB::commit();
-		    Log::info('Se eliminó el esquema '.$esquema);
+        // Comienzan limíeza de esquema
+        try {
+         	    DB::beginTransaction();
+              DB::statement('DROP SCHEMA "'.$esquema.'" CASCADE;');
+		          DB::commit();
+       		    Log::info('Se eliminó el esquema '.$esquema);
 	            return true;
                 }catch (\Illuminate\Database\QueryException $exception) {
                     Log::error('No se pudo limpiar el esquema: '.$exception);
@@ -1151,13 +1202,12 @@ FROM
 
         public static function darPermisos($esquema,$grupo='geoestadistica'){
                 try {
-                DB::statement("GRANT USAGE ON SCHEMA ".$esquema." TO ".$grupo.";");
-                DB::statement("GRANT SELECT ON ALL TABLES IN SCHEMA  ".$esquema." TO ".$grupo);
-                DB::statement("ALTER DEFAULT PRIVILEGES IN SCHEMA  ".$esquema." GRANT
-        SELECT ON TABLES TO ".$grupo);
-                    
+                DB::statement('GRANT USAGE ON SCHEMA "'.$esquema.'" TO '.$grupo);
+                DB::statement('GRANT SELECT ON ALL TABLES IN SCHEMA  "'.$esquema.'" TO '.$grupo);
+                DB::statement('ALTER DEFAULT PRIVILEGES IN SCHEMA  "'.$esquema.'"
+                                GRANT SELECT ON TABLES TO '.$grupo);
                     } catch (QueryException $e)  { 
-                        Log::Error('No se pudieron asignar permisos');
+                        Log::Error('No se pudieron asignar permisos'.$e);
                         return false;}
                 Log::Debug('Se establecieron permisos para geoestadistica');
                 return true;

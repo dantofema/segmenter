@@ -84,30 +84,35 @@ class Archivo extends Model
             // Mensaje de subida de DBF.
             flash('Procesando DBF.')->info();
 
-            // Subo DBF con pgdbf a una tabla temporal.
+	    // Subo DBF con pgdbf a una tabla temporal.
             $process = Process::fromShellCommandline('pgdbf -s latin1 $c1_dbf_file | psql -h $host -p $port -U $user $db');
-            $process->run(null, [
+            try {
+                $process->run(null, [
                     'c1_dbf_file' => storage_path().'/app/'.$this->nombre,
                     'db'=>Config::get('database.connections.pgsql.database'),
                     'host'=>Config::get('database.connections.pgsql.host'),
                     'user'=>Config::get('database.connections.pgsql.username'),
                     'port'=>Config::get('database.connections.pgsql.port'),
                     'PGPASSWORD'=>Config::get('database.connections.pgsql.password')]);
-
-	    // executes after the command finishes
-	    $this->procesado=true;
-	    $this->save();
-	    return true;
-	    }else{
-	     flash($data['file']['csv_info'] = 'Se Cargo un archivo de formato
+                //    $process->mustRun();
+	        // executes after the command finishes
+	        $this->procesado=true;
+	        $this->save();
+	        Log::debug($process->getOutput());
+	        return true;
+	    } catch (ProcessFailedException $exception) {
+	        Log::error($process->getErrorOutput());
+	    }
+	}else{
+	  flash($data['file']['csv_info'] = 'Se Cargo un archivo de formato
 		     no esperado!')->error()->important();
-            $this->procesado=false;
-            return false;
+          $this->procesado=false;
+          return false;
         }
     }
 
     public function procesarGeomSHP(){
-          flash('Procesando Geom .')->info();
+          flash('Procesando Geom . TODO: No implementado!')->error();
                 
           $processOGR2OGR =
                 Process::fromShellCommandline('(/usr/bin/ogr2ogr -f \
@@ -126,7 +131,7 @@ class Archivo extends Model
            
            }
     public function procesarGeomE00(){
-          flash('Procesando Geom Import E00.')->info();
+          flash('Procesando Arcos y Etiquetas (Importando E00.) ')->info();
           MyDB::createSchema('_'.$this->tabla);
           $processOGR2OGR = Process::fromShellCommandline('/usr/bin/ogr2ogr -f "PostgreSQL" \
                      PG:"dbname=$db host=$host user=$user port=$port active_schema=e_$esquema \
@@ -137,7 +142,8 @@ class Archivo extends Model
                      -nln $capa -addfields -overwrite $file $capa');
            $processOGR2OGR->setTimeout(3600);
                      // -skipfailures           
-       //Cargo arcos
+	  //Cargo arcos
+	  try{
            $processOGR2OGR->run(null, 
             ['capa'=>'arc',
              'epsg'=> $this->epsg_def,
@@ -150,7 +156,12 @@ class Archivo extends Model
              'pass'=>Config::get('database.connections.pgsql.password'),
              'port'=>Config::get('database.connections.pgsql.port')]);
             $mensajes=$processOGR2OGR->getErrorOutput().'<br />'.$processOGR2OGR->getOutput();
-      //Cargo etiquetas
+	   } catch (ProcessFailedException $exception) {
+	       Log::error($processOGR2OGR->getErrorOutput());
+           }
+
+	  //Cargo etiquetas
+	  try{
            $processOGR2OGR->run(null, 
             ['capa'=>'lab',
              'epsg'=> $this->epsg_def,
@@ -163,37 +174,57 @@ class Archivo extends Model
              'pass'=>Config::get('database.connections.pgsql.password'),
              'port'=>Config::get('database.connections.pgsql.port')]);
               $mensajes.='<br />'.$processOGR2OGR->getErrorOutput().'<br />'.$processOGR2OGR->getOutput();
-	    $this->procesado=true;
-	    $this->save();	    
-                
-        return $mensajes;
+	      $this->procesado=true;
+	   } catch (ProcessFailedException $exception) {
+	      Log::error($processOGR2OGR->getErrorOutput());
+	      $this->procesado=false;
+     }
+     $this->save();
+     return $mensajes;
     }
 
     public function moverData(){
-            // Leo dentro del csv que aglo/s viene/n o localidad depto CABA
-            $ppdddlll=MyDB::getLoc($this->tabla,'public');
-            if (substr($ppdddlll,0,2)=='02'){
-                flash($data['file']['caba']='Se detecto CABA: '.$ppdddlll);
-                $esquema=$ppdddlll;
+       // Busca dentro de la tabla las localidades
+       $ppdddllls=MyDB::getLocs($this->tabla,'public');
+       $count=0;
+       foreach ($ppdddllls as $ppdddlll){
+          	flash('Se encontró loc en C1: '.$ppdddlll->link);
+            MyDB::createSchema($ppdddlll->link);
+
+            if (substr($ppdddlll->link,0,2)=='02'){
+                flash($data['file']['caba']='Se detecto CABA: '.$ppdddlll->link);
+                $codigo_esquema=$ppdddlll->link;
                 $segmenta_auto=true;
-            }elseif (substr($ppdddlll,0,2)=='06'){
-                flash($data['file']['data']='Se detecto PBA: '.$ppdddlll);
-                $esquema=substr($ppdddlll,0,5);
+            }elseif (substr($ppdddlll->link,0,2)=='06'){
+                flash($data['file']['data']='Se detecto PBA: '.$ppdddlll->link);
+                $codigo_esquema=substr($ppdddlll->link,0,5);
             }else{
-                $esquema=$ppdddlll;
+                $codigo_esquema=$ppdddlll->link;
             }
-            MyDB::createSchema($esquema);
-            MyDB::moverDBF(storage_path().'/app/'.$this->nombre,$esquema);
-            $data['file']['info_dbf']=MyDB::infoDBF('listado',$esquema);
-            return $data['file']['codigo_usado']=$esquema;
+            MyDB::moverDBF(storage_path().'/app/'.$this->nombre,$codigo_esquema);
+            $count++;
+        }
+        Log::debug('C1 se copió en '.$count.' esqumas');
+        MyDB::borrarTabla($this->tabla);
+        return $codigo_esquema;
     }
  
     public function pasarData(){
              // Leo dentro de la tabla de etiquetas la/s localidades
             $ppdddllls=MyDB::getLocs('lab','e_'.$this->tabla);
+            $count=0;
             foreach ($ppdddllls as $ppdddlll){
-            	flash('Se encontró loc: '.$ppdddlll->link);
-            	MyDB::moverEsquema('e_'.$this->tabla,'e'.$ppdddlll->link);
+             	flash('Se encontró loc Etiquetas: '.$ppdddlll->link);
+              MyDB::createSchema($ppdddlll->link);
+            	//MyDB::moverEsquema('e_'.$this->tabla,'e'.$ppdddlll->link);
+              MyDB::copiaraEsquema('e_'.$this->tabla,'e'.$ppdddlll->link);
+              $count++;
             }
-    }  
+            MyDB::limpiar_esquema('e_'.$this->tabla);
+            return $count;
+    }
+
+    public function infoData(){
+       return MyDB::infoDBF('listado',$this->tabla);
+    }
 }
