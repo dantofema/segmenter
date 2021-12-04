@@ -65,8 +65,9 @@ class LocalidadController extends Controller
                         'localidad'=>$localidad,
                         'aglomerado'=>$localidad->aglomerado,
                         'radios'=>$localidad->radios,
-                        'carto'=>$localidad->carto,
-                        'listado'=>$localidad->listado
+                        'carto'=>$localidad->Carto,
+                        'listado'=>$localidad->Listado,
+                        'svg'=>$localidad->getSVG()
                         ]);
     }
 
