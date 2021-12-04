@@ -95,8 +95,8 @@ class LocalidadController extends Controller
                     MyDB::segmentos_excedidos($localidad->codigo,$request['vivs_max'],$radio);
                     $mensajes_excedidos = '';
                     foreach ($excedidos as $segmento){
-          $mensajes_excedidos .= 'El lado '.$segmento->lado.' de la manzana '.$segmento->mza.
-            ' debe segmentarse x listado, ya que tienen '.$segmento->vivs.' viviendas.
+                    $mensajes_excedidos .= 'El lado '.$segmento->lado.' de la manzana '.$segmento->mza.
+                    ' debe segmentarse x listado, ya que tienen '.$segmento->vivs.' viviendas.
                                     ';
                         Log::debug(json_encode($segmento));
                     }

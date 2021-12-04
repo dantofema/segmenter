@@ -94,17 +94,27 @@ class MyDB extends Model
         public static function segmentos_excedidos($esquema,$vivs,Radio $radio=null)
         {
                 if ($radio){
+                    $filtro=' ppddcccffrr like
+                    '.substr($radio->codigo,0,5).'___'.substr($radio->codigo,-4);
                     Log::debug('Filtro excedidos del radio: '.$radio->codigo.'
-                    aplicando ppddcccffrr like 
-                    '.substr($radio->codigo,0,5).'___'.substr($radio->codigo,-4));
-                        $result = DB::select("SELECT * FROM e".$esquema.".v_segmentos_lados_completos
-                        WHERE vivs > ".$vivs." and ppdddcccffrr like
-                        '".substr($radio->codigo,0,5)."___".substr($radio->codigo,-4)."';");
-                        }
-                    else{
-                        $result = DB::select("SELECT * FROM e".$esquema.".v_segmentos_lados_completos
-                    WHERE vivs > ".$vivs.";");
+                                aplicando '.$filtro);
+                    try{
+                       $result = DB::select("SELECT * FROM e".$esquema.".v_segmentos_lados_completos
+                        WHERE vivs > ".$vivs." and ".$filtro."';");
+                    }catch(QueryException $e){
+                      Log::error('ERROR Buscando segmentos excedidos del esquema-> '.$esquema.' con el filtro '.$filtro);
+                      $result=[];
                     }
+                 }
+                 else{
+                    try{
+                     $result = DB::select("SELECT * FROM e".$esquema.".v_segmentos_lados_completos
+                           WHERE vivs > ".$vivs.";");
+                    }catch(QueryException $e){
+                      Log::error('ERROR Buscando segmentos excedidos del esquema-> '.$esquema.' sin filtro ');
+                      $result=[];
+                    }
+                }
             return $result;
         }
 
