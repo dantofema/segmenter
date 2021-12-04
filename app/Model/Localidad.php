@@ -19,8 +19,8 @@ class Localidad extends Model
     // Sin fecha de creación o modificación
     //
     public $timestamps = false;
-    public $carto;
-    public $listado;
+    private $_carto;
+    private $_listado;
     public $segmentadoListado;
     public $segmentadoLados;
 
@@ -58,30 +58,29 @@ class Localidad extends Model
 
     public function getCartoAttribute($value)
     {
-        if(! $this->carto) {
+        if(! $this->_carto) {
             if (Schema::hasTable('e'.$this->codigo.'.arc')) {
-                $this->carto = true;
+                $this->_carto = true;
             }else{
-                $this->carto = false;
+                $this->_carto = false;
             }
         }
-        return $this->carto;
+        return $this->_carto;
     }
     
 
     public function getListadoAttribute($value)
     {
         /// do your magic
-        if (! $this->listado) {
-
+        if (! $this->_listado) {
             if (Schema::hasTable('e'.$this->codigo.'.listado')) {
                 //
-                $this->listado= true;
+                $this->_listado= true;
             }else{
-                $this->listado= false;
+                $this->_listado= false;
             }
         }
-        return $this->listado;
+        return $this->_listado;
     }
 
     public function getSegmentadolistadoAttribute($value)
@@ -120,14 +119,14 @@ class Localidad extends Model
 
     public function setCartoAtribute()
     {
-        if (! $this->carto) {
+        if (! $this->_carto) {
           if (Schema::hasTable('e'.$this->codigo.'.arc')) {
-              return $this->carto = true;
+              return $this->_carto = true;
           }else{
-              return $this->carto = false;
+              return $this->_carto = false;
           }
         }
-        return $this->carto;
+        return $this->_carto;
 
     }
 
@@ -266,19 +265,20 @@ WITH shapes (geom, attribute) AS (
             'stroke=\"black\" stroke-width=\"".$stroke."\" fill=\"#22' ||
             attribute*10 || '88\"'
          END,
-          ' />')
+          ' />') 
      FROM shapes GROUP BY attribute
  )
  SELECT concat(
-         '<svg id=\"aglo_".$this->codigo."\"xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"".$viewBox.
+         '<svg id=\"localidad_".$this->codigo."\"xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"".$viewBox.
          "\" height=\"".$height."\" width=\"".$width."\">',
          array_to_string(array_agg(svg),''),
-         '</svg>')
+         '</svg>') 
  FROM paths;
 ");
-
-            return $svg[0]->concat;
-        }else{ return "No geodata"; }
+        if ($svg[0]->concat) {
+          return $svg[0]->concat;
+        }else{ return "no SVG"; }
+        }else{ return "No se puede previsualizar"; }
 
     }
 

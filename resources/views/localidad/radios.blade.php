@@ -52,7 +52,7 @@
 
 </div>
      @if($carto)
-        {!! $svg->concat !!}
+        {!! $svg !!}
      @endif
 @if($localidad->codigo =='0125')         
 <div>
