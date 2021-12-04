@@ -83,8 +83,8 @@ class Segmentador extends Model
     public function
     segmentar_excedidos_ffrr($esquema,$frac,$radio,$umbral,$desado)
     {
-        MyDB::segmentar_excedidos_ffrr($esquema,$frac,$radio,$umbral,$desado);
-	MyDB::grabarSegmentacion($esquema,$frac,$radio);
+       MyDB::segmentar_excedidos_ffrr($esquema,$frac,$radio,$umbral,$desado);
+	     MyDB::grabarSegmentacion($esquema,$frac,$radio);
     }
 
 }

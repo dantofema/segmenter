@@ -168,7 +168,7 @@ class SegmenterController extends Controller
                 $processOGR2OGR->run(null, ['capa'=>'lab','epsg' => $epsg_id, 'file' => storage_path().'/app/'.$data['file']['shp_lab'],'e00'=>$codaglo,'db'=>Config::get('database.connections.pgsql.database'),'host'=>Config::get('database.connections.pgsql.host'),'user'=>Config::get('database.connections.pgsql.username'),'pass'=>Config::get('database.connections.pgsql.password'),'port'=>Config::get('database.connections.pgsql.port')]);
  */
                 $shp_file->epsg_def = $epsg_id;
-		    if( $shp_file->procesar() ) {flash('Proceso');}else{flash('la cago')->error();
+		    if( $ppddllls=$shp_file->procesar() ) {flash('Proceso');}else{flash('la cago')->error();
 		    }
   	    }
             if (!$processOGR2OGR->isSuccessful()) {
@@ -184,7 +184,7 @@ class SegmenterController extends Controller
 		$shp_file->save();
 		if( $mensajes=$shp_file->procesar() ) {
 			flash('Procesó e00')->important()->success();
-			$shp_file->pasarData();
+			$ppdddllls=$shp_file->pasarData();
 		}else{flash('la cago')->error();
 		    }
 /*            $random_name='t_'.$request->shp->hashName();
@@ -242,21 +242,24 @@ class SegmenterController extends Controller
 	    }
 
 	    }
-
-            MyDB::agregarsegisegd($codaglo);
+        foreach($ppdddllls as $ppdddlll){
+          MyDB::agregarsegisegd($ppdddlll->link);
+          MyDB::juntaListadoGeom('e'.$ppdddlll->link);
+        }
+        //MyDB::agregarsegisegd($codaglo);
         }else {//dd($request->file('shp')); 
             flash('File geo not valid')->error()->important();
         }
         if (isset($codaglo)){
             if ($epsg_id=='sr-org:8333'){
 	        MyDB::setSRID('e'.$codaglo,98333);
-	    }
-            MyDB::juntaListadoGeom('e'.$codaglo);
-            if($segmenta_auto) {
-                    MyDB::segmentar_equilibrado($codaglo,36);
-                    flash('Segmentado automáticamente a 36 viviendas x segmento')->important();
-            }
-	 }
+        }
+        //MyDB::juntaListadoGeom('e'.$codaglo);
+        if($segmenta_auto) {
+               MyDB::segmentar_equilibrado($codaglo,36);
+               flash('Segmentado automáticamente a 36 viviendas x segmento')->important();
+        }
+	     }
       }
     }
     if ($request->hasFile('pxrad')) {

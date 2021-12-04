@@ -92,7 +92,7 @@ class LocalidadController extends Controller
                     $this->run_segmentar_x_lado($request,$localidad,$radio,true);
                     Log::debug("Segmentacion lucky: ".$radio);
                     $excedidos =
-                    MyDB::segmentos_excedidos($localidad->codigo,$request['vivs_max'],$radio);
+                    MyDB::segmentos_excedidos('e'.$localidad->codigo,$request['vivs_max'],$radio);
                     $mensajes_excedidos = '';
                     foreach ($excedidos as $segmento){
                     $mensajes_excedidos .= 'El lado '.$segmento->lado.' de la manzana '.$segmento->mza.

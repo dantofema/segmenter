@@ -183,6 +183,8 @@ class Archivo extends Model
      return $mensajes;
     }
 
+    // Copia o Mueve listados de una C1 al esquema de las localidades encontradas
+    // Retorna Array $ppdddlls con codigos de localidades
     public function moverData(){
        // Busca dentro de la tabla las localidades
        $ppdddllls=MyDB::getLocs($this->tabla,'public');
@@ -206,9 +208,12 @@ class Archivo extends Model
         }
         Log::debug('C1 se copió en '.$count.' esqumas');
         MyDB::borrarTabla($this->tabla);
-        return $codigo_esquema;
+        return $ppdddllls;
     }
- 
+
+
+    // Pasa data geo, arcos y labels al esquema de las localidades encontradas
+    // Retorna Array $ppdddlls con codigos de localidades
     public function pasarData(){
              // Leo dentro de la tabla de etiquetas la/s localidades
             $ppdddllls=MyDB::getLocs('lab','e_'.$this->tabla);
@@ -221,7 +226,7 @@ class Archivo extends Model
               $count++;
             }
             MyDB::limpiar_esquema('e_'.$this->tabla);
-            return $count;
+            return $ppdddllls;
     }
 
     public function infoData(){

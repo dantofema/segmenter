@@ -94,24 +94,24 @@ class MyDB extends Model
         public static function segmentos_excedidos($esquema,$vivs,Radio $radio=null)
         {
                 if ($radio){
-                    $filtro=' ppddcccffrr like
-                    '.substr($radio->codigo,0,5).'___'.substr($radio->codigo,-4);
+                    $filtro=" ppdddcccffrr like
+                    '".substr($radio->codigo,0,5)."___".substr($radio->codigo,-4)."'";
                     Log::debug('Filtro excedidos del radio: '.$radio->codigo.'
                                 aplicando '.$filtro);
                     try{
-                       $result = DB::select("SELECT * FROM e".$esquema.".v_segmentos_lados_completos
-                        WHERE vivs > ".$vivs." and ".$filtro."';");
+                       $result = DB::select("SELECT * FROM ".$esquema.".v_segmentos_lados_completos
+                        WHERE vivs > ".$vivs." and ".$filtro.";");
                     }catch(QueryException $e){
-                      Log::error('ERROR Buscando segmentos excedidos del esquema-> '.$esquema.' con el filtro '.$filtro);
+                      Log::error('ERROR Buscando segmentos excedidos del esquema-> '.$esquema.' con el filtro '.$filtro.$e);
                       $result=[];
                     }
                  }
                  else{
                     try{
-                     $result = DB::select("SELECT * FROM e".$esquema.".v_segmentos_lados_completos
+                     $result = DB::select("SELECT * FROM ".$esquema.".v_segmentos_lados_completos
                            WHERE vivs > ".$vivs.";");
                     }catch(QueryException $e){
-                      Log::error('ERROR Buscando segmentos excedidos del esquema-> '.$esquema.' sin filtro ');
+                      Log::error('ERROR Buscando segmentos excedidos del esquema-> '.$esquema.' sin filtro '.$e);
                       $result=[];
                     }
                 }
@@ -666,8 +666,8 @@ FROM
                 }
         }
 
-        public static function agregarsegisegd($esquema)
-        {
+        public static function agregarsegisegd(String $esquema)
+        {   
             if (Schema::hasTable('e'.$esquema.'.arc')) {
             DB::statement('ALTER TABLE e'.$esquema.'.arc ADD COLUMN IF NOT EXISTS segi integer;');
             DB::statement('ALTER TABLE e'.$esquema.'.arc ADD COLUMN IF NOT EXISTS segd integer;');

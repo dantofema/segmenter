@@ -119,7 +119,7 @@ use Illuminate\Support\Facades\Log;
                     $this->run_segmentar_x_lado($request,$aglomerado,$radio,true); 
                     Log::debug("Segmentacion lucky: ".$radio);
                     $excedidos =
-                    MyDB::segmentos_excedidos($aglomerado->codigo,$request['vivs_max'],$radio);
+                    MyDB::segmentos_excedidos('e'.$aglomerado->codigo,$request['vivs_max'],$radio);
                     $mensajes_excedidos = '';
                     foreach ($excedidos as $segmento){
 			    $mensajes_excedidos .= 'El lado '.$segmento->lado.' de la manzana '.$segmento->mza.
