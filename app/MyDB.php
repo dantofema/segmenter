@@ -232,51 +232,51 @@ FROM
 	            '.$esquema.'.'.$tabla.' group by 1,2 order by codprov||coddepto asc,count(*) desc ;'));
 	    }
 	    Log::error('Error: '.$exception);
-		// Loguea error y devuelve array nulo 
+		  // Loguea error y devuelve array nulo 
 	    return [];
-	}
+	    }
     }
 
     public static function getDataFrac($tabla,$esquema,$codigo_dpto=null)
     {
 	    if(isset($codigo_dpto)){ 
 	        log::debug(' Fracciones del departamento: '.$codigo_dpto);   
-                $filtro=" WHERE codprov||coddepto= '".$codigo_dpto."'";
+          $filtro=" WHERE codprov||coddepto= '".$codigo_dpto."'";
 	    }else{$filtro='';}
         try {
-	    return (DB::select('SELECT codprov||coddepto||frac2020 as codigo,
-		codprov||coddepto||codloc||frac2020 as nombre FROM
-                '.$esquema.'.'.$tabla.' '.$filtro.' group by 1,2 order by codprov||coddepto||codloc||frac2020 asc, count(*) desc ;'));
+	        return (DB::select('SELECT codprov||coddepto||frac2020 as codigo,
+                     	codprov||coddepto||codloc||frac2020 as nombre FROM
+                     '.$esquema.'.'.$tabla.' '.$filtro.' group by 1,2 order by codprov||coddepto||codloc||frac2020 asc, count(*) desc ;'));
         }catch (\Illuminate\Database\QueryException $exception) {
-		Log::error('Error: '.$exception);
-		//
-	    return null;
-	}
+		      Log::error('Error: '.$exception);
+		      //
+	        return [];
+	      }  
     }
 
     public static function getDataRadio($tabla,$esquema,$codigo_loc=null)
     {
 	    log::debug(' Radios de la Localidad: '.$codigo_loc);
-	    if(isset($codigo_loc)){ $filtro=" WHERE codprov||coddepto||codloc= '".$codigo_loc."'";
-	    }else{$filtro='';}
-        try {
-	    return (DB::select('SELECT codprov||coddepto||frac2020||radio2020 as codigo,
-		codprov||coddepto||codloc||frac2020||radio2020 as nombre,upper(tiporad20) as tipo FROM
-                '.$esquema.'.'.$tabla.' '.$filtro.' group by 1,2,3 order by codprov||coddepto||codloc||frac2020||radio2020 asc, count(*) desc ;'));
-        }catch (\Illuminate\Database\QueryException $exception) {
+	   if(isset($codigo_loc)){ $filtro=" WHERE codprov||coddepto||codloc= '".$codigo_loc."'";
+	   }else{$filtro='';}
+     try {
+	       return (DB::select('SELECT codprov||coddepto||frac2020||radio2020 as codigo,
+		             codprov||coddepto||codloc||frac2020||radio2020 as nombre,upper(tiporad20) as tipo FROM
+                 '.$esquema.'.'.$tabla.' '.$filtro.' group by 1,2,3 order by codprov||coddepto||codloc||frac2020||radio2020 asc, count(*) desc ;'));
+     }catch (\Illuminate\Database\QueryException $exception) {
 	    Log::warning('Malabares : '.$exception);
 	    flash('Puede que no se haya encontrado el tipo de radio, se asúme todo Urbano')->important()->warning();
 	    // Se intenta asumiendo que es urbano y falta el tiporad20	
-            try {
+      try {
 	       return (DB::select('SELECT codprov||coddepto||frac2020||radio2020 as codigo,
-		codprov||coddepto||codloc||frac2020||radio2020 as nombre,\'U\' as tipo FROM
+		            codprov||coddepto||codloc||frac2020||radio2020 as nombre,\'U\' as tipo FROM
                 '.$esquema.'.'.$tabla.' '.$filtro.' group by 1,2,3 order by codprov||coddepto||codloc||frac2020||radio2020 asc, count(*) desc ;'));
-		//
-            }catch (\Illuminate\Database\QueryException $exception) {
+            		//
+      }catch (\Illuminate\Database\QueryException $exception) {
 	        Log::error('Error : '.$exception);
-	        return null;
+	        return [];
 	    }
-	}
+	   }
     }
 
     public static function getDataLoc($tabla,$esquema,$codigo_depto=null)

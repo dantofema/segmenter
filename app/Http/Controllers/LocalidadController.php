@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Model\Localidad;
+use App\Model\Radio;
+use App\MyDB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class LocalidadController extends Controller
 {
@@ -102,7 +105,7 @@ class LocalidadController extends Controller
                         $radio->resultado.= '
     '.$mensajes_excedidos;
                         }
-                        return app('App\Http\Controllers\SegmentacionController')->ver_grafo($localidad,$radio);
+                        return app('App\Http\Controllers\SegmentacionController')->ver($localidad,$radio);
                     }
               return
               app('App\Http\Controllers\SegmentacionController')->index($localidad);
@@ -193,7 +196,7 @@ class LocalidadController extends Controller
                                           $request['vivs_min'],
                                           $request['mzas_indivisibles']);
                                           }
-            return  app('App\Http\Controllers\SegmentacionController')->ver_grafo($localidad,$radio);
+            return  app('App\Http\Controllers\SegmentacionController')->ver($localidad,$radio);
         }else{
            flash('No selecciono ningún radio valido!');
            dd($request);

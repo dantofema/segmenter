@@ -7,6 +7,7 @@ use Auth;
 use App\MyDB;
 use App\Model\Aglomerado;
 use App\Model\Radio;
+use App\Model\Localidad;
 
 
 class SegmentacionController extends Controller
@@ -49,5 +50,23 @@ class SegmentacionController extends Controller
 
                 $segmentacion=MyDB::segmentar_lados_ver_resumen($aglomerado->codigo);
                 return view('segmentacion.grafico2_lados',['segmentacion'=>$segmenta_data,'aglomerado'=>$aglomerado]);
+    }
+
+    public function ver(Localidad $localidad,Radio $radio)
+      {
+        $filtro_radio = substr($radio->codigo,0,5).'___'.substr($radio->codigo,5,4);
+        $nodos = MyDB::getNodos($radio->esquema,$filtro_radio);
+        $edges = MyDB::getAdyacencias($radio->esquema,$filtro_radio);
+        $segmentacion_data = MyDB::getSegmentos($radio->esquema,$filtro_radio);
+        $segmentacion=[];
+        foreach ($segmentacion_data as $data){ 
+                $segmentacion[]=explode(',',str_replace('}','',str_replace('{','',$data->segmento)));
+                }
+        $segmentacion_listado=MyDB::segmentar_equilibrado_ver($localidad->codigo,100,$radio);
+        $radio->refresh();
+        return
+        view('grafo.show',['nodos'=>$nodos,'relaciones'=>$edges,
+             'segmentacion'=>$segmentacion,'segmentacion_data_listado'=>$segmentacion_listado,
+             'aglomerado'=>$localidad->aglomerado,'radio'=>$radio]);
     }
 }
