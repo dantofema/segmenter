@@ -18,7 +18,8 @@ class CreateRadioEntidadRelation extends Migration
            DB::unprepared($sql);
        }catch(Illuminate\Database\QueryException $e){
           DB::Rollback();
-          echo _('Error creando relacion radio - entidad...');
+	  echo _('Error creando relacion radio - entidad...
+		  ');
        }
     }
 
@@ -29,6 +30,6 @@ class CreateRadioEntidadRelation extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('radio_entidad_relation');
+        Schema::dropIfExists('radio_entidad');
     }
 }

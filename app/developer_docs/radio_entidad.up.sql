@@ -18,7 +18,6 @@ SET row_security = off;
 
 SET default_tablespace = '';
 
-SET default_table_access_method = heap;
 
 --
 -- Name: radio_entidad; Type: TABLE; Schema: public; Owner: -
