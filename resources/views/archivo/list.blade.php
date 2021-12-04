@@ -109,15 +109,15 @@
          },
          columns: [
                   { visible: false, data: 'id', name: 'id' },
-                  { data: 'nombre_original', name: 'nombre' },
-                  { visible: false, data: 'nombre', name: 'nombre_interno' },
+                  { data: 'nombre_original', name: 'nombre_original' },
+                  { visible: false, data: 'nombre', name: 'nombre' },
                   { visible: false, data: 'user_id', name: 'user_id' },
                   { data: 'tipo', name: 'tipo' },
                   { data: 'mime', name: 'mime' },
                   { data: 'checksum', name: 'checksum' },
                   { data: 'size', name: 'size' },
                   { orderable: false, searchable: false , data: function ( row, type, val, meta ) {
-                                var html =  '<button type="button" class="btn_descarga btn-sm btn-primary" > Descargar </button> ';
+                             var html =  '<button type="button" class="btn_descarga btn-sm btn-primary" > Descargar </button> ';
                                  html +=  '<button type="button" class="btn_arch btn-sm btn-primary" > Ver </button>';
                                  html +=  '<button type="button" class="btn_arch_delete btn-sm btn-delete " > Borrar </button>';
                               return html;
