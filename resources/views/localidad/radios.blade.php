@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Localidad {{ $localidad->nombre }}')
+@section('title', $localidad->nombre )
 
 @section('content')
 <div class="container">
