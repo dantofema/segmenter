@@ -24,6 +24,7 @@ class Radio extends Model
     private $_isSegmentado;
     private $_resultado;
     private $_esquema;
+    private $_esquemas;
 
     public static function getradioData(){
       $value=DB::table($table)->orderBy('id', 'asc')->get();
@@ -96,26 +97,19 @@ class Radio extends Model
      }
 
      /**
-      * Relación con Aglomerado, un Radio puede pertenecer a varios aglomerado? Espero que solo este en 1.
+      * Relación con Aglomerado, 
+      * un Radio puede pertenecer a varios aglomerados!
+      * (? Esperaba que solo este en 1. :( )
       *
       */
 
-     public function aglomerado()
+     public function aglomerados()
      {
-        //TODO
-    //    return $this->hasOneThrough(Aglomerado::class,Fraccion::class);
-    //    return $this->belongsToMany('App\Model\Localidad', 'radio_localidad');
-            if ($this->localidades->count()>1){
-                Log::warning('Varias localidades: Tomo la primera
-			'.$this->localidades->first()->codigo.
-			' '.($this->localidades)->toJson(JSON_PRETTY_PRINT));
-                return $aglo = $this->localidades->first()->aglomerado;
-            }elseif ($localidad=$this->localidades->first())
-                {
-                    return $aglo=$localidad->aglomerado;
-                }
-                else
-                    return null; //new Aglomerado();
+	    $aglos=[];
+            foreach ($this->localidades as $localidad){
+                $aglos[] = $localidad->aglomerado;
+            }
+            return $aglos;
      }
 
     /**
@@ -196,9 +190,6 @@ class Radio extends Model
      public function getCantMzasAttribute($value)
      {
           $cant_mzas = MyDB::getCantMzas($this);
-          if ($cant_mzas!=0){
-            $cant_mzas = $cant_mzas;
-            }else{$cant_mzas=-1;}
           return $cant_mzas;
      }
 
@@ -209,7 +200,7 @@ class Radio extends Model
      public function getisSegmentadoAttribute($value)
      {
         if (! isset($this->_isSegmentado)){
-          if ($this->aglomerado() != null){
+          if (count($this->aglomerados())>0){
                     $result = MyDB::isSegmentado($this);
 
               if ($result):
@@ -235,53 +226,56 @@ class Radio extends Model
     }
 
     public function getEsquemaAttribute($value){
-        if (! $this->_esquema){
-          $this->_esquema='foo';
-          if ($this->aglomerado() != null){
-		  if ($this->aglomerado()->codigo=='0001'){
-                    if ($this->fraccion->departamento->provincia->codigo == '02') {
-                        $this->_esquema = 'e'.
-                                    $this->fraccion->departamento->codigo.
-                                    $this->localidades()->first()->codigoLoc;
-                    }else{
-                        $this->_esquema = 'e'.$this->fraccion->departamento->codigo;
-                    }
-                }else
-                {
-                    $this->_esquema = 'e'.$this->aglomerado()->codigo;
-                    try{
-			    if(!$this->fraccion){
+      if ($this->_esquema){
+	      return $this->_esquema;
+     	}else{
+	     $this->_esquema='cualca';
+	     $posibles_esquemas=$this->esquemas;
+	    return $this->_esquema=$posibles_esquemas[0];
+	    }
+    }
+
+    public function getEsquemasAttribute($value){
+        if (! $this->_esquemas){
+                 try{
+           			    if(!$this->fraccion){
                          	    Log::error('Radio sin fracción? : '.collect($this)->toJson(JSON_PRETTY_PRINT));
-				    $this->_esquema='e'.$this->codigo;
-			    }elseif ($this->fraccion->departamento->provincia->codigo == '06') {
-                               $this->_esquema = 'e'.$this->fraccion->departamento->codigo;
-                               }elseif ($this->localidades()->count() > 1) {
-				   $loc_no_rural=$this->localidades()->whereHas('aglomerado', function($q) {
-                                              $q->where('codigo', 'not like', '%000%');
+				                     $esquemas[]='e'.$this->codigo;
+          	        }elseif ($this->fraccion->departamento->provincia->codigo == '06') {
+                                $esquemas[]='e'.$this->fraccion->departamento->codigo;
+                      }elseif ($this->localidades()->count() > 1) {
+              				   $loc_no_rural=$this->localidades()->whereHas('aglomerado', function($q) {
+                                              $q->where('codigo', 'not like', '%0000%');
                                                })->get();
-				   if ($loc_no_rural->count() > 1) {
-					   Log::warning('TODO: Implementar radio multilocalidades'.$this->localidades()->get()->toJson(
-					   JSON_PRETTY_PRINT));
-                                     foreach($loc_no_rural as $localidad){
-                                       Log::info('Posible esquema:'.($localidad->codigo));
-                                     }
-				      $this->_esquema = 'e'.$this->fraccion->departamento->codigo;
-				    }else{
-					    Log::info('Buscando parte Urbana del Radio en esquema:'.
-						    ($loc_no_rural->first()->aglomerado()->first()->codigo));
-                                      $this->_esquema = 'e'.$loc_no_rural->first()->aglomerado()->first()->codigo;
-				    }
-                              }
-                    }catch (Exception $e){
-                         Log::error('Algo muy raro paso: '.$e);
-                    };
-                }
-        }else{
-            $this->_esquema='e'.$this->codigo;
+               				   if ($loc_no_rural->count() > 1) {
+		               			   Log::warning('TODO: Implementar radio multilocalidades'.$this->localidades()->get()->toJson(
+					                              JSON_PRETTY_PRINT));
+                           foreach($loc_no_rural as $localidad){
+                        		     Log::info('Posible esquema:'.($localidad->codigo));
+                         		     $esquemas[]=$localidad->codigo;
+                           }
+              				      $esquemas[]='e'.$this->fraccion->departamento->codigo;
+				                }else{
+					                    Log::info('Buscando parte Urbana del Radio en el esquema de la única localidad:'.
+                         						    ($loc_no_rural->first()->codigo));
+                              $esquemas[]='e'.$loc_no_rural->first()->codigo;
+				                }
+			              }else{
+                       $esquemas[]='e'.$this->localidades()->first()->codigo;
+			              }
+                }catch (Exception $e){
+                 Log::error('Algo muy raro paso: '.$e);
+                };
+          if ($this->aglomerados() != null){
+             			foreach ($this->aglomerados() as $aglo){
+	                    $esquemas[]='e'.$aglo->codigo;
+            			}
+          }
+        Log::debug('Radio '.$this->codigo.' esperado en esquemas => '.collect($esquemas)->toJson(
+                                           JSON_PRETTY_PRINT));
+        return $this->_esquemas=$esquemas; //$this->_esquema;
         }
-        Log::debug('Radio '.$this->codigo.' esperado en esquema: '.$this->_esquema);
-        }
-        return $this->_esquema;
+        return $this->_esquemas; //$this->_esquema;
     }
 
     public function getSVG()
