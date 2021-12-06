@@ -1,37 +1,61 @@
-@extends('layouts.app')
+@extends ('layouts.app')
 
-@section('title', $localidad->nombre)
+@section ('title', $localidad->nombre)
 
-@section('content')
+@section ('content')
 <div class="container">
     Información de la Localidad ({{ $localidad->codigo }}) 
     <b> {{ $localidad->nombre }} </b><br />
-    @if($aglomerado)
-    Aglomerado <a href="{{ url("/aglo/{$aglomerado->id}") }}" >
+    @if ($aglomerado)
+    del aglomerado <a href="{{ url("/aglo/{$aglomerado->id}") }}" >
     ({{ $aglomerado->codigo }}) 
     <b> {{ $aglomerado->nombre }} </b></a><br />
      @else
         NO está definido ningún aglomerado.
      @endif
     <div class="">
-     @if($carto)
+     @if ($carto)
         La base geográfica está cargada.
      @else
         NO está cargada la base geográfica.
      @endif 
     </div>
     <div class="">
-     @if($listado)
+     @if ($listado)
         El Listado de viviendas esta cargado.
      @else
         NO está cargado el listado de viviendas.
      @endif 
     </div>
 
+@if ($carto && $listado)
+<button type="button" class="btn btn-primary" id="segmentar">Segmentar</button>
+@endif
+ <div class="container">
+   <!-- Modal -->
+   <div class="modal fade" id="segmentaLocModal" role="dialog">
+    <div class="modal-dialog">
+
+     <!-- Modal content-->
+     <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Segmentar Localidad</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <div class="modal-body" id="modal-body-segmenta">
+
+      </div>
+      <div class="modal-footer">
+       <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+      </div>
+     </div>
+    </div>
+   </div>
+
+
 <div class="form-horizontal">
 <form action="/grafo/{{ $localidad->id }}" method="GET" enctype="multipart/form-data">
                 @csrf
-
   <div class="form-group">
     <label class="control-label" for="radio">Seleccione un Radio para ver grafo de segmentación:</label>
     <div class="">
@@ -123,3 +147,29 @@
 </div>
 @endif
 @stop
+@section('footer_scripts')
+ <script>
+ $(document).ready( function () {
+     $.ajaxSetup({
+          headers: {
+              'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+          }
+      });
+$("#segmentar").click(function () {
+      // AJAX request
+           $.ajax({
+            url: "{{ url('localidad-segmenta') }}"+"/{{ $localidad->id }}",
+            type: 'post',
+            data: {id: {{ $localidad->id }},format: 'html'},
+            success: function(response){ 
+              // Add response in Modal body
+              $('#modal-body-segmenta').html(response);
+              // Display Modal
+              $('#segmentaLocModal').modal('show'); 
+            }
+           });
+  });
+});
+</script>
+@endsection
+
