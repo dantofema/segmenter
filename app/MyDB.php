@@ -1169,23 +1169,26 @@ FROM
             }
 
             public static function getCantMzas(Radio $radio){
-                $esquemas=$radio->esquemas;
+                $esquemas=$radio->Esquemas;
+                Log::debug('Contando Mzas para radio '.$radio->codigo);
                 $prov=substr($radio->codigo,0,2);
                 $dpto=substr($radio->codigo,2,3);
                 $frac=substr($radio->codigo,5,2);
-		$rad=substr($radio->codigo,7,2);
-		$mzas=0;
+		            $rad=substr($radio->codigo,7,2);
+             		$suma_mzas=0;
                 foreach($esquemas as $esquema){
-		try{
-                    $mzas += DB::select("
+              		try{
+                    $mzas = (int) DB::select("
                                SELECT count( distinct mza)  cant_mzas 
                                FROM ".$esquema.".conteos WHERE prov=".$prov." and dpto = ".$dpto." and
                                frac=".$frac." and radio=".$rad." ;")[0]->cant_mzas;
-                 }catch(QueryException $e){
+                    $suma_mzas +=$mzas;
+                    Log::info('Manzanas para radio '.$radio.' contadas '.$mzas);
+                   }catch(QueryException $e){
                     Log::error('No se encontro conteo manzanas para radio '.$radio.$e);
-                 }
-		}
-		    return $mzas;
+                   }
+            		}
+        		    return $suma_mzas;
             }
 
             public static function isSegmentado(Radio $radio=null){
