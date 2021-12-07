@@ -20,19 +20,23 @@ class CreateDepartamentosTable extends Migration
 
         });
      **/
-
-	Schema::create('departamentos', function (Blueprint $table) {
-		$table->bigIncrements('id')->index();
-		$table->string('codigo')->index();
-		$table->string('nombre')->index();
-		$table->integer('provincia_id')->index();
-		$table->date('fecha_desde')->nullable();
-		$table->date('fecha_hasta')->nullable();
-		$table->integer('observacion_id')->nullable();
-		$table->integer('geometria_id')->nullable();
-		$table->foreign('provincia_id')->references('id')->on('provincia')->onDelete('cascade');
+  if (! Schema::hasTable('provincia')){
+	  Schema::create('departamentos', function (Blueprint $table) {
+		  $table->bigIncrements('id')->index();
+		  $table->string('codigo')->index();
+		  $table->string('nombre')->index();
+		  $table->integer('provincia_id')->index();
+		  $table->date('fecha_desde')->nullable();
+		  $table->date('fecha_hasta')->nullable();
+		  $table->integer('observacion_id')->nullable();
+		  $table->integer('geometria_id')->nullable();
+		  $table->foreign('provincia_id')->references('id')->on('provincia')->onDelete('cascade');
 		//$table->timestamps();
-	});
+	  });
+   }else{
+	  echo _('Omitiendo creación de tabla de departametos existente...
+');
+   }
 /*
 	 $sql = file_get_contents(app_path() . '/developer_docs/departamentos.up.sql');
 	 DB::unprepared($sql);
