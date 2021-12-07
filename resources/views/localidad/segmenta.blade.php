@@ -2,19 +2,20 @@
     Información de la localidad ({{ $localidad->codigo }}) 
     <b> {{ $localidad->nombre }} </b><br />
     <p>
-     @if($carto)
+     @if ($carto)
         La base geográfica está cargada.
      @else
         NO está cargada la base geográfica.
      @endif 
     <br />
-     @if($listado)
+     @if ($listado)
         El listado de viviendas está cargado.
      @else
         NO está cargado el listado de viviendas.
      @endif 
     <br />
     </p>
+@if ($carto && listado)
 <div class="form-horizontal">
 <form action="/localidad-segmenta-run/{{ $localidad->id }}" method="POST" enctype="multipart/form-data">
                 @csrf
@@ -71,4 +72,5 @@
   </div>
 </form>
 </div>
+@endif
 </div>

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 //use App\Model\Radio;
 
 class Aglomerado extends Model
@@ -40,14 +41,18 @@ class Aglomerado extends Model
     {
     //select * from information_schema.tables where table_schema = 'e0777' and table_name = 'arc' and table_type = 'BASE TABLE'
         if(! $this->carto){
-            if ($this->codigo!='0001'){
-            if (Schema::hasTable('e'.$this->codigo.'.arc')) {
-            //
-                $this->carto = true;
-            }else{
-                $this->carto = false;
-            }
-            }else { $this->carto = false; }
+            if ($this->localidades()->count()==1){
+              if (Schema::hasTable('e'.$this->localidades()->first()->codigo.'.arc')) {
+                  //Veo Arcos en esquema de localidad
+                $this->carto=true;
+              }elseif (Schema::hasTable('e'.$this->codigo.'.arc')) {
+                     // Veo carto en esquema de aglomerado
+                    $this->carto = true;
+                    Log::debug('No se encontró carto en esquema de localidad, pero si en esquema de aglomerado'.$this);
+              }else{
+                   $this->carto = false;
+              }
+             }else { $this->carto = false; }
         }
         return $this->carto;
     }
