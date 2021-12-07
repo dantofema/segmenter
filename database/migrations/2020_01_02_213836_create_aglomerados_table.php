@@ -13,25 +13,16 @@ class CreateAglomeradosTable extends Migration
      */
     public function up()
     {
-     /**
-        Schema::create('provincia', function (Blueprint $table) {
-            $table->bigIncrements('id');
-            $table->timestamps();
-
-        });
-     **/
-	 $sql = file_get_contents(app_path() . '/developer_docs/aglomerados.up.sql');
+	    $sql = file_get_contents(app_path() . '/developer_docs/aglomerados.up.sql');
       try{
-           DB::unprepared($sql);
+          DB::unprepared($sql);
        }catch(Illuminate\Database\QueryException $e){
-          DB::Rollback();
 	        echo _('Omitiendo creación de tabla de aglomerados...
-		      ');
+');
        }
       try{
         Schema::table('aglomerados', function (Blueprint $table) {
             $table->index(['id']);
-            $table->index(['codigo']);
         });
        }catch(Illuminate\Database\QueryException $e){
 	        echo _('Omitiendo creación de indices de aglomerados...
