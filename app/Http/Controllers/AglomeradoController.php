@@ -73,7 +73,10 @@ use Illuminate\Support\Facades\Log;
         {
             //
             if($aglomerado->Localidades()->count()==1) {
-                $carto=$aglomerado->Carto;
+                return redirect()->action(
+                  [LocalidadController::class, 'show'], [$aglomerado->Localidades()->first()]
+                  );
+/*                $carto=$aglomerado->Carto;
                 $listado=$aglomerado->Listado;
                 $radios=$aglomerado->Radios;
                 $svg=$aglomerado->getSVG();
@@ -82,7 +85,7 @@ use Illuminate\Support\Facades\Log;
                             'carto' => $carto,
                             'listado'=>$listado,
                             'radios'=>$radios,
-                            'svg'=>$svg]);
+                            'svg'=>$svg]);*/
             }else{
                 $aglomerado->load('localidades');
                 return view('aglo.localidades_view',[
@@ -98,11 +101,18 @@ use Illuminate\Support\Facades\Log;
 
         public function segmenta_post(Aglomerado $aglomerado)
         {
-            //
-            $carto=$aglomerado->Carto;
-            $listado=$aglomerado->Listado;
-            $radios=$aglomerado->ComboRadios;
-            return view('aglo.segmenta',['aglomerado' => $aglomerado,'carto' => $carto,'listado'=>$listado,'radios'=>$radios]);
+            // Si el Aglomerado es una sola localidad
+            // Entonces redireccion al metodo de la localidad
+            if($aglomerado->Localidades()->count()==1){
+                return redirect()->action(
+                      [LocalidadController::class, 'segmenta_post'], [$aglomerado->Localidades()->first()]
+                    );
+            }else{
+              $carto=$aglomerado->Carto;
+              $listado=$aglomerado->Listado;
+              $radios=$aglomerado->ComboRadios;
+              return view('aglo.segmenta',['aglomerado' => $aglomerado,'carto' => $carto,'listado'=>$listado,'radios'=>$radios]);
+            }
         }
 
         public function run_segmentar(Request $request, Aglomerado $aglomerado)

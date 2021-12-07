@@ -33,8 +33,10 @@
    </div>
 
    <h3 class="text-center">
-({{ $aglomerado->codigo }} )
-{{ $aglomerado->nombre }} 
+@if (isset($aglomerado))
+  ({{ $aglomerado->codigo }} )
+  {{ $aglomerado->nombre }} 
+@endif
 </h3>
    <h4 class="text-center">Listado de Segmentos x lados </h4>
    <br>
