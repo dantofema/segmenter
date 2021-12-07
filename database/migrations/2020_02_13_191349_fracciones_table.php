@@ -32,6 +32,6 @@ class FraccionesTable extends Migration
     public function down()
     {
         //
-        Schema::dropIfExists('fraccion');
+//        Schema::dropIfExists('fraccion');
     }
 }
