@@ -4,33 +4,45 @@
 
 @section ('content')
 <div class="container">
+<div class="row">
+  <div class="col-md-6">
     Información de la Localidad ({{ $localidad->codigo }}) 
     <b> {{ $localidad->nombre }} </b><br />
     @if ($aglomerado)
-    del aglomerado <a href="{{ url("/aglo/{$aglomerado->id}") }}" >
-    ({{ $aglomerado->codigo }}) 
-    <b> {{ $aglomerado->nombre }} </b></a><br />
-     @else
-        NO está definido ningún aglomerado.
-     @endif
-    <div class="">
+      del aglomerado <a href="{{ url("/aglo/{$aglomerado->id}") }}" >
+      ({{ $aglomerado->codigo }}) 
+      <b> {{ $aglomerado->nombre }} </b></a><br />
+    @else
+      NO está definido ningún aglomerado.
+    @endif
+    @if ($oDepto = $localidad->departamentos()->first())
+      en el Departamento <a href="{{ url("/depto/{$oDepto->id}") }}" >
+      ({{ $oDepto->codigo }}) 
+      <b> {{ $oDepto->nombre }} </b></a><br />
+    @else
+      NO está definido ningún departamento.
+    @endif
+   </div>
+   <div class="col-md-6 text-center">
      @if ($carto)
         La base geográfica está cargada.
      @else
         NO está cargada la base geográfica.
      @endif 
-    </div>
-    <div class="">
+     <br />
      @if ($listado)
         El Listado de viviendas esta cargado.
      @else
         NO está cargado el listado de viviendas.
      @endif 
+     <div>
+     @if ($carto && $listado)
+       <button type="button" class="btn btn-primary" id="segmentar">Segmentar</button>
+     @endif
     </div>
-
-@if ($carto && $listado)
-<button type="button" class="btn btn-primary" id="segmentar">Segmentar</button>
-@endif
+</div>
+</div>
+</div>
  <div class="container">
    <!-- Modal -->
    <div class="modal fade" id="segmentaLocModal" role="dialog">
@@ -52,12 +64,12 @@
     </div>
    </div>
 
-
+<hr />
 <div class="form-horizontal">
 <form action="/grafo/{{ $localidad->id }}" method="GET" enctype="multipart/form-data">
                 @csrf
   <div class="form-group">
-    <label class="control-label" for="radio">Seleccione un Radio para ver grafo de segmentación:</label>
+    <label class="control-label" for="radio">Seleccione un Radio para ver:</label>
     <div class="">
 <ul class="nav">
             @foreach($radios as $radio)
