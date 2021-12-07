@@ -20,8 +20,14 @@ class CreateLocalidadDepartamentosTable extends Migration
 
         });
      **/
-	 $sql = file_get_contents(app_path() . '/developer_docs/localidad_departamento.up.sql');
-	 DB::unprepared($sql);
+  	 $sql = file_get_contents(app_path() . '/developer_docs/localidad_departamento.up.sql');
+      try{
+           DB::unprepared($sql);
+       }catch(Illuminate\Database\QueryException $e){
+          DB::Rollback();
+	        echo _('Omitiendo creación de tabla de relación localidad con departamentos...
+		      ');
+       }
     }
 
     /**
@@ -31,6 +37,6 @@ class CreateLocalidadDepartamentosTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('localidad_departamento');
+//        Schema::dropIfExists('localidad_departamento');
     }
 }

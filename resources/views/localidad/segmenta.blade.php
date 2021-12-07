@@ -15,7 +15,7 @@
      @endif 
     <br />
     </p>
-@if ($carto && listado)
+@if ($carto && $listado)
 <div class="form-horizontal">
 <form action="/localidad-segmenta-run/{{ $localidad->id }}" method="POST" enctype="multipart/form-data">
                 @csrf

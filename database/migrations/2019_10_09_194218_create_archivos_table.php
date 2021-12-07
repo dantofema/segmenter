@@ -13,6 +13,7 @@ class CreateArchivosTable extends Migration
      */
     public function up()
     {
+      If (! Schema::hasTable('archivos')){
         Schema::create('archivos', function (Blueprint $table) {
             $table->bigIncrements('id')->index();
             $table->bigInteger('user_id')->index();
@@ -27,6 +28,10 @@ class CreateArchivosTable extends Migration
             $table->string('epsg_def')->nullable();
             $table->timestamps();
         });
+      }else{
+      	 echo _('Omitiendo creación de tabla de archivos existente...
+		     ');
+     }
     }
 
     /**
@@ -36,6 +41,6 @@ class CreateArchivosTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('archivos');
+//        Schema::dropIfExists('archivos');
     }
 }
