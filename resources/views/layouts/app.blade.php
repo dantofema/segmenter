@@ -7,14 +7,14 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>{{ config('app.name', 'Mandarina') }} @yield('title','') </title>
 
     <!-- Scripts -->
-    <script src="{{ asset('js/app.js') }}" defer></script>
+    <script src="{{ asset('js/app.js') }}" ></script>
 
     <!-- Fonts -->
-    <link rel="dns-prefetch" href="//fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
+    <!-- link rel="dns-prefetch" href="//fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet" -->
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
@@ -26,24 +26,31 @@
 <body>
     @yield('divs4content')
     <div id="app">
-        <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
+            <nav class="navbar navbar-expand-md navbar-light bg-white shadow-sm">
             <div class="container">
-		@include('flash::message')
+                <div class="m-0 p-0 text-center" >
                 <a class="navbar-brand text-uppercase" href="{{ url('/') }}">
-                    {{ config('app.name', 'Laravel') }}
+                <img src="/images/mandarina.svg" width="30" height="30" class="d-inline-block align-top" alt="">
+                    {{ config('app.name', 'App sin nombre') }}
                 </a>
+                <div style="position: relative; top: -15px; height:0px;">{{ Git::branch() }}</div>
+                </div>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="{{ __('Toggle navigation') }}">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <!-- Left Side Of Navbar -->
-                    <ul class="navbar-nav mr-auto">
-			<li><a href="{{ url('/users') }}"> Users </a> </li>
-			<li><a href="{{ url('/listado') }}"> Listado </a> </li>
-			<li><a href="{{ url('/provs') }}"> Provincias </a> </li>
-			<li><a href="{{ url('/segmentador') }}"> Cargar </a> </li>
-			<li><a href="{{ url('/aglos') }}"> Aglomerados </a> </li>
+                    <ul class="navbar-nav mr-auto btn">
+                    @auth
+                        <li class="nav-item"><a class="nav-link" href="{{ url('/home') }}"> Inicio </a> </li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url('/provs') }}"> Provincias </a> </li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url('/aglos') }}"> Aglomerados </a> </li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url('/segmentador') }}"> Cargar </a> </li>
+                        <li class="nav-item"><a class="nav-link" href="{{
+                        url('https://github.com/bichav/salidagrafica-atlas/archive/master.zip')
+                        }}"> Descargar plugin </a> </li>
+                    @endauth
                     </ul>
 
                     <!-- Right Side Of Navbar -->
@@ -60,11 +67,14 @@
                             @endif
                         @else
                             <li class="nav-item dropdown">
-                                <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
-                                    {{ Auth::user()->name }} <span class="caret"></span>
+                                <a id="navbarDropdownLogin" class="nav-link
+                                dropdown-toggle" href="#logout" role="button"
+                                aria-controls=logout
+                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre> {{ Auth::user()->name }} <span class="caret"></span>
                                 </a>
 
-                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                                <div id=logout class="dropdown-menu dropdown-menu-right collapse"
+                                aria-labelledby="navbarDropdownLogin">
                                     <a class="dropdown-item" href="{{ route('logout') }}"
                                        onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">
@@ -81,22 +91,28 @@
                 </div>
             </div>
         </nav>
-
         <main class="py-4">
+		    @include('flash::message')
             @yield('content')
         </main>
-    </div>
+        </div>
+            @yield('content_main')
+        <div id="copyright" class="text-center justify-content-center"
+            style="display:block"><hr />© Copyright 2021 INDEC - Geoestadística
+            <div>{{ Git::branch() }} - {{ Git::version() }} -  {{ Git::lastCommitDate() }}</div>
+            </div>
 <!-- If using flash()->important() or flash()->overlay(), you'll need to pull in the JS for Twitter Bootstrap. -->
-<script src="//code.jquery.com/jquery.js"></script>
-<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+<!--script src="//code.jquery.com/jquery.js"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script -->
 <script>
    $(document).ready( function () {
     $('#flash-overlay-modal').modal();
+    $('div.alert').not('.alert-important').delay(5000).fadeOut(350);
 });
 </script>
+    @yield ('footer_scripts')
 <script>
 $('div.alert').not('.alert-important').delay(3000).fadeOut(350);
 </script>
-    @yield ('footer_scripts')
 </body>
 </html>

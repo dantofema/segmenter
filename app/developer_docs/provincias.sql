@@ -19,6 +19,6 @@ INSERT INTO public.provincia VALUES (19, '74', 'San Luis', NULL, NULL, NULL, NUL
 INSERT INTO public.provincia VALUES (20, '78', 'Santa Cruz', NULL, NULL, NULL, NULL);
 INSERT INTO public.provincia VALUES (21, '82', 'Santa Fe', NULL, NULL, NULL, NULL);
 INSERT INTO public.provincia VALUES (22, '86', 'Santiago del Estero', NULL, NULL, NULL, NULL);
-INSERT INTO public.provincia VALUES (1, '02', 'Ciudad de Buenos Aires', NULL, NULL, NULL, NULL);
+INSERT INTO public.provincia VALUES (1, '02', 'Ciudad Autónoma de Buenos Aires', NULL, NULL, NULL, NULL);
 INSERT INTO public.provincia VALUES (23, '90', 'Tucumán', NULL, NULL, NULL, NULL);
 INSERT INTO public.provincia VALUES (24, '94', 'Tierra del Fuego', NULL, NULL, NULL, NULL);

@@ -18,8 +18,7 @@ class ProvinciaController extends Controller
      */
     public function index()
     {
-		//
-//        $provincias = Provincia::withCount('departamentos')->orderBy('codigo','asc')->get();
+// $provincias = Provincia::withCount('departamentos')->orderBy('codigo','asc')->get()
 //        $category = Departamento::find(3);
 // dd($product);
 
@@ -33,12 +32,12 @@ class ProvinciaController extends Controller
     {   
         $provsQuery = Provincia::query();
         $codigo = (!empty($_GET["codigo"])) ? ($_GET["codigo"]) : ('');
-        if($codigo){
-
+        if($codigo!=''){
          $provsQuery->where('codigo','=',$codigo);
         }
 
-        $provs = $provsQuery->select('*')->withCount('departamentos');
+	$provs = $provsQuery->select('*')->withCount('departamentos');
+
         return datatables()->of($provs)
             ->make(true);
     }

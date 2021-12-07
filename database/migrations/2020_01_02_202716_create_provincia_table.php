@@ -25,9 +25,9 @@ class CreateProvinciaTable extends Migration
 	 DB::unprepared($sql);
 */
 	Schema::create('provincia', function (Blueprint $table) {
-		$table->bigIncrements('id');
-		$table->string('codigo');
-		$table->string('nombre');
+		$table->bigIncrements('id')->index();
+		$table->string('codigo')->index();
+		$table->string('nombre')->index();
 		$table->date('fecha_desde')->nullable();
 		$table->date('fecha_hasta')->nullable();
 		$table->integer('observacion_id')->nullable();
@@ -43,7 +43,6 @@ class CreateProvinciaTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('departamentos');
         Schema::dropIfExists('provincia');
     }
 }

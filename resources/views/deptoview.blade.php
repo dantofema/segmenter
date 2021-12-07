@@ -1,7 +1,9 @@
-@extends('layouts.default')
+@extends('layouts.app')
 
-@section('title', '{{ $departamento->parent->nombre ?? ""}} Departamento: {{ $departamento->nombre }}')
+@section('title', ' Departamento ')
 
 @section('content')
+<div class=container >
      @include('deptoinfo')
+</div>
 @stop

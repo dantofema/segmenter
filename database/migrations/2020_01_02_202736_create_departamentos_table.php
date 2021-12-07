@@ -22,10 +22,10 @@ class CreateDepartamentosTable extends Migration
      **/
 
 	Schema::create('departamentos', function (Blueprint $table) {
-		$table->bigIncrements('id');
-		$table->string('codigo');
-		$table->string('nombre');
-		$table->integer('provincia_id');
+		$table->bigIncrements('id')->index();
+		$table->string('codigo')->index();
+		$table->string('nombre')->index();
+		$table->integer('provincia_id')->index();
 		$table->date('fecha_desde')->nullable();
 		$table->date('fecha_hasta')->nullable();
 		$table->integer('observacion_id')->nullable();

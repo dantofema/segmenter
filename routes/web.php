@@ -15,7 +15,75 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/tetete', function () {
+    return view('test3');
+});
+
+Route::get('/tete', function () {
+    return view('test2');
+});
+
+Route::get('/testeando', function () {
+    return view('test');
+});
+
 Auth::routes();
+
+/**
+* Estructura mas ordenada de aplicacion, layout...
+*/
+Route::get('/home', function()
+{
+    return View::make('pages.home');
+});
+Route::get('/about', function()
+{
+    return View::make('pages.about');
+});
+Route::get('projects', function()
+{
+    return View::make('pages.projects');
+});
+Route::get('/contact', function()
+{
+    return View::make('pages.contact');
+});
+Route::get('/serverinfo', function()
+{
+    return View::make('pages.serverinfo');
+});
+
+Route::get('/sala', 'SalaController@index')->name('sala');
+
+Route::get('/setup', 'SetupController@index')->name('setup');
+Route::get('/setup/test', 'SetupController@testFlash')->name('setup.test');
+Route::get('/setup/{esquema}', 'SetupController@permisos')->name('setup.permisos');
+Route::get('/setup/topo/{esquema}',
+'SetupController@cargarTopologia')->name('setup.topologia');
+Route::get('/setup/topo_drop/{esquema}',
+'SetupController@dropTopologia')->name('setup.drop.topologia');
+Route::get('/setup/index/{esquema}',
+'SetupController@addIndexListado')->name('setup.index');
+Route::get('/setup/index/id/{tabla}',
+'SetupController@addIndexId')->name('setup.indexId');
+Route::get('/setup/geo/{esquema}',
+'SetupController@georeferenciarEsquema')->name('setup.geo');
+Route::get('/setup/geoseg/{esquema}',
+'SetupController@georeferenciarSegmentacionEsquema')->name('setup.geoseg');
+Route::get('/setup/segmenta/{esquema}',
+'SetupController@segmentarEsquema')->name('setup.segmenta');
+Route::get('/setup/limpia/{esquema}',
+'SetupController@limpiarEsquema')->name('setup.limpia');
+Route::get('/setup/muestrea/{esquema}',
+'SetupController@muestreaEsquema')->name('setup.muestrea');
+Route::get('/setup/junta/{esquema}',
+'SetupController@juntarSegmentos')->name('setup.junta');
+Route::get('/setup/index/{esquema}/{tabla}/{cols}',
+'SetupController@createIndex')->name('setup.create.index');
+Route::get('/setup/grupogeoestadistica/{usuario}',
+'SetupController@grupoGeoestadistica')->name('setup.grupogeo');
+Route::get('/setup/grupogeoestadistica/tabla/{tabla}',
+'SetupController@grupoGeoestadisticaTabla')->name('setup.grupogeo.tabla');
 
 Route::get('/inicio', 'HomeController@index')->name('inicio');
 Route::resource('/listado', 'ListadoController',['only' => [
@@ -29,7 +97,7 @@ Route::get('/segmentador', 'SegmenterController@index')->name('segmentador');
 Route::post('/segmentador/guardar', 'SegmenterController@store');
 
 Route::get('/', function () {
-    flash('Laravel 6 Flash Message')->success();
+    flash(' Bienvenides !')->success();
     return view('welcome');
 });
 
@@ -58,19 +126,63 @@ Route::get('prov/list/{provincia}','DepartamentoController@list');
 Route::get('depto/{departamento}','DepartamentoController@show');
 Route::post('depto/{departamento}','DepartamentoController@show_post');
 
+// ---------- LOCALIDADES --------
+Route::get('localidades','LocalidadController@index');
+Route::get('localidad/{localidad}','LocalidadController@show');
+Route::post('localidad-segmenta/{localidad}','LocalidadController@segmenta_post');
+Route::get('localidad-segmenta/{localidad}','LocalidadController@segmenta_post');
+Route::post('localidad-segmenta-run/{localidad}','LocalidadController@run_segmentar');
+//Route::post('localidad/{localidad}','LocalidadController@show_post');
+// PxSeg Localidad
+Route::get('localidad/{localidad}/pxseg','LocalidadController@ver_pxseg')->name('localidad-ver-segmentacion-pxseg');
+Route::get('localidad/{localidad}/segmentacion','LocalidadController@ver_segmentacion')->name('localidad-ver-segmentacion');
+Route::get('localidad/{localidad}/segmentacion-lados','LocalidadController@ver_segmentacion_lados')->name('localidad-ver-segmentacion-lados');
+Route::get('localidad/{localidad}/grafico','LocalidadController@ver_segmentacion_grafico')->name('localidad-ver-segmentacion-grafico');
+Route::post('localidad/{localidad}/grafico','LocalidadController@ver_segmentacion_grafico')->name('localidad-ver-segmentacion-grafico');
+
 // ---------- AGLOMERADOS --------
 Route::get('aglos-list', 'AglomeradoController@aglosList');
 Route::post('aglos-list', 'AglomeradoController@aglosList');
 Route::get('aglos','AglomeradoController@index');
-Route::get('aglo/{aglomerado}','AglomeradoController@show');
+Route::get('aglo/{aglomerado}','AglomeradoController@show')->name('aglo-ver');
 Route::post('aglo/{aglomerado}','AglomeradoController@show_post');
 Route::post('aglo-segmenta/{aglomerado}','AglomeradoController@segmenta_post');
 Route::get('aglo-segmenta/{aglomerado}','AglomeradoController@segmenta_post');
-Route::post('aglo-segmenta-run/{aglomerado}','AglomeradoController@run_segmentar_equilibrado');
+Route::post('aglo-segmenta-run/{aglomerado}','AglomeradoController@run_segmentar');
 
+// --------- SEGMENTACION X AGLOMERADO --------- 
+Route::get('aglo/{aglomerado}/pxseg','AglomeradoController@ver_pxseg')->name('ver-segmentacion-pxseg');
+Route::get('ver-segmentacion/{aglomerado}','AglomeradoController@ver_segmentacion')->name('ver-segmentacion');
+Route::get('ver-segmentacion-lados/{aglomerado}','AglomeradoController@ver_segmentacion_lados')->name('ver-segmentacion-lados');
+Route::get('ver-segmentacion/grafico/{aglomerado}','AglomeradoController@ver_segmentacion_grafico')->name('ver-segmentacion-grafico');
+Route::post('ver-segmentacion-grafico/{aglomerado}','AglomeradoController@ver_segmentacion_grafico')->name('ver-segmentacion-grafico');
 
+Route::get('ver-segmentacion/grafico-resumen/{aglomerado}','AglomeradoController@ver_segmentacion_grafico_resumen')->name('ver-segmentacion-grafico-resumen');
+Route::post('ver-segmentacion-grafico-resumen/{aglomerado}','AglomeradoController@ver_segmentacion_grafico_resumen')->name('ver-segmentacion-grafico-resumen');
+//ver_segmentacion_lados_grafico_resumen
+Route::get('ver-segmentacion-lados/grafico-resumen/{aglomerado}','AglomeradoController@ver_segmentacion_lados_grafico_resumen')->name('ver-segmentacion-lados-grafico-resumen');
+Route::post('ver-segmentacion-lados-grafico-resumen/{aglomerado}','AglomeradoController@ver_segmentacion_lados_grafico_resumen')->name('ver-segmentacion-lados-grafico-resumen');
 
-Route::get('mail', 'MailCsvController@index');
+// ---------- RADIOS Localidad Depto --------
+// Para CABA
+Route::get('radios/{localidad}/{departamento}','RadiosController@show');
+Route::get('radio/{radio}','RadioController@show');
+
+// ---------- GRAFOS AGLOMERADOS --------
+Route::get('grafo/{aglomerado}','SegmentacionController@index')->name('index');
+Route::get('grafo/{aglomerado}/{radio}/','SegmentacionController@ver_grafo')->name('ver-grafo');
+
+// ---------- ARCHIVOS --------
+Route::post('archivos','ArchivoController@index');
+Route::get('archivos','ArchivoController@index');
+Route::get('archivo/{archivo}','ArchivoController@show');
+Route::delete('archivo/{archivo}','ArchivoController@destroy');
+Route::get('archivo/{archivo}/descargar','ArchivoController@descargar');
+
+//Route::get('mail', 'MailCsvController@index');
+
+/* Logout via GET */
+Route::get('/logout', 'Auth\LoginController@logout');
 
 /* Auto-generated admin routes */
 Route::middleware(['auth:' . config('admin-auth.defaults.guard'), 'admin'])->group(static function () {
@@ -97,5 +209,10 @@ Route::middleware(['auth:' . config('admin-auth.defaults.guard'), 'admin'])->gro
     });
 });
 Auth::routes();
+
+Route::get('/clear-cache', function() {
+    Artisan::call('cache:clear');
+    return "Cache is cleared";
+});
 
 Route::get('/home', 'HomeController@index')->name('home');

@@ -3545,20 +3545,20 @@ INSERT INTO public.localidad_departamento VALUES (5509, 473);
 INSERT INTO public.localidad_departamento VALUES (5782, 501);
 INSERT INTO public.localidad_departamento VALUES (5900, 521);
 INSERT INTO public.localidad_departamento VALUES (3203, 170);
-INSERT INTO public.localidad_departamento VALUES (2388, 1);
-INSERT INTO public.localidad_departamento VALUES (2388, 3);
-INSERT INTO public.localidad_departamento VALUES (2388, 4);
-INSERT INTO public.localidad_departamento VALUES (2388, 5);
-INSERT INTO public.localidad_departamento VALUES (2388, 6);
-INSERT INTO public.localidad_departamento VALUES (2388, 7);
-INSERT INTO public.localidad_departamento VALUES (2388, 8);
-INSERT INTO public.localidad_departamento VALUES (2388, 9);
-INSERT INTO public.localidad_departamento VALUES (2388, 10);
-INSERT INTO public.localidad_departamento VALUES (2388, 11);
-INSERT INTO public.localidad_departamento VALUES (2388, 12);
-INSERT INTO public.localidad_departamento VALUES (2388, 13);
-INSERT INTO public.localidad_departamento VALUES (2388, 14);
-INSERT INTO public.localidad_departamento VALUES (2388, 15);
+--INSERT INTO public.localidad_departamento VALUES (2388, 1);
+--INSERT INTO public.localidad_departamento VALUES (2388, 3);
+--INSERT INTO public.localidad_departamento VALUES (2388, 4);
+--INSERT INTO public.localidad_departamento VALUES (2388, 5);
+--INSERT INTO public.localidad_departamento VALUES (2388, 6);
+--INSERT INTO public.localidad_departamento VALUES (2388, 7);
+--INSERT INTO public.localidad_departamento VALUES (2388, 8);
+--INSERT INTO public.localidad_departamento VALUES (2388, 9);
+--INSERT INTO public.localidad_departamento VALUES (2388, 10);
+--INSERT INTO public.localidad_departamento VALUES (2388, 11);
+--INSERT INTO public.localidad_departamento VALUES (2388, 12);
+--INSERT INTO public.localidad_departamento VALUES (2388, 13);
+--INSERT INTO public.localidad_departamento VALUES (2388, 14);
+--INSERT INTO public.localidad_departamento VALUES (2388, 15);
 
 
 --

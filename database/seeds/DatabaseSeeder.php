@@ -20,11 +20,18 @@ class DatabaseSeeder extends Seeder
             SqlLocDeptoSeeder::class,
             SqlAgloSeeder::class,
             SqlGobLocSeeder::class,
-            SqlFraccionSeeder::class,
-            SqlRadioSeeder::class,
-            SqlRadioLocSeeder::class
-]);
-
-
+       //     SqlFraccionSeeder::class,
+       //     SqlRadioSeeder::class,
+       //     SqlRadioLocSeeder::class,
+            SqlEntidadSeeder::class,
+            SqlGobLocEntidadSeeder::class,
+            SqlGobLocDeptoSeeder::class,
+            SqlLocalidadGobLocSeeder::class,
+            SqlParajeSeeder::class,
+            SqlOperativosSeeder::class,
+            SqlFuenteSeeder::class,
+            SqlSubtipoViviendaSeeder::class //,
+       //     SqlRadioEntidadSeeder::class
+        ]);
     }
 }

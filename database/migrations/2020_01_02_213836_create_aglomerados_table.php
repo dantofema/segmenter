@@ -22,6 +22,10 @@ class CreateAglomeradosTable extends Migration
      **/
 	 $sql = file_get_contents(app_path() . '/developer_docs/aglomerados.up.sql');
 	 DB::unprepared($sql);
+        Schema::table('aglomerados', function (Blueprint $table) {
+            $table->index(['id']);
+        });
+
     }
 
     /**

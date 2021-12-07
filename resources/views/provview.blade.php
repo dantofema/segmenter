@@ -1,7 +1,9 @@
 @extends('layouts.default')
 
-@section('title', 'Provincia {{ $provincia->nombre }}')
+@section('title', $provincia->nombre )
 
 @section('content')
+<div class=container >
      @include('provinfo')
+</div>
 @stop
