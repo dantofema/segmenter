@@ -15,8 +15,13 @@ class FraccionesTable extends Migration
     {
         //
 	 $sql = file_get_contents(app_path() . '/developer_docs/fraccion.up.sql');
-	 DB::unprepared($sql);
-
+      try{
+           DB::unprepared($sql);
+       }catch(Illuminate\Database\QueryException $e){
+          DB::Rollback();
+	        echo _('Omitiendo creación de tabla de fracciones...
+		      ');
+       }
     }
 
     /**
