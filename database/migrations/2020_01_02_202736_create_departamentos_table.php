@@ -20,7 +20,7 @@ class CreateDepartamentosTable extends Migration
 
         });
      **/
-  if (! Schema::hasTable('provincia')){
+  if (! Schema::hasTable('departamentos')){
 	  Schema::create('departamentos', function (Blueprint $table) {
 		  $table->bigIncrements('id')->index();
 		  $table->string('codigo')->index();
