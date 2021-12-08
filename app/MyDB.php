@@ -1176,13 +1176,13 @@ FROM
                 $frac=substr($radio->codigo,5,2);
                 $rad=substr($radio->codigo,7,2);
                 if(isset($esquema)){
-                  if (Arr::has($esquemas,$esquema)){
+                  if (in_array($esquema,$esquemas)){
                     Log::debug('Buscando Mzas para radio '.$radio->codigo.' en esquema'.$esquema);
                   }else{
-                    Log::warning('Buscando Mzas para radio '.$radio->codigo.' en esquema'.$esquema.' fuera de lo esperado');
+                    Log::warning('Buscando Mzas para radio '.$radio->codigo.' en esquema '.$esquema.' fuera de lo esperado');
                   }
                   try{
-                    $return = (int) DB::select("
+                    return (int) DB::select("
                                SELECT count( distinct mza)  cant_mzas
                                FROM ".$esquema.".conteos WHERE prov=".$prov." and dpto = ".$dpto." and
                                frac=".$frac." and radio=".$rad." ;")[0]->cant_mzas;
@@ -1222,28 +1222,50 @@ FROM
                 return -3;
             }
 
-       public static function isSegmentado(Radio $radio=null){
-            $esquemas=$radio->esquemas;
+       public static function isSegmentado(Radio $radio=null,$esquema=null){
+            $esquemas=$radio->Esquemas;
             if ($radio){
                 $filtro = " and (frac,radio) = ('".$radio->CodigoFrac."','".$radio->CodigoRad."') ";
               } else {
                 $filtro = '';
              }
-             $count=0;
-             foreach($esquemas as $esquema){
-                  try {
-                     $count += (int) DB::select("SELECT 1 FROM ".$esquema.".segmentacion s JOIN
+             if(isset($esquema)){
+                 if (in_array($esquema,$esquemas)){
+                   Log::debug('Viendo si esta segmentado el radio '.$radio->codigo.' en esquema '.$esquema);
+                 }else{
+                   Log::warning('Raro! Buscando segmentacion para radio '.$radio->codigo.' en esquema '.$esquema.
+                                ' fuera de los esperados ');
+                 }
+                  try{
+                    return (int) DB::select("SELECT count(distinct segmento_id) FROM ".$esquema.".segmentacion s JOIN
                            ".$esquema.".listado l ON s.listado_id=l.id WHERE segmento_id is not null ".
                             ($filtro)
-                           ." limit 1;");
+                           ." ;")[0]->count;
+                   }catch(QueryException $e){
+                            if ($e->getCode() == '42P01'){
+                              Log::debug('No existe o hay problemas con segmentacion en esquema: '.$esquema);
+                          }else{
+                              Log::error('No se encontro segmentacion manzanas para radio '.$radio.$e);
+                          }
+                   }
+             }else{
+             $count=0;
+             foreach($esquemas as $esquema){
+                  try { 
+                    $count += (int) DB::select("SELECT count(distinct segmento_id) FROM ".$esquema.".segmentacion s JOIN
+                           ".$esquema.".listado l ON s.listado_id=l.id WHERE segmento_id is not null ".
+                            ($filtro)
+                           ." ;")[0]->count;
+               Log:info('Buscando si está segmentado '.$radio->codigo.' en esquema: '.$esquema.' segmentos: '.$count);
                        } catch (QueryException $e)  {
                             if ($e->getCode() == '42P01'){
                               Log::debug('No existe o hay problemas con esquema: '.$esquema);
                           }
                        }
               }
-              return ($count>0);
+              return $count;
         }
+     }
 
         public static function darPermisos($esquema,$grupo='geoestadistica'){
                 try {
