@@ -24,6 +24,7 @@
     @endif
    </div>
    <div class="col-md-6 text-center">
+    @auth
      @if ($carto)
         La base geográfica está cargada.
      @else
@@ -39,6 +40,7 @@
      @if ($carto && $listado)
        <button type="button" class="btn btn-primary" id="segmentar">Segmentar</button>
      @endif
+    @endauth
     </div>
 </div>
 </div>
@@ -72,13 +74,18 @@
     <label class="control-label" for="radio">Seleccione un Radio para ver:</label>
     <div class="">
 <ul class="nav">
-            @foreach($radios as $radio)
-    <li class="btn @if($radio->isSegmentado) segmentado @endif " >
-    @if($radio->isSegmentado)<a href="{{ url('/grafo/'.$aglomerado->id.'/'.$radio->id) }}"> @endif
-        {{ trim($radio->codigo) }}: {{ trim($radio->nombre) }} <br />Mzas: {{ trim($radio->CantMzas) }}
-    @if($radio->isSegmentado)</a> @endif
+  @foreach ($radios as $radio)
+       @if ($radio->isSegmentado) 
+          <li class="btn border border-success "> 
+        @else
+          <li class="btn "> 
+        @endif 
+    <a href="{{ url('/grafo/'.$aglomerado->id.'/'.$radio->id) }}">
+        {{ trim($radio->codigo) }}: {{ trim($radio->nombre) }} <br />Mzas: {{ trim($radio->CantMzas) }} 
+        @if ($radio->isSegmentado) Segmentos: {{ trim($radio->isSegmentado) }} @endif
+    </a>
     </li>
-            @endforeach
+  @endforeach
 </ul>
     </div>
   </div>
