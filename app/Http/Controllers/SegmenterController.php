@@ -171,7 +171,7 @@ class SegmenterController extends Controller
                 'file '.storage_path().'/app/'.$data['file']['shp'],'e00 '.$codaglo[0]->link);
                 throw new ProcessFailedException($processOGR2OGR);
             }
-            MyDB::agregarsegisegd($codaglo);
+            MyDB::agregarsegisegd($codaglo[0]->link);
 
         }elseif ($original_extension == 'e00'){
 		$shp_file->epsg_def = $epsg_id;
@@ -184,11 +184,11 @@ class SegmenterController extends Controller
 	    if ($epsg_id=='sr-org:8333'){ // Si es CABA cargo sin epsg
             $processOGR2OGR = Process::fromShellCommandline('/usr/bin/ogr2ogr -f "PostgreSQL" PG:"dbname=$db host=$host user=$user port=$port active_schema=e$e00 password=$pass port=$port" --config PG_USE_COPY YES -lco OVERWRITE=YES --config OGR_TRUNCATE YES -dsco PRELUDE_STATEMENTS="SET client_encoding TO latin1;CREATE SCHEMA IF NOT EXISTS e$e00;" -dsco active_schema=e$e00 -lco PRECISION=NO -lco SCHEMA=e$e00 -skipfailures -addfields -overwrite $file ARC');
             $processOGR2OGR->setTimeout(3600);
-            $processOGR2OGR->run(null, ['epsg' => $epsg_id, 'file' => storage_path().'/app/'.$data['file']['shp'],'e00'=>$codaglo,'db'=>Config::get('database.connections.pgsql.database'),'host'=>Config::get('database.connections.pgsql.host'),'user'=>Config::get('database.connections.pgsql.username'),'pass'=>Config::get('database.connections.pgsql.password'),'port'=>Config::get('database.connections.pgsql.port')]);
+            $processOGR2OGR->run(null, ['epsg' => $epsg_id, 'file' => storage_path().'/app/'.$data['file']['shp'],'e00'=>$codaglo[0]->link,'db'=>Config::get('database.connections.pgsql.database'),'host'=>Config::get('database.connections.pgsql.host'),'user'=>Config::get('database.connections.pgsql.username'),'pass'=>Config::get('database.connections.pgsql.password'),'port'=>Config::get('database.connections.pgsql.port')]);
          //		dd($processOGR2OGR);	
         $processOGR2OGR_lab = Process::fromShellCommandline('/usr/bin/ogr2ogr -f "PostgreSQL" PG:"dbname=$db host=$host user=$user port=$port active_schema=e$e00 password=$pass" --config PG_USE_COPY YES -lco OVERWRITE=YES --config OGR_TRUNCATE YES -dsco PRELUDE_STATEMENTS="SET client_encoding TO latin1;CREATE SCHEMA IF NOT EXISTS e$e00;" -dsco active_schema=e$e00 -lco PRECISION=NO -lco SCHEMA=e$e00 -skipfailures -addfields -overwrite $file LAB');
         $processOGR2OGR_lab->setTimeout(3600);
-        $processOGR2OGR_lab->run(null, ['epsg' => $epsg_id, 'file' => storage_path().'/app/'.$data['file']['shp'],'e00'=>$codaglo,'db'=>Config::get('database.connections.pgsql.database'),'host'=>Config::get('database.connections.pgsql.host'),'user'=>Config::get('database.connections.pgsql.username'),'pass'=>Config::get('database.connections.pgsql.password'),'port'=>Config::get('database.connections.pgsql.port')]);
+        $processOGR2OGR_lab->run(null, ['epsg' => $epsg_id, 'file' => storage_path().'/app/'.$data['file']['shp'],'e00'=>$codaglo[0]->link,'db'=>Config::get('database.connections.pgsql.database'),'host'=>Config::get('database.connections.pgsql.host'),'user'=>Config::get('database.connections.pgsql.username'),'pass'=>Config::get('database.connections.pgsql.password'),'port'=>Config::get('database.connections.pgsql.port')]);
             //dd($processOGR2OGR_lab->getErrorOutput());
         flash($data['file']['ogr2ogr_lab'] = $processOGR2OGR_lab->getErrorOutput().'<br />'.$processOGR2OGR_lab->getOutput())->important();
 	      flash($data['file']['ogr2ogr'] = $processOGR2OGR->getErrorOutput().'<br />'.$processOGR2OGR->getOutput())->important();
@@ -218,13 +218,13 @@ class SegmenterController extends Controller
         }else {//dd($request->file('shp')); 
             flash('File geo not valid')->error()->important();
         }
-        if (isset($codaglo)){
+        if (isset($codaglo[0]->link)){
             if ($epsg_id=='sr-org:8333'){
-	        MyDB::setSRID('e'.$codaglo,98333);
+	        MyDB::setSRID('e'.$codaglo[0]->link,98333);
         }
         //MyDB::juntaListadoGeom('e'.$codaglo);
         if($segmenta_auto) {
-               MyDB::segmentar_equilibrado($codaglo,36);
+               MyDB::segmentar_equilibrado($codaglo[0]->link,36);
                flash('Segmentado automáticamente a 36 viviendas x segmento')->important();
         }
 	     }
