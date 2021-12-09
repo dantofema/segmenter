@@ -117,7 +117,7 @@ class SegmenterController extends Controller
 	    }
 
 	    //Cargo etiquetas
-	    $processOGR2OGR->run(null, ['capa'=>'lab','epsg'=>$epsg_def,'file' => storage_path().'/app/'.$data['file']['shp_lab'],'e00'=>$codaglo[0],'db'=>Config::get('database.connections.pgsql.database'),'host'=>Config::get('database.connections.pgsql.host'),'user'=>Config::get('database.connections.pgsql.username'),'pass'=>Config::get('database.connections.pgsql.password'),'port'=>Config::get('database.connections.pgsql.port')]);
+	    $processOGR2OGR->run(null, ['capa'=>'lab','epsg'=>$epsg_def,'file' => storage_path().'/app/'.$data['file']['shp_lab'],'e00'=>$codaglo[0]->link,'db'=>Config::get('database.connections.pgsql.database'),'host'=>Config::get('database.connections.pgsql.host'),'user'=>Config::get('database.connections.pgsql.username'),'pass'=>Config::get('database.connections.pgsql.password'),'port'=>Config::get('database.connections.pgsql.port')]);
 
         }
     }
@@ -157,7 +157,7 @@ class SegmenterController extends Controller
                         
             if ($epsg_id=='sr-org:8333'){
 		//Cargo arcos
-		$processOGR2OGR->run(null, ['capa'=>'arc','epsg'=>$epsg_def,'file' => storage_path().'/app/'.$data['file']['shp'],'e00'=>$codaglo[0],'db'=>Config::get('database.connections.pgsql.database'),'host'=>Config::get('database.connections.pgsql.host'),'user'=>Config::get('database.connections.pgsql.username'),'pass'=>Config::get('database.connections.pgsql.password'),'port'=>Config::get('database.connections.pgsql.port')]);
+		$processOGR2OGR->run(null, ['capa'=>'arc','epsg'=>$epsg_def,'file' => storage_path().'/app/'.$data['file']['shp'],'e00'=>$codaglo[0]->link,'db'=>Config::get('database.connections.pgsql.database'),'host'=>Config::get('database.connections.pgsql.host'),'user'=>Config::get('database.connections.pgsql.username'),'pass'=>Config::get('database.connections.pgsql.password'),'port'=>Config::get('database.connections.pgsql.port')]);
             }else{
                 $shp_file->epsg_def = $epsg_id;
 	        	    if( $ppddllls=$shp_file->procesar() ) 
@@ -168,7 +168,7 @@ class SegmenterController extends Controller
             if (!$processOGR2OGR->isSuccessful()) {
                 $epsg_def=isset($epsg_def)?$epsg_def:'No definido';
                 dd($processOGR2OGR,'epsg '.$epsg_id,'epsg_def '.$epsg_def.
-                'file '.storage_path().'/app/'.$data['file']['shp'],'e00 '.$codaglo);
+                'file '.storage_path().'/app/'.$data['file']['shp'],'e00 '.$codaglo[0]->link);
                 throw new ProcessFailedException($processOGR2OGR);
             }
             MyDB::agregarsegisegd($codaglo);
