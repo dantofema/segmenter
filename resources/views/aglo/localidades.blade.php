@@ -40,27 +40,31 @@
   <div class="form-group">
     <label class="control-label" for="localidad">
 	 {{$aglomerado->localidades->count()}} localidades: </label>
-    <div class="">
+   @if ( isset($localidades) )
+   <div class="">
     <ul class="nav justify-content-around">
-            @foreach($localidades as $localidad)
+    @foreach ($localidades as $localidad)
     <li class="btn  btn-outline-primary" style="margin-bottom: 5px" >
     <a href="{{ url('/localidad/'.$localidad->id) }}">
 	{{ trim($localidad->codigo) }}: {{ trim($localidad->nombre) }}</br >
 
     </a>(
-	    @foreach($localidad->departamentos()->orderBy('codigo')->get() as $departamento)
+	    @foreach ($localidad->departamentos()->orderBy('codigo')->get() as $departamento)
     		<a href="{{ url('/depto/'.$departamento->id) }}">
-		{{ trim($departamento->nombre) }} 
-		</a>
-    @if (!$loop->last)
-        |
-    @endif
-            @endforeach
-)
+		       {{ trim($departamento->nombre) }} 
+		    </a>
+            @if (!$loop->last)
+             |
+            @endif
+        @endforeach
+        )
     </li>
-            @endforeach
+    @endforeach
     </ul>
     </div>
+    @else
+        No se encontraron localidades.
+    @endif
   </div>
 </form>
 </div>
