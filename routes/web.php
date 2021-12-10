@@ -129,7 +129,16 @@ Route::post('depto/{departamento}','DepartamentoController@show_post');
 // ---------- LOCALIDADES --------
 Route::get('localidades','LocalidadController@index');
 Route::get('localidad/{localidad}','LocalidadController@show');
+Route::post('localidad-segmenta/{localidad}','LocalidadController@segmenta_post');
+Route::get('localidad-segmenta/{localidad}','LocalidadController@segmenta_post');
+Route::post('localidad-segmenta-run/{localidad}','LocalidadController@run_segmentar');
 //Route::post('localidad/{localidad}','LocalidadController@show_post');
+// PxSeg Localidad
+Route::get('localidad/{localidad}/pxseg','LocalidadController@ver_pxseg')->name('localidad-ver-segmentacion-pxseg');
+Route::get('localidad/{localidad}/segmentacion','LocalidadController@ver_segmentacion')->name('localidad-ver-segmentacion');
+Route::get('localidad/{localidad}/segmentacion-lados','LocalidadController@ver_segmentacion_lados')->name('localidad-ver-segmentacion-lados');
+Route::get('localidad/{localidad}/grafico','LocalidadController@ver_segmentacion_grafico')->name('localidad-ver-segmentacion-grafico');
+Route::post('localidad/{localidad}/grafico','LocalidadController@ver_segmentacion_grafico')->name('localidad-ver-segmentacion-grafico');
 
 // ---------- AGLOMERADOS --------
 Route::get('aglos-list', 'AglomeradoController@aglosList');
@@ -162,6 +171,13 @@ Route::get('radio/{radio}','RadioController@show');
 // ---------- GRAFOS AGLOMERADOS --------
 Route::get('grafo/{aglomerado}','SegmentacionController@index')->name('index');
 Route::get('grafo/{aglomerado}/{radio}/','SegmentacionController@ver_grafo')->name('ver-grafo');
+
+// ---------- ARCHIVOS --------
+Route::post('archivos','ArchivoController@index');
+Route::get('archivos','ArchivoController@index');
+Route::get('archivo/{archivo}','ArchivoController@show');
+Route::delete('archivo/{archivo}','ArchivoController@destroy');
+Route::get('archivo/{archivo}/descargar','ArchivoController@descargar');
 
 //Route::get('mail', 'MailCsvController@index');
 

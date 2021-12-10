@@ -15,7 +15,13 @@ class RadioLocalidadTable extends Migration
     {
         //
          $sql = file_get_contents(app_path() . '/developer_docs/radio_localidad.up.sql');
-         DB::unprepared($sql);
+      try{
+           DB::unprepared($sql);
+       }catch(Illuminate\Database\QueryException $e){
+          DB::Rollback();
+	        echo _('Omitiendo creación de tabla de relación radio localidad...
+		      ');
+       }
     }
 
     /**
@@ -26,6 +32,6 @@ class RadioLocalidadTable extends Migration
     public function down()
     {
         //
-        Schema::dropIfExists('radio_localidad');
+//        Schema::dropIfExists('radio_localidad');
     }
 }

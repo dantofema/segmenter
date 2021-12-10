@@ -20,8 +20,14 @@ class CreateLocalidadTable extends Migration
 
         });
      **/
-	 $sql = file_get_contents(app_path() . '/developer_docs/localidad.up.sql');
-	 DB::unprepared($sql);
+   	 $sql = file_get_contents(app_path() . '/developer_docs/localidad.up.sql');
+      try{
+           DB::unprepared($sql);
+       }catch(Illuminate\Database\QueryException $e){
+          DB::Rollback();
+	        echo _('Omitiendo creación de tabla de localidad...
+		      ');
+       }
     }
 
     /**
@@ -31,6 +37,6 @@ class CreateLocalidadTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('localidad');
+//        Schema::dropIfExists('localidad');
     }
 }

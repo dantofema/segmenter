@@ -1,48 +1,91 @@
-@extends('layouts.app')
+@extends ('layouts.app')
 
-@section('title', 'Localidad {{ $localidad->nombre }}')
+@section('title', $localidad->nombre )
 
-@section('content')
+@section ('content')
 <div class="container">
+<div class="row">
+  <div class="col-md-6">
     Información de la Localidad ({{ $localidad->codigo }}) 
     <b> {{ $localidad->nombre }} </b><br />
-    @if($aglomerado)
-    Aglomerado <a href="{{ url("/aglo/{$aglomerado->id}") }}" >
-    ({{ $aglomerado->codigo }}) 
-    <b> {{ $aglomerado->nombre }} </b></a><br />
-     @else
-        NO está definido ningún aglomerado.
-     @endif
-    <div class="">
-     @if($carto)
+    @if ($aglomerado)
+      del aglomerado <a href="{{ url("/aglo/{$aglomerado->id}") }}" >
+      ({{ $aglomerado->codigo }}) 
+      <b> {{ $aglomerado->nombre }} </b></a><br />
+    @else
+      NO está definido ningún aglomerado.
+    @endif
+    @if ($oDepto = $localidad->departamentos()->first())
+      en el Departamento <a href="{{ url("/depto/{$oDepto->id}") }}" >
+      ({{ $oDepto->codigo }}) 
+      <b> {{ $oDepto->nombre }} </b></a><br />
+    @else
+      NO está definido ningún departamento.
+    @endif
+   </div>
+   <div class="col-md-6 text-center">
+    @auth
+     @if ($carto)
         La base geográfica está cargada.
      @else
         NO está cargada la base geográfica.
      @endif 
-    </div>
-    <div class="">
-     @if($listado)
+     <br />
+     @if ($listado)
         El Listado de viviendas esta cargado.
      @else
         NO está cargado el listado de viviendas.
      @endif 
+     <div>
+     @if ($carto && $listado)
+       <button type="button" class="btn btn-primary" id="segmentar">Segmentar</button>
+     @endif
+    @endauth
     </div>
+</div>
+</div>
+</div>
+ <div class="container">
+   <!-- Modal -->
+   <div class="modal fade" id="segmentaLocModal" role="dialog">
+    <div class="modal-dialog">
 
+     <!-- Modal content-->
+     <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Segmentar Localidad</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <div class="modal-body" id="modal-body-segmenta">
+
+      </div>
+      <div class="modal-footer">
+       <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+      </div>
+     </div>
+    </div>
+   </div>
+
+<hr />
 <div class="form-horizontal">
 <form action="/grafo/{{ $localidad->id }}" method="GET" enctype="multipart/form-data">
                 @csrf
-
   <div class="form-group">
-    <label class="control-label" for="radio">Seleccione un Radio para ver grafo de segmentación:</label>
+    <label class="control-label" for="radio">Seleccione un Radio para ver:</label>
     <div class="">
 <ul class="nav">
-            @foreach($radios as $radio)
-    <li class="btn @if($radio->isSegmentado) segmentado @endif " >
-    @if($radio->isSegmentado)<a href="{{ url('/grafo/'.$aglomerado->id.'/'.$radio->id) }}"> @endif
-        {{ trim($radio->codigo) }}: {{ trim($radio->nombre) }} <br />Mzas: {{ trim($radio->CantMzas) }}
-    @if($radio->isSegmentado)</a> @endif
+  @foreach ($radios as $radio)
+       @if ($radio->isSegmentado) 
+          <li class="btn border border-success "> 
+        @else
+          <li class="btn "> 
+        @endif 
+    <a href="{{ url('/grafo/'.$aglomerado->id.'/'.$radio->id) }}">
+        {{ trim($radio->codigo) }}: {{ trim($radio->nombre) }} <br />Mzas: {{ trim($radio->CantMzas) }} 
+        @if ($radio->isSegmentado) Segmentos: {{ trim($radio->isSegmentado) }} @endif
+    </a>
     </li>
-            @endforeach
+  @endforeach
 </ul>
     </div>
   </div>
@@ -52,7 +95,7 @@
 
 </div>
      @if($carto)
-        {!! $svg->concat !!}
+        {!! $svg !!}
      @endif
 @if($localidad->codigo =='0125')         
 <div>
@@ -123,3 +166,28 @@
 </div>
 @endif
 @stop
+@section('footer_scripts')
+<script>
+ $(document).ready( function () {
+     $.ajaxSetup({
+          headers: {
+              'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+          }
+     });
+     $("#segmentar").click(function () {
+      // AJAX request
+           $.ajax({
+            url: "{{ url('localidad-segmenta') }}"+"/{{ $localidad->id }}",
+            type: 'post',
+            data: {id: {{ $localidad->id }},format: 'html'},
+            success: function(response){ 
+              // Add response in Modal body
+              $('#modal-body-segmenta').html(response);
+              // Display Modal
+              $('#segmentaLocModal').modal('show'); 
+            }
+           });
+     });
+ });
+</script>
+@endsection

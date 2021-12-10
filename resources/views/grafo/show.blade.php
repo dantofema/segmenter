@@ -162,6 +162,7 @@ function zoom(scale) {
       selector: 'node',
       style: {
         'background-color': function (ele) {
+          let n=1;
 					for (let i = 0; i < arrayOfClusterArrays.length; i++)
 						if (arrayOfClusterArrays[i].includes(ele.data('id')))
                            if (i>clusterColors.length) {n=i-clusterColors.length;

@@ -4,7 +4,7 @@
 Hola, bienvenide!
 
 Aquí están las instrucciones para instalar el entorno de desarrollo de este proyecto.
-Esta es la parte web nacida del segmentador asistido para el censo de población, hogares y viviendas de la ronda 2020 de Argentina.
+Ésta es la parte web nacida del segmentador asistido para el censo de población, hogares y viviendas de la ronda 2020 de Argentina.
 
 Pensado como una interfaz para ejecutar el **Segmentador-core** y también como interfaz de carga de los datos mínimos necesarios para éste.
 
@@ -16,10 +16,18 @@ Todo aporte es bienvenido y agradecido.
 
 salud! M.
 
+### Introducción
+En este repositorio se encunetran 4 ramas principales.
+- master  donde hago los desarrollos 
+- dev     la versión que usada en el servidor de integración.
+- uat     versión de testing
+- prd     versión para producción
+
 ## Prerrequisitos (las instrucciones asumen que se está usando Ubuntu)
 * PHP 7.3 o superior.3 o superior.3 o superior: php-mbstring php-dom php-zip php-gd php-pdo-pgsql composer
 ```
-sudo apt install php-mbstring php-dom php-zip php-gd php-pdo-pgsql composer
+sudo apt install php-mbstring php-dom php-zip php-gd php-pdo-pgsql 
+curl -sS https://getcomposer.org/installer | php
 ```
 * gdal (ogr2ogr)
 ```
@@ -43,9 +51,11 @@ pip3 install GDAL
 ```
 --- pip3 install psycopg2-binary ---
 
-* y usamos NodeJs también 
+* y usamos NodeJs también. Lo manejamos con n y instalamos la versión 12
 ```
 sudo apt install npm
+npm install -g n
+n 12
 ```
 ## Para instalar el entorno de desarrollo se debe, (según extracto de [guia][1]):
 

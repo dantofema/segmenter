@@ -1,22 +1,3 @@
-<?php /*
-<!DOCTYPE html>
- 
-<html lang="es">
-<head>
-<meta name="csrf-token" content="{{ csrf_token() }}">
-<title>{{ config('app.name', 'Laravel') }}</title>
-<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rel="stylesheet">  
-<link  href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css" rel="stylesheet">
-<script src="//ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.js"></script>  
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script >
-<script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
-<link  href="https://cdn.datatables.net/buttons/1.6.1/css/buttons.dataTables.min.css" rel="stylesheet">
-<script src="https://cdn.datatables.net/buttons/1.6.1/js/dataTables.buttons.min.js"></script>  
-
-</head>
-<body>
- <div class="container">
- */ ?>
 @extends('layouts.app')
 @section ('content_main') 
    <!-- Modal -->
@@ -47,7 +28,7 @@
      <!-- Modal content-->
      <div class="modal-content">
       <div class="modal-header">
-        <h4 class="modal-title">Segmentar Aglomerado</h4>
+        <h4 class="modal-title">Segmentar</h4>
         <button type="button" class="close" data-dismiss="modal">&times;</button>
       </div>
       <div class="modal-body" id="modal-body-segmenta">

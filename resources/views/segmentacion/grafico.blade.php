@@ -1,12 +1,22 @@
 @extends('layouts.app')
 @section('content')
+@if (isset($aglomerado))
 <h3 class="text-center">Aglomerado ({{ $aglomerado->codigo }}) {{ $aglomerado->nombre }}</h3>
+@endif
+@if (isset($localidad))
+<h4 class="text-center">Localidad ({{ $localidad->codigo }}) {{ $localidad->nombre }}</h4>
+@endif
 <canvas id="canvas" style="padding: 20px;" height="280" width="600"></canvas>
 @endsection
 @section('footer_scripts')
        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.bundle.js" charset="utf-8"></script>
         <script>
+      @if (isset($aglomerado))
         var url = "{{url('ver-segmentacion-grafico')}}/{{$aglomerado->id}}";
+      @endif
+      @if (isset($localidad))
+        var url = "{{url('localidad')}}/{{$localidad->id}}/grafico";
+      @endif
         var Segmentos = new Array();
         var Labels = new Array();
         var Viviendas = new Array();
