@@ -30,7 +30,7 @@ class CreateArchivosTable extends Migration
         });
       }else{
       	 echo _('Omitiendo creación de tabla de archivos existente...
-		     ');
+');
      }
     }
 
