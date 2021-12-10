@@ -200,18 +200,13 @@ class Radio extends Model
      public function getisSegmentadoAttribute($value)
      {
         if (! isset($this->_isSegmentado)){
-          if (count($this->aglomerados())>0){
-                    $result = MyDB::isSegmentado($this);
-
-              if ($result):
+              $result = MyDB::isSegmentado($this,$this->esquema);
+              return $this->_isSegmentado = $result;
+              if ($result>0):
                   $this->_isSegmentado = true;
               else:
                   $this->_isSegmentado = false;
               endif;
-           }
-          else{
-             return false;
-          }
         }else{
             return $this->_isSegmentado;
         }
