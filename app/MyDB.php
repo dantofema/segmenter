@@ -64,12 +64,12 @@ class MyDB extends Model
         lados_completos_a_tabla_segmentacion_ffrr($esquema,$frac,$radio)
         {
             try{
-                self::generarSegmentacionVacia($esquema);
-                self::generarR3Vacia($esquema);
                 DB::statement("SELECT
                 indec.lados_completos_a_tabla_segmentacion_ffrr('e".$esquema."',".$frac.",".$radio.");");
                 DB::statement("SELECT indec.segmentos_desde_hasta('e".$esquema."');");
             }catch(QueryException $e){
+                self::generarSegmentacionVacia($esquema);
+                self::generarR3Vacia($esquema);
                 self::addSequenceSegmentos('e'.$esquema);
                 Log::warning('Create sequence xq no exisitia...');
                 self::recrea_vista_segmentos_lados_completos($esquema);
