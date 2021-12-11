@@ -269,30 +269,28 @@ class SegmenterController extends Controller
             
 	    try{
             $procesar_result=MyDB::procesarPxRad($tabla,'public');
-	    // Busco provincia encontrada en pxrad:
-	    //
-	    //
-	    $prov=MyDB::getCodProv($tabla,'public');
-	    if($prov==0){
-		    flash('Error grave. Buscando provincia. NO SE PUDO PROCESAR PXRAD ? ')->error()->important();
-		    $data['file']['pxrad']='none';
-                    return view('segmenter/index', ['data' => $data,'epsgs'=> $this->epsgs]);
-	    }
-	    $oProvincia= Provincia::where('codigo', $prov)->first();
-	    if ($oProvincia==null){
-	    	$prov_data=MyDB::getDataProv($tabla,'public');
-		$oProvincia= new Provincia ($prov_data);
-		if ($oProvincia->save()){
-			flash('Se creó la provincia: '.$oProvincia->tojson(JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))->success()->important();
-		}
-
-	    }
+	          // Busco provincia encontrada en pxrad:
+            $prov=MyDB::getCodProv($tabla,'public');
+            if($prov==0){
+		          flash('Error grave. Buscando provincia. NO SE PUDO PROCESAR PXRAD ! ')->error()->important();
+              $data['file']['pxrad']='No se pudo procesar PxRad! ';
+              return view('segmenter/index', ['data' => $data,'epsgs'=> $this->epsgs]);
+	          }
+	      $oProvincia= Provincia::where('codigo', $prov)->first();
+	      if ($oProvincia==null){
+	      	$prov_data=MyDB::getDataProv($tabla,'public');
+		      $oProvincia= new Provincia ($prov_data);
+		      if ($oProvincia->save()){
+			       flash('Se creó la provincia: '.$oProvincia->tojson(JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))->warning()->important();
+	 	      }
+        }else{
+	         flash('Provincia: ('.$oProvincia->codigo.') '.$oProvincia->nombre)->success()->important();
+        }
 	    }catch (Illuminate\Database\QueryException $e){
 		    flash('Error grave. NO SE PUDO PROCESAR PXRAD '.$e)->error()->important();
 		    $data['file']['pxrad']='none';
-                    return view('segmenter/index', ['data' => $data,'epsgs'=> $this->epsgs]);
+        return view('segmenter/index', ['data' => $data,'epsgs'=> $this->epsgs]);
 	    }
-//	    Log::debug('Provincia: '.$oProvincia->tojson(JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 	    
 	    $depto_data=MyDB::getDatadepto($tabla,'public');
 //	    Log::debug('Deptos data: '.collect($depto_data) ); //.' cantidad: '.count($depto_data));
@@ -340,17 +338,13 @@ class SegmenterController extends Controller
 			    $oRadio->Fraccion()->associate(Fraccion::where('codigo',substr($radio->codigo,0,7))->firstorFail());
 			    $oRadio->Tipo()->associate(TipoRadio::firstOrCreate(['nombre'=>$radio->tipo]));
                             $oRadio->save();
-
   //                          Log::debug('Radio: '.$estado.$oRadio->tojson(JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-
                         }
 		    }
 	    }
 	    
 //	    Log::debug('Provincia: '.$oProvincia->tojson(JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-
 	}
-
 	     }
 	    $data['file']['pxrad']='Si';
     }else{
