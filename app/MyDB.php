@@ -722,7 +722,12 @@ FROM
         public static function grabarSegmentacion($esquema,$frac=null,$radio=null)
         {
             if ($frac!=null) {
-              DB::statement("select indec.sincro_r3_ffrr('e".$esquema."', $frac, $radio);");
+              try{
+                 DB::statement("select indec.sincro_r3_ffrr('e".$esquema."', $frac, $radio);");
+              }catch(QueryException $e){
+                 Log::error($e);
+                 return false;
+              }
         // guarda indec.describe_segmentos_con_direcciones_ffrr en esquema.r3 (hace delete & insert)a
       }else{
         DB::statement("SELECT indec.sincro_r3('e".$esquema."');");
