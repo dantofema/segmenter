@@ -780,10 +780,18 @@ FROM
                 $esquema=$radio->esquema;
                 $filtro= ' where (frac::integer,radio::integer) =
                     ('.$radio->CodigoFrac.','.$radio->CodigoRad.') ';
-                $funcion_describe= " indec.describe_segmentos_con_direcciones_ffrr('".$esquema."',".$radio->CodigoFrac.",".$radio->CodigoRad.") ";
-            } else
-            { $filtro = '';
-            $funcion_describe= " indec.describe_segmentos_con_direcciones('".$esquema."') ";
+                if (Schema::hasTable($esquema.'.r3')){
+                  $funcion_describe= ' "'.$esquema.'".r3 '.$filtro;
+                }else{
+                  $funcion_describe= " indec.describe_segmentos_con_direcciones_ffrr('".$esquema."',".$radio->CodigoFrac.",".$radio->CodigoRad.") ";
+                }
+            }else{ 
+              $filtro = '';
+              if (Schema::hasTable($esquema.'.r3')){
+                $funcion_describe= ' "'.$esquema.'".r3 ';
+              }else{
+                $funcion_describe= " indec.describe_segmentos_con_direcciones('".$esquema."') ";
+              }
             }
 
             try{
