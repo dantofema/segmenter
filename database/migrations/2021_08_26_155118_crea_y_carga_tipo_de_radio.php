@@ -31,6 +31,6 @@ class CreaYCargaTipoDeRadio extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('tipo_de_radio');        //
+//        Schema::dropIfExists('tipo_de_radio');        //
     }
 }

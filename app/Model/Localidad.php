@@ -159,23 +159,31 @@ class Localidad extends Model
             $new_radios=[];
             $objRadios= Collect (new Radio);
             $nuevos_radios=0;
+//            $objRadios=Radio::whereIn('codigo',$radios);
+//            flash($radios->get('link').'a')->important();
         if($radios){
             foreach($radios as $radio){
-                if (Radio::where('codigo',$radio->link)->exists()){
+  //              if (Radio::where('codigo',$radio->link)->exists()){
                                $links[]=$radio->link;
-                }else{
-                    $new_radios[]=new Radio (['codigo'=>$radio->link,'nombre'=>'Nuevo: '.$radio->link]);
-        $nuevos_radios++;
-        flash('No se encontró radio  -> '.$radio->link)->error()->important();
-                }
+  //              }else{
+  //                  $new_radios[]=new Radio (['codigo'=>$radio->link,'nombre'=>'Nuevo x listado']);
+  //                  $nuevos_radios++;
+  //                flash('No se encontró radio  -> '.$radio->link.': Revisar y cargar PxRad ')->error()->important();
+  //              }
             }
         }
         if (count($links)>0){
-            $objRadios=Radio::whereIn('codigo',$links)->get();
-      flash('Radios verificados -> '.$objRadios->count())->success();
+            $objRadios=Radio::whereIn('codigo',$links)
+                        ->get();
+            if($objRadios->count()!=count($radios)){
+               flash('Radios existentes verificados: '.$objRadios->count().'. Radios encontrados en listado: '.count($radios))->warning()->important();
+               // TODO: Crear un nuevo radio para el radio encontrado, o avisar cuál es.
+            }else{
+               flash('Radios existentes verificados -> '.$objRadios->count())->success();
+            }
         }
             //dd($new_radios,$nuevos_radios);
-            $objs=$objRadios->union(Collect ($new_radios));
+            $objs=$objRadios->union(Collect ($new_radios))->sortBy('codigo');
         return $objs;
 
     }

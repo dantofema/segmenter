@@ -255,8 +255,11 @@ class Radio extends Model
                          						    ($loc_no_rural->first()->codigo));
                               $esquemas[]='e'.$loc_no_rural->first()->codigo;
 				                }
-			              }else{
+			              }elseif($this->localidades()->count()==1){
                        $esquemas[]='e'.$this->localidades()->first()->codigo;
+                      }else{
+                       $esquemas[]='e'.$this->codigo;
+                       Log::error('No se encontró localidad para el radio: '.$this->codigo);
 			              }
                 }catch (Exception $e){
                  Log::error('Algo muy raro paso: '.$e);

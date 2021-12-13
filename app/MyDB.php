@@ -64,12 +64,12 @@ class MyDB extends Model
         lados_completos_a_tabla_segmentacion_ffrr($esquema,$frac,$radio)
         {
             try{
-                self::generarSegmentacionVacia($esquema);
-                self::generarR3Vacia($esquema);
                 DB::statement("SELECT
                 indec.lados_completos_a_tabla_segmentacion_ffrr('e".$esquema."',".$frac.",".$radio.");");
                 DB::statement("SELECT indec.segmentos_desde_hasta('e".$esquema."');");
             }catch(QueryException $e){
+                self::generarSegmentacionVacia($esquema);
+                self::generarR3Vacia($esquema);
                 self::addSequenceSegmentos('e'.$esquema);
                 Log::warning('Create sequence xq no exisitia...');
                 self::recrea_vista_segmentos_lados_completos($esquema);
@@ -722,7 +722,12 @@ FROM
         public static function grabarSegmentacion($esquema,$frac=null,$radio=null)
         {
             if ($frac!=null) {
-              DB::statement("select indec.sincro_r3_ffrr('e".$esquema."', $frac, $radio);");
+              try{
+                 DB::statement("select indec.sincro_r3_ffrr('e".$esquema."', $frac, $radio);");
+              }catch(QueryException $e){
+                 Log::error($e);
+                 return false;
+              }
         // guarda indec.describe_segmentos_con_direcciones_ffrr en esquema.r3 (hace delete & insert)a
       }else{
         DB::statement("SELECT indec.sincro_r3('e".$esquema."');");
@@ -775,10 +780,18 @@ FROM
                 $esquema=$radio->esquema;
                 $filtro= ' where (frac::integer,radio::integer) =
                     ('.$radio->CodigoFrac.','.$radio->CodigoRad.') ';
-                $funcion_describe= " indec.describe_segmentos_con_direcciones_ffrr('".$esquema."',".$radio->CodigoFrac.",".$radio->CodigoRad.") ";
-            } else
-            { $filtro = '';
-            $funcion_describe= " indec.describe_segmentos_con_direcciones('".$esquema."') ";
+                if (Schema::hasTable($esquema.'.r3')){
+                  $funcion_describe= ' "'.$esquema.'".r3 '.$filtro;
+                }else{
+                  $funcion_describe= " indec.describe_segmentos_con_direcciones_ffrr('".$esquema."',".$radio->CodigoFrac.",".$radio->CodigoRad.") ";
+                }
+            }else{ 
+              $filtro = '';
+              if (Schema::hasTable($esquema.'.r3')){
+                $funcion_describe= ' "'.$esquema.'".r3 ';
+              }else{
+                $funcion_describe= " indec.describe_segmentos_con_direcciones('".$esquema."') ";
+              }
             }
 
             try{
