@@ -117,7 +117,7 @@ class SegmenterController extends Controller
 	    }
 
 	    //Cargo etiquetas
-	    $processOGR2OGR->run(null, ['capa'=>'lab','epsg'=>$epsg_def,'file' => storage_path().'/app/'.$data['file']['shp_lab'],'e00'=>$codaglo[0],'db'=>Config::get('database.connections.pgsql.database'),'host'=>Config::get('database.connections.pgsql.host'),'user'=>Config::get('database.connections.pgsql.username'),'pass'=>Config::get('database.connections.pgsql.password'),'port'=>Config::get('database.connections.pgsql.port')]);
+	    $processOGR2OGR->run(null, ['capa'=>'lab','epsg'=>$epsg_def,'file' => storage_path().'/app/'.$data['file']['shp_lab'],'e00'=>$codaglo[0]->link,'db'=>Config::get('database.connections.pgsql.database'),'host'=>Config::get('database.connections.pgsql.host'),'user'=>Config::get('database.connections.pgsql.username'),'pass'=>Config::get('database.connections.pgsql.password'),'port'=>Config::get('database.connections.pgsql.port')]);
 
         }
     }
@@ -157,7 +157,7 @@ class SegmenterController extends Controller
                         
             if ($epsg_id=='sr-org:8333'){
 		//Cargo arcos
-		$processOGR2OGR->run(null, ['capa'=>'arc','epsg'=>$epsg_def,'file' => storage_path().'/app/'.$data['file']['shp'],'e00'=>$codaglo[0],'db'=>Config::get('database.connections.pgsql.database'),'host'=>Config::get('database.connections.pgsql.host'),'user'=>Config::get('database.connections.pgsql.username'),'pass'=>Config::get('database.connections.pgsql.password'),'port'=>Config::get('database.connections.pgsql.port')]);
+		$processOGR2OGR->run(null, ['capa'=>'arc','epsg'=>$epsg_def,'file' => storage_path().'/app/'.$data['file']['shp'],'e00'=>$codaglo[0]->link,'db'=>Config::get('database.connections.pgsql.database'),'host'=>Config::get('database.connections.pgsql.host'),'user'=>Config::get('database.connections.pgsql.username'),'pass'=>Config::get('database.connections.pgsql.password'),'port'=>Config::get('database.connections.pgsql.port')]);
             }else{
                 $shp_file->epsg_def = $epsg_id;
 	        	    if( $ppddllls=$shp_file->procesar() ) 
@@ -168,10 +168,10 @@ class SegmenterController extends Controller
             if (!$processOGR2OGR->isSuccessful()) {
                 $epsg_def=isset($epsg_def)?$epsg_def:'No definido';
                 dd($processOGR2OGR,'epsg '.$epsg_id,'epsg_def '.$epsg_def.
-                'file '.storage_path().'/app/'.$data['file']['shp'],'e00 '.$codaglo);
+                'file '.storage_path().'/app/'.$data['file']['shp'],'e00 '.$codaglo[0]->link);
                 throw new ProcessFailedException($processOGR2OGR);
             }
-            MyDB::agregarsegisegd($codaglo);
+            MyDB::agregarsegisegd($codaglo[0]->link);
 
         }elseif ($original_extension == 'e00'){
 		$shp_file->epsg_def = $epsg_id;
@@ -184,11 +184,11 @@ class SegmenterController extends Controller
 	    if ($epsg_id=='sr-org:8333'){ // Si es CABA cargo sin epsg
             $processOGR2OGR = Process::fromShellCommandline('/usr/bin/ogr2ogr -f "PostgreSQL" PG:"dbname=$db host=$host user=$user port=$port active_schema=e$e00 password=$pass port=$port" --config PG_USE_COPY YES -lco OVERWRITE=YES --config OGR_TRUNCATE YES -dsco PRELUDE_STATEMENTS="SET client_encoding TO latin1;CREATE SCHEMA IF NOT EXISTS e$e00;" -dsco active_schema=e$e00 -lco PRECISION=NO -lco SCHEMA=e$e00 -skipfailures -addfields -overwrite $file ARC');
             $processOGR2OGR->setTimeout(3600);
-            $processOGR2OGR->run(null, ['epsg' => $epsg_id, 'file' => storage_path().'/app/'.$data['file']['shp'],'e00'=>$codaglo,'db'=>Config::get('database.connections.pgsql.database'),'host'=>Config::get('database.connections.pgsql.host'),'user'=>Config::get('database.connections.pgsql.username'),'pass'=>Config::get('database.connections.pgsql.password'),'port'=>Config::get('database.connections.pgsql.port')]);
+            $processOGR2OGR->run(null, ['epsg' => $epsg_id, 'file' => storage_path().'/app/'.$data['file']['shp'],'e00'=>$codaglo[0]->link,'db'=>Config::get('database.connections.pgsql.database'),'host'=>Config::get('database.connections.pgsql.host'),'user'=>Config::get('database.connections.pgsql.username'),'pass'=>Config::get('database.connections.pgsql.password'),'port'=>Config::get('database.connections.pgsql.port')]);
          //		dd($processOGR2OGR);	
         $processOGR2OGR_lab = Process::fromShellCommandline('/usr/bin/ogr2ogr -f "PostgreSQL" PG:"dbname=$db host=$host user=$user port=$port active_schema=e$e00 password=$pass" --config PG_USE_COPY YES -lco OVERWRITE=YES --config OGR_TRUNCATE YES -dsco PRELUDE_STATEMENTS="SET client_encoding TO latin1;CREATE SCHEMA IF NOT EXISTS e$e00;" -dsco active_schema=e$e00 -lco PRECISION=NO -lco SCHEMA=e$e00 -skipfailures -addfields -overwrite $file LAB');
         $processOGR2OGR_lab->setTimeout(3600);
-        $processOGR2OGR_lab->run(null, ['epsg' => $epsg_id, 'file' => storage_path().'/app/'.$data['file']['shp'],'e00'=>$codaglo,'db'=>Config::get('database.connections.pgsql.database'),'host'=>Config::get('database.connections.pgsql.host'),'user'=>Config::get('database.connections.pgsql.username'),'pass'=>Config::get('database.connections.pgsql.password'),'port'=>Config::get('database.connections.pgsql.port')]);
+        $processOGR2OGR_lab->run(null, ['epsg' => $epsg_id, 'file' => storage_path().'/app/'.$data['file']['shp'],'e00'=>$codaglo[0]->link,'db'=>Config::get('database.connections.pgsql.database'),'host'=>Config::get('database.connections.pgsql.host'),'user'=>Config::get('database.connections.pgsql.username'),'pass'=>Config::get('database.connections.pgsql.password'),'port'=>Config::get('database.connections.pgsql.port')]);
             //dd($processOGR2OGR_lab->getErrorOutput());
         flash($data['file']['ogr2ogr_lab'] = $processOGR2OGR_lab->getErrorOutput().'<br />'.$processOGR2OGR_lab->getOutput())->important();
 	      flash($data['file']['ogr2ogr'] = $processOGR2OGR->getErrorOutput().'<br />'.$processOGR2OGR->getOutput())->important();
@@ -218,13 +218,13 @@ class SegmenterController extends Controller
         }else {//dd($request->file('shp')); 
             flash('File geo not valid')->error()->important();
         }
-        if (isset($codaglo)){
+        if (isset($codaglo[0]->link)){
             if ($epsg_id=='sr-org:8333'){
-	        MyDB::setSRID('e'.$codaglo,98333);
+	        MyDB::setSRID('e'.$codaglo[0]->link,98333);
         }
         //MyDB::juntaListadoGeom('e'.$codaglo);
         if($segmenta_auto) {
-               MyDB::segmentar_equilibrado($codaglo,36);
+               MyDB::segmentar_equilibrado($codaglo[0]->link,36);
                flash('Segmentado automáticamente a 36 viviendas x segmento')->important();
         }
 	     }
@@ -269,30 +269,28 @@ class SegmenterController extends Controller
             
 	    try{
             $procesar_result=MyDB::procesarPxRad($tabla,'public');
-	    // Busco provincia encontrada en pxrad:
-	    //
-	    //
-	    $prov=MyDB::getCodProv($tabla,'public');
-	    if($prov==0){
-		    flash('Error grave. Buscando provincia. NO SE PUDO PROCESAR PXRAD ? ')->error()->important();
-		    $data['file']['pxrad']='none';
-                    return view('segmenter/index', ['data' => $data,'epsgs'=> $this->epsgs]);
-	    }
-	    $oProvincia= Provincia::where('codigo', $prov)->first();
-	    if ($oProvincia==null){
-	    	$prov_data=MyDB::getDataProv($tabla,'public');
-		$oProvincia= new Provincia ($prov_data);
-		if ($oProvincia->save()){
-			flash('Se creó la provincia: '.$oProvincia->tojson(JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))->success()->important();
-		}
-
-	    }
+	          // Busco provincia encontrada en pxrad:
+            $prov=MyDB::getCodProv($tabla,'public');
+            if($prov==0){
+		          flash('Error grave. Buscando provincia. NO SE PUDO PROCESAR PXRAD ! ')->error()->important();
+              $data['file']['pxrad']='No se pudo procesar PxRad! ';
+              return view('segmenter/index', ['data' => $data,'epsgs'=> $this->epsgs]);
+	          }
+	      $oProvincia= Provincia::where('codigo', $prov)->first();
+	      if ($oProvincia==null){
+	      	$prov_data=MyDB::getDataProv($tabla,'public');
+		      $oProvincia= new Provincia ($prov_data);
+		      if ($oProvincia->save()){
+			       flash('Se creó la provincia: '.$oProvincia->tojson(JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))->warning()->important();
+	 	      }
+        }else{
+	         flash('Provincia: ('.$oProvincia->codigo.') '.$oProvincia->nombre)->success()->important();
+        }
 	    }catch (Illuminate\Database\QueryException $e){
 		    flash('Error grave. NO SE PUDO PROCESAR PXRAD '.$e)->error()->important();
 		    $data['file']['pxrad']='none';
-                    return view('segmenter/index', ['data' => $data,'epsgs'=> $this->epsgs]);
+        return view('segmenter/index', ['data' => $data,'epsgs'=> $this->epsgs]);
 	    }
-//	    Log::debug('Provincia: '.$oProvincia->tojson(JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 	    
 	    $depto_data=MyDB::getDatadepto($tabla,'public');
 //	    Log::debug('Deptos data: '.collect($depto_data) ); //.' cantidad: '.count($depto_data));
@@ -340,17 +338,13 @@ class SegmenterController extends Controller
 			    $oRadio->Fraccion()->associate(Fraccion::where('codigo',substr($radio->codigo,0,7))->firstorFail());
 			    $oRadio->Tipo()->associate(TipoRadio::firstOrCreate(['nombre'=>$radio->tipo]));
                             $oRadio->save();
-
   //                          Log::debug('Radio: '.$estado.$oRadio->tojson(JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-
                         }
 		    }
 	    }
 	    
 //	    Log::debug('Provincia: '.$oProvincia->tojson(JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-
 	}
-
 	     }
 	    $data['file']['pxrad']='Si';
     }else{

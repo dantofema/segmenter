@@ -37,6 +37,6 @@ class CreateLocalidadDepartamentosTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('localidad_departamento');
+//        Schema::dropIfExists('localidad_departamento');
     }
 }

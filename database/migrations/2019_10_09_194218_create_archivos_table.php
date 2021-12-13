@@ -30,7 +30,7 @@ class CreateArchivosTable extends Migration
         });
       }else{
       	 echo _('Omitiendo creación de tabla de archivos existente...
-		     ');
+');
      }
     }
 
@@ -41,6 +41,6 @@ class CreateArchivosTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('archivos');
+//        Schema::dropIfExists('archivos');
     }
 }
