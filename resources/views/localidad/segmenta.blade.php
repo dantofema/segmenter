@@ -42,7 +42,7 @@
     <label class="radio-inline"><input type="radio" name="optalgoritmo" value=lados>Lados Completos</label>
     <label class="radio-inline" title="Primero segmenta a lados completos, luego los lados excedidos son segmentados a lado independiente."
     alt="Primero segmenta a lados completos, luego los lados excedidos son segmentados a lado independiente."><input type="radio" name="optalgoritmo"
-    value=magic checked>Mixto</label>
+    value=magic checked>Combinado</label>
   </div>
   <div class="form-group">
     <label class="control-label" for="radio">Parametros:</label><br />
