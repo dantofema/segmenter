@@ -101,7 +101,9 @@ class Archivo extends Model
           Log::debug($process->getOutput());
           return true;
       } catch (ProcessFailedException $exception) {
-          Log::error($process->getErrorOutput());
+          Log::error($process->getErrorOutput().$exception);
+      } catch (RuntimeException $exception) {
+          Log::error($process->getErrorOutput().$exception);
       }
   }else{
     flash($data['file']['csv_info'] = 'Se Cargo un archivo de formato
@@ -158,7 +160,11 @@ class Archivo extends Model
         $mensajes=$processOGR2OGR->getErrorOutput().'<br />'.$processOGR2OGR->getOutput();
      } catch (ProcessFailedException $exception) {
          Log::error($processOGR2OGR->getErrorOutput());
-           }
+         return false;
+     } catch (RuntimeException $exception) {
+         Log::error($process->getErrorOutput().$exception);
+         return false;
+     }
 
     //Cargo etiquetas
     try{
@@ -178,6 +184,11 @@ class Archivo extends Model
      } catch (ProcessFailedException $exception) {
         Log::error($processOGR2OGR->getErrorOutput());
         $this->procesado=false;
+         return false;
+     } catch (RuntimeException $exception) {
+         Log::error($process->getErrorOutput().$exception);
+        $this->procesado=false;
+         return false;
      }
      $this->save();
      return $mensajes;
