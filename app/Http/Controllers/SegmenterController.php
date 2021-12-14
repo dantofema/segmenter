@@ -192,29 +192,13 @@ class SegmenterController extends Controller
         $processOGR2OGR_lab->setTimeout(3600);
         $processOGR2OGR_lab->run(null, ['epsg' => $epsg_id, 'file' => storage_path().'/app/'.$data['file']['shp'],'e00'=>$codaglo[0]->link,'db'=>Config::get('database.connections.pgsql.database'),'host'=>Config::get('database.connections.pgsql.host'),'user'=>Config::get('database.connections.pgsql.username'),'pass'=>Config::get('database.connections.pgsql.password'),'port'=>Config::get('database.connections.pgsql.port')]);
             //dd($processOGR2OGR_lab->getErrorOutput());
-        flash($data['file']['ogr2ogr_lab'] = $processOGR2OGR_lab->getErrorOutput().'<br />'.$processOGR2OGR_lab->getOutput())->important();
-	      flash($data['file']['ogr2ogr'] = $processOGR2OGR->getErrorOutput().'<br />'.$processOGR2OGR->getOutput())->important();
-	    }else{ // Cargo con epsg
-		    $shp_file->epsg_def = $epsg_id;
-		    $shp_file->save();
-	    if( $mensaje=$shp_file->procesar() ) {
-          flash('Proceso');
-		    }else{flash('No se pudo procesar la cartografía')->error();
-          $mensajes='ERROR';
-          $ppdddllls=[];
-		    }
-	    if (!Str::contains($mensajes,['ERROR'])){
-	    	flash('Se cargaron las Etiquetas con éxito. ')->important()->success();
-	    }else{
-	    	flash($mensaje)->important()->error();
+        flash($mensajes.=$data['file']['ogr2ogr_lab'] = $processOGR2OGR_lab->getErrorOutput().'<br />'.$processOGR2OGR_lab->getOutput())->important();
+	      flash($mensajes.=$data['file']['ogr2ogr'] = $processOGR2OGR->getErrorOutput().'<br />'.$processOGR2OGR->getOutput())->important();
 	    }
-            //$mensaje=$data['file']['ogr2ogr'] = $processOGR2OGR->getErrorOutput().'<br />'.$processOGR2OGR->getOutput();
 	    if (!Str::contains($mensajes,['ERROR'])){
-	    	flash('Se cargaron los Arcos con éxito. ')->important()->success();
+	    	flash('Se cargaron las Etiquetas y Arcos con éxito. ')->important()->success();
 	    }else{
-	    	flash($mensaje)->important()->error();
-	    }
-
+	    	flash($mensajes)->important()->error();
 	    }
         foreach($ppdddllls as $ppdddlll){
           MyDB::agregarsegisegd($ppdddlll->link);
@@ -222,7 +206,7 @@ class SegmenterController extends Controller
         }
         //MyDB::agregarsegisegd($codaglo);
         }else {//dd($request->file('shp')); 
-            flash('File geo not valid')->error()->important();
+            flash('No se encontraron localidades')->error()->important();
         }
         if (isset($codaglo[0]->link)){
             if ($epsg_id=='sr-org:8333'){

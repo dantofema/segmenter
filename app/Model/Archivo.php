@@ -248,6 +248,7 @@ class Archivo extends Model
               MyDB::copiaraEsquema('e_'.$this->tabla,'e'.$ppdddlll->link);
               $count++;
             }
+            flash('Se encontraron '.$count.' localidaes en la cartografía');
             MyDB::limpiar_esquema('e_'.$this->tabla);
             return $ppdddllls;
     }
