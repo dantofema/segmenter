@@ -64,6 +64,7 @@ class Archivo extends Model
     }
 
     public function procesar(){
+      if(!$this->procesado){
        if ($this->tipo == 'csv' or $this->tipo == 'dbf'){
             return $this->procesarC1();
         }elseif($this->tipo == 'e00' or $this->tipo == 'bin') {
@@ -72,6 +73,10 @@ class Archivo extends Model
             flash('No se encontro qué hacer para procesar '.$this->nombre_original )->warning();
             return false;
         }
+      }else{
+            flash('Archivo ya fue procesado: '.$this->nombre_original )->warning();
+            return false;
+      }
     }
 
     public function procesarC1(){
