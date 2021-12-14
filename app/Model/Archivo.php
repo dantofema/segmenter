@@ -75,7 +75,7 @@ class Archivo extends Model
         }
       }else{
             flash('Archivo ya fue procesado: '.$this->nombre_original )->warning();
-            return false;
+            return true;
       }
     }
 
