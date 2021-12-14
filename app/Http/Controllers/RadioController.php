@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Model\Radio;
 use Illuminate\Http\Request;
 use App\Segmentador;
+use Illuminate\Support\Facades\Log;
+ 
 
 class RadioController extends Controller
 {
@@ -54,8 +56,16 @@ class RadioController extends Controller
     public function show(Radio $radio)
     {
         //
+        return $radio->load(['fraccion','localidades']);
+          flash(
+                ($radio
+                    ->load(['fraccion','localidades'])
+                )->toJson(JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)
+          )->important();
+          Log::debug($radio->esquema);
+          Log::debug(collect($radio->esquemas)->toJson(JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+          return view('home');
 
-       // dd($radio);
     }
 
     /**

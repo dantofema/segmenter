@@ -179,7 +179,9 @@ class SegmenterController extends Controller
 		if( $mensajes=$shp_file->procesar() ) {
 			flash('Procesó e00')->important()->success();
 			$ppdddllls=$shp_file->pasarData();
-		}else{flash('la cago')->error();
+		}else{flash('No se pudo procesar la cartografía')->error();
+      $mensajes='ERROR';
+      $ppdddllls=[];
 		    }
 	    if ($epsg_id=='sr-org:8333'){ // Si es CABA cargo sin epsg
             $processOGR2OGR = Process::fromShellCommandline('/usr/bin/ogr2ogr -f "PostgreSQL" PG:"dbname=$db host=$host user=$user port=$port active_schema=e$e00 password=$pass port=$port" --config PG_USE_COPY YES -lco OVERWRITE=YES --config OGR_TRUNCATE YES -dsco PRELUDE_STATEMENTS="SET client_encoding TO latin1;CREATE SCHEMA IF NOT EXISTS e$e00;" -dsco active_schema=e$e00 -lco PRECISION=NO -lco SCHEMA=e$e00 -skipfailures -addfields -overwrite $file ARC');
@@ -195,8 +197,12 @@ class SegmenterController extends Controller
 	    }else{ // Cargo con epsg
 		    $shp_file->epsg_def = $epsg_id;
 		    $shp_file->save();
-	    if( $mensaje=$shp_file->procesar() ) {flash('Proceso');}else{flash('la cago')->error();
-	    }
+	    if( $mensaje=$shp_file->procesar() ) {
+          flash('Proceso');
+		    }else{flash('No se pudo procesar la cartografía')->error();
+          $mensajes='ERROR';
+          $ppdddllls=[];
+		    }
 	    if (!Str::contains($mensajes,['ERROR'])){
 	    	flash('Se cargaron las Etiquetas con éxito. ')->important()->success();
 	    }else{

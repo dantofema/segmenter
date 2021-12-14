@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Exception\ProcessTimedOutException;
+use Symfony\Component\Process\Exception\RuntimeException; 
 use Illuminate\Support\Facades\Config;
 //use App\Imports\CsvImport;
 use Maatwebsite\Excel;
@@ -127,7 +129,7 @@ class Archivo extends Model
                 -nln $capa \
                 -skipfailures \
                 -overwrite $file )');
-           $processOGR2OGR->setTimeout(3600);
+           $processOGR2OGR->setTimeout(300);
       $this->procesado=false;
       $this->save();
 
@@ -142,7 +144,7 @@ class Archivo extends Model
                      CREATE SCHEMA IF NOT EXISTS e_$esquema;" -dsco active_schema=e_$esquema \
                      -lco PRECISION=NO -lco SCHEMA=e_$esquema -s_srs $epsg -t_srs $epsg \
                      -nln $capa -addfields -overwrite $file $capa');
-           $processOGR2OGR->setTimeout(3600);
+           $processOGR2OGR->setTimeout(300);
                      // -skipfailures
     //Cargo arcos
     try{
@@ -151,7 +153,7 @@ class Archivo extends Model
           'epsg'=> $this->epsg_def,
           'file' => storage_path().'/app/'.$this->nombre,
           'esquema'=>$this->tabla,
-          'encoding'=>'latin1',
+          'encoding'=>'cp1252',
           'db'=>Config::get('database.connections.pgsql.database'),
           'host'=>Config::get('database.connections.pgsql.host'),
           'user'=>Config::get('database.connections.pgsql.username'),
@@ -162,10 +164,12 @@ class Archivo extends Model
          Log::error($processOGR2OGR->getErrorOutput());
          return false;
      } catch (RuntimeException $exception) {
-         Log::error($process->getErrorOutput().$exception);
+         Log::error($processOGR2OGR->getErrorOutput().$exception);
          return false;
-     }
-
+     } catch(ProcessTimedOutException $exception){
+         Log::error($processOGR2OGR->getErrorOutput().$exception);
+         return false;
+      }
     //Cargo etiquetas
     try{
            $processOGR2OGR->run(null,
@@ -173,7 +177,7 @@ class Archivo extends Model
              'epsg'=> $this->epsg_def,
              'file' => storage_path().'/app/'.$this->nombre,
              'esquema'=>$this->tabla,
-             'encoding'=>'latin1',
+             'encoding'=>'cp1252',
              'db'=>Config::get('database.connections.pgsql.database'),
              'host'=>Config::get('database.connections.pgsql.host'),
              'user'=>Config::get('database.connections.pgsql.username'),
@@ -186,8 +190,11 @@ class Archivo extends Model
         $this->procesado=false;
          return false;
      } catch (RuntimeException $exception) {
-         Log::error($process->getErrorOutput().$exception);
+         Log::error($processOGR2OGR-->getErrorOutput().$exception);
         $this->procesado=false;
+         return false;
+     } catch(ProcessTimedOutException $exception){
+         Log::error($processOGR2OGR->getErrorOutput().$exception);
          return false;
      }
      $this->save();
