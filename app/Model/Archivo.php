@@ -167,12 +167,15 @@ class Archivo extends Model
         $mensajes=$processOGR2OGR->getErrorOutput().'<br />'.$processOGR2OGR->getOutput();
      } catch (ProcessFailedException $exception) {
          Log::error($processOGR2OGR->getErrorOutput());
+         flash('Error Importando Falló E00 '.$this->nombre_original)->info();
          return false;
      } catch (RuntimeException $exception) {
          Log::error($processOGR2OGR->getErrorOutput().$exception);
+         flash('Error Importando Runtime E00 '.$this->nombre_original)->info();
          return false;
      } catch(ProcessTimedOutException $exception){
          Log::error($processOGR2OGR->getErrorOutput().$exception);
+         flash('Se agotó el tiempo Importando E00 de arcos '.$this->nombre_original)->info();
          return false;
       }
     //Cargo etiquetas
@@ -192,15 +195,18 @@ class Archivo extends Model
         $this->procesado=true;
      } catch (ProcessFailedException $exception) {
         Log::error($processOGR2OGR->getErrorOutput());
+        flash('Error Importando Falló E00 '.$this->nombre_original)->info();
         $this->procesado=false;
-         return false;
+        return false;
      } catch (RuntimeException $exception) {
-         Log::error($processOGR2OGR-->getErrorOutput().$exception);
+        Log::error($processOGR2OGR-->getErrorOutput().$exception);
+        flash('Error Importando Runtime E00 '.$this->nombre_original)->info();
         $this->procesado=false;
-         return false;
+        return false;
      } catch(ProcessTimedOutException $exception){
-         Log::error($processOGR2OGR->getErrorOutput().$exception);
-         return false;
+        Log::error($processOGR2OGR->getErrorOutput().$exception);
+        flash('Se agotó el tiempo Importando E00 de etiquetas '.$this->nombre_original)->info();
+        return false;
      }
      $this->save();
      return $mensajes;
@@ -245,7 +251,7 @@ class Archivo extends Model
                flash('Se encontró loc Etiquetas: '.$ppdddlll->link);
               MyDB::createSchema($ppdddlll->link);
               //MyDB::moverEsquema('e_'.$this->tabla,'e'.$ppdddlll->link);
-              MyDB::copiaraEsquema('e_'.$this->tabla,'e'.$ppdddlll->link);
+              MyDB::copiaraEsquema('e_'.$this->tabla,'e'.$ppdddlll->link,$ppdddlll->link);
               $count++;
             }
             flash('Se encontraron '.$count.' localidaes en la cartografía');
