@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "615e0ffe07b2ade8cab453952834b180",
+    "content-hash": "ed7b8a5cc256cb8e8b82625ef7c6e303",
     "packages": [
         {
             "name": "brackets/admin-auth",
