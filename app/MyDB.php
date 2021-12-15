@@ -146,6 +146,21 @@ class MyDB extends Model
             return false;
         }
 
+        // Borra los esquemas temporales donde fallaron carga de arcos y etiquetas comenzados en e_ 
+        // * debo escapar el _ que es comodin de caracter en sql.
+        public static function limpiaEsquemasTemporales()
+        {
+            if ($esquemas_temporales=DB::select("SELECT schema_name from information_schema.schemata where schema_name like 'e\_%'")){
+                foreach ($esquemas_temporales as $esquema){
+                  DB::statement("DROP SCHEMA \"".$esquema->schema_name."\" CASCADE;"); //,[$esquema->schema_name]);
+                }
+                flash('Se borraron '.count($esquemas_temporales).' equemas temporales');
+               return true;
+            }
+            flash('No se encontraron esquemas temporales');
+            return false;
+        }
+
         //Dar permisos a una tabla.
         public static function darPermisosTabla($tabla,$rol='geoestadistica')
         {
@@ -638,16 +653,25 @@ FROM
         {
         // Borrar tabla "temporal"
         try {
-               DB::beginTransaction();
+              DB::beginTransaction();
               DB::statement('DROP TABLE "'.$tabla.'" CASCADE;');
               DB::commit();
-               Log::info('Se eliminó el tabla '.$tabla);
+              Log::info('Se eliminó el tabla '.$tabla);
               return true;
+             }catch (\Illuminate\Database\QueryException $exception) {
+                try {
+                  DB::Rollback();
+                  DB::beginTransaction();
+                  DB::statement('DROP TABLE "'.strtolower($tabla).'" CASCADE;');
+                  DB::commit();
+                  Log::info('Se eliminó la tabla '.strtolower($tabla).' en el segundo intento.');
+                  return true;
                 }catch (\Illuminate\Database\QueryException $exception) {
                     Log::error('No se pudo borrar la tabla: '.$exception);
                     DB::Rollback();
-              return false;
+                    return false;
                 }
+             }
         }
 
         public static function limpiar_esquema($esquema)

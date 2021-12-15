@@ -246,8 +246,8 @@ class Radio extends Model
 		               			   Log::warning('TODO: Implementar radio multilocalidades'.$this->localidades()->get()->toJson(
 					                              JSON_PRETTY_PRINT));
                            foreach($loc_no_rural as $localidad){
-                        		     Log::info('Posible esquema:'.($localidad->codigo));
-                         		     $esquemas[]=$localidad->codigo;
+                                 Log::info('Posible esquema: e'.($localidad->codigo));
+                                 $esquemas[]='e'.$localidad->codigo;
                            }
               				      $esquemas[]='e'.$this->fraccion->departamento->codigo;
 				                }else{

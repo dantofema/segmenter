@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
+use Symfony\Component\Process\Exception\ProcessTimedOutException;
+use Symfony\Component\Process\Exception\RuntimeException; 
 use Illuminate\Support\Facades\Config;
 //use App\Imports\CsvImport;
 use Maatwebsite\Excel;
@@ -62,6 +64,7 @@ class Archivo extends Model
     }
 
     public function procesar(){
+      if(!$this->procesado){
        if ($this->tipo == 'csv' or $this->tipo == 'dbf'){
             return $this->procesarC1();
         }elseif($this->tipo == 'e00' or $this->tipo == 'bin') {
@@ -70,6 +73,10 @@ class Archivo extends Model
             flash('No se encontro qué hacer para procesar '.$this->nombre_original )->warning();
             return false;
         }
+      }else{
+            flash('Archivo ya fue procesado: '.$this->nombre_original )->warning();
+            return true;
+      }
     }
 
     public function procesarC1(){
@@ -101,7 +108,9 @@ class Archivo extends Model
           Log::debug($process->getOutput());
           return true;
       } catch (ProcessFailedException $exception) {
-          Log::error($process->getErrorOutput());
+          Log::error($process->getErrorOutput().$exception);
+      } catch (RuntimeException $exception) {
+          Log::error($process->getErrorOutput().$exception);
       }
   }else{
     flash($data['file']['csv_info'] = 'Se Cargo un archivo de formato
@@ -125,7 +134,7 @@ class Archivo extends Model
                 -nln $capa \
                 -skipfailures \
                 -overwrite $file )');
-           $processOGR2OGR->setTimeout(3600);
+           $processOGR2OGR->setTimeout(300);
       $this->procesado=false;
       $this->save();
 
@@ -140,7 +149,7 @@ class Archivo extends Model
                      CREATE SCHEMA IF NOT EXISTS e_$esquema;" -dsco active_schema=e_$esquema \
                      -lco PRECISION=NO -lco SCHEMA=e_$esquema -s_srs $epsg -t_srs $epsg \
                      -nln $capa -addfields -overwrite $file $capa');
-           $processOGR2OGR->setTimeout(3600);
+           $processOGR2OGR->setTimeout(300);
                      // -skipfailures
     //Cargo arcos
     try{
@@ -149,7 +158,7 @@ class Archivo extends Model
           'epsg'=> $this->epsg_def,
           'file' => storage_path().'/app/'.$this->nombre,
           'esquema'=>$this->tabla,
-          'encoding'=>'latin1',
+          'encoding'=>'cp1252',
           'db'=>Config::get('database.connections.pgsql.database'),
           'host'=>Config::get('database.connections.pgsql.host'),
           'user'=>Config::get('database.connections.pgsql.username'),
@@ -158,8 +167,14 @@ class Archivo extends Model
         $mensajes=$processOGR2OGR->getErrorOutput().'<br />'.$processOGR2OGR->getOutput();
      } catch (ProcessFailedException $exception) {
          Log::error($processOGR2OGR->getErrorOutput());
-           }
-
+         return false;
+     } catch (RuntimeException $exception) {
+         Log::error($processOGR2OGR->getErrorOutput().$exception);
+         return false;
+     } catch(ProcessTimedOutException $exception){
+         Log::error($processOGR2OGR->getErrorOutput().$exception);
+         return false;
+      }
     //Cargo etiquetas
     try{
            $processOGR2OGR->run(null,
@@ -167,7 +182,7 @@ class Archivo extends Model
              'epsg'=> $this->epsg_def,
              'file' => storage_path().'/app/'.$this->nombre,
              'esquema'=>$this->tabla,
-             'encoding'=>'latin1',
+             'encoding'=>'cp1252',
              'db'=>Config::get('database.connections.pgsql.database'),
              'host'=>Config::get('database.connections.pgsql.host'),
              'user'=>Config::get('database.connections.pgsql.username'),
@@ -178,6 +193,14 @@ class Archivo extends Model
      } catch (ProcessFailedException $exception) {
         Log::error($processOGR2OGR->getErrorOutput());
         $this->procesado=false;
+         return false;
+     } catch (RuntimeException $exception) {
+         Log::error($processOGR2OGR-->getErrorOutput().$exception);
+        $this->procesado=false;
+         return false;
+     } catch(ProcessTimedOutException $exception){
+         Log::error($processOGR2OGR->getErrorOutput().$exception);
+         return false;
      }
      $this->save();
      return $mensajes;
@@ -225,6 +248,7 @@ class Archivo extends Model
               MyDB::copiaraEsquema('e_'.$this->tabla,'e'.$ppdddlll->link);
               $count++;
             }
+            flash('Se encontraron '.$count.' localidaes en la cartografía');
             MyDB::limpiar_esquema('e_'.$this->tabla);
             return $ppdddllls;
     }
