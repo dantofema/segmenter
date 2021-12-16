@@ -51,7 +51,7 @@ class Segmentador extends Model
                         if (!$process->isSuccessful()) {
                                 Log::error($process->getErrorOutput());
                                 flash('No se pudo correr la segmentación! ')->error()->important();
-                                $return $this->resultado='No se pudo correr segmentación.';
+                                return $this->resultado='No se pudo correr segmentación.';
                         }else{  
                             MyDB::lados_completos_a_tabla_segmentacion_ffrr($aglo,$frac,$radio);
                             return $this->resultado=$process->getOutput();
