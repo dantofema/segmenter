@@ -32,6 +32,7 @@ class HomeController extends Controller
             flash('Cantidad de Localidades cargados: '.Localidad::count());
 //            flash('Cantidad de Entidades cargados: '.Entidades::count());
             flash('Cantidad de Radios cargados: '.Radio::count());
+            flash('Cantidad de Radios segmentados: '.Radio::whereNotNull('resultado')->count())->success();
         return view('home');
     }
 }
