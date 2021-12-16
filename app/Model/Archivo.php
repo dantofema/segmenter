@@ -103,10 +103,17 @@ class Archivo extends Model
                     'PGPASSWORD'=>Config::get('database.connections.pgsql.password')]);
                 //    $process->mustRun();
           // executes after the command finishes
-          $this->procesado=true;
-          $this->save();
-          Log::debug($process->getOutput());
-          return true;
+          if($process->getErrorOutput()){
+            Log::error('Error cargando C1.',[$process->getOutput(),$process->getErrorOutput()]);
+            flash('Error cargando C1. '.$process->getErrorOutput())->important()->error();
+            return true;
+
+          }else{
+            $this->procesado=true;
+            $this->save();
+            Log::debug($process->getOutput().$process->getErrorOutput());
+            return true;
+          }
       } catch (ProcessFailedException $exception) {
           Log::error($process->getErrorOutput().$exception);
       } catch (RuntimeException $exception) {
