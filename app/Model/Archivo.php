@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Config;
 use Maatwebsite\Excel;
 use App\MyDB;
 use Illuminate\Support\Facades\Log;
-
+use Illuminate\Support\Str;
 
 class Archivo extends Model
 {
@@ -103,11 +103,10 @@ class Archivo extends Model
                     'PGPASSWORD'=>Config::get('database.connections.pgsql.password')]);
                 //    $process->mustRun();
           // executes after the command finishes
-          if($process->getErrorOutput()){
+          if (Str::contains($process->getErrorOutput(),['ERROR'])){
             Log::error('Error cargando C1.',[$process->getOutput(),$process->getErrorOutput()]);
             flash('Error cargando C1. '.$process->getErrorOutput())->important()->error();
-            return true;
-
+            return false;
           }else{
             $this->procesado=true;
             $this->save();
