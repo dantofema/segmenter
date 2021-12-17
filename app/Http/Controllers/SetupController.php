@@ -158,6 +158,12 @@ class SetupController extends Controller
         return view('home');
     }
 
+    public function limpiaEsquemasTemporales()
+    {
+        $result= MyDB::limpiaEsquemasTemporales();
+        return view('home');
+    }
+
     public function testFlash($texto='Mensaje de prueba.')
     {
         flash(' Normal  '.$texto);
