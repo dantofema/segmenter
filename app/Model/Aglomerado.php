@@ -41,35 +41,30 @@ class Aglomerado extends Model
     {
     //select * from information_schema.tables where table_schema = 'e0777' and table_name = 'arc' and table_type = 'BASE TABLE'
         if(! $this->carto){
-            if ($this->localidades()->count()==1){
-              if (Schema::hasTable('e'.$this->localidades()->first()->codigo.'.arc')) {
-                  //Veo Arcos en esquema de localidad
-                $this->carto=true;
-              }elseif (Schema::hasTable('e'.$this->codigo.'.arc')) {
-                     // Veo carto en esquema de aglomerado
-                    $this->carto = true;
-                    Log::debug('No se encontró carto en esquema de localidad, pero si en esquema de aglomerado'.$this);
-              }else{
-                   $this->carto = false;
+            $this->carto=0;
+            foreach ($this->localidades()->get() as $localidad) {
+              if (Schema::hasTable('e'.$localidad->codigo.'.arc')) {
+                     // Cuento carto en cada localidad
+                    $this->carto++;
               }
-             }else { $this->carto = false; }
+            }
+            Log::debug('Se encontraron '.$this->carto.' carto de '.$this->localidades()->count().' localidades para este aglo:'.$this->codigo);
         }
-        return $this->carto;
+        return $this->carto;//==$this->localidades()->count();
     }
 
     public function getListadoAttribute($value)
     {
         /// do your magic
         if (! $this->listado) { 
-        
-            if (Schema::hasTable('e'.$this->codigo.'.listado')) {
-                //
-                $this->listado= true;
-            }else{
-                $this->listado= false;
+              $this->listado=0;
+            foreach ($this->localidades()->get() as $localidad){
+              if (Schema::hasTable('e'.$localidad->codigo.'.listado')) {
+                $this->listado++;
+              }
             }
         }
-        return $this->listado;
+        return $this->listado;//==$this->localidades()->count();
     }
 
     public function getSegmentadolistadoAttribute($value)
