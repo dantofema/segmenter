@@ -264,7 +264,7 @@ WITH shapes (geom, attribute) AS (
  FROM paths;
 ");
             return $svg[0]->concat;
-        }else{ return "No geodata"; }
+        }else{ return "Por el momento no se puede pevisualizar el Aglomerado."; }
         
     }
 
