@@ -225,7 +225,10 @@ class Localidad extends Model
 //    ((SELECT ST_MakeLine(ST_MakePoint(0,0), ST_MakePoint(50,50))), 2),
         //    ((SELECT ST_Envelope(ST_MakeBox2d(ST_MakePoint(0,0), st_makepoint(10,10)))), 3)
 
-        if ($this->Carto){
+      if ($this->Carto){
+        if ($this->radios->count()>50){
+           return __('Demasiados radios para previsualizar, son más de 50');
+        }
         $height=800;
         $width=900;
         $escalar=false;
