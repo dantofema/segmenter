@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 use App\MyDB;
 
@@ -16,6 +17,7 @@ class SetupController extends Controller
     public function __construct()
     {
         $this->middleware('auth');
+        $this->middleware('can:run-setup');
     }
 
     /**
