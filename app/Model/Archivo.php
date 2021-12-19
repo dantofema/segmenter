@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Config;
 use Maatwebsite\Excel;
 use App\MyDB;
 use Illuminate\Support\Facades\Log;
-
+use Illuminate\Support\Str;
 
 class Archivo extends Model
 {
@@ -103,10 +103,16 @@ class Archivo extends Model
                     'PGPASSWORD'=>Config::get('database.connections.pgsql.password')]);
                 //    $process->mustRun();
           // executes after the command finishes
-          $this->procesado=true;
-          $this->save();
-          Log::debug($process->getOutput());
-          return true;
+          if (Str::contains($process->getErrorOutput(),['ERROR'])){
+            Log::error('Error cargando C1.',[$process->getOutput(),$process->getErrorOutput()]);
+            flash('Error cargando C1. '.$process->getErrorOutput())->important()->error();
+            return false;
+          }else{
+            $this->procesado=true;
+            $this->save();
+            Log::debug($process->getOutput().$process->getErrorOutput());
+            return true;
+          }
       } catch (ProcessFailedException $exception) {
           Log::error($process->getErrorOutput().$exception);
       } catch (RuntimeException $exception) {
@@ -167,12 +173,15 @@ class Archivo extends Model
         $mensajes=$processOGR2OGR->getErrorOutput().'<br />'.$processOGR2OGR->getOutput();
      } catch (ProcessFailedException $exception) {
          Log::error($processOGR2OGR->getErrorOutput());
+         flash('Error Importando Falló E00 '.$this->nombre_original)->info();
          return false;
      } catch (RuntimeException $exception) {
          Log::error($processOGR2OGR->getErrorOutput().$exception);
+         flash('Error Importando Runtime E00 '.$this->nombre_original)->info();
          return false;
      } catch(ProcessTimedOutException $exception){
          Log::error($processOGR2OGR->getErrorOutput().$exception);
+         flash('Se agotó el tiempo Importando E00 de arcos '.$this->nombre_original)->info();
          return false;
       }
     //Cargo etiquetas
@@ -192,15 +201,18 @@ class Archivo extends Model
         $this->procesado=true;
      } catch (ProcessFailedException $exception) {
         Log::error($processOGR2OGR->getErrorOutput());
+        flash('Error Importando Falló E00 '.$this->nombre_original)->info();
         $this->procesado=false;
-         return false;
+        return false;
      } catch (RuntimeException $exception) {
-         Log::error($processOGR2OGR-->getErrorOutput().$exception);
+        Log::error($processOGR2OGR-->getErrorOutput().$exception);
+        flash('Error Importando Runtime E00 '.$this->nombre_original)->info();
         $this->procesado=false;
-         return false;
+        return false;
      } catch(ProcessTimedOutException $exception){
-         Log::error($processOGR2OGR->getErrorOutput().$exception);
-         return false;
+        Log::error($processOGR2OGR->getErrorOutput().$exception);
+        flash('Se agotó el tiempo Importando E00 de etiquetas '.$this->nombre_original)->info();
+        return false;
      }
      $this->save();
      return $mensajes;
@@ -226,7 +238,7 @@ class Archivo extends Model
             }else{
                 $codigo_esquema=$ppdddlll->link;
             }
-            MyDB::moverDBF(storage_path().'/app/'.$this->nombre,$codigo_esquema);
+            MyDB::moverDBF(storage_path().'/app/'.$this->nombre,$codigo_esquema,$ppdddlll->link);
             $count++;
         }
         Log::debug('C1 se copió en '.$count.' esqumas');
@@ -245,7 +257,7 @@ class Archivo extends Model
                flash('Se encontró loc Etiquetas: '.$ppdddlll->link);
               MyDB::createSchema($ppdddlll->link);
               //MyDB::moverEsquema('e_'.$this->tabla,'e'.$ppdddlll->link);
-              MyDB::copiaraEsquema('e_'.$this->tabla,'e'.$ppdddlll->link);
+              MyDB::copiaraEsquema('e_'.$this->tabla,'e'.$ppdddlll->link,$ppdddlll->link);
               $count++;
             }
             flash('Se encontraron '.$count.' localidaes en la cartografía');

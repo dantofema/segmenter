@@ -162,7 +162,7 @@ class SegmenterController extends Controller
                 $shp_file->epsg_def = $epsg_id;
 	        	    if( $ppddllls=$shp_file->procesar() ) 
                    {flash('Proceso');
-                   }else{flash('la cago')->error();
+                   }else{flash('la pifio')->error();
 		            }
   	        }
             if (!$processOGR2OGR->isSuccessful()) {
@@ -179,7 +179,7 @@ class SegmenterController extends Controller
 		if( $mensajes=$shp_file->procesar() ) {
 			flash('Procesó e00')->important()->success();
 			$ppdddllls=$shp_file->pasarData();
-		}else{flash('No se pudo procesar la cartografía')->error();
+		}else{flash('No se pudo procesar la cartografía')->error()->important();
       $mensajes='ERROR';
       $ppdddllls=[];
 		    }
