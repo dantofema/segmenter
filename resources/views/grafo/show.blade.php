@@ -23,13 +23,13 @@ $localidad->codigo}}) {{ $localidad->nombre}}</a>
 @section('content')
 @endsection
 @section('header_scripts')
-<script src="https://unpkg.com/numeric/numeric-1.2.6.js"></script>
+<!-- script src="https://unpkg.com/numeric/numeric-1.2.6.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cytoscape/3.14.0/cytoscape.min.js"></script>
 <script src="https://unpkg.com/layout-base/layout-base.js"></script>
 <script src="https://unpkg.com/cose-base/cose-base.js"></script>
 <script src="/js/cytoscape-fcose.js"></script>
 <script src="/js/cytoscape-cola.js"></script>
-<script src="/js/cola.min.js"></script>
+<script src="/js/cola.min.js"></script -->
 <style>
 #grafo_cy {
   width: 480px;
