@@ -12,6 +12,8 @@ try {
 
     require('bootstrap');
     require('datatables.net-bs4');
+    require('cose-base');
+    window.cytoscape = require('cytoscape');
 } catch (e) {}
 
 /**
