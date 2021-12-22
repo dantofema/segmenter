@@ -905,6 +905,7 @@ FROM
                             segmentacion s JOIN
                             '.$esquema.'.
                             listado l ON s.listado_id=l.id
+                            WHERE segmento_id is not null
                             GROUP BY segmento_id
                             ORDER BY count(*) asc, array_agg(mza), segmento_id) foo GROUP BY vivs order by vivs asc;');
         // SQL retrun:
