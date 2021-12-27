@@ -138,7 +138,7 @@ Route::get('localidad/{localidad}/pxseg','LocalidadController@ver_pxseg')->name(
 Route::get('localidad/{localidad}/segmentacion','LocalidadController@ver_segmentacion')->name('localidad-ver-segmentacion');
 Route::get('localidad/{localidad}/segmentacion-lados','LocalidadController@ver_segmentacion_lados')->name('localidad-ver-segmentacion-lados');
 Route::get('localidad/{localidad}/grafico','LocalidadController@ver_segmentacion_grafico')->name('localidad-ver-segmentacion-grafico');
-Route::post('localidad/{localidad}/grafico','LocalidadController@ver_segmentacion_grafico')->name('localidad-ver-segmentacion-grafico');
+Route::post('localidad/{localidad}/grafico','LocalidadController@ver_segmentacion_grafico_resumen')->name('localidad-ver-segmentacion-grafico');
 
 // ---------- AGLOMERADOS --------
 Route::get('aglos-list', 'AglomeradoController@aglosList');

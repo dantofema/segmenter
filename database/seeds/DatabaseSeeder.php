@@ -14,7 +14,8 @@ class DatabaseSeeder extends Seeder
         $this->call([
     		UsersTableSeeder::class,
 	        // Bunch of seeders using Eloquent
-	  //       SqlSeeder::class,
+            // Provincias
+	         SqlProvSeeder::class,
     //       SqlDeptoSeeder::class,
     //       SqlLocSeeder::class,
     //       SqlLocDeptoSeeder::class,
