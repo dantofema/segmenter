@@ -36,6 +36,20 @@ class Aglomerado extends Model
          return $this->hasMany('App\Model\Localidad');
      }
 
+    public function getNombreAttribute($value)
+    {
+        /// do your magic
+          if($value=='Sin Nombre'){
+            $nombres='de :';
+            foreach ($this->localidades as $localidad){
+              $nombres.= ' - ' . $localidad->nombre;
+            }
+            return $nombres;
+          }else{
+            return $value;
+            //return $value;
+          }
+    }
 
     public function getCartoAttribute($value)
     {
