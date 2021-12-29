@@ -13,7 +13,7 @@
 </div>
 @endsection
 @section('footer_scripts')
-       <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js" charset="utf-8"></script>
+       <!--script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js" charset="utf-8"></script-->
         <script>
         var myChart = '';
         var SegmentosCantidad = new Array();
