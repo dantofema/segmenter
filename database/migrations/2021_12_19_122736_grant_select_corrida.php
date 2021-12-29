@@ -17,9 +17,8 @@ class GrantSelectCorrida extends Migration
             DB::statement("grant select on table public.corrida to geoestadistica_admin;");
         }catch(QueryException $e){
                 Log::error('No se pudo dar permisos de lectura a tabla corrida a geoestadistica_admin');
-            }
-            Log::debug('Se dieron permisos de lectura a tabla corrida a geoestadistica_admin');
         }
+        Log::debug('Se dieron permisos de lectura a tabla corrida a geoestadistica_admin');
     }
 
     /**
