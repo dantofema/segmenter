@@ -28,15 +28,6 @@
         var Viviendas = new Array();
         var Detalle = new Array();
         $(document).ready(function(){
-        var colores = {
-          red: 'rgb(255, 99, 132)',
-          orange: 'rgb(255, 159, 64)',
-          yellow: 'rgb(255, 205, 86)',
-          green: 'rgb(75, 192, 192)',
-          blue: 'rgb(54, 162, 235)',
-          purple: 'rgb(153, 102, 255)',
-          grey: 'rgb(231,233,237)'
-        };
           $.post(url, {"_token": "{{ csrf_token() }}"},function(response){
             var sum = 0;
             var n_segs= 0;
@@ -68,27 +59,36 @@
                       scales: {
                           y: {
                               title: 'Cantidad de segmentos',
-                              gridLines: {
+                              grid: {
                                   drawBorder: true,
-                                  color: colores
+                                  color:
+                                  function (context) {
+                                   const colores = [
+                                      'rgb(255, 99, 132)',
+                                      'rgb(255, 159, 64)',
+                                      'rgb(255, 205, 86)',
+                                      'rgb(75, 192, 192)',
+                                      'rgb(54, 162, 235)',
+                                      'rgb(153, 102, 255)',
+                                      'rgb(231,233,237)'
+                                    ];
+                                   return colores[context.tick.value % 7];
+                                  }
                               },
                               ticks: {
                                   // valores enteros
                                   precision: 0, 
-                                    // Include a dollar sign in the ticks
-                                  callback: function(value, index, ticks) {
-                                      if (value === 0) { return '0' };
-                                      if (value === 1) { return '1 segmento'};
-                                      return value + ' segmentos';
-                                  },
                                   beginAtZero:true
+                              },
+                              title: {
+                                display: true,
+                                text: 'Segmentos'
                               }
                           },
                           x: {
-                              ticks: {
-                                  callback: function(value, index, ticks) {
-                                      return Viviendas[value] + ' vivs ';
-                                  }
+                              title: {
+                                display: true,
+                                text: 'Viviendas'
                               }
                           }
                       }
