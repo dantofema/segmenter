@@ -9,7 +9,7 @@
 <h4 class="text-center">Localidad ({{ $localidad->codigo }}) {{ $localidad->nombre }}</h4>
 @endif
 <div id ="resumen"></div>
-<canvas id="canvas" style="padding: 20px 50px 20px 50px; max-height: 600px; " height="280" width="600"></canvas>
+<canvas id="canvas" style="padding: 20px 50px 20px 50px; max-height: 500px; " height="280" width="600"></canvas>
 </div>
 @endsection
 @section('footer_scripts')
@@ -28,6 +28,15 @@
         var Viviendas = new Array();
         var Detalle = new Array();
         $(document).ready(function(){
+        var colores = {
+          red: 'rgb(255, 99, 132)',
+          orange: 'rgb(255, 159, 64)',
+          yellow: 'rgb(255, 205, 86)',
+          green: 'rgb(75, 192, 192)',
+          blue: 'rgb(54, 162, 235)',
+          purple: 'rgb(153, 102, 255)',
+          grey: 'rgb(231,233,237)'
+        };
           $.post(url, {"_token": "{{ csrf_token() }}"},function(response){
             var sum = 0;
             var n_segs= 0;
@@ -44,11 +53,11 @@
                 var myChart = new Chart(ctx, {
                   type: 'bar',
                   data: {
-                      labels:Viviendas,
+                      labels: Viviendas,
                       datasets: [{
-                          label: 'Cantidad de Segmentos ',
+                          label: 'Cantidad de Segmentos',
                           data: SegmentosCantidad,
-                          borderWidth: 1,
+                          borderWidth: 2,
                           backgroundColor: 'rgb(36, 125, 173)',
                           borderColor: 'rgb(66, 155, 213)'
                       }]
@@ -57,16 +66,31 @@
                       responsive: true,
                       borderRadius: 10,
                       scales: {
-                          yAxes: [{
+                          y: {
+                              title: 'Cantidad de segmentos',
                               gridLines: {
-                                  title: 'Cantidad de segmentos',
                                   drawBorder: true,
-                                  color: ['pink', 'red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'purple']
+                                  color: colores
                               },
                               ticks: {
+                                  // valores enteros
+                                  precision: 0, 
+                                    // Include a dollar sign in the ticks
+                                  callback: function(value, index, ticks) {
+                                      if (value === 0) { return '0' };
+                                      if (value === 1) { return '1 segmento'};
+                                      return value + ' segmentos';
+                                  },
                                   beginAtZero:true
                               }
-                          }]
+                          },
+                          x: {
+                              ticks: {
+                                  callback: function(value, index, ticks) {
+                                      return Viviendas[value] + ' vivs ';
+                                  }
+                              }
+                          }
                       }
                   }
               });
