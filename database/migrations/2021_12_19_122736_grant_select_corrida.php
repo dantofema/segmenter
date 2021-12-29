@@ -13,12 +13,14 @@ class GrantSelectCorrida extends Migration
      */
     public function up()
     {
-        try{
+       try{
             DB::statement("grant select on table public.corrida to geoestadistica_admin;");
-        }catch(QueryException $e){
-                Log::error('No se pudo dar permisos de lectura a tabla corrida a geoestadistica_admin');
+            echo _('Se dieron permisos de lectura a tabla corrida a geoestadistica_admin
+');
+        }catch(Illuminate\Database\QueryException $e){
+            echo _('No se pudo dar permisos de lectura a tabla corrida a geoestadistica_admin
+');
         }
-        Log::debug('Se dieron permisos de lectura a tabla corrida a geoestadistica_admin');
     }
 
     /**
