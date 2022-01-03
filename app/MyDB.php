@@ -1227,7 +1227,7 @@ FROM
                 $rad=substr($radio->codigo,7,2);
                 if(isset($esquema)){
                   if (in_array($esquema,$esquemas)){
-                    Log::debug('Buscando Mzas para radio '.$radio->codigo.' en esquema'.$esquema);
+                    Log::debug('Buscando Mzas para radio '.$radio->codigo.' en esquema '.$esquema);
                   }else{
                     Log::warning('Buscando Mzas para radio '.$radio->codigo.' en esquema '.$esquema.' fuera de lo esperado');
                   }
