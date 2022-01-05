@@ -905,6 +905,7 @@ FROM
                             segmentacion s JOIN
                             '.$esquema.'.
                             listado l ON s.listado_id=l.id
+                            WHERE segmento_id is not null
                             GROUP BY segmento_id
                             ORDER BY count(*) asc, array_agg(mza), segmento_id) foo GROUP BY vivs order by vivs asc;');
         // SQL retrun:
@@ -1226,7 +1227,7 @@ FROM
                 $rad=substr($radio->codigo,7,2);
                 if(isset($esquema)){
                   if (in_array($esquema,$esquemas)){
-                    Log::debug('Buscando Mzas para radio '.$radio->codigo.' en esquema'.$esquema);
+                    Log::debug('Buscando Mzas para radio '.$radio->codigo.' en esquema '.$esquema);
                   }else{
                     Log::warning('Buscando Mzas para radio '.$radio->codigo.' en esquema '.$esquema.' fuera de lo esperado');
                   }
