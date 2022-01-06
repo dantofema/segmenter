@@ -13,7 +13,8 @@ class GrantSelectPorvDeptoLoc extends Migration
      */
     public function up()
     {
-       try{
+       try{ 
+            DB::statement("GRANT USAGE ON SCHEMA public TO geoestadistica");
             DB::statement("grant select on table public.provincia to geoestadistica;");
             DB::statement("grant select on table public.departamentos to geoestadistica;");
             DB::statement("grant select on table public.localidad to geoestadistica;");
