@@ -1,0 +1,38 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+class GrantSelectPorvDeptoLoc extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+       try{ 
+            DB::statement("GRANT USAGE ON SCHEMA public TO geoestadistica");
+            DB::statement("grant select on table public.provincia to geoestadistica;");
+            DB::statement("grant select on table public.departamentos to geoestadistica;");
+            DB::statement("grant select on table public.localidad to geoestadistica;");
+            echo _('Se dieron permisos de lectura a tabla provincias,departamentos, localidades a geoestadistica
+');
+        }catch(Illuminate\Database\QueryException $e){
+            echo _('No se pudo dar permisos de lectura a tabla corrida a geoestadistica_admin
+'.$e->getMessage());
+        }
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        //
+    }
+}
