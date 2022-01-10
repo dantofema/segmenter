@@ -66,6 +66,12 @@
                                 </li>
                             @endif
                         @else
+                            <li class="nav-item">
+                                    <a class="nav-link" alt="Ver/Ocultar mensajes"
+                                    title="Ver/Ocultar Menajes flash"
+                                    onclick="$('div.alert').toggle();">
+                                    Mensajes</a>
+                            </li>
                             <li class="nav-item dropdown">
                                 <a id="navbarDropdownLogin" class="nav-link
                                 dropdown-toggle" href="#logout" role="button"
