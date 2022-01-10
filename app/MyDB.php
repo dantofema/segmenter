@@ -949,16 +949,16 @@ FROM
             // SQL retrun:
             }
 
-            public static function georeferenciar_listado($esquema)
+            public static function
+            georeferenciar_listado($esquema,$desplazamiento_vereda=8)
             {
         //   --ALTER TABLE ' ".$esquema." '.arc alter column wkb_geometry type geometry('LineString',22182) USING (st_setsrid(wkb_geometry,22182));
-
             try{
-
+                DB::beginTransaction();
                 DB::statement("DROP TABLE IF EXISTS ".$esquema.".listado_geo;");
-      $query="
+              $query="
                 WITH listado as (
-            SELECT id, l.prov, nom_provin, l.dpto, nom_dpto, l.codaglo, l.codloc,
+                SELECT id, l.prov, nom_provin, l.dpto, nom_dpto, l.codaglo, l.codloc,
                 nom_loc, codent, nom_ent, l.frac, l.radio, l.mza, l.lado,
                 CASE WHEN nro_inicia='' THEN 0 ELSE nro_inicia::integer END
                 ::integer as nro_inicia,
@@ -974,7 +974,6 @@ FROM
             count(*) over w as conteo,
             conteo as conteo_vivs,
             row_number() over w_nrocatastr as nro_en_numero
-
             FROM
             ".$esquema.".listado l
             LEFT JOIN ".$esquema.".conteos c ON
@@ -988,7 +987,6 @@ FROM
             CASE WHEN orden_reco='' THEN 1::integer ELSE
             orden_reco::integer END asc),
             w AS (partition by l.frac, l.radio, l.mza, l.lado)
-
         ),
         arcos as (
       SELECT min(ogc_fid) ogc_fid, st_LineMerge(st_union(wkb_geometry)) wkb_geometry,
@@ -1060,15 +1058,24 @@ FROM
                 e.mza like
                 '%'||btrim(to_char(l.frac::integer, '09'::text))::character varying(3)||btrim(to_char(l.radio::integer, '09'::text))::character varying(3)||btrim(to_char(l.mza::integer, '099'::text))::character varying(3)
             );";
-            Log::debug('Georreferenciando: '.$esquema,[$query]);
-
-      $resultado= DB::select($query);
+            $resultado= DB::select($query);
+            DB::commit();
+            Log::debug('Georreferenciado: '.$esquema);
 
             }catch(QueryException $e){
-                    Log::error('No se pudo georeferenciar el listado.',[$e]);
-                        flash('No se pudo georeferenciar el listado.
-                        Reintente.')->error()->important();
-                    return false;
+                DB::Rollback();
+                    if ($desplazamiento_vereda==8){
+                            flash('No se pudo georreferenciar el listado dentro
+                            de la manzana.
+                            Reintentado a 1m del eje.')->warning()->important();
+                            self::georeferenciar_listado($esquema,1);
+                            flash('Se georreferencio el listado sobre el eje de
+                            calle')->success()->important();
+                    }else{
+                        Log::error('No se pudo georreferenciar el
+                        listado.',[$e->getMessage()]);
+                        return false;
+                    }
             }
             try{
                 DB::statement("GRANT SELECT ON TABLE  ".$esquema.".listado_geo TO geoestadistica");
