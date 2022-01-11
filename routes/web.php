@@ -53,6 +53,10 @@ Route::get('/serverinfo', function()
     return View::make('pages.serverinfo');
 });
 
+Route::get('/guia', function()
+{
+    return View::make('segmentacion.guia');
+});
 Route::get('/sala', 'SalaController@index')->name('sala');
 
 Route::get('/setup', 'SetupController@index')->name('setup');
