@@ -653,8 +653,6 @@ FROM
             }
 
             self::georeferenciar_listado($schema);
-            flash('Se georeferencio el listado del esquema '.$schema);
-
 
             }
         }
@@ -787,7 +785,6 @@ FROM
                 // llamar generar r3 como tabla resultado de function indec.r3(agl)
                     ( DB::statement("SELECT indec.descripcion_segmentos('e".$esquema."');") );
                     ( DB::statement("SELECT indec.segmentos_desde_hasta('e".$esquema."');") );
-//               self::georeferenciar_segmentacion($esquema);
     //
                  flash('Resultado: '.self::juntar_segmentos('e'.$esquema));
              // Llamar a función guardar segmentación para actualizar la r3 con los resultados...
@@ -952,6 +949,7 @@ FROM
             public static function
             georeferenciar_listado($esquema,$desplazamiento_vereda=8)
             {
+              $desp=-1*$desplazamiento_vereda;
         //   --ALTER TABLE ' ".$esquema." '.arc alter column wkb_geometry type geometry('LineString',22182) USING (st_setsrid(wkb_geometry,22182));
             try{
                 DB::beginTransaction();
@@ -1010,18 +1008,18 @@ FROM
     )
     SELECT nro_en_lado, nro_en_numero, conteo,1.0*nro_en_lado/(conteo+1) interpolacion, l.orden_reco,
     case when 1.0*nro_en_lado/(conteo+1)>1 then
-        ST_LineInterpolatePoint(st_reverse(st_offsetcurve(ST_LineSubstring(st_LineMerge(wkb_geometry),0.07,0.93),-8-nro_en_lado)),0.5)
+        ST_LineInterpolatePoint(st_reverse(st_offsetcurve(ST_LineSubstring(st_LineMerge(wkb_geometry),0.07,0.93),".$desp."-nro_en_lado)),0.5)
     else
     CASE WHEN (
             e.mza like '%'||btrim(to_char(l.frac::integer, '09'::text))::character varying(3)||btrim(to_char(l.radio::integer, '09'::text))::character varying(3)||btrim(to_char(l.mza::integer, '099'::text))::character varying(3))
                     and l.lado::integer=e.lado and (l.tipoviv='LSV' or
                     l.tipoviv='')
                     THEN
-                    ST_LineInterpolatePoint(st_reverse(st_offsetcurve(ST_LineSubstring(st_LineMerge(wkb_geometry),0.07,0.93),-8-(0.5*nro_en_numero))),0.5)
+                    ST_LineInterpolatePoint(st_reverse(st_offsetcurve(ST_LineSubstring(st_LineMerge(wkb_geometry),0.07,0.93),".$desp."-(0.5*nro_en_numero))),0.5)
             WHEN ( e.mza like '%'||btrim(to_char(l.frac::integer, '09'::text))::character varying(3)||btrim(to_char(l.radio::integer, '09'::text))::character varying(3)||btrim(to_char(l.mza::integer, '099'::text))::character varying(3))
                     and l.lado::integer=e.lado
                     THEN
-                    ST_LineInterpolatePoint(st_reverse(st_offsetcurve(ST_LineSubstring(st_LineMerge(wkb_geometry),0.07,0.93),-8-(0.5*nro_en_numero))),1.0*(nro_en_lado)/(conteo+1))
+                    ST_LineInterpolatePoint(st_reverse(st_offsetcurve(ST_LineSubstring(st_LineMerge(wkb_geometry),0.07,0.93),".$desp."-(0.5*nro_en_numero))),1.0*(nro_en_lado)/(conteo+1))
                 end
                 END as wkb_geometry, e.ogc_fid||'-'||l.id id ,e.ogc_fid id_lin,l.id id_list, wkb_geometry wkb_geometry_lado,
     CASE WHEN nro_final::integer-nro_inicia::integer>0 and (nrocatastr)>0 THEN
@@ -1035,13 +1033,13 @@ FROM
         CASE
         WHEN (((nrocatastr::integer-nro_inicia::integer)::numeric/(nro_final::integer-nro_inicia::integer)<0
                 or (nrocatastr::integer-nro_inicia::integer)::numeric/(nro_final::integer-nro_inicia::integer)>1 )) THEN
-            ST_LineInterpolatePoint(st_reverse(st_offsetcurve(ST_LineSubstring(st_LineMerge(wkb_geometry),0.07,0.93),-8)),0.5)
+            ST_LineInterpolatePoint(st_reverse(st_offsetcurve(ST_LineSubstring(st_LineMerge(wkb_geometry),0.07,0.93),".$desp.")),0.5)
             ELSE
-            ST_LineInterpolatePoint(st_reverse(st_offsetcurve(ST_LineSubstring(st_LineMerge(wkb_geometry),0.07,0.93),-8)),1-
+            ST_LineInterpolatePoint(st_reverse(st_offsetcurve(ST_LineSubstring(st_LineMerge(wkb_geometry),0.07,0.93),".$desp.")),1-
                                     (nrocatastr::integer-nro_inicia::integer)::numeric/(nro_final::integer-nro_inicia::integer))
         END
     ELSE
-    ST_LineInterpolatePoint(st_reverse(st_offsetcurve(ST_LineSubstring(st_LineMerge(wkb_geometry),0.07,0.93),-8)),
+    ST_LineInterpolatePoint(st_reverse(st_offsetcurve(ST_LineSubstring(st_LineMerge(wkb_geometry),0.07,0.93),".$desp.")),
         0.5 --deberia usarse la posicion del anterior.. tiro null quizas ?
         )
         END geom_segun_nro_catastral,
@@ -1060,18 +1058,20 @@ FROM
             );";
             $resultado= DB::select($query);
             DB::commit();
-            Log::debug('Georreferenciado: '.$esquema);
+            flash('Se georreferenció el listado para '.$esquema)->success()->important();
 
             }catch(QueryException $e){
                 DB::Rollback();
                     if ($desplazamiento_vereda==8){
                             flash('No se pudo georreferenciar el listado dentro
-                            de la manzana.
-                            Reintentado a 1m del eje.')->warning()->important();
-                            self::georeferenciar_listado($esquema,1);
-                            flash('Se georreferencio el listado sobre el eje de
-                            calle')->success()->important();
+                            de la manzana para '.$esquema.'.
+                            Reintentado a 1m del eje.')->warning();
+                            if($resultado = self::georeferenciar_listado($esquema,1)){
+                              flash('Se georreferenció el listado sobre el eje de
+                              calle')->success()->important();
+                            }
                     }else{
+                        flash('No se pudo georrefernciar el listado para '.$esquema)->error()->important();
                         Log::error('No se pudo georreferenciar el
                         listado.',[$e->getMessage()]);
                         return false;
@@ -1082,11 +1082,9 @@ FROM
             }catch(QueryException $e){
                 Log::error('No se pudo dar permiso a geoestadistica sobre el listado.'.$e);
             }
-
-                return $resultado;
-
-
-            }
+            Log::debug('Georreferenciado: '.$esquema);
+            return $resultado;
+        }
 
         public static function geo_translate($esquema)
         {
@@ -1139,15 +1137,15 @@ FROM
         )
         SELECT segmento_id,nro_en_lado, conteo,1.0*nro_en_lado/(conteo+1) interpolacion, l.orden_reco,
         case when nro_en_lado/(conteo+1)>1
-        then ST_LineInterpolatePoint(st_reverse(st_offsetcurve(ST_LineSubstring(st_LineMerge(wkb_geometry),0.07,0.93),-8-nro_en_lado)),0.5)
+        then ST_LineInterpolatePoint(st_reverse(st_offsetcurve(ST_LineSubstring(st_LineMerge(wkb_geometry),0.07,0.93),".$desp."-nro_en_lado)),0.5)
         else
         CASE WHEN (
             e.mza like '%'||btrim(to_char(l.frac::integer, '09'::text))::character varying(3)||btrim(to_char(l.radio::integer, '09'::text))::character varying(3)||btrim(to_char(l.mza::integer, '099'::text))::character varying(3))
                     and l.lado::integer=e.lado and l.tipoviv='LSV'
-                    THEN ST_LineInterpolatePoint(st_reverse(st_offsetcurve(ST_LineSubstring(st_LineMerge(wkb_geometry),0.07,0.93),-8)),0.5)
+                    THEN ST_LineInterpolatePoint(st_reverse(st_offsetcurve(ST_LineSubstring(st_LineMerge(wkb_geometry),0.07,0.93),".$desp.")),0.5)
             WHEN ( e.mza like '%'||btrim(to_char(l.frac::integer, '09'::text))::character varying(3)||btrim(to_char(l.radio::integer, '09'::text))::character varying(3)||btrim(to_char(l.mza::integer, '099'::text))::character varying(3))
                     and l.lado::integer=e.lado
-                    THEN ST_LineInterpolatePoint(st_reverse(st_offsetcurve(ST_LineSubstring(st_LineMerge(wkb_geometry),0.07,0.93),-8)),1.0*nro_en_lado/(conteo+1))
+                    THEN ST_LineInterpolatePoint(st_reverse(st_offsetcurve(ST_LineSubstring(st_LineMerge(wkb_geometry),0.07,0.93),".$desp.")),1.0*nro_en_lado/(conteo+1))
                 end
                 END as wkb_geometry, e.ogc_fid||'-'||l.id id ,e.ogc_fid id_lin,l.id id_list, wkb_geometry wkb_geometry_lado,
                     codigo10, nomencla, codigo20,
