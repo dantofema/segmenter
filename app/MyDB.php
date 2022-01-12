@@ -1566,5 +1566,23 @@ public static function getPxSeg($esquema)
        }
     }
 
+    // Generar informe de avances del uso del segmentador.
+    public static function getAvancesProv($filtro=null)
+    {
+        try{
+            return DB::select(
+              "select substr(codigo,1,2) prov,date(updated_at),
+                      count(case when resultado is not null then 1 else null end) segmentados
+                from radio
+                where updated_at is not null
+                group by 1,date(updated_at)
+                order by date(updated_at);");
+       }catch(QueryException $e){
+            Log::error('Error al consultar avances en radios resumindos por provincias '.$filtro.$e);
+            return 'Sin resultados de avances';
+       }
+    }
+
+
 }
 
