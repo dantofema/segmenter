@@ -148,7 +148,7 @@ class Radio extends Model
      * Segmentar radio con metodo magico.
      *
      */
-    public function segmentarLucky($esquema,$deseadas,$max,$min,$indivisible)
+    public function segmentarLucky($esquema,$deseadas,$max,$min,$indivisible,$force=false)
     {
       if (Auth::check()) {
         $AppUser= Auth::user();
@@ -164,9 +164,9 @@ class Radio extends Model
         $segmenta->lados_completos_a_tabla_segmentacion_ffrr($esquema,$frac,$radio);
 
         // Calculo de umbral ...
-	// Según primer aproximación charlada con -h ...
-	// Valor mayor entre el máximo y el doble del mínimo.
-	$umbral=max($min*2,$max);
+      	// Según primer aproximación charlada con -h ...
+      	// Valor mayor entre el máximo y el doble del mínimo.
+      	$umbral=max($min*2,$max);
 
         $segmenta->segmentar_excedidos_ffrr($esquema,$frac,$radio,$umbral,$deseadas);
         $this->resultado = $segmenta->ver_segmentacion().'
