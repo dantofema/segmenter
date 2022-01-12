@@ -769,7 +769,7 @@ FROM
         }
 
 
-        public static function segmentar_equilibrado($esquema,$deseado = 10)
+        public static function segmentar_equilibrado($esquema,$deseado = 10,Radio $radio=null)
         {
             $AppUser= Auth::user();
             $processLog = Process::fromShellCommandline('echo "$tiempo: $usuario_name ($usuario_id) -> va a segmentar a manzana independiente: $info_segmenta"  >> segmentaciones.log');
@@ -777,29 +777,43 @@ FROM
                                     'usuario_id' => $AppUser->id,
                                     'usuario_name' => $AppUser->name,
                                     'tiempo' => date('Y-m-d H:i:s')]);
-
-            try{
+            if ($radio){
+             try{
+                if ( DB::statement("SELECT indec.segmentar_equilibrado_ffrr(
+                      'e".$esquema."',".$radio->CodigoFrac.",".$radio->CodigoRad.",".$deseado.");") )
+                    {
+                     // Llamar a función guardar segmentación para actualizar la r3 con los resultados...
+                     // $esquema para el esquema completo.
+                     self::grabarSegmentacion($esquema,$radio->CodigoFrac,$radio->CodigoRad);
+                      return true;
+                    }else{
+                      return false; }
+                }catch (QueryException $e){
+                  LOG::error('Se produjo algún error luego de segmentar equilibrado a manzanas independientes '.$e);
+                  flash('Se produjo algún error luego de segmentar equilibrado a manzanas independientes')->error()->important();
+                  return false;
+             }
+            }else{ //Segmentar equilibrado esquema entero.
+             try{
                 self::addSequenceSegmentos('e'.$esquema,false);
                 self::generarSegmentacionNula('e'.$esquema);
                 if ( DB::statement("SELECT indec.segmentar_equilibrado('e".$esquema."',".$deseado.");") ){
                 // llamar generar r3 como tabla resultado de function indec.r3(agl)
                     ( DB::statement("SELECT indec.descripcion_segmentos('e".$esquema."');") );
                     ( DB::statement("SELECT indec.segmentos_desde_hasta('e".$esquema."');") );
-    //
                  flash('Resultado: '.self::juntar_segmentos('e'.$esquema));
-             // Llamar a función guardar segmentación para actualizar la r3 con los resultados...
+                 // Llamar a función guardar segmentación para actualizar la r3 con los resultados...
                  // $esquema para el esquema completo.
-             self::grabarSegmentacion($esquema);
+                    self::grabarSegmentacion($esquema);
                     return true;
                 }else{
                     return false; }
-            }catch (QueryException $e){
+             }catch (QueryException $e){
                   LOG::error('Se produjo algún error luego de segmentar equilibrado a manzanas independientes '.$e);
-      flash('Se produjo algún error luego de segmentar equilibrado a manzanas independientes')->error()->important();
+                  flash('Se produjo algún error luego de segmentar equilibrado a manzanas independientes')->error()->important();
                   return false;
             }
-
-
+           }
         // SQL retrun: Select segmento_id,count(*) FROM e0777.segmentacion GROUP BY segmento_id;
         }
 

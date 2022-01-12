@@ -90,4 +90,7 @@ class Segmentador extends Model
 	     MyDB::grabarSegmentacion($esquema,$frac,$radio);
     }
 
+    public function segmentar_equilibrado_ffrr($esquema,$radio){
+      MyDB::segmentar_equilibrado($esquema,$radio);
+    }
 }
