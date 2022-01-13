@@ -33,6 +33,7 @@ class CreateProvinciaTable extends Migration
 		$table->date('fecha_hasta')->nullable();
 		$table->integer('observacion_id')->nullable();
 		$table->integer('geometria_id')->nullable();
+		$table->integer('deseable');
 		//$table->timestamps();
    });
    }else{
