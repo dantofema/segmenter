@@ -31,6 +31,7 @@
              <th>Localidades</th>
              <th>Fracciones</th>
              <th>Radios</th>
+             <th>Radios Segmentados</th>
           </tr>
        </thead>
     </table>
@@ -91,7 +92,8 @@
                   { data: 'nombre', name: 'nombre' },
 		  { searchable: false , data: 'localidades_count', name: 'localidades_count' },
 		  { searchable: false , data: 'fracciones_count', name: 'fracciones_count' },
-		  { searchable: false , data: 'radios_count', name: 'radios_count' }
+		  { searchable: false , data: 'radios_count', name: 'radios_count' },
+		  { searchable: false , data: 'segmentados', name: 'segmentados' }
 	          ]
       });
 
