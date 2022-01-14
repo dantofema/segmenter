@@ -80,9 +80,11 @@ class DepartamentoController extends Controller
     public function list(Provincia $provincia)
     {   
 	    $deptos = $provincia->departamentos()
-			 ->withCount('localidades')->with('localidades')
-			 ->withCount('fracciones')
-			 ->withCount('radios')->get(); 
+            ->with('localidades')
+            ->withCount(['localidades','fracciones','radios',
+              'radios as segmentados' => function ($query) {
+                $query->whereNotNull('resultado');
+              }])->get(); 
 	    //Departamento::where('provincia_id',$provincia)->get(['codigo','nombre']);
         return datatables()->of($deptos)
             ->make(true);
