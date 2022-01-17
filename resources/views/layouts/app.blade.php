@@ -50,6 +50,7 @@
                         <li class="nav-item"><a class="nav-link" href="{{
                         url('https://github.com/bichav/salidagrafica-atlas/archive/master.zip')
                         }}"> Descargar plugin </a> </li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url('/guia') }}"> Guia </a> </li>
                     @endauth
                     </ul>
 
