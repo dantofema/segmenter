@@ -42,3 +42,4 @@ window.$ = window.jQuery = $;
 //import Chart from 'chart.js/auto';
 import Chart from 'chart.js/auto';
 window.Chart = Chart;
+import 'chartjs-adapter-date-fns';
