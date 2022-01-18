@@ -1,9 +1,10 @@
 @extends('layouts.app')
 @section('content')
 <div class="text-center">
-<h2 class="text-center">Histograma</h2>
 @if (isset($titulo))
 <h3 class="text-center">({{ $titulo }})</h3>
+@else
+<h2 class="text-center">Histograma</h2>
 @endif
 @if (isset($provincia))
 <h3 class="text-center">({{ $provincia->codigo }}) {{ $provincia->nombre }}</h3>
