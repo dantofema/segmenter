@@ -121,8 +121,12 @@ newDataset
                                type: 'time',
                                time: {
                                     // Luxon format string
-                                    tooltipFormat: 'DD T'
-                               }
+                                    tooltipFormat: 'dd-MM '
+//                                    unit: 'day'
+                               },
+                               display: true,
+                               offset: true,
+                               text: 'Fecha'
                           },
                           y: {
                               title: 'Radios ',
@@ -150,12 +154,6 @@ newDataset
                               title: {
                                 display: true,
                                 text: 'Cantidad'
-                              }
-                          },
-                          x: {
-                              title: {
-                                display: true,
-                                text: 'Fecha'
                               }
                           }
                       }
