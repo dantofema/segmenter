@@ -183,6 +183,14 @@ Route::get('archivo/{archivo}','ArchivoController@show');
 Route::delete('archivo/{archivo}','ArchivoController@destroy');
 Route::get('archivo/{archivo}/descargar','ArchivoController@descargar');
 
+
+// ---------- TABLERO ---------
+
+Route::get('informe/prov','TableroController@GraficoProvincias');
+Route::post('informe/prov','TableroController@GraficoProvincias');
+Route::get('informe/avances','TableroController@GraficoAvances');
+Route::post('informe/avances','TableroController@GraficoAvances');
+
 //Route::get('mail', 'MailCsvController@index');
 
 /* Logout via GET */
