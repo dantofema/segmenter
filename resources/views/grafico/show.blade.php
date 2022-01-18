@@ -1,9 +1,10 @@
 @extends('layouts.app')
 @section('content')
 <div class="text-center">
-<h2 class="text-center">Histograma</h2>
 @if (isset($titulo))
 <h3 class="text-center">({{ $titulo }})</h3>
+@else
+<h2 class="text-center">Histograma</h2>
 @endif
 @if (isset($provincia))
 <h3 class="text-center">({{ $provincia->codigo }}) {{ $provincia->nombre }}</h3>
@@ -93,7 +94,6 @@
                 Cantidad.push(data.cant);
                 Hechos.push(data.hecho); 
                 Provs.push(data.prov);
-                radiosDataSet.push({label:data.prov,data:{x:data.hecho,y:data.cant}});
                 sum += Number(data.cant);
                 n_cants++;
                 Detalle.push(data.detalle);
@@ -105,14 +105,7 @@
                   type: 'line',
                   data: {
                       labels: Hechos,
-                      datasets: 
-//[
-//                      {
-//                          label: Provs, //'Radios',
-//                          data: Cantidad,
-//                      }
-newDataset
-//]
+                      datasets: newDataset
                   },
                   options: {
                       responsive: true,

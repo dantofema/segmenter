@@ -1592,7 +1592,7 @@ public static function getPxSeg($esquema)
                 from radio
                 where updated_at is not null
                 group by 1,date(updated_at)
-                order by date(updated_at) asc;");
+                order by substr(codigo,1,2),date(updated_at) asc;");
        }catch(QueryException $e){
             Log::error('Error al consultar avances en radios resumindos por provincias '.$filtro.$e);
             return 'Sin resultados de avances';
