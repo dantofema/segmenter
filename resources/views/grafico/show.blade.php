@@ -92,13 +92,13 @@
                 });
               }
                 Cantidad.push(data.cant);
-                Hechos.push(data.hecho); 
+                Hechos.indexOf(data.hecho) === -1 ? Hechos.push(data.hecho): true ; 
                 Provs.push(data.prov);
                 sum += Number(data.cant);
                 n_cants++;
                 Detalle.push(data.detalle);
             });
-            var mensaje = sum+' en '+n_cants+' días, con un promedio de '+Math.round (sum/n_cants)+' x día';
+            var mensaje = sum+' en '+Hechos.length+' días, con un promedio de '+Math.round (sum/Hechos.length)+' x día';
             document.getElementById("resumen").innerHTML=mensaje;
             var ctx = document.getElementById("canvas").getContext('2d');
                 var myChart = new Chart(ctx, {
