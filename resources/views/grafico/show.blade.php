@@ -94,7 +94,6 @@
                 Cantidad.push(data.cant);
                 Hechos.push(data.hecho); 
                 Provs.push(data.prov);
-                radiosDataSet.push({label:data.prov,data:{x:data.hecho,y:data.cant}});
                 sum += Number(data.cant);
                 n_cants++;
                 Detalle.push(data.detalle);
@@ -106,14 +105,7 @@
                   type: 'line',
                   data: {
                       labels: Hechos,
-                      datasets: 
-//[
-//                      {
-//                          label: Provs, //'Radios',
-//                          data: Cantidad,
-//                      }
-newDataset
-//]
+                      datasets: newDataset
                   },
                   options: {
                       responsive: true,
