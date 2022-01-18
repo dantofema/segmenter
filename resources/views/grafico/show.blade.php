@@ -32,16 +32,68 @@
         var url = "{{url('localidad')}}/{{$localidad->id}}/grafico";
       @endif
         var Hechos = new Array();
+        var Provs = new Array();
         var Labels = new Array();
         var Viviendas = new Array();
         var Detalle = new Array();
+        var radiosDataSet = new Array();
+        var newDataset = new Array();
+
+        const COLORS = [
+          '#4dc9f6',
+          '#f67019',
+          '#f53794',
+          '#537bc4',
+          '#acc236',
+          '#166a8f',
+          '#00a950',
+          '#58595b',
+          '#8549ba',
+          '#4dc911',
+          '#f67011',
+          '#f53711',
+          '#537b11',
+          '#acc211',
+          '#166a11',
+          '#00a911',
+          '#585911',
+          '#854911',
+          '#4d22f6',
+          '#f62219',
+          '#f52294',
+          '#5322c4',
+          '#ac2236',
+          '#16228f'
+        ];
+
+        function fcolor(index) {
+          index=(parseInt(index)+2)/4;
+          return COLORS[index % COLORS.length];
+        };
         $(document).ready(function(){
           $.post(url, {"_token": "{{ csrf_token() }}"},function(response){
             var sum = 0;
             var n_cants= 0;
             response.forEach(function(data){
+
+              const resultado = newDataset.find( prov => prov.label === data.prov );
+              if (resultado){
+                resultado.data.push( 
+                    {x:data.hecho,y:data.cant}
+                );
+                newDataset.push(resultado);
+              
+              }else{
+                newDataset.push( {
+                    label: data.prov,
+                    borderColor: fcolor(data.prov),
+                    data: [{x:data.hecho,y:data.cant}]
+                });
+              }
                 Cantidad.push(data.cant);
-                Hechos.push(data.hecho);
+                Hechos.push(data.hecho); 
+                Provs.push(data.prov);
+                radiosDataSet.push({label:data.prov,data:{x:data.hecho,y:data.cant}});
                 sum += Number(data.cant);
                 n_cants++;
                 Detalle.push(data.detalle);
@@ -53,14 +105,25 @@
                   type: 'line',
                   data: {
                       labels: Hechos,
-                      datasets: [{
-                          label: 'Radios',
-                          data: Cantidad,
-                      }]
+                      datasets: 
+//[
+//                      {
+//                          label: Provs, //'Radios',
+//                          data: Cantidad,
+//                      }
+newDataset
+//]
                   },
                   options: {
                       responsive: true,
                       scales: {
+                          x: {
+                               type: 'time',
+                               time: {
+                                    // Luxon format string
+                                    tooltipFormat: 'DD T'
+                               }
+                          },
                           y: {
                               title: 'Radios ',
                               grid: {
