@@ -129,13 +129,13 @@
                                text: 'Fecha'
                           },
                           y: {
-@if (isset($tipo_grafico))
-    @if ($tipo_grafico=='area')
-                  stacked: true,
-    @else
-                  stacked: false,
-    @endif
-@endif
+                              @if (isset($tipo_grafico))
+                                @if ($tipo_grafico=='area')
+                                        stacked: true,
+                                @else
+                                        stacked: false,
+                                @endif
+                              @endif
                               title: 'Radios ',
                               grid: {
                                   drawBorder: true,
