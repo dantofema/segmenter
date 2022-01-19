@@ -88,7 +88,7 @@
             </div>
         </div>
         <div id="copyright" class="text-center justify-content-center"
-        style="display:block"><hr />© Copyright 2021 INDEC - Geoestadística</div>
+        style="display:block"><hr />© 2022 INDEC - Argentina - Geoestadística</div>
         </div>
     </body>
 </html>

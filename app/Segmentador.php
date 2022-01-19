@@ -59,6 +59,7 @@ class Segmentador extends Model
                         }
 	// e0777.arc 50 084 1 4 20 30 10 1');
 	}else{
+	   flash('No tiene permisos para segmentar o no está logueado. Maybe be reported!')->warning()->important();
 	   return 'No tiene permisos para segmentar o no está logueado';
 	}
      }
