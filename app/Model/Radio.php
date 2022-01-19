@@ -164,9 +164,10 @@ class Radio extends Model
         $segmenta->lados_completos_a_tabla_segmentacion_ffrr($esquema,$frac,$radio);
 
         // Calculo de umbral ...
-      	// Según primer aproximación charlada con -h ...
-      	// Valor mayor entre el máximo y el doble del mínimo.
-      	$umbral=max($min*2,$max);
+      	// Según nuevo abordaje para forzar partir excedidos -h ...
+      	// Valor por encima del 5% del máximo.
+        $holgura = 1.05;
+        $umbral = $holgura*$max;
 
         $segmenta->segmentar_excedidos_ffrr($esquema,$frac,$radio,$umbral,$deseadas);
         $this->resultado = $segmenta->ver_segmentacion().'
