@@ -190,6 +190,8 @@ Route::get('informe/prov','TableroController@GraficoProvincias');
 Route::post('informe/prov','TableroController@GraficoProvincias');
 Route::get('informe/avances','TableroController@GraficoAvances');
 Route::post('informe/avances','TableroController@GraficoAvances');
+Route::get('informe/avance','TableroController@GraficoAvance');
+Route::post('informe/avance','TableroController@GraficoAvance');
 
 //Route::get('mail', 'MailCsvController@index');
 
