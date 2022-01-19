@@ -166,6 +166,10 @@ class Radio extends Model
         // Calculo de umbral ...
       	// Según nuevo abordaje para forzar partir excedidos -h ...
       	// Valor por encima del 5% del máximo.
+        // Prpongo sin holgura (=1) y revisar deseado según número de viviendas
+        // ya que el umbral sólo selecciona el segmento a partir y luego
+        // se usa el desaeado. 2022-01-19 M.
+
         $holgura = 1.05;
         $umbral = $holgura*$max;
 
