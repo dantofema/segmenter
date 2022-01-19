@@ -1599,6 +1599,31 @@ public static function getPxSeg($esquema)
        }
     }
 
+    // Generar informe de avances del uso del segmentador.
+    // Acumulado
+    public static function getAvanceProvAcum($filtro=null)
+    {
+        try{
+            return DB::select(
+"with hechos_por_dia as (
+  select substr(codigo,1,2) prov,date(updated_at) hecho,
+  count(case when resultado is not null then 1 else null end) cant
+  from radio
+  where updated_at is not null
+  group by 1,date(updated_at)
+  )
+select hoy.prov, hoy.hecho, sum(antes.cant) cant
+from hechos_por_dia hoy
+join hechos_por_dia antes
+on antes.prov = hoy.prov and antes.hecho <= hoy.hecho
+group by 1,2
+order by 1,2
+    ;");
+       }catch(QueryException $e){
+            Log::error('Error al consultar avances en radios segmentados acumulados x provincia'.$filtro.$e);
+            return 'Sin resultados de avances';
+       }
+    }
 
 }
 

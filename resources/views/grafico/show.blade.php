@@ -76,7 +76,6 @@
             var sum = 0;
             var n_cants= 0;
             response.forEach(function(data){
-
               const resultado = newDataset.find( prov => prov.label === data.prov );
               if (resultado){
                 resultado.data.push( 
@@ -88,6 +87,14 @@
                 newDataset.push( {
                     label: data.prov,
                     borderColor: fcolor(data.prov),
+                    backgroundColor: fcolor(data.prov),
+                    @if (isset($tipo_grafico))
+                      @if ($tipo_grafico=='area')
+                            fill: true,
+                      @else
+                            fill: 0,
+                      @endif
+                    @endif
                     data: [{x:data.hecho,y:data.cant}]
                 });
               }
@@ -122,6 +129,13 @@
                                text: 'Fecha'
                           },
                           y: {
+@if (isset($tipo_grafico))
+    @if ($tipo_grafico=='area')
+                  stacked: true,
+    @else
+                  stacked: false,
+    @endif
+@endif
                               title: 'Radios ',
                               grid: {
                                   drawBorder: true,

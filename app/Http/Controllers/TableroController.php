@@ -32,4 +32,16 @@ class TableroController extends Controller
          }
     }
     
+    // Terecer tablero de informe por provincias.
+    // Histograma radios segmentadosi acumulado.
+    public function GraficoAvance(Request $request) {
+        $titulo = "Informe de proceso de segmentación";
+        if ($request->isMethod('post')) {
+             $avances = MyDB::getAvanceProvAcum();
+             $data = json_encode ($avances);
+             return response()->json($avances);
+         }else{
+             return view('grafico.show',['titulo'=>$titulo,'url_data'=>'avance','tipo_grafico'=>'area']);
+         }
+    }
 }
