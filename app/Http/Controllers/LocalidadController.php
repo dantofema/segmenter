@@ -109,6 +109,7 @@ class LocalidadController extends Controller
                         $radio->resultado.= '
     '.$mensajes_excedidos;
                         }
+                        $radio->esquema='e'.$localidad->codigo;
                         return app('App\Http\Controllers\SegmentacionController')->ver($localidad,$radio);
                     }
               return
@@ -209,19 +210,19 @@ class LocalidadController extends Controller
                 Log::debug('No se encontró el radio: '.$request->radios.' Se
                 crea temporalmente.');
             }
-            if ($lucky!=true){
+          if ($lucky!=true){
            $resultado = $radio->segmentar($localidad->codigo,
                                           $request['vivs_deseadas'],
                                           $request['vivs_max'],
                                           $request['vivs_min'],
                                           $request['mzas_indivisibles']);
-                                          }else{
+          }else{
            $resultado = $radio->segmentarLucky($localidad->codigo,
                                           $request['vivs_deseadas'],
                                           $request['vivs_max'],
                                           $request['vivs_min'],
                                           $request['mzas_indivisibles']);
-                                          }
+          }
             return  app('App\Http\Controllers\SegmentacionController')->ver($localidad,$radio);
         }else{
            flash('No selecciono ningún radio valido!');

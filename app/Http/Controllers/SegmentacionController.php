@@ -67,7 +67,7 @@ class SegmentacionController extends Controller
     public function ver(Localidad $localidad,Radio $radio)
       {
         // Ver radio especificando el esquema de la localidad.
-        $radio->esquema = 'e'.$localidad;
+        $radio->esquema = 'e'.$localidad->codigo;
 
         $filtro_radio = substr($radio->codigo,0,5).'___'.substr($radio->codigo,5,4);
         $nodos = MyDB::getNodos($radio->esquema,$filtro_radio);
