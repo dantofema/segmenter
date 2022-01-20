@@ -1238,7 +1238,8 @@ FROM
             }
 
             public static function getCantMzas(Radio $radio,$esquema=null){
-               $esquemas=$radio->Esquemas;
+                $esquemas=$radio->Esquemas;
+                $esquema=$radio->esquema;                
                 Log::debug('Buscando Mzas para radio '.$radio->codigo);
                 $prov=substr($radio->codigo,0,2);
                 $dpto=substr($radio->codigo,2,3);

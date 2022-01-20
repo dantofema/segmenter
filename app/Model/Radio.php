@@ -255,7 +255,7 @@ class Radio extends Model
                                               $q->where('codigo', 'not like', '%0000%');
                                                })->get();
                				   if ($loc_no_rural->count() > 1) {
-		               			   Log::warning('TODO: Implementar radio multilocalidades'.$this->localidades()->get()->toJson(
+                   	       Log::debug('Radio multilocalidades'.$this->localidades()->get()->toJson(
 					                              JSON_PRETTY_PRINT));
                            foreach($loc_no_rural as $localidad){
                                  Log::info('Posible esquema: e'.($localidad->codigo));
