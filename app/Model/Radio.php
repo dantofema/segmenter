@@ -226,7 +226,7 @@ class Radio extends Model
     }
 
     public function getEsquemaAttribute($value){
-      if ($this->_esquema){
+      if (isset($this->_esquema)){
 	      return $this->_esquema;
      	}else{
 	     $this->_esquema='cualca';
