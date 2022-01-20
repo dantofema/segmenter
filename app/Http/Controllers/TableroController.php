@@ -10,7 +10,7 @@ class TableroController extends Controller
     // Primer tablero de informe por provincias.
     // Histograma radios segmentados.
     public function GraficoProvincias(Request $request) {
-        $titulo = "Informe de Avances";
+        $titulo = "Actividad diaria: cantidad de radios\n según última fecha de radio segmentado";
         if ($request->isMethod('post')) {
              $avances = MyDB::getAvancesProv();
              $data = json_encode ($avances);
@@ -35,7 +35,7 @@ class TableroController extends Controller
     // Terecer tablero de informe por provincias.
     // Histograma radios segmentadosi acumulado.
     public function GraficoAvance(Request $request) {
-        $titulo = "Informe de proceso de segmentación";
+        $titulo = "Avance de segmentación por provincia: cantidad de radios\n según última fecha de radio segmentado";
         if ($request->isMethod('post')) {
              $avances = MyDB::getAvanceProvAcum();
              $data = json_encode ($avances);
