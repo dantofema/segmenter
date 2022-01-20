@@ -169,9 +169,10 @@ class Radio extends Model
         // Prpongo sin holgura (=1) y revisar deseado según número de viviendas
         // ya que el umbral sólo selecciona el segmento a partir y luego
         // se usa el desaeado. 2022-01-19 M.
+        // Numeros enteros es lo que recibe al funcion uso piso (floor)
 
         $holgura = 1.05;
-        $umbral = $holgura*$max;
+        $umbral = floor($holgura*$max);
 
         $segmenta->segmentar_excedidos_ffrr($esquema,$frac,$radio,$umbral,$deseadas);
         $this->resultado = $segmenta->ver_segmentacion().'
