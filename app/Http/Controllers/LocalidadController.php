@@ -62,6 +62,7 @@ class LocalidadController extends Controller
                         ]);
 
             }
+            foreach($localidad->radios as $radio){$radio->esquema='e'.$localidad->codigo;}
             return view('localidad.radios',[
                         'localidad'=>$localidad,
                         'aglomerado'=>$localidad->aglomerado,

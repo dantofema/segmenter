@@ -234,6 +234,13 @@ class Radio extends Model
 	    return $this->_esquema=$posibles_esquemas[0];
 	    }
     }
+ 
+   public function setEsquemaAttribute($value){
+      if (isset($this->_esquema) and $this->_esquema!='e' and $this->_esquema!='' ){
+          Log::debug('Esquema seteado anterior:'.$this->_esquema.' - nuevo: '.$value);
+	    }
+          $this->_esquema=$value;
+    }
 
     public function getEsquemasAttribute($value){
         if (! $this->_esquemas){
