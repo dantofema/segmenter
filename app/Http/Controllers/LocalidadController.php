@@ -62,6 +62,8 @@ class LocalidadController extends Controller
                         ]);
 
             }
+            //radios_loc definido para localidades sin radios cargados
+            $radios_loc = array();
             foreach($localidad->radios as $radio){$radio->esquema='e'.$localidad->codigo;$radios_loc[]=$radio;}
             return view('localidad.radios',[
                         'localidad'=>$localidad,
