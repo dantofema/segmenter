@@ -62,11 +62,11 @@ class LocalidadController extends Controller
                         ]);
 
             }
-            foreach($localidad->radios as $radio){$radio->esquema='e'.$localidad->codigo;}
+            foreach($localidad->radios as $radio){$radio->esquema='e'.$localidad->codigo;$radios_loc[]=$radio;}
             return view('localidad.radios',[
                         'localidad'=>$localidad,
                         'aglomerado'=>$localidad->aglomerado,
-                        'radios'=>$localidad->radios,
+                        'radios'=>$radios_loc,
                         'carto'=>$localidad->Carto,
                         'listado'=>$localidad->Listado,
                         'svg'=>$localidad->getSVG()

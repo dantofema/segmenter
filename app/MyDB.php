@@ -1293,18 +1293,16 @@ FROM
             }
 
        public static function isSegmentado(Radio $radio=null,$esquema=null){
-            $esquemas=$radio->Esquemas;
             if ($radio){
                 $filtro = " and (frac,radio) = ('".$radio->CodigoFrac."','".$radio->CodigoRad."') ";
               } else {
                 $filtro = '';
              }
-             if(isset($esquema)){
-                 if (in_array($esquema,$esquemas)){
-                   Log::debug('Viendo si esta segmentado el radio '.$radio->codigo.' en esquema '.$esquema);
-                 }else{
+             if(isset($esquema) and $esquema == $radio->esquema){
+                 Log::debug('Viendo si esta segmentado el radio '.$radio->codigo.' en esquema '.$esquema);
+                 if ($esquema != $radio->esquema){
                    Log::warning('Raro! Buscando segmentacion para radio '.$radio->codigo.' en esquema '.$esquema.
-                                ' fuera de los esperados ');
+                                ' fuera del esperados '.$this->esquema);
                  }
                   try{
                     return (int) DB::select("SELECT count(distinct segmento_id) FROM ".$esquema.".segmentacion s JOIN
@@ -1320,7 +1318,7 @@ FROM
                    }
              }else{
              $count=0;
-             foreach($esquemas as $esquema){
+             foreach($radio->esquemas as $esquema){
                   try { 
                     $count += (int) DB::select("SELECT count(distinct segmento_id) FROM ".$esquema.".segmentacion s JOIN
                            ".$esquema.".listado l ON s.listado_id=l.id WHERE segmento_id is not null ".

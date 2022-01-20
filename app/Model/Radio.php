@@ -231,6 +231,7 @@ class Radio extends Model
      	}else{
 	     $this->_esquema='cualca';
 	     $posibles_esquemas=$this->esquemas;
+       Log::warning('Tomando primer esquema xq no está especificado');
 	    return $this->_esquema=$posibles_esquemas[0];
 	    }
     }
