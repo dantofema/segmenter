@@ -264,12 +264,13 @@ class Radio extends Model
                                  $esquemas[]='e'.$localidad->codigo;
                            }
               				      $esquemas[]='e'.$this->fraccion->departamento->codigo;
-				                }else{
-					                    Log::info('Buscando parte Urbana del Radio en el esquema de la única localidad:'.
-                         						    ($loc_no_rural->first()->codigo));
+				                  }elseif ( $loc_no_rural->count()==1  ) {
+                              Log::info('Buscando parte Urbana del Radio en el esquema de la única localidad:'.
+                         		            ($loc_no_rural->first()->codigo));
                               $esquemas[]='e'.$loc_no_rural->first()->codigo;
-				                }
-			              }elseif($this->localidades()->count()==1){
+				                    }else{ Log::info('Varias localidades sin parte rural ? '.$loc_no_rural);
+                          }
+                        }elseif($this->localidades()->count()==1){
                        $esquemas[]='e'.$this->localidades()->first()->codigo;
                       }else{
                        $esquemas[]='e'.$this->codigo;
