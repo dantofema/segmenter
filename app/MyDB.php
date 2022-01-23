@@ -650,6 +650,8 @@ FROM
 
             if (self::cargarTopologia($schema)) {
                 flash('Se creo la topología para '.$schema);
+            }else{
+                flash('No se pudo validar la topología para '.$schema)->error()->important();
             }
 
             self::georeferenciar_listado($schema);
