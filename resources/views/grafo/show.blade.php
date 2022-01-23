@@ -4,11 +4,11 @@
 <h4><a href="{{ url("/aglo/{$aglomerado->id}") }}" > ({{ $aglomerado->codigo}}) {{ $aglomerado->nombre}}</a></h4>
 <h5>
 @foreach($radio->localidades as $localidad)
-@if($localidad)
+@if($localidad and substr($localidad->codigo,5,3)!='000')
 <a href="{{ url("/localidad/{$localidad->id}") }}" > ({{
 $localidad->codigo}}) {{ $localidad->nombre}}</a>
 @else
- Rural? 
+<i>(parte urbana)</i>
 @endif
 @endforeach
 </h5>

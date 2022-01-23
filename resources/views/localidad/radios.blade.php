@@ -19,6 +19,9 @@
       en el Departamento <a href="{{ url("/depto/{$oDepto->id}") }}" >
       ({{ $oDepto->codigo }}) 
       <b> {{ $oDepto->nombre }} </b></a><br />
+      <a href="{{ url("/prov/{$oDepto->provincia->id}") }}" >
+      ({{ $oDepto->provincia->codigo }}) 
+      <b> {{ $oDepto->provincia->nombre }} </b></a>
     @else
       NO está definido ningún departamento.
     @endif
@@ -68,7 +71,10 @@
 
 <hr />
 <div class="form-horizontal">
-<form action="/grafo/{{ $localidad->id }}" method="GET" enctype="multipart/form-data">
+    <a href="{{ url('/localidad/'.$localidad->id.'/grafico') }}">
+      grafico de segmentación
+    </a>
+<form action="/localidad/{{ $localidad->id }}" method="GET" enctype="multipart/form-data">
                 @csrf
   <div class="form-group">
     <label class="control-label" for="radio">Seleccione un Radio para ver:</label>
@@ -80,7 +86,7 @@
         @else
           <li class="btn "> 
         @endif 
-    <a href="{{ url('/grafo/'.$aglomerado->id.'/'.$radio->id) }}">
+    <a href="{{ url('/radio/'.$localidad->id.'/'.$radio->id) }}">
         {{ trim($radio->codigo) }}: {{ trim($radio->nombre) }} <br />Mzas: {{ trim($radio->CantMzas) }} 
         @if ($radio->isSegmentado) Segmentos: {{ trim($radio->isSegmentado) }} @endif
     </a>

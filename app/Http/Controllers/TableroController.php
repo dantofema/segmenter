@@ -41,7 +41,7 @@ class TableroController extends Controller
              $data = json_encode ($avances);
              return response()->json($avances);
          }else{
-             return view('grafico.show',['titulo'=>$titulo,'url_data'=>'avance','tipo_grafico'=>'area']);
+             return view('grafico.show',['titulo'=>$titulo,'url_data'=>'avance','tipo'=>'acumulado']);
          }
     }
 }

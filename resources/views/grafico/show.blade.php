@@ -105,7 +105,11 @@
                 n_cants++;
                 Detalle.push(data.detalle);
             });
-            var mensaje = sum+' en '+Hechos.length+' días, con un promedio de '+Math.round (sum/Hechos.length)+' x día';
+             @if (isset($tipo) and ($tipo='acumuldao'))
+              var mensaje = 'Acumulado de radios segmentados x provincia.';
+             @else
+              var mensaje = sum+' en '+Hechos.length+' días, con un promedio de '+Math.round (sum/Hechos.length)+' x día';
+             @endif
             document.getElementById("resumen").innerHTML=mensaje;
             var ctx = document.getElementById("canvas").getContext('2d');
                 var myChart = new Chart(ctx, {
@@ -129,13 +133,13 @@
                                text: 'Fecha'
                           },
                           y: {
-@if (isset($tipo_grafico))
-    @if ($tipo_grafico=='area')
-                  stacked: true,
-    @else
-                  stacked: false,
-    @endif
-@endif
+                              @if (isset($tipo_grafico))
+                                @if ($tipo_grafico=='area')
+                                        stacked: true,
+                                @else
+                                        stacked: false,
+                                @endif
+                              @endif
                               title: 'Radios ',
                               grid: {
                                   drawBorder: true,

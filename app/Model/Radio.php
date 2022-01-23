@@ -169,9 +169,10 @@ class Radio extends Model
         // Prpongo sin holgura (=1) y revisar deseado según número de viviendas
         // ya que el umbral sólo selecciona el segmento a partir y luego
         // se usa el desaeado. 2022-01-19 M.
+        // Numeros enteros es lo que recibe al funcion uso piso (floor)
 
         $holgura = 1.05;
-        $umbral = $holgura*$max;
+        $umbral = floor($holgura*$max);
 
         $segmenta->segmentar_excedidos_ffrr($esquema,$frac,$radio,$umbral,$deseadas);
         $this->resultado = $segmenta->ver_segmentacion().'
@@ -226,13 +227,21 @@ class Radio extends Model
     }
 
     public function getEsquemaAttribute($value){
-      if ($this->_esquema){
+      if (isset($this->_esquema)){
 	      return $this->_esquema;
      	}else{
 	     $this->_esquema='cualca';
 	     $posibles_esquemas=$this->esquemas;
+       Log::warning('Tomando primer esquema xq no está especificado');
 	    return $this->_esquema=$posibles_esquemas[0];
 	    }
+    }
+ 
+   public function setEsquemaAttribute($value){
+      if (isset($this->_esquema) and $this->_esquema!='e' and $this->_esquema!='' ){
+          Log::debug('Esquema seteado anterior:'.$this->_esquema.' - nuevo: '.$value);
+	    }
+          $this->_esquema=$value;
     }
 
     public function getEsquemasAttribute($value){
@@ -248,19 +257,20 @@ class Radio extends Model
                                               $q->where('codigo', 'not like', '%0000%');
                                                })->get();
                				   if ($loc_no_rural->count() > 1) {
-		               			   Log::warning('TODO: Implementar radio multilocalidades'.$this->localidades()->get()->toJson(
+                   	       Log::debug('Radio multilocalidades'.$this->localidades()->get()->toJson(
 					                              JSON_PRETTY_PRINT));
                            foreach($loc_no_rural as $localidad){
                                  Log::info('Posible esquema: e'.($localidad->codigo));
                                  $esquemas[]='e'.$localidad->codigo;
                            }
               				      $esquemas[]='e'.$this->fraccion->departamento->codigo;
-				                }else{
-					                    Log::info('Buscando parte Urbana del Radio en el esquema de la única localidad:'.
-                         						    ($loc_no_rural->first()->codigo));
+				                  }elseif ( $loc_no_rural->count()==1  ) {
+                              Log::info('Buscando parte Urbana del Radio en el esquema de la única localidad:'.
+                         		            ($loc_no_rural->first()->codigo));
                               $esquemas[]='e'.$loc_no_rural->first()->codigo;
-				                }
-			              }elseif($this->localidades()->count()==1){
+				                    }else{ Log::info('Varias localidades sin parte rural ? '.$loc_no_rural);
+                          }
+                        }elseif($this->localidades()->count()==1){
                        $esquemas[]='e'.$this->localidades()->first()->codigo;
                       }else{
                        $esquemas[]='e'.$this->codigo;
