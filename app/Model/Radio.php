@@ -332,12 +332,15 @@ class Radio extends Model
             //dd($viewBox.'/n'.$this->viewBox($extent,$epsilon,$height,$width).'/n'.$x0." -".$y0." ".$x1." -".$y1);
             $svg=DB::select("
 WITH shapes (geom, attribute, tipo) AS (
-    ( SELECT st_buffer(CASE WHEN trim(lg.tipoviv) in ('','LSV') then lg.wkb_geometry_lado
-    else lg.wkb_geometry END,1) wkb_geometry, 
-    rank() over (order by segmento_id::integer) as attribute,
+    ( SELECT 
+          CASE WHEN trim(lg.tipoviv) in ('','LSV') then 
+            st_buffer(st_LineSubstring(st_offsetcurve(lg.wkb_geometry_lado,-5),0.05,0.95),1,'endcap=flat join=round')
+          ELSE st_buffer(lg.wkb_geometry,2) END  wkb_geometry, 
+       r3.seg::integer as attribute,
     lg.tipoviv tipo
     FROM ".$this->esquema.".listado_geo lg JOIN ".$this->esquema.".segmentacion
-    s ON s.listado_id=id_list
+    s ON s.listado_id=id_list JOIN ".$this->esquema.".r3 
+      ON s.segmento_id=r3.segmento_id
     WHERE  substr(mzae,1,5)||substr(mzae,9,4)='".$this->codigo."'
     ) ".$mzas."
   ),
@@ -360,6 +363,7 @@ WITH shapes (geom, attribute, tipo) AS (
             'stroke=\"black\" stroke-width=\"".$stroke."\" fill=\"#22' ||
             attribute*10 || '88\"'
          END,
+          'segmento=\"',attribute,'\"',
           ' />') as svg,
           CASE WHEN tipo='mza' then 0
                WHEN tipo='LSV' then 1
