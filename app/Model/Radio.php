@@ -298,7 +298,7 @@ class Radio extends Model
             $height=600;
             $width=600;
             $escalar=false;
-            $extent=DB::select("SELECT box2d(st_collect(wkb_geometry)) box FROM
+            $extent=DB::select("SELECT box2d(st_collect(wkb_geometry_lado)) box FROM
             ".$this->esquema.".listado_geo
             WHERE  substr(mzae,1,5)||substr(mzae,9,4)='".$this->codigo."' ");
             $extent=$extent[0]->box;
@@ -339,7 +339,7 @@ WITH shapes (geom, attribute, tipo) AS (
        r3.seg::integer as attribute,
     lg.tipoviv tipo
     FROM ".$this->esquema.".listado_geo lg JOIN ".$this->esquema.".segmentacion
-    s ON s.listado_id=id_list JOIN ".$this->esquema.".r3 
+    s ON s.listado_id=id_list LEFT JOIN ".$this->esquema.".r3
       ON s.segmento_id=r3.segmento_id
     WHERE  substr(mzae,1,5)||substr(mzae,9,4)='".$this->codigo."'
     ) ".$mzas."
