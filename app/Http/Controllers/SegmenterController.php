@@ -212,8 +212,8 @@ class SegmenterController extends Controller
             if ($epsg_id=='sr-org:8333'){
 	        MyDB::setSRID('e'.$codaglo[0]->link,98333);
         }
-        //MyDB::juntaListadoGeom('e'.$codaglo);
         if($segmenta_auto) {
+               MyDB::juntaListadoGeom('e'.$codaglo[0]->link);
                MyDB::segmentar_equilibrado($codaglo[0]->link,36);
                flash('Segmentado automáticamente a 36 viviendas x segmento')->important();
         }
