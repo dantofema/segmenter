@@ -83,7 +83,8 @@ class SegmenterController extends Controller
             $prj_file='./app/developer_docs/8333.prj';
             $epsg_def= $epsg_id;
             $epsg_def='+proj=tmerc +lat_0=-34.6297166 +lon_0=-58.4627 +k=1 +x_0=100000 +y_0=100000 +ellps=intl +units=m +no_defs';
-	    $srs_name='sr-org:8333';
+      	    $srs_name='sr-org:8333';
+            $segmenta_auto=true;
     }else {
             $epsg_def= '';
     }
@@ -213,7 +214,6 @@ class SegmenterController extends Controller
 	        MyDB::setSRID('e'.$codaglo[0]->link,98333);
         }
         if($segmenta_auto) {
-               MyDB::juntaListadoGeom('e'.$codaglo[0]->link);
                MyDB::segmentar_equilibrado($codaglo[0]->link,36);
                flash('Segmentado automáticamente a 36 viviendas x segmento')->important();
         }
