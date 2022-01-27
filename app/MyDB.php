@@ -635,7 +635,10 @@ FROM
                     try {
                         DB::unprepared("Select indec.cargar_lados('".$esquema."')");
                         DB::unprepared("Select indec.cargar_conteos('".$esquema."')");
+                        self::createIndex($esquema,'conteos','prov,dpto,frac,radio,mza,lado');
                         DB::unprepared("Select indec.generar_adyacencias('".$esquema."')");
+                        self::createIndex($esquema,'lados_adyacentes','substr(mza_i,1,2),substr(mza_i,3,3),substr(mza_i,9,2),substr(mza_i,11,2),substr(mza_i,13,3)');
+                        self::createIndex($esquema,'lados_adyacentes','substr(mza_j,1,2),substr(mza_j,3,3),substr(mza_j,9,2),substr(mza_j,11,2),substr(mza_j,13,3)');
                         Log::info('Se procesaron lados, conteos y adyacencias!');
                     }catch (\Illuminate\Database\QueryException $exception) {
                             Log::error('No se pudieron cargar lados '.$exception);
