@@ -21,7 +21,6 @@ class MyDB extends Model
         try{
             DB::beginTransaction();
             DB::statement(" SELECT indec.muestrear('".$esquema."');");
-            DB::statement(" SELECT indec.segmentos_desde_hasta('".$esquema."');");
             $result = DB::statement(" SELECT * from indec.describe_despues_de_muestreo('".$esquema."');");
             DB::commit();
         }catch(QueryException $e){
@@ -66,7 +65,6 @@ class MyDB extends Model
             try{
                 DB::statement("SELECT
                 indec.lados_completos_a_tabla_segmentacion_ffrr('e".$esquema."',".$frac.",".$radio.");");
-                DB::statement("SELECT indec.segmentos_desde_hasta('e".$esquema."');");
             }catch(QueryException $e){
                 self::generarSegmentacionVacia($esquema);
                 self::generarR3Vacia($esquema);
@@ -805,7 +803,6 @@ FROM
                 if ( DB::statement("SELECT indec.segmentar_equilibrado('e".$esquema."',".$deseado.");") ){
                 // llamar generar r3 como tabla resultado de function indec.r3(agl)
                     ( DB::statement("SELECT indec.descripcion_segmentos('e".$esquema."');") );
-                    ( DB::statement("SELECT indec.segmentos_desde_hasta('e".$esquema."');") );
                  flash('Resultado: '.self::juntar_segmentos('e'.$esquema));
                  // Llamar a función guardar segmentación para actualizar la r3 con los resultados...
                  // $esquema para el esquema completo.
@@ -863,26 +860,8 @@ FROM
                             order by frac,radio,seg,segmento_id
                             LIMIT ".$max.";");
                 }catch(QueryException $e){
-                    Log::warning('Se detecto una carga medio antigua. Se encontro tabla de
-                    "segmentos desde hasta". Pero sin vivendas... Se hace lo
-                    que se puede.');
-                    try{
-                        return DB::select("SELECT segmento_id, frac, radio, mza, lado,
-                            CASE  WHEN completo THEN 'Lado Completo'
-                            ELSE 'Desde ' ||
-                            indec.descripcion_domicilio('".$esquema."',seg_lado_desde) || '
-                                hasta ' ||
-                                indec.descripcion_domicilio('".$esquema."',seg_lado_hasta)
-                            END detalle,
-                            null vivs, segmento_id seg, null ts
-                            FROM ".$esquema.".segmentos_desde_hasta
-                            ".$filtro."
-                            order by frac,radio,segmento_id,mza,lado
-                            LIMIT ".$max.";");
-                    }catch(QueryException $e){
-
-                        Log::warning('Se detecto una carga antigua. No se encontro tabla de
-                            "segmentos desde hasta". Se hace lo que se puede.');
+                        Log::warning('Se detecto una carga antigua o con problemas.
+                            Se hace lo que se puede.');
                         try{
                         return DB::select('
                             SELECT segmento_id,l.frac,l.radio,count(*)
@@ -905,7 +884,6 @@ FROM
                             return [];
                         }
                 }
-            }
             }
         }
 
