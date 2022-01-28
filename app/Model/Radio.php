@@ -363,7 +363,8 @@ WITH shapes (geom, attribute, tipo) AS (
             'stroke=\"black\" stroke-width=\"".$stroke."\" fill=\"#22' ||
             attribute*10 || '88\"'
          END,
-          'segmento=\"',attribute,'\"',
+          ' segmento=\"',attribute,'\"',
+          ' title=\"Segmento ',attribute,'\"',
           ' />') as svg,
           CASE WHEN tipo='mza' then 0
                WHEN tipo='LSV' then 1
