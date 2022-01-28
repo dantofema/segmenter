@@ -588,18 +588,18 @@ FROM
             self::eliminaRepetidosListado($esquema);
         }
 
-        public static function eliminaRepetidosListado($esquema){
-          if (Schema::hasTable($esquema.'.listado')){
+        public static function eliminaRepetidosListado($esquema,$tabla='listado'){
+          if (Schema::hasTable($esquema.'.'.$tabla)){
             Log::debug('eliminando registros repetidos en listado');
             DB::beginTransaction();
-              try {DB::statement('delete from '.$esquema.'.listado 
+              try {$result=DB::delete('delete from '.$esquema.'.'.$tabla.'
                                       where id not in 
-                                      (select min(id) from '.$esquema.'.listado
+                                      (select min(id) from '.$esquema.'.'.$tabla.'
                                       group by prov, dpto, codloc, frac, radio, mza, lado, orden_reco);');
               }catch (\Illuminate\Database\QueryException $exception) {
-                            Log::error('No se pudo eliminar registros repetidos '.$exception);
-                            DB::Rollback();
-                    };
+                        Log::error('No se pudo eliminar registros repetidos en '.$esquema.'.'.$tabla,$exception);
+                        DB::Rollback();
+              };
             DB::commit();
           }
         }
