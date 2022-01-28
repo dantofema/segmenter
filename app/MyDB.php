@@ -585,7 +585,23 @@ FROM
 
                 DB::commit();
             self::juntaListadoGeom($esquema);
+            self::eliminaRepetidosListado($esquema);
+        }
 
+        public static function eliminaRepetidosListado($esquema){
+          if (Schema::hasTable($esquema.'.listado')){
+            Log::debug('eliminando registros repetidos en listado');
+            DB::beginTransaction();
+              try {DB::statement('delete from '.$esquema.'.listado 
+                                      where id not in 
+                                      (select min(id) from '.$esquema.'.listado
+                                      group by prov, dpto, codloc, frac, radio, mza, lado, orden_reco);');
+              }catch (\Illuminate\Database\QueryException $exception) {
+                            Log::error('No se pudo eliminar registros repetidos '.$exception);
+                            DB::Rollback();
+                    };
+            DB::commit();
+          }
         }
 
         public static function juntaListadoGeom($esquema){
