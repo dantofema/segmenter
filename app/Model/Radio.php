@@ -327,7 +327,14 @@ class Radio extends Model
                 as svg ,20 as orden
                 FROM ".$this->esquema.".manzanas
                     WHERE  prov||dpto||frac||radio='".$this->codigo."' )";
-            }else{Log::debug('No se encontro grafica de manzanas. ');$mzas='';$mzas_labels='';}
+        }else{Log::debug('No se encontro grafica de manzanas. ');$mzas='';$mzas_labels='';} 
+        if (Schema::hasTable($this->esquema.'.r3')){
+          $r3_seg='r3.seg::integer';
+          $r3_join="LEFT JOIN ".$this->esquema.".r3 ON s.segmento_id=r3.segmento_id";
+        }else{Log::debug('No se encontro R3. ');
+          $r3_seg="'99'";
+          $r3_join='';
+        } 
 
             //dd($viewBox.'/n'.$this->viewBox($extent,$epsilon,$height,$width).'/n'.$x0." -".$y0." ".$x1." -".$y1);
             $svg=DB::select("
@@ -336,11 +343,11 @@ WITH shapes (geom, attribute, tipo) AS (
           CASE WHEN trim(lg.tipoviv) in ('','LSV') then 
             st_buffer(st_LineSubstring(st_offsetcurve(lg.wkb_geometry_lado,-5),0.05,0.95),1,'endcap=flat join=round')
           ELSE st_buffer(lg.wkb_geometry,2) END  wkb_geometry, 
-       r3.seg::integer as attribute,
+       ".$r3_seg." as attribute,
     lg.tipoviv tipo
     FROM ".$this->esquema.".listado_geo lg JOIN ".$this->esquema.".segmentacion
-    s ON s.listado_id=id_list LEFT JOIN ".$this->esquema.".r3
-      ON s.segmento_id=r3.segmento_id
+    s ON s.listado_id=id_list 
+      ".$r3_join."
     WHERE  substr(mzae,1,5)||substr(mzae,9,4)='".$this->codigo."'
     ) ".$mzas."
   ),
