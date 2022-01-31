@@ -526,6 +526,7 @@ FROM
                       when descripcio ilike '%Conteo - VE%' then 'VE'
                       when descripcio ilike '%Conteo - FD%' then 'FD'
                       when descripcio ilike '%Conteo - CA/CP%' then 'CA/CP'
+                      else 'X'
                     end
                     where tipoviv = 'X' and descripcio ilike '%Conteo - %'
                   ;");
