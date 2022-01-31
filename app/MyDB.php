@@ -21,7 +21,6 @@ class MyDB extends Model
         try{
             DB::beginTransaction();
             DB::statement(" SELECT indec.muestrear('".$esquema."');");
-            DB::statement(" SELECT indec.segmentos_desde_hasta('".$esquema."');");
             $result = DB::statement(" SELECT * from indec.describe_despues_de_muestreo('".$esquema."');");
             DB::commit();
         }catch(QueryException $e){
@@ -66,7 +65,6 @@ class MyDB extends Model
             try{
                 DB::statement("SELECT
                 indec.lados_completos_a_tabla_segmentacion_ffrr('e".$esquema."',".$frac.",".$radio.");");
-                DB::statement("SELECT indec.segmentos_desde_hasta('e".$esquema."');");
             }catch(QueryException $e){
                 self::generarSegmentacionVacia($esquema);
                 self::generarR3Vacia($esquema);
@@ -587,7 +585,23 @@ FROM
 
                 DB::commit();
             self::juntaListadoGeom($esquema);
+            self::eliminaRepetidosListado($esquema);
+        }
 
+        public static function eliminaRepetidosListado($esquema,$tabla='listado'){
+          if (Schema::hasTable($esquema.'.'.$tabla)){
+            Log::debug('eliminando registros repetidos en listado');
+            DB::beginTransaction();
+              try {$result=DB::delete('delete from '.$esquema.'.'.$tabla.'
+                                      where id not in 
+                                      (select min(id) from '.$esquema.'.'.$tabla.'
+                                      group by prov, dpto, codloc, frac, radio, mza, lado, orden_reco);');
+              }catch (\Illuminate\Database\QueryException $exception) {
+                        Log::error('No se pudo eliminar registros repetidos en '.$esquema.'.'.$tabla,$exception);
+                        DB::Rollback();
+              };
+            DB::commit();
+          }
         }
 
         public static function juntaListadoGeom($esquema){
@@ -619,7 +633,10 @@ FROM
                     try {
                         DB::unprepared("Select indec.cargar_lados('".$esquema."')");
                         DB::unprepared("Select indec.cargar_conteos('".$esquema."')");
+                        self::createIndex($esquema,'conteos','prov,dpto,frac,radio,mza,lado');
                         DB::unprepared("Select indec.generar_adyacencias('".$esquema."')");
+                        self::createIndex($esquema,'lados_adyacentes','substr(mza_i,1,2),substr(mza_i,3,3),substr(mza_i,9,2),substr(mza_i,11,2),substr(mza_i,13,3)');
+                        self::createIndex($esquema,'lados_adyacentes','substr(mza_j,1,2),substr(mza_j,3,3),substr(mza_j,9,2),substr(mza_j,11,2),substr(mza_j,13,3)');
                         Log::info('Se procesaron lados, conteos y adyacencias!');
                     }catch (\Illuminate\Database\QueryException $exception) {
                             Log::error('No se pudieron cargar lados '.$exception);
@@ -650,6 +667,8 @@ FROM
 
             if (self::cargarTopologia($schema)) {
                 flash('Se creo la topología para '.$schema);
+            }else{
+                flash('No se pudo validar la topología para '.$schema)->error()->important();
             }
 
             self::georeferenciar_listado($schema);
@@ -800,7 +819,6 @@ FROM
                 if ( DB::statement("SELECT indec.segmentar_equilibrado('e".$esquema."',".$deseado.");") ){
                 // llamar generar r3 como tabla resultado de function indec.r3(agl)
                     ( DB::statement("SELECT indec.descripcion_segmentos('e".$esquema."');") );
-                    ( DB::statement("SELECT indec.segmentos_desde_hasta('e".$esquema."');") );
                  flash('Resultado: '.self::juntar_segmentos('e'.$esquema));
                  // Llamar a función guardar segmentación para actualizar la r3 con los resultados...
                  // $esquema para el esquema completo.
@@ -858,26 +876,8 @@ FROM
                             order by frac,radio,seg,segmento_id
                             LIMIT ".$max.";");
                 }catch(QueryException $e){
-                    Log::warning('Se detecto una carga medio antigua. Se encontro tabla de
-                    "segmentos desde hasta". Pero sin vivendas... Se hace lo
-                    que se puede.');
-                    try{
-                        return DB::select("SELECT segmento_id, frac, radio, mza, lado,
-                            CASE  WHEN completo THEN 'Lado Completo'
-                            ELSE 'Desde ' ||
-                            indec.descripcion_domicilio('".$esquema."',seg_lado_desde) || '
-                                hasta ' ||
-                                indec.descripcion_domicilio('".$esquema."',seg_lado_hasta)
-                            END detalle,
-                            null vivs, segmento_id seg, null ts
-                            FROM ".$esquema.".segmentos_desde_hasta
-                            ".$filtro."
-                            order by frac,radio,segmento_id,mza,lado
-                            LIMIT ".$max.";");
-                    }catch(QueryException $e){
-
-                        Log::warning('Se detecto una carga antigua. No se encontro tabla de
-                            "segmentos desde hasta". Se hace lo que se puede.');
+                        Log::warning('Se detecto una carga antigua o con problemas.
+                            Se hace lo que se puede.');
                         try{
                         return DB::select('
                             SELECT segmento_id,l.frac,l.radio,count(*)
@@ -900,7 +900,6 @@ FROM
                             return [];
                         }
                 }
-            }
             }
         }
 

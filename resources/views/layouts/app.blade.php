@@ -69,7 +69,7 @@
                         @else
                             <li class="nav-item">
                                     <a class="nav-link" alt="Ver/Ocultar mensajes"
-                                    title="Ver/Ocultar Menajes flash"
+                                    title="Ver/Ocultar Menaajes flash"
                                     onclick="$('div.alert').toggle();">
                                     Mensajes</a>
                             </li>

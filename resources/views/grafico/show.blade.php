@@ -2,9 +2,12 @@
 @section('content')
 <div class="text-center">
 @if (isset($titulo))
-<h3 class="text-center">({{ $titulo }})</h3>
+<h3 class="text-center">{{ $titulo }}</h3>
 @else
 <h2 class="text-center">Histograma</h2>
+@endif
+@if (isset($subtitulo))
+<h5 class="text-center">({{ $subtitulo }})</h5>
 @endif
 @if (isset($provincia))
 <h3 class="text-center">({{ $provincia->codigo }}) {{ $provincia->nombre }}</h3>
