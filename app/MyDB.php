@@ -753,11 +753,20 @@ FROM
         public static function generarSegmentacionNula($esquema)
         {
             if (Schema::hasTable($esquema.'.listado')) {
-            DB::statement('create TABLE if not exists '.$esquema.'.segmentacion as
-                select id as listado_id, Null::integer as segmento_id
-                from '.$esquema.'.listado
-                ;');
-            return true;
+              if (!Schema::hasTable($esquema.'.segmentacion')) {
+                DB::statement('create TABLE if not exists '.$esquema.'.segmentacion as
+                    select id as listado_id, Null::integer as segmento_id
+                    from '.$esquema.'.listado
+                    ;');
+                return true;
+              }else{
+                DB::statement('truncate TABLE '.$esquema.'.segmentacion');  
+                DB::statement('insert into '.$esquema.'.segmentacion  
+                    select id as listado_id, Null::integer as segmento_id
+                    from '.$esquema.'.listado
+                    ;');
+                return true;
+              }
             }
             else{
             return false;
