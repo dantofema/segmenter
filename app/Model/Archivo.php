@@ -241,7 +241,7 @@ class Archivo extends Model
             MyDB::moverDBF(storage_path().'/app/'.$this->nombre,$codigo_esquema,$ppdddlll->link);
             $count++;
         }
-        Log::debug('C1 se copió en '.$count.' esqumas');
+        Log::debug('C1 se copió en '.$count.' esquemas');
         MyDB::borrarTabla($this->tabla);
         return $ppdddllls;
     }
