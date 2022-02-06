@@ -221,7 +221,7 @@ class Localidad extends Model
         // return SVG Con Radios
         // WITH shapes (geom, attribute) AS (a
 
-      if ($this->Carto){
+       if (Schema::hasTable('e'.$this->codigo.'.radios')) {
         $height=800;
         $width=900;
         $escalar=false;
@@ -273,7 +273,7 @@ WITH shapes (geom, attribute,bgcolor) AS (
         if ($svg[0]->concat) {
           return $svg[0]->concat;
         }else{ return "no SVG"; }
-        }else{ return "No se puede previsualizar"; }
+     }else{ return "No se pueden previsualizar los radios"; }
 
     }
 
