@@ -140,7 +140,7 @@ class Archivo extends Model
                 -nln $capa \
                 -skipfailures \
                 -overwrite $file )');
-           $processOGR2OGR->setTimeout(300);
+           $processOGR2OGR->setTimeout(1800);
       $this->procesado=false;
       $this->save();
 
@@ -155,7 +155,7 @@ class Archivo extends Model
                      CREATE SCHEMA IF NOT EXISTS e_$esquema;" -dsco active_schema=e_$esquema \
                      -lco PRECISION=NO -lco SCHEMA=e_$esquema -s_srs $epsg -t_srs $epsg \
                      -nln $capa -addfields -overwrite $file $capa');
-           $processOGR2OGR->setTimeout(300);
+           $processOGR2OGR->setTimeout(1800);
                      // -skipfailures
     //Cargo arcos
     try{
