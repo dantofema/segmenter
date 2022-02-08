@@ -116,17 +116,47 @@ class MyDB extends Model
             return $result;
         }
 
-        // Junta los segmentos con 0 vivendas al segmneto menor cercano.
-        public static function juntar_segmentos($esquema)
-  {
+        // Consulta cantidad de segmentos con 0 vivendas o menos de x.
+        public static function cantidad_segmentos($esquema,$viviendas=0)
+        {
             try{
-              $result = DB::statement("SELECT indec.juntar_segmentos('".$esquema."')");
-              Log::debug('Juntando segmentos del esquema-> '.$esquema);
+              $result = (int) DB::select('
+                          SELECT count(*) cant_segmentos FROM ( 
+                            select segmento_id, count(indec.contar_vivienda(tipoviv)) as vivs
+                            from "' . $esquema . '".listado
+                            join "' . $esquema . '".segmentacion
+                            on listado.id = segmentacion.listado_id
+                            group by segmento_id
+                            having count(indec.contar_vivienda(tipoviv)) <= '.$viviendas.
+                                        ') foo;')[0]->cant_segmentos;
               return $result;
             }catch(QueryException $e){
-              Log::error('ERROR Juntando segmentos del esquema-> '.$esquema);
-        return false;
-      }
+              Log::error('ERROR Juntando segmentos del esquema-> '.$esquema.$e);
+              return -1;
+            }
+        }
+
+        //Crea el esquema si no existe y asigna los permisos.
+        // Junta los segmentos con 0 vivendas al segmneto menor cercano.
+        public static function juntar_segmentos($esquema)
+        {
+            $_cant_segmentos_en_cero_antes = 0;
+            $_cant_segmentos_en_cero = self::cantidad_segmentos($esquema,0);
+            $result= 'Nada';
+            while ( $_cant_segmentos_en_cero>0 and $_cant_segmentos_en_cero!=$_cant_segmentos_en_cero_antes){
+              $_cant_segmentos_en_cero_antes = $_cant_segmentos_en_cero;
+              try{
+                $result = DB::statement("SELECT indec.juntar_segmentos('".$esquema."')");
+                Log::debug('Juntando segmentos del esquema-> '.$esquema.' Había: '.$_cant_segmentos_en_cero);
+              }catch(QueryException $e){
+                Log::error('ERROR Juntando segmentos del esquema-> '.$esquema);
+                return false;
+              }
+              $_cant_segmentos_en_cero = self::cantidad_segmentos($esquema,0);
+            }
+            flash('Se termino de juntar todos los segmentos en 0 que se pudo. Quedaron: '.$_cant_segmentos_en_cero)->success();            
+            return $result;
+
         }
 
         //Crea el esquema si no existe y asigna los permisos.
