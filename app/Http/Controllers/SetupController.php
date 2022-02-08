@@ -148,6 +148,7 @@ class SetupController extends Controller
     {
         flash('Resultado: '.MyDB::juntar_segmentos($schema));
         flash('Se juntaron los segmentos con 0 viviendas del esquema '.$schema);
+        flash('Sincro R3: '.MyDB::grabarSegmentacion(substr($schema,1,strlen($schema)-1)));
         return view('home');
     }
 
