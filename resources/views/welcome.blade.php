@@ -83,7 +83,8 @@
 
             <div class="content">
                 <div class="title m-b-md">
-                    INDEC
+                    INDEC<br />
+                <img width="600px" src="images/logo_censo2022.jpg" alt="Censo 2022 República Argentina">
                 </div>
             </div>
         </div>
