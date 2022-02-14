@@ -111,10 +111,11 @@
       });
 
    table.on( 'click', 'tr', function () {
-        var data = table.row( this ).data();
-// AJAX request
+    var data = table.row( this ).data();
+   if ( data != null ){
+    // AJAX request
    $.ajax({
-    url: "{{ url('prov') }}"+"\\"+data.id,
+    url: "{{ url('prov') }}"+"/"+data.id,
     type: 'post',
     data: {id: data.id,format: 'html'},
     success: function(response){ 
@@ -126,6 +127,7 @@
     }
   });
         console.log( 'You clicked on '+data.id+'\'s row' );
+  }
    });
 
 // Función de botón Ver 2.
