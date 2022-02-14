@@ -216,17 +216,74 @@ class Localidad extends Model
         return $radios;
     }
 
+    public function getSVGRadios()
+    {
+        // return SVG Con Radios
+        // WITH shapes (geom, attribute) AS (a
+
+       if (Schema::hasTable('e'.$this->codigo.'.radios')) {
+        $height=800;
+        $width=900;
+        $escalar=false;
+            $extent=DB::select("SELECT box2d(st_collect(wkb_geometry)) box FROM  e".$this->codigo.".radios");
+            $extent=$extent[0]->box;
+            list($x0,$y0,$x1,$y1) = sscanf($extent,'BOX(%f %f,%f %f)');
+
+             $Dx=$x1-$x0; $Dy=$y1-$y0;
+            if (!$height and $width) $height=round($width*$Dy/$Dx);
+            if ($height and !$width) $width=round($height*$Dx/$Dy);
+            if (!$height and !$width) {$width=round($perimeter*$Dx/2/($Dx+$Dy)); $height=round($width*$Dy/$Dx);}
+            $dx=$Dx/$width; $dy=$Dy/$height; $epsilon=min($dx,$dy)/15; // mínima reolución, acho y alto de lo que representa un pixel
+            if ($escalar) {$viewBox="0 0 $width $height"; $stroke=2;}
+            else { $viewBox=$this->viewBox($extent,$epsilon,$height,$width); $stroke=2*$epsilon;
+        }
+
+            //dd($viewBox.'/n'.$this->viewBox($extent,$epsilon,$height,$width).'/n'.$x0." -".$y0." ".$x1." -".$y1);
+            $svg=DB::select("
+WITH shapes (geom, attribute,bgcolor) AS (
+    ( SELECT wkb_geometry, gid,'none' 
+    FROM e".$this->codigo.".radios)
+  ),
+  paths (svg) as (
+     SELECT concat(
+         '<path d= \"',
+         ST_AsSVG(st_buffer(st_union(geom),-5),0), '\" ',
+         CASE WHEN attribute = 0 THEN 'stroke=\"gray\" stroke-width=\"2\"
+         fill=\"gray\"'
+              WHEN attribute < 5 THEN 'stroke=\"none\"
+              stroke-width=\"".$stroke."\" fill=\"#' || attribute*20 || 'AAAA\"'
+              WHEN attribute < 10 THEN 'stroke=\"none\"
+         stroke-width=\"".$stroke."\" fill=\"#00' || (attribute-5)*20 || '00\"'
+              WHEN attribute < 15 THEN 'stroke=\"none\"
+         stroke-width=\"".$stroke."\" fill=\"#AA' || (attribute-10)*20 || '00\"'
+         ELSE
+            'stroke=\"black\" stroke-width=\"".$stroke."\" fill=\"#22' ||
+            attribute*10 || '88\"'
+         END,
+          ' />') 
+     FROM shapes GROUP BY attribute
+ )
+ SELECT concat(
+         '<svg id=\"localidad_".$this->codigo."\"xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"".$viewBox.
+         "\" height=\"".$height."\" width=\"".$width."\">',
+         array_to_string(array_agg(svg),''),
+         '</svg>') 
+ FROM paths;
+");
+        if ($svg[0]->concat) {
+          return $svg[0]->concat;
+        }else{ return "no SVG"; }
+     }else{ return "No se pueden previsualizar los radios"; }
+
+    }
+
     public function getSVG()
     {
         // return SVG Carto? Listado? Segmentación?
         // WITH shapes (geom, attribute) AS (a
-//
-//  VALUES
-//    ((SELECT ST_MakeLine(ST_MakePoint(0,0), ST_MakePoint(50,50))), 2),
-        //    ((SELECT ST_Envelope(ST_MakeBox2d(ST_MakePoint(0,0), st_makepoint(10,10)))), 3)
-
       if ($this->Carto){
-        if ($this->radios->count()>50){
+        if ($this->radios->count()>20){
+           return $this->getSVGRadios();
            return __('Demasiados radios para previsualizar, son más de 50');
         }
         $height=800;

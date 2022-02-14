@@ -32,13 +32,34 @@ class ProvinciaController extends Controller
     {   
         $provsQuery = Provincia::query();
         $codigo = (!empty($_GET["codigo"])) ? ($_GET["codigo"]) : ('');
-        if($codigo!=''){
-         $provsQuery->where('codigo','=',$codigo);
+        if ($codigo!='') {
+            $provsQuery->where('codigo', '=', $codigo);
         }
-
-	$provs = $provsQuery->select('*')->withCount('departamentos');
-
-        return datatables()->of($provs)
+      	$provs = $provsQuery->select('*')
+                ->withCount(['departamentos'])
+                ->with('departamentos')
+                ->with('fracciones')
+                ->with('fracciones.radios')
+                ->with('departamentos.localidades')
+                ->with('departamentos.fracciones.radios')
+                ->with('departamentos.fracciones')->get();
+//        dd($provs->get());
+        foreach ($provs as $prov){
+          $prov->localidades_count=0;
+          $prov->radios_count=0;
+          $prov->radios_resultado_count=0;
+          $prov->fracciones_count=0;
+          $prov->fracciones_count = $prov->fracciones->count();
+          foreach( $prov->fracciones as $fraccion ){
+              $prov->radios_resultado_count += $fraccion->radios->whereNotNull('resultado')->count();
+              $prov->radios_count += $fraccion->radios->count();
+          }
+          foreach( $prov->departamentos as $depto){
+              $prov->localidades_count += count($depto->localidades);
+          }
+          $aProvs[]=$prov;
+        }
+      return datatables()->of($aProvs)
             ->make(true);
     }
 

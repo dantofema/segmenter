@@ -70,16 +70,19 @@
    </div>
 
 <hr />
-<div class="form-horizontal">
-    <a href="{{ url('/localidad/'.$localidad->id.'/grafico') }}">
-      grafico de segmentación
-    </a>
+<div class="form-horizontal text-center">
+    |<a href="{{ url('/localidad/'.$localidad->id.'/grafico') }}">
+      Grafico de segmentación
+    </a>|
+    <!--a href="{{ url('/localidad/'.$localidad->id.'/pxseg') }}">
+      PxSeg
+    </a-->
 <form action="/localidad/{{ $localidad->id }}" method="GET" enctype="multipart/form-data">
                 @csrf
-  <div class="form-group">
+  <div class="form-groupi text-left">
     <label class="control-label" for="radio">Seleccione un Radio para ver:</label>
     <div class="">
-<ul class="nav">
+<ul class="nav nav-center list-inline mx-auto justify-content-center">
   @foreach ($radios as $radio)
        @if ($radio->isSegmentado) 
           <li class="btn border border-success "> 
@@ -100,10 +103,12 @@
 
 
 </div>
+<div class='text-center'>
      @if($carto)
         {!! $svg !!}
      @endif
 @if($localidad->codigo =='0125')         
+</div>
 <div>
 
 <svg id="C30" class="mapa" xmlns="http://www.w3.org/2000/svg" height="500" width="450" viewBox="0 0 450 500">

@@ -24,4 +24,20 @@ class Provincia extends Model
     {
         return $this->hasMany('App\Model\Departamento');
     }
+
+    /**
+     * Relación con Fracciones, a través de departamentos puede tener muchas fracciones.
+     */
+    public function fracciones()
+    {
+        return $this->hasManyThrough('App\Model\Fraccion','App\Model\Departamento');
+    }
+
+    /**
+     * Relación con Fracciones, a través de departamentos puede tener muchas fracciones.
+     */
+//    public function radios()
+//    {
+//        return $this->hasManyThrough('App\Model\Radio','App\Model\Departamento');
+//    }
 }

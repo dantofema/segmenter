@@ -116,17 +116,47 @@ class MyDB extends Model
             return $result;
         }
 
-        // Junta los segmentos con 0 vivendas al segmneto menor cercano.
-        public static function juntar_segmentos($esquema)
-  {
+        // Consulta cantidad de segmentos con 0 vivendas o menos de x.
+        public static function cantidad_segmentos($esquema,$viviendas=0)
+        {
             try{
-              $result = DB::statement("SELECT indec.juntar_segmentos('".$esquema."')");
-              Log::debug('Juntando segmentos del esquema-> '.$esquema);
+              $result = (int) DB::select('
+                          SELECT count(*) cant_segmentos FROM ( 
+                            select segmento_id, count(indec.contar_vivienda(tipoviv)) as vivs
+                            from "' . $esquema . '".listado
+                            join "' . $esquema . '".segmentacion
+                            on listado.id = segmentacion.listado_id
+                            group by segmento_id
+                            having count(indec.contar_vivienda(tipoviv)) <= '.$viviendas.
+                                        ') foo;')[0]->cant_segmentos;
               return $result;
             }catch(QueryException $e){
-              Log::error('ERROR Juntando segmentos del esquema-> '.$esquema);
-        return false;
-      }
+              Log::error('ERROR Juntando segmentos del esquema-> '.$esquema.$e);
+              return -1;
+            }
+        }
+
+        //Crea el esquema si no existe y asigna los permisos.
+        // Junta los segmentos con 0 vivendas al segmneto menor cercano.
+        public static function juntar_segmentos($esquema)
+        {
+            $_cant_segmentos_en_cero_antes = 0;
+            $_cant_segmentos_en_cero = self::cantidad_segmentos($esquema,0);
+            $result= 'Nada';
+            while ( $_cant_segmentos_en_cero>0 and $_cant_segmentos_en_cero!=$_cant_segmentos_en_cero_antes){
+              $_cant_segmentos_en_cero_antes = $_cant_segmentos_en_cero;
+              try{
+                $result = DB::statement("SELECT indec.juntar_segmentos('".$esquema."')");
+                Log::debug('Juntando segmentos del esquema-> '.$esquema.' Había: '.$_cant_segmentos_en_cero);
+              }catch(QueryException $e){
+                Log::error('ERROR Juntando segmentos del esquema-> '.$esquema);
+                return false;
+              }
+              $_cant_segmentos_en_cero = self::cantidad_segmentos($esquema,0);
+            }
+            flash('Se termino de juntar todos los segmentos en 0 que se pudo. Quedaron: '.$_cant_segmentos_en_cero)->success();            
+            return $result;
+
         }
 
         //Crea el esquema si no existe y asigna los permisos.
@@ -512,6 +542,26 @@ FROM
                   Log::debug('Se quitan espacios en cod_subt_v');
             }
 
+            if (Schema::hasColumn($esquema.'.listado' , 'tipoviv') and Schema::hasColumn($esquema.'.listado' , 'descripcio')){
+                  DB::statement("UPDATE ".$esquema.".listado SET
+                    tipoviv = case
+                      when descripcio ilike '%Conteo - A%' then 'A'
+                      when descripcio ilike '%Conteo - B1%' then 'B1'
+                      when descripcio ilike '%Conteo - B2%' then 'B2'
+                      when descripcio ilike '%Conteo - B3%' then 'B3'
+                      when descripcio ilike '%Conteo - C%' then 'C'
+                      when descripcio ilike '%Conteo - D%' then 'D'
+                      when descripcio ilike '%Conteo - H%' then 'H'
+                      when descripcio ilike '%Conteo - J%' then 'J'
+                      when descripcio ilike '%Conteo - VE%' then 'VE'
+                      when descripcio ilike '%Conteo - FD%' then 'FD'
+                      when descripcio ilike '%Conteo - CA/CP%' then 'CA/CP'
+                      else 'X'
+                    end
+                    where tipoviv = 'X' and descripcio ilike '%Conteo - %'
+                  ;");
+                  Log::debug("Se toma tipoviv de descripcio si tipoviv es X y figura 'Conteo - Tipo' en descripcio");
+            }
 
             if (! Schema::hasColumn($esquema.'.listado' , 'codent')){
                         DB::statement('ALTER TABLE '.$esquema.'.listado ADD
@@ -733,11 +783,20 @@ FROM
         public static function generarSegmentacionNula($esquema)
         {
             if (Schema::hasTable($esquema.'.listado')) {
-            DB::statement('create TABLE if not exists '.$esquema.'.segmentacion as
-                select id as listado_id, Null::integer as segmento_id
-                from '.$esquema.'.listado
-                ;');
-            return true;
+              if (!Schema::hasTable($esquema.'.segmentacion')) {
+                DB::statement('create TABLE if not exists '.$esquema.'.segmentacion as
+                    select id as listado_id, Null::integer as segmento_id
+                    from '.$esquema.'.listado
+                    ;');
+                return true;
+              }else{
+                DB::statement('truncate TABLE '.$esquema.'.segmentacion');  
+                DB::statement('insert into '.$esquema.'.segmentacion  
+                    select id as listado_id, Null::integer as segmento_id
+                    from '.$esquema.'.listado
+                    ;');
+                return true;
+              }
             }
             else{
             return false;
