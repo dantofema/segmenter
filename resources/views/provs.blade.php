@@ -36,7 +36,7 @@
              <th>Cantidad de Fracciones</th>
              <th>Cantidad de Radios</th>
              <th>Cantidad de Radios Segmentados</th>
-             <th> * </th>
+             <th style="min-width:90px;"> * </th>
           </tr>
        </thead>
     </table>
@@ -84,7 +84,7 @@
                 }
 },
          processing: true,
-         serverSide: true,
+         serverSide: false,
          ajax: {
           url: "{{ url('provs-list') }}",
           type: 'GET',
