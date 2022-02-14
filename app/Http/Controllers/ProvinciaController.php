@@ -41,8 +41,7 @@ class ProvinciaController extends Controller
                 ->with('fracciones')
                 ->with('fracciones.radios')
                 ->with('departamentos.localidades')
-                ->with('departamentos.fracciones.radios')
-                ->with('departamentos.fracciones')->get();
+                ->get('codigo','nombre');
 //        dd($provs->get());
         foreach ($provs as $prov){
           $prov->localidades_count=0;
