@@ -38,28 +38,29 @@ class ProvinciaController extends Controller
       	$provs = $provsQuery->select('*')
                 ->withCount(['departamentos'])
                 ->with('departamentos')
-                ->with('departamentos.localidades.radios')
-                ->with('departamentos.fracciones.radios');
+                ->with('fracciones')
+                ->with('fracciones.radios')
+                ->with('departamentos.localidades')
+                ->with('departamentos.fracciones.radios')
+                ->with('departamentos.fracciones')->get();
 //        dd($provs->get());
-        foreach ($provs->get() as $prov){
+        foreach ($provs as $prov){
           $prov->localidades_count=0;
           $prov->radios_count=0;
           $prov->radios_resultado_count=0;
           $prov->fracciones_count=0;
-          foreach( $prov->departamentos as $depto){
-        //      flash('Depto: '.$depto->codigo.' -> '.count($depto->localidades));
-              $prov->fracciones_count += $depto->fracciones->count();
-              $prov->radios_count += $depto->radios->count();
-              $prov->radios_resultado_count += $depto->radios->whereNotNull('resultado')->count();
-              $prov->localidades_count += count($depto->localidades);
-              foreach( $depto->localidades as $loc){
-//                flash('Loc: '.$loc->codigo.' -> '.count($loc->radios));
-              
-              }
+          $prov->fracciones_count = $prov->fracciones->count();
+          foreach( $prov->fracciones as $fraccion ){
+              $prov->radios_resultado_count += $fraccion->radios->whereNotNull('resultado')->count();
+              $prov->radios_count += $fraccion->radios->count();
           }
-          $aProvs[]=$prov;
+          foreach( $prov->departamentos as $depto){
+              $prov->localidades_count += count($depto->localidades);
+          }
         }
-        return datatables()->of($aProvs)
+        $aProvs[]=$prov;
+      }
+      return datatables()->of($aProvs)
             ->make(true);
     }
 
