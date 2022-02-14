@@ -56,7 +56,15 @@ class ProvinciaController extends Controller
           foreach( $prov->departamentos as $depto){
               $prov->localidades_count += count($depto->localidades);
           }
-          $aProvs[]=$prov;
+          $prov->fracciones = null;
+          $prov->radios = null;
+          $prov->departamentos = null;
+          $aProvs[$prov->codigo]=['id'=>$prov->id,'codigo'=>$prov->codigo,'nombre'=>$prov->nombre,
+                                  'localidades_count'=> $prov->localidades_count ,
+                                  'radios_count'=>$prov->radios_count ,
+                                  'radios_resultado_count'=> $prov->fracciones_count ,
+                                  'fracciones_count'=>$prov->fracciones_count,
+                                  'departamentos_count'=>$prov->departamentos_count ];
         }
       return datatables()->of($aProvs)
             ->make(true);
