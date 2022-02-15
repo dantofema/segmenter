@@ -640,7 +640,7 @@ FROM
 
         public static function eliminaRepetidosListado($esquema,$tabla='listado'){
           if (Schema::hasTable($esquema.'.'.$tabla)){
-            Log::debug('eliminando registros repetidos en listado');
+            Log::debug('eliminando registros repetidos en listado '.$esquema);
             DB::beginTransaction();
               try {$result=DB::delete('delete from '.$esquema.'.'.$tabla.'
                                       where id not in 
@@ -653,6 +653,22 @@ FROM
             DB::commit();
           }
         }
+
+        public static function eliminaLSVconViviendasEnListado($esquema,$tabla='listado'){
+          if (Schema::hasTable($esquema.'.'.$tabla)){
+            Log::debug('eliminando registros LSV en lados con viviendas del listado '.$esquema);
+            DB::beginTransaction();
+              try {$result=DB::delete('DELETE FROM  '.$esquema.'.'.$tabla.' 
+                   WHERE (frac,radio,mza,lado) in (select frac,radio,mza,lado from '.$esquema.'.'.$tabla.'  
+                    group by frac,radio,mza,lado 
+                    having \'LSV\' = ANY (array_agg(tipoviv)) and count(*)>1) and tipoviv = \'LSV\';');
+              }catch (\Illuminate\Database\QueryException $exception) {
+                        Log::error('No se pudo eliminar registros LSV en lados con viviendas del listado '.$esquema.'.'.$tabla,$exception);
+                        DB::Rollback();
+              };
+            DB::commit();
+          }
+      }
 
         public static function juntaListadoGeom($esquema){
             if (Schema::hasTable($esquema.'.arc') and Schema::hasTable($esquema.'.listado')){
