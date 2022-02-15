@@ -167,6 +167,14 @@ class SetupController extends Controller
         return view('home');
     }
 
+    public function limpiaListado($schema)
+    {
+        MyDB::eliminaRepetidosListado($schema);
+        MyDB::eliminaLSVconViviendasEnListado($schema);
+        flash('Sincro R3: '.MyDB::grabarSegmentacion(substr($schema,1,strlen($schema)-1)));
+        return view('home');
+    }
+
     public function testFlash($texto='Mensaje de prueba.')
     {
         flash(' Normal  '.$texto);
