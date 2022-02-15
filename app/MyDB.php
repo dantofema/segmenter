@@ -634,8 +634,9 @@ FROM
                 }
 
                 DB::commit();
-            self::juntaListadoGeom($esquema);
             self::eliminaRepetidosListado($esquema);
+            self::eliminaLSVconViviendasEnListado($esquema);
+            self::juntaListadoGeom($esquema);
         }
 
         public static function eliminaRepetidosListado($esquema,$tabla='listado'){
