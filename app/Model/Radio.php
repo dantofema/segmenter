@@ -366,6 +366,10 @@ WITH shapes (geom, attribute, tipo) AS (
          stroke-width=\"".$stroke."\" fill=\"#00' || (attribute-5)*20 || '00\"'
               WHEN attribute < 15 THEN 'stroke=\"none\"
          stroke-width=\"".$stroke."\" fill=\"#AA' || (attribute-10)*20 || '00\"'
+              WHEN attribute = 80 THEN 'stroke=\"none\"
+         stroke-width=\"".$stroke."\" fill=\"#00BB00\"'
+              WHEN attribute = 81 THEN 'stroke=\"none\"
+         stroke-width=\"".$stroke."\" fill=\"#0BA\"'
          ELSE
             'stroke=\"black\" stroke-width=\"".$stroke."\" fill=\"#22' ||
             attribute*10 || '88\"'
