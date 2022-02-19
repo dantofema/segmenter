@@ -294,6 +294,7 @@ class Radio extends Model
     public function getSVG()
     {
         // return SVG Radio? Listado? Segmentación?
+        //  Utiliza tablas listado_geo, r3 junto a segmentacion y manzanas.
         if (Schema::hasTable($this->esquema.'.listado_geo')){
             $height=600;
             $width=600;
@@ -337,6 +338,11 @@ class Radio extends Model
         } 
 
             //dd($viewBox.'/n'.$this->viewBox($extent,$epsilon,$height,$width).'/n'.$x0." -".$y0." ".$x1." -".$y1);
+            // Consulta que arma SVG de Radio, con lo que encuentra en esquema viendo tablas: listado_geo, manzanas, r3
+            /* Colores según javascript en grafo
+               let clusterColors = ['#FF0', '#0FF', '#F0F', '#4139dd', '#d57dba', '#8dcaa4'
+                        ,'#555','#CCC','#A00','#0A0','#00A','#F00','#0F0','#00F','#008','#800','#080'];
+            */
             $svg=DB::select("
 WITH shapes (geom, attribute, tipo) AS (
     ( SELECT 
