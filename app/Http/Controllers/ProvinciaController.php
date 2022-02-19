@@ -59,7 +59,7 @@ class ProvinciaController extends Controller
           $aProvs[$prov->codigo]=['id'=>$prov->id,'codigo'=>$prov->codigo,'nombre'=>$prov->nombre,
                                   'localidades_count'=> $prov->localidades_count ,
                                   'radios_count'=>$prov->radios_count ,
-                                  'radios_resultado_count'=> $prov->resultado_count ,
+                                  'radios_resultado_count'=> $prov->radios_resultado_count ,
                                   'fracciones_count'=>$prov->fracciones_count,
                                   'departamentos_count'=>$prov->departamentos_count ];
         }
