@@ -822,7 +822,7 @@ FROM
             }
         }
 
-        public static function sincroSegmentacion($esquema)
+        public static function sincroSegmentacion($esquema){
             if (Schema::hasTable($esquema.'.listado')) {
               if (Schema::hasTable($esquema.'.segmentacion')) {
                 DB::beginTransaction();
@@ -836,18 +836,19 @@ FROM
                   DB::statement('insert into '.$esquema.'.segmentacion  
                     select id as listado_id, Null::integer as segmento_id
                     from '.$esquema.'.listado
-                    where id not in (select listado_id from '.$esquema.'.segmentacion ))
+                    where id not in (select listado_id from '.$esquema.'.segmentacion )
                     ;');
                   DB::commit();
+                  Log::debug('Sincronizado listado con segmentacion para '.$esquema);
                 }catch (\Illuminate\Database\QueryException $exception) {
-                        Log::error('No se pudo eliminar registros repetidos en '.$esquema.'.'.$tabla,$exception);
+                        Log::error('No se pudo resincronizar listado con tabla segmentacion para '.$esquema,[$exception]);
                         DB::Rollback();
-                };
+                }
               return true;
               }
             }
             else{
-            return false;
+              return false;
             }
         }
 
