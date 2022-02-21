@@ -171,6 +171,7 @@ class SetupController extends Controller
     {
         MyDB::eliminaRepetidosListado($schema);
         MyDB::eliminaLSVconViviendasEnListado($schema);
+        MyDB::sincroSegmentacion($schema);
         flash('Sincro R3: '.MyDB::grabarSegmentacion(substr($schema,1,strlen($schema)-1)));
         return view('home');
     }
