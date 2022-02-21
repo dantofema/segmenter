@@ -88,6 +88,8 @@ Route::get('/setup/grupogeoestadistica/{usuario}',
 'SetupController@grupoGeoestadistica')->name('setup.grupogeo');
 Route::get('/setup/grupogeoestadistica/tabla/{tabla}',
 'SetupController@grupoGeoestadisticaTabla')->name('setup.grupogeo.tabla');
+Route::get('/setup/duplicadosLSV/{esquema}',
+'SetupController@limpiaListado')->name('setup.limpialistado');
 
 Route::get('/inicio', 'HomeController@index')->name('inicio');
 Route::resource('/listado', 'ListadoController',['only' => [

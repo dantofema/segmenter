@@ -116,17 +116,47 @@ class MyDB extends Model
             return $result;
         }
 
-        // Junta los segmentos con 0 vivendas al segmneto menor cercano.
-        public static function juntar_segmentos($esquema)
-  {
+        // Consulta cantidad de segmentos con 0 vivendas o menos de x.
+        public static function cantidad_segmentos($esquema,$viviendas=0)
+        {
             try{
-              $result = DB::statement("SELECT indec.juntar_segmentos('".$esquema."')");
-              Log::debug('Juntando segmentos del esquema-> '.$esquema);
+              $result = (int) DB::select('
+                          SELECT count(*) cant_segmentos FROM ( 
+                            select segmento_id, count(indec.contar_vivienda(tipoviv)) as vivs
+                            from "' . $esquema . '".listado
+                            join "' . $esquema . '".segmentacion
+                            on listado.id = segmentacion.listado_id
+                            group by segmento_id
+                            having count(indec.contar_vivienda(tipoviv)) <= '.$viviendas.
+                                        ') foo;')[0]->cant_segmentos;
               return $result;
             }catch(QueryException $e){
-              Log::error('ERROR Juntando segmentos del esquema-> '.$esquema);
-        return false;
-      }
+              Log::error('ERROR Juntando segmentos del esquema-> '.$esquema.$e);
+              return -1;
+            }
+        }
+
+        //Crea el esquema si no existe y asigna los permisos.
+        // Junta los segmentos con 0 vivendas al segmneto menor cercano.
+        public static function juntar_segmentos($esquema)
+        {
+            $_cant_segmentos_en_cero_antes = 0;
+            $_cant_segmentos_en_cero = self::cantidad_segmentos($esquema,0);
+            $result= 'Nada';
+            while ( $_cant_segmentos_en_cero>0 and $_cant_segmentos_en_cero!=$_cant_segmentos_en_cero_antes){
+              $_cant_segmentos_en_cero_antes = $_cant_segmentos_en_cero;
+              try{
+                $result = DB::statement("SELECT indec.juntar_segmentos('".$esquema."')");
+                Log::debug('Juntando segmentos del esquema-> '.$esquema.' Había: '.$_cant_segmentos_en_cero);
+              }catch(QueryException $e){
+                Log::error('ERROR Juntando segmentos del esquema-> '.$esquema);
+                return false;
+              }
+              $_cant_segmentos_en_cero = self::cantidad_segmentos($esquema,0);
+            }
+            flash('Se termino de juntar todos los segmentos en 0 que se pudo. Quedaron: '.$_cant_segmentos_en_cero)->success();            
+            return $result;
+
         }
 
         //Crea el esquema si no existe y asigna los permisos.
@@ -604,13 +634,14 @@ FROM
                 }
 
                 DB::commit();
-            self::juntaListadoGeom($esquema);
             self::eliminaRepetidosListado($esquema);
+            self::eliminaLSVconViviendasEnListado($esquema);
+            self::juntaListadoGeom($esquema);
         }
 
         public static function eliminaRepetidosListado($esquema,$tabla='listado'){
           if (Schema::hasTable($esquema.'.'.$tabla)){
-            Log::debug('eliminando registros repetidos en listado');
+            Log::debug('eliminando registros repetidos en listado '.$esquema);
             DB::beginTransaction();
               try {$result=DB::delete('delete from '.$esquema.'.'.$tabla.'
                                       where id not in 
@@ -623,6 +654,22 @@ FROM
             DB::commit();
           }
         }
+
+        public static function eliminaLSVconViviendasEnListado($esquema,$tabla='listado'){
+          if (Schema::hasTable($esquema.'.'.$tabla)){
+            Log::debug('eliminando registros LSV en lados con viviendas del listado '.$esquema);
+            DB::beginTransaction();
+              try {$result=DB::delete('DELETE FROM  '.$esquema.'.'.$tabla.' 
+                   WHERE (frac,radio,mza,lado) in (select frac,radio,mza,lado from '.$esquema.'.'.$tabla.'  
+                    group by frac,radio,mza,lado 
+                    having \'LSV\' = ANY (array_agg(tipoviv)) and count(*)>1) and tipoviv = \'LSV\';');
+              }catch (\Illuminate\Database\QueryException $exception) {
+                        Log::error('No se pudo eliminar registros LSV en lados con viviendas del listado '.$esquema.'.'.$tabla,$exception);
+                        DB::Rollback();
+              };
+            DB::commit();
+          }
+      }
 
         public static function juntaListadoGeom($esquema){
             if (Schema::hasTable($esquema.'.arc') and Schema::hasTable($esquema.'.listado')){
@@ -760,16 +807,48 @@ FROM
                     ;');
                 return true;
               }else{
+                DB::beginTransaction();
                 DB::statement('truncate TABLE '.$esquema.'.segmentacion');  
                 DB::statement('insert into '.$esquema.'.segmentacion  
                     select id as listado_id, Null::integer as segmento_id
                     from '.$esquema.'.listado
                     ;');
+                DB::commit();
                 return true;
               }
             }
             else{
             return false;
+            }
+        }
+
+        public static function sincroSegmentacion($esquema){
+            if (Schema::hasTable($esquema.'.listado')) {
+              if (Schema::hasTable($esquema.'.segmentacion')) {
+                DB::beginTransaction();
+                try {
+                  // Borra los id de listado que no están más en listado
+                  DB::delete('delete from '.$esquema.'.segmentacion 
+                                      where listado_id not in 
+                                      (select id from '.$esquema.'.listado
+                                      );');
+                  // Agrega los id de lisado nuevos en el listado. 
+                  DB::statement('insert into '.$esquema.'.segmentacion  
+                    select id as listado_id, Null::integer as segmento_id
+                    from '.$esquema.'.listado
+                    where id not in (select listado_id from '.$esquema.'.segmentacion )
+                    ;');
+                  DB::commit();
+                  Log::debug('Sincronizado listado con segmentacion para '.$esquema);
+                }catch (\Illuminate\Database\QueryException $exception) {
+                        Log::error('No se pudo resincronizar listado con tabla segmentacion para '.$esquema,[$exception]);
+                        DB::Rollback();
+                }
+              return true;
+              }
+            }
+            else{
+              return false;
             }
         }
 

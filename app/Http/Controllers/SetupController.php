@@ -148,6 +148,7 @@ class SetupController extends Controller
     {
         flash('Resultado: '.MyDB::juntar_segmentos($schema));
         flash('Se juntaron los segmentos con 0 viviendas del esquema '.$schema);
+        flash('Sincro R3: '.MyDB::grabarSegmentacion(substr($schema,1,strlen($schema)-1)));
         return view('home');
     }
 
@@ -163,6 +164,15 @@ class SetupController extends Controller
     public function limpiaEsquemasTemporales()
     {
         $result= MyDB::limpiaEsquemasTemporales();
+        return view('home');
+    }
+
+    public function limpiaListado($schema)
+    {
+        MyDB::eliminaRepetidosListado($schema);
+        MyDB::eliminaLSVconViviendasEnListado($schema);
+        MyDB::sincroSegmentacion($schema);
+        flash('Sincro R3: '.MyDB::grabarSegmentacion(substr($schema,1,strlen($schema)-1)));
         return view('home');
     }
 

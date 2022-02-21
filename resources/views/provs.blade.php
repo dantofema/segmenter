@@ -23,26 +23,6 @@
 
   <div class="container">
    <h2>Listado de Provincias</h2>
-   <br>
-   <div class="row">
-    <div class="form-group col-md-6">
-     <h5>Codigo<span class="text-danger"></span></h5>
-     <div class="controls">
-	<input type="numeric" name="codigo" id="codigo" class="form-control " placeholder="Por favor introduzca un código">
-        <div class="help-block"></div>
-     </div>
-    </div>
-    <!--div class="form-group col-md-6">
-    <h5>End Date <span class="text-danger"></span></h5>
-    <div class="controls">
-        <input type="date" name="end_date" id="end_date" class="form-control datepicker-autoclose" placeholder="Please select end date"> <div class="help-block"></div></div>
-    </div-->
-    <div class="text-left" style="
-    margin-left: 15px;
-    ">
-    <button type="text" id="btnFiterSubmitSearch" class="btn btn-info">Submit</button>
-    </div>
-   </div>
    <div class="row">
    <div class="col-lg-12">
     <table class="table table-striped table-bordered dataTable table-hover order-column" id="laravel_datatable">
@@ -52,7 +32,11 @@
              <th>Código</th>
              <th>Nombre</th>
              <th>Cantidad de Comunas / Partidos / Departamentos</th>
-             <th> * </th>
+             <th>Cantidad de Localidades</th>
+             <th>Cantidad de Fracciones</th>
+             <th>Cantidad de Radios</th>
+             <th>Cantidad de Radios Segmentados</th>
+             <th style="min-width:90px;"> * </th>
           </tr>
        </thead>
     </table>
@@ -100,7 +84,7 @@
                 }
 },
          processing: true,
-         serverSide: true,
+         serverSide: false,
          ajax: {
           url: "{{ url('provs-list') }}",
           type: 'GET',
@@ -113,6 +97,10 @@
                   { data: 'codigo', name: 'codigo' },
                   { data: 'nombre', name: 'nombre' },
                   { searchable: false , data: 'departamentos_count', name: 'departamentos_count' },
+                  { searchable: false , data: 'localidades_count', name: 'localidades_count' },
+                  { searchable: false , data: 'fracciones_count', name: 'fracciones_count' },
+                  { searchable: false , data: 'radios_count', name: 'radios_count' },
+                  { searchable: false , data: 'radios_resultado_count', name: 'radios_resultado_count' },
                   { orderable: false, searchable: false , data: function ( row, type, val, meta ) {
                                 var html =  '<button type="button" class="btn_departamentos btn-sm btn-primary" > Ver </button> ';
                                  html +=  '<button type="button" class="btn_prov btn-sm btn-primary" > Ver 2 </button>';
@@ -123,10 +111,11 @@
       });
 
    table.on( 'click', 'tr', function () {
-        var data = table.row( this ).data();
-// AJAX request
+    var data = table.row( this ).data();
+   if ( data != null ){
+    // AJAX request
    $.ajax({
-    url: "{{ url('prov') }}"+"\\"+data.id,
+    url: "{{ url('prov') }}"+"/"+data.id,
     type: 'post',
     data: {id: data.id,format: 'html'},
     success: function(response){ 
@@ -138,6 +127,7 @@
     }
   });
         console.log( 'You clicked on '+data.id+'\'s row' );
+  }
    });
 
 // Función de botón Ver 2.
