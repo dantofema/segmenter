@@ -15,7 +15,7 @@
                     @endif
 		    {{ __('messages.Welcome') }}
                 </div>
-                  <img src="images/logo_censo2022.jpg" alt="Censo 2022 República Argentina">
+                  <img src="/images/logo_censo2022.jpg" alt="Censo 2022 República Argentina">
             </div>
         </div>
     </div>
