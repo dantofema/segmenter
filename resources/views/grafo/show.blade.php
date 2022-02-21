@@ -164,10 +164,13 @@ function zoom(scale) {
         'background-color': function (ele) {
           let n=1;
 					for (let i = 0; i < arrayOfClusterArrays.length; i++)
-						if (arrayOfClusterArrays[i].includes(ele.data('id')))
+						if (arrayOfClusterArrays[i].includes(ele.data('id'))){
+                           //Seteo id de segmentacino en node
+                           ele.seg=i; 
                            if (i>clusterColors.length) {n=i-clusterColors.length;
                                                         if (n<0) n=-n;}
                             else n=i;
+            }
 						if (clusterColors[n]!=null) return clusterColors[n];
 					return '#000000';
 				},
@@ -197,6 +200,15 @@ function zoom(scale) {
     cy.on('click', 'node', function(evt){
       var node = evt.target;
       alert( 'Lado: ' + node.id() );
+    });
+    cy.on('mouseover', 'node', function(evt){
+      var node = evt.target;
+      console.log( 'Viviendas: ' + node.style('label') + ' Mza:lado: ' + node.data('label' ) + ' Segmento: '+node.seg);
+          let n=1;
+					for (let i = 0; i < arrayOfClusterArrays.length; i++)
+						if (arrayOfClusterArrays[i].includes(node.data('id'))){
+              console.log(i);
+          }
     });
 //    var layout = cy.layout({ name: 'cose'});
 //    layout.run();

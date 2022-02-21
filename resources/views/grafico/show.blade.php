@@ -18,6 +18,10 @@
 @if (isset($localidad))
 <h4 class="text-center">Localidad ({{ $localidad->codigo }}) {{ $localidad->nombre }}</h4>
 @endif
+@if (isset($departamento))
+<h5 class="text-center">{{ $departamento->nombre }}</h5>
+@endif
+<div id ="resumen"></div>
 <div id ="resumen"></div>
 <canvas id="canvas" style="padding: 20px 50px 20px 50px; max-height: 500px; " height="280" width="600"></canvas>
 </div>
