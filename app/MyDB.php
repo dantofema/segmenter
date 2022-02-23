@@ -542,26 +542,7 @@ FROM
                   Log::debug('Se quitan espacios en cod_subt_v');
             }
 
-            if (Schema::hasColumn($esquema.'.listado' , 'tipoviv') and Schema::hasColumn($esquema.'.listado' , 'descripcio')){
-                  DB::statement("UPDATE ".$esquema.".listado SET
-                    tipoviv = case
-                      when descripcio ilike '%Conteo - A%' then 'A'
-                      when descripcio ilike '%Conteo - B1%' then 'B1'
-                      when descripcio ilike '%Conteo - B2%' then 'B2'
-                      when descripcio ilike '%Conteo - B3%' then 'B3'
-                      when descripcio ilike '%Conteo - C%' then 'C'
-                      when descripcio ilike '%Conteo - D%' then 'D'
-                      when descripcio ilike '%Conteo - H%' then 'H'
-                      when descripcio ilike '%Conteo - J%' then 'J'
-                      when descripcio ilike '%Conteo - VE%' then 'VE'
-                      when descripcio ilike '%Conteo - FD%' then 'FD'
-                      when descripcio ilike '%Conteo - CA/CP%' then 'CA/CP'
-                      else 'X'
-                    end
-                    where tipoviv = 'X' and descripcio ilike '%Conteo - %'
-                  ;");
-                  Log::debug("Se toma tipoviv de descripcio si tipoviv es X y figura 'Conteo - Tipo' en descripcio");
-            }
+            self::UpdateTipoVivDescripcion($esquema);
 
             if (! Schema::hasColumn($esquema.'.listado' , 'codent')){
                         DB::statement('ALTER TABLE '.$esquema.'.listado ADD
@@ -589,8 +570,6 @@ FROM
                     y si esta vacio se usa el piso');
 
       }
-
-
 
                 if (! Schema::hasColumn($esquema.'.listado' , 'nrocatastr')){
                         if (Schema::hasColumn($esquema.'.listado' , 'nro_catast')){
@@ -637,6 +616,33 @@ FROM
             self::eliminaRepetidosListado($esquema);
             self::eliminaLSVconViviendasEnListado($esquema);
             self::juntaListadoGeom($esquema);
+        }
+
+        public static function UpdateTipoVivDescripcion($esquema,$fix=false) {
+            if (Schema::hasColumn($esquema.'.listado' , 'tipoviv') and Schema::hasColumn($esquema.'.listado' , 'descripcio')){
+                  DB::statement("UPDATE ".$esquema.".listado SET
+                    tipoviv = case
+                      when descripcio ilike '%Conteo - A%' then 'A'
+                      when descripcio ilike '%Conteo - B1%' then 'B1'
+                      when descripcio ilike '%Conteo - B2%' then 'B2'
+                      when descripcio ilike '%Conteo - B3%' then 'B3'
+                      when descripcio ilike '%Conteo - C%' then 'C'
+                      when descripcio ilike '%Conteo - D%' then 'D'
+                      when descripcio ilike '%Conteo - H%' then 'H'
+                      when descripcio ilike '%Conteo - J%' then 'J'
+                      when descripcio ilike '%Conteo - VE%' then 'VE'
+                      when descripcio ilike '%Conteo - FD%' then 'FD'
+                      when descripcio ilike '%Conteo - CA/CP%' then 'CA/CP'
+                      when descripcio ilike '%Conteo - CO%' then 'CO'
+                      else 'X'
+                    end
+                    where tipoviv = 'X' and descripcio ilike '%Conteo - %'
+                  ;");
+                  Log::debug("Se toma tipoviv de descripcio si tipoviv es X y figura 'Conteo - Tipo' en descripcio");
+            }
+            if ($fix){
+                 DB::unprepared("Select indec.cargar_conteos('".$esquema."')");
+            }
         }
 
         public static function eliminaRepetidosListado($esquema,$tabla='listado'){
