@@ -170,6 +170,7 @@ class SetupController extends Controller
 
     public function tipoVivdeDescripcion($schema){
         MyDB::UpdateTipoVivDescripcion($schema,true);
+    }
 
     public function limpiaListado($schema)
     {
