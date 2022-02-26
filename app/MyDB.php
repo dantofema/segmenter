@@ -1118,14 +1118,14 @@ FROM
                    nomencla,codigo20,array_agg(distinct codigo10) codigo10, tipo, nombre,lado,min(desde) desde,
             max(hasta) hasta,mza
             FROM
-      (SELECT ogc_fid,st_reverse(wkb_geometry) wkb_geometry,nomencla10 nomencla,codigo20,codigo10,
+      (SELECT ogc_fid,st_reverse(wkb_geometry) wkb_geometry,nomencla,codigo20,codigo10,
              tipo, nombre, ancho, anchomed, ladoi lado,desdei desde,
-        hastai hasta,mzai mza, nomencla10,nomenclai nomenclax, codinomb, segi seg
+        hastai hasta,mzai mza
         FROM ".$esquema.".arc
         UNION
-  SELECT ogc_fid,wkb_geometry,nomencla10 nomencla,codigo20,codigo10,tipo, nombre,
+        SELECT ogc_fid,wkb_geometry, nomencla,codigo20,codigo10,tipo, nombre,
                ancho, anchomed, ladod lado,desded desde,
-               hastad hasta,mzad mza, nomencla10,nomenclad nomenclax, codinomb, segd seg
+               hastad hasta,mzad mza 
         FROM ".$esquema.".arc
         ) arcos_juntados
         GROUP BY nomencla,codigo20,tipo, nombre,lado,mza
