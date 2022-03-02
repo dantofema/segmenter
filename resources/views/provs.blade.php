@@ -105,7 +105,7 @@
                   { searchable: false , data: function(data,type,row) {
                                 if (data["radios_resultado_count"]==0) return 0; 
                                   else 
-                                  return Math.round(data["radios_resultado_count"] / data["radios_count"]*100,2)/100}},
+                                  return Math.round(data["radios_resultado_count"] / data["radios_count"]*1000,2)/10}},
                   { orderable: false, searchable: false , data: function ( row, type, val, meta ) {
                                 var html =  '<button type="button" class="btn_departamentos btn-sm btn-primary" > Ver </button> ';
                                  html +=  '<button type="button" class="btn_prov btn-sm btn-primary" > Ver 2 </button>';
