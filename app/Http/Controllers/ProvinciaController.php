@@ -32,13 +32,38 @@ class ProvinciaController extends Controller
     {   
         $provsQuery = Provincia::query();
         $codigo = (!empty($_GET["codigo"])) ? ($_GET["codigo"]) : ('');
-        if($codigo!=''){
-         $provsQuery->where('codigo','=',$codigo);
+        if ($codigo!='') {
+            $provsQuery->where('codigo', '=', $codigo);
         }
-
-	$provs = $provsQuery->select('*')->withCount('departamentos');
-
-        return datatables()->of($provs)
+      	$provs = $provsQuery->select('*')
+                ->withCount(['departamentos'])
+                ->with('departamentos')
+                ->with('fracciones')
+                ->with('fracciones.radios')
+                ->with('departamentos.localidades')
+                ->get('codigo','nombre');
+//        dd($provs->get());
+        foreach ($provs as $prov){
+          $prov->localidades_count=0;
+          $prov->radios_count=0;
+          $prov->radios_resultado_count=0;
+          $prov->fracciones_count=0;
+          $prov->fracciones_count = $prov->fracciones->count();
+          foreach( $prov->fracciones as $fraccion ){
+              $prov->radios_resultado_count += $fraccion->radios->whereNotNull('resultado')->count();
+              $prov->radios_count += $fraccion->radios->count();
+          }
+          foreach( $prov->departamentos as $depto){
+              $prov->localidades_count += count($depto->localidades);
+          }
+          $aProvs[$prov->codigo]=['id'=>$prov->id,'codigo'=>$prov->codigo,'nombre'=>$prov->nombre,
+                                  'localidades_count'=> $prov->localidades_count ,
+                                  'radios_count'=>$prov->radios_count ,
+                                  'radios_resultado_count'=> $prov->radios_resultado_count ,
+                                  'fracciones_count'=>$prov->fracciones_count,
+                                  'departamentos_count'=>$prov->departamentos_count ];
+        }
+      return datatables()->of($aProvs)
             ->make(true);
     }
 

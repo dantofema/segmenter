@@ -141,13 +141,14 @@ class SetupController extends Controller
     {
         MyDB::limpiar_esquema($schema);
         flash('Limpieza de esquema '.$schema);
-	return view('home');
+       	return view('home');
     }
     
     public function juntarSegmentos($schema)
     {
         flash('Resultado: '.MyDB::juntar_segmentos($schema));
         flash('Se juntaron los segmentos con 0 viviendas del esquema '.$schema);
+        flash('Sincro R3: '.MyDB::grabarSegmentacion(substr($schema,1,strlen($schema)-1)));
         return view('home');
     }
 
@@ -166,6 +167,20 @@ class SetupController extends Controller
         return view('home');
     }
 
+
+    public function tipoVivdeDescripcion($schema){
+        MyDB::UpdateTipoVivDescripcion($schema,true);
+    }
+
+    public function limpiaListado($schema)
+    {
+        MyDB::eliminaRepetidosListado($schema);
+        MyDB::eliminaLSVconViviendasEnListado($schema);
+        MyDB::sincroSegmentacion($schema);
+        flash('Sincro R3: '.MyDB::grabarSegmentacion(substr($schema,1,strlen($schema)-1)));
+        return view('home');
+    }
+
     public function testFlash($texto='Mensaje de prueba.')
     {
         flash(' Normal  '.$texto);
@@ -178,7 +193,7 @@ class SetupController extends Controller
         flash('Proyecto Mandarina Test Overlay flash message')->overlay();// Render the message as an overlay.
         flash()->overlay('Modal Message Mandarina', 'Mandarina Modal Title');// Display a modal overlay with a title.
         flash('Message important')->important();//: Add a close button to the flash message.
-	flash('Message error()->important')->error()->important();//       
+       	flash('Message error()->important')->error()->important();//       
         flash(' Info Importante '.$texto)->info()->important();
         flash(' Success imporatnte  '.$texto)->success()->important();
         
