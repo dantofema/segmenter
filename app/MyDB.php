@@ -644,11 +644,11 @@ FROM
                         if (! Schema::hasColumn($esquema.'.arc' , 'segd')){
                                 DB::statement('ALTER TABLE '.$esquema.'.arc ADD COLUMN IF NOT EXISTS segd integer;');
                         }
+                        DB::commit();
                     }catch (\Illuminate\Database\QueryException $exception) {
                             Log::error('No se pudieron cargar lados '.$exception);
                             DB::Rollback();
                     };
-                DB::commit();
                 DB::beginTransaction();
                     try {
                         DB::unprepared("Select indec.cargar_lados('".$esquema."')");
@@ -658,15 +658,16 @@ FROM
                         self::createIndex($esquema,'lados_adyacentes','substr(mza_i,1,2),substr(mza_i,3,3),substr(mza_i,9,2),substr(mza_i,11,2),substr(mza_i,13,3)');
                         self::createIndex($esquema,'lados_adyacentes','substr(mza_j,1,2),substr(mza_j,3,3),substr(mza_j,9,2),substr(mza_j,11,2),substr(mza_j,13,3)');
                         Log::info('Se procesaron lados, conteos y adyacencias!');
+                        DB::commit();
                     }catch (\Illuminate\Database\QueryException $exception) {
                             Log::error('No se pudieron cargar lados '.$exception);
                             DB::Rollback();
                     };
-                DB::commit();
                 // Comienzan posprocesos de carga
                 DB::beginTransaction();
                     try {
                         DB::unprepared("Select indec.descripcion_segmentos('".$esquema."')");
+                DB::commit();
                     }catch (\Illuminate\Database\QueryException $exception) {
                         Log::error('No se pudo crear la descripcion de los segmentos: '.$exception);
                         DB::Rollback();
@@ -674,7 +675,6 @@ FROM
                 self::addSequenceSegmentos($esquema);
                 self::generarSegmentacionNula($esquema);
 
-                DB::commit();
 
             // Indices y georef.
             $schema=$esquema;
