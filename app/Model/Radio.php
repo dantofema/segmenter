@@ -130,7 +130,7 @@ class Radio extends Model
 
         $segmenta->vista_segmentos_lados_completos($esquema);
         $segmenta->lados_completos_a_tabla_segmentacion_ffrr($esquema,$frac,$radio);
-        $this->resultado = $segmenta->ver_segmentacion().'
+        $this->resultado = 'Segmentado x método LADOS COMPLETOS: '.$segmenta->ver_segmentacion().'
 	x '.$AppUser->name.' ('.$AppUser->email.') en '.date("Y-m-d H:i:s").
 	'
 	----------------------- LOG ----------------------------
@@ -175,7 +175,7 @@ class Radio extends Model
         $umbral = floor($holgura*$max);
 
         $segmenta->segmentar_excedidos_ffrr($esquema,$frac,$radio,$umbral,$deseadas);
-        $this->resultado = $segmenta->ver_segmentacion().'
+        $this->resultado = 'Segmentado x método COMBINADO: '.$segmenta->ver_segmentacion().'
         x '.$AppUser->name.' ('.$AppUser->email.') en '.date("Y-m-d H:i:s").
 	'
 	----------------------- LOG ----------------------------
