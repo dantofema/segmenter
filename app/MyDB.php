@@ -851,7 +851,6 @@ FROM
                     ;');
                   DB::commit();
                   Log::debug('Sincronizado listado con segmentacion para '.$esquema);
-                  self::grabarSegmentacion($esquema);
                 }catch (\Illuminate\Database\QueryException $exception) {
                         Log::error('No se pudo resincronizar listado con tabla segmentacion para '.$esquema,[$exception]);
                         DB::Rollback();
