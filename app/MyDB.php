@@ -838,6 +838,11 @@ FROM
                                       where listado_id not in 
                                       (select id from '.$esquema.'.listado
                                       );');
+                  // Borra las segmentaciones de la r3 que no están más en segmentacion
+                  DB::delete('delete from '.$esquema.'.r3 
+                                      where segmento_id not in 
+                                      (select segmento_id from '.$esquema.'.segmentacion
+                                      );');
                   // Agrega los id de lisado nuevos en el listado. 
                   DB::statement('insert into '.$esquema.'.segmentacion  
                     select id as listado_id, Null::integer as segmento_id
@@ -846,6 +851,7 @@ FROM
                     ;');
                   DB::commit();
                   Log::debug('Sincronizado listado con segmentacion para '.$esquema);
+                  self::grabarSegmentacion($esquema);
                 }catch (\Illuminate\Database\QueryException $exception) {
                         Log::error('No se pudo resincronizar listado con tabla segmentacion para '.$esquema,[$exception]);
                         DB::Rollback();
