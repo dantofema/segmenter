@@ -20,20 +20,18 @@ strSQL text;
 rec record;
 begin
 RAISE NOTICE 'Buscando localidades con r3...';
-strSQL := '';
  FOR rec IN SELECT table_schema, table_name
             FROM information_schema.tables
             WHERE table_schema like 'e________' and table_name = 'r3'
  LOOP
-     strSQL := strSQL || 'SELECT prov::integer,dpto::integer,codloc::integer,frac::integer,
+     strSQL := CONCAT_WS(' union ',strSQL,'SELECT prov::integer,dpto::integer,codloc::integer,frac::integer,
                                  radio::integer,count(*)::integer segmentos, sum(viviendas)::integer viviendas FROM ' || 
                rec.table_schema || '.' || rec.table_name || 
-               ' GROUP BY 1,2,3,4,5 UNION ';
+               ' GROUP BY 1,2,3,4,5 ');
  END LOOP;
 
 RAISE NOTICE 'Consulta armada';
 -- have to remove the last ' UNION ' from strSQL    
-strSQL := strSQL || 'SELECT 99 prov, 999 dpto, 999 codloc, 99 frac, 99 radio,0 segmentos, 0 viviendas ';
 strSQL := 'SELECT  prov,dpto,codloc,frac,radio,segmentos,viviendas
           FROM (' || strSQL || ') foo';
 return query
