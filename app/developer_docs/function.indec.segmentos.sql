@@ -9,8 +9,8 @@ fecha: 2022-03-11 Vi
 DROP FUNCTION if exists indec.segmentos();
 create or replace function indec.segmentos()
  returns table (
- esquema text, prov integer, dpto integer, codloc integer, frac integer, radio integer, 
- seg text, segmento_id bigint, viviendas numeric 
+ prov integer, dpto integer, codloc integer, frac integer, radio integer, 
+ seg integer, descripcion text, viviendas integer 
 )
 language plpgsql volatile
 set client_min_messages = 'notice'
@@ -24,18 +24,14 @@ RAISE NOTICE 'Buscando localidades con r3...';
             FROM information_schema.tables
             WHERE table_schema like 'e________' and table_name = 'r3'
  LOOP
-     strSQL := CONCAT_WS(' union ',strSQL,'select ''' || rec.table_schema || ''' esquema, 
+     strSQL := CONCAT_WS(' union ',strSQL,'select  
                                  prov::integer, dpto::integer, codloc::integer, 
-                                 frac::integer, radio::integer, seg, segmento_id, viviendas from ' || 
+                                 frac::integer, radio::integer, seg::integer, descripcion, viviendas::integer from ' || 
                rec.table_schema || '.' || rec.table_name);
  END LOOP;
 
-RAISE NOTICE 'Consulta armada';
 return query
 EXECUTE strSQL;
-
--- usando la idea de
--- https://stackoverflow.com/questions/35486057/dynamic-union-all-query-in-postgres
 
 end
 $function$

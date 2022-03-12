@@ -181,6 +181,12 @@ class SetupController extends Controller
         return view('home');
     }
 
+    public function juntaR3()
+    {
+        flash('Resultado: '.MyDB::juntaR3());
+        return view('home');
+    }
+
     public function testFlash($texto='Mensaje de prueba.')
     {
         flash(' Normal  '.$texto);
