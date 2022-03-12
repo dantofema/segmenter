@@ -9,8 +9,8 @@ fecha: 2022-03-11 Vi
 DROP FUNCTION if exists indec.segmentos();
 create or replace function indec.segmentos()
  returns table (
- prov integer, dpto integer, codloc integer, frac integer, radio integer, 
- seg integer, viviendas integer 
+ esquema text, prov integer, dpto integer, codloc integer, frac integer, radio integer, 
+ seg text, segmento_id bigint, viviendas numeric 
 )
 language plpgsql volatile
 set client_min_messages = 'notice'
@@ -24,16 +24,13 @@ RAISE NOTICE 'Buscando localidades con r3...';
             FROM information_schema.tables
             WHERE table_schema like 'e________' and table_name = 'r3'
  LOOP
-     strSQL := CONCAT_WS(' union ',strSQL,'SELECT prov::integer,dpto::integer,codloc::integer,frac::integer,
-                                 radio::integer,count(*)::integer segmentos, sum(viviendas)::integer viviendas FROM ' || 
-               rec.table_schema || '.' || rec.table_name || 
-               ' GROUP BY 1,2,3,4,5 ');
+     strSQL := CONCAT_WS(' union ',strSQL,'select ''' || rec.table_schema || ''' esquema, 
+                                 prov::integer, dpto::integer, codloc::integer, 
+                                 frac::integer, radio::integer, seg, segmento_id, viviendas from ' || 
+               rec.table_schema || '.' || rec.table_name);
  END LOOP;
 
 RAISE NOTICE 'Consulta armada';
--- have to remove the last ' UNION ' from strSQL    
-strSQL := 'SELECT  prov,dpto,codloc,frac,radio,segmentos,viviendas
-          FROM (' || strSQL || ') foo';
 return query
 EXECUTE strSQL;
 
