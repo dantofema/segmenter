@@ -10,7 +10,7 @@ DROP FUNCTION if exists indec.segmentos();
 create or replace function indec.segmentos()
  returns table (
  prov integer, dpto integer, codloc integer, frac integer, radio integer, 
- seg integer, descripcion text, viviendas integer 
+ seg text, descripcion text, viviendas integer 
 )
 language plpgsql volatile
 set client_min_messages = 'notice'
@@ -26,7 +26,8 @@ RAISE NOTICE 'Buscando localidades con r3...';
  LOOP
      strSQL := CONCAT_WS(' union ',strSQL,'select  
                                  prov::integer, dpto::integer, codloc::integer, 
-                                 frac::integer, radio::integer, case when seg='XX' THEN 0 else seg END seg::integer, descripcion, viviendas::integer from ' || 
+                                 frac::integer, radio::integer, seg::text,
+                                 descripcion, viviendas::integer from ' || 
                rec.table_schema || '.' || rec.table_name);
  END LOOP;
 
