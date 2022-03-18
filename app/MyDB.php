@@ -1742,5 +1742,26 @@ order by 1,2
        }
     }
 
+    // Junta r3 de todos los esquemas.
+    public static function juntaR3($filtro=null)
+    {
+        try{
+            DB::beginTransaction();
+            if (Schema::hasTable('r3')) {
+              DB::statement("DROP TABLE r3;");
+            }
+            DB::statement("CREATE TABLE r3 AS SELECT * FROM indec.segmentos();");
+            $result = DB::select("SELECT Count(*) from r3;")[0]->count;
+            self::darPermisosTabla('r3');
+            DB::commit();
+        }catch(QueryException $e){
+            DB::Rollback();
+            $result=null;
+            Log::error('Error no se pudo actualizar las r3 '.$filtro.$e);
+            return 'R3 sin actualizar';
+       }
+       return 'Se actualizo r3 con '.$result.' registros';
+    }
+
 }
 
