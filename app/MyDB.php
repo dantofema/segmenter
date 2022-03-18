@@ -229,17 +229,17 @@ FROM
           log::info('Buscando aglomerado para la localidad : '.$codloc);
                 $filtro=" WHERE codprov||coddepto||codloc= '".$codloc."'";
       }else{$filtro='';}
-        try {
-            return (DB::select('SELECT codaglo as codigo, nombre FROM
+      try {
+           return (DB::select('SELECT codaglo as codigo, nombre FROM
                          '.$esquema.'.'.$tabla.
                          $filtro.
                          ' group by 1,2 order by count(*) desc Limit 1;')[0]);
         }catch (\Illuminate\Database\QueryException $exception) {
-    Log::notice('Aglomerado Sin Nombre: '.$exception);
-    //Supongo sin Nombre
-    $codaglo=self::getAglo($tabla,$esquema,$filtro);
-      return (object) ['codigo'=>$codaglo,'nombre'=>'Sin Nombre'];
-  }
+            Log::notice('Aglomerado Sin Nombre: '.$filtro);
+            //Supongo sin Nombre
+            $codaglo=self::getAglo($tabla,$esquema,$filtro);
+            return (object) ['codigo'=>$codaglo,'nombre'=>'Sin Nombre'];
+        }
     }
 
     public static function getProv($tabla,$esquema)
