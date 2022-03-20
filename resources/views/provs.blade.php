@@ -36,6 +36,7 @@
              <th>Cantidad de Fracciones</th>
              <th>Cantidad de Radios</th>
              <th>Cantidad de Radios Segmentados</th>
+             <th>% U+M</th>
              <th>%</th>
              <th style="min-width:90px;"> * </th>
           </tr>
@@ -103,7 +104,11 @@
                   { searchable: false , data: 'radios_count', name: 'radios_count' },
                   { searchable: false , data: 'radios_resultado_count', name: 'radios_resultado_count' },
                   { searchable: false , data: function(data,type,row) {
-                                if (data["radios_resultado_count"]==0) return 0; 
+                                if ( data["radios_count_u_m"]==0 ) return 0; 
+                                  else 
+                                  return Math.round(data["radios_resultado_count"] / data["radios_count_u_m"]*1000,2)/10}},
+                  { searchable: false , data: function(data,type,row) {
+                                if ( data["radios_count"]==0 ) return 0; 
                                   else 
                                   return Math.round(data["radios_resultado_count"] / data["radios_count"]*1000,2)/10}},
                   { orderable: false, searchable: false , data: function ( row, type, val, meta ) {

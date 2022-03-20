@@ -29,17 +29,19 @@ class ProvinciaController extends Controller
 
 
     public function provsList()
-    {   
-        $provsQuery = Provincia::query();
-        $codigo = (!empty($_GET["codigo"])) ? ($_GET["codigo"]) : ('');
-        if ($codigo!='') {
-            $provsQuery->where('codigo', '=', $codigo);
-        }
-      	$provs = $provsQuery->select('*')
-                ->withCount(['departamentos'])
+    {  
+           $aProvs=[]; 
+           $provsQuery = Provincia::query();
+           $codigo = (!empty($_GET["codigo"])) ? ($_GET["codigo"]) : ('');
+           if ($codigo!='') {
+              $provsQuery->where('codigo', '=', $codigo);
+           }
+    	  $provs = $provsQuery->select('*')
+                ->withCount(['departamentos','fracciones'])
                 ->with('departamentos')
                 ->with('fracciones')
                 ->with('fracciones.radios')
+                ->with('fracciones.radios.tipo')
                 ->with('departamentos.localidades')
                 ->get('codigo','nombre');
 //        dd($provs->get());
@@ -47,11 +49,14 @@ class ProvinciaController extends Controller
           $prov->localidades_count=0;
           $prov->radios_count=0;
           $prov->radios_resultado_count=0;
-          $prov->fracciones_count=0;
-          $prov->fracciones_count = $prov->fracciones->count();
+          $prov->radios_count_u_m = 0;
+//          $prov->fracciones_count=0;
+//          $prov->fracciones_count = $prov->fracciones->count();
+          $prov->radios_counts = [];
           foreach( $prov->fracciones as $fraccion ){
               $prov->radios_resultado_count += $fraccion->radios->whereNotNull('resultado')->count();
               $prov->radios_count += $fraccion->radios->count();
+              $prov->radios_count_u_m += $fraccion->radios->whereIn('tipo_de_radio_id',[1,3])->count();
           }
           foreach( $prov->departamentos as $depto){
               $prov->localidades_count += count($depto->localidades);
@@ -59,6 +64,8 @@ class ProvinciaController extends Controller
           $aProvs[$prov->codigo]=['id'=>$prov->id,'codigo'=>$prov->codigo,'nombre'=>$prov->nombre,
                                   'localidades_count'=> $prov->localidades_count ,
                                   'radios_count'=>$prov->radios_count ,
+                                  'radios_count_u_m'=>$prov->radios_count_u_m ,
+                                  'radios_resumen'=>$prov->radios_counts ,
                                   'radios_resultado_count'=> $prov->radios_resultado_count ,
                                   'fracciones_count'=>$prov->fracciones_count,
                                   'departamentos_count'=>$prov->departamentos_count ];
