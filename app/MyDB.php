@@ -963,7 +963,7 @@ FROM
              try{
                 self::addSequenceSegmentos('e'.$esquema,false);
                 self::generarSegmentacionNula('e'.$esquema);
-                if ( DB::statement("SELECT indec.segmentar_equilibrado('e".$esquema."',".$deseado.");") ){
+                if ( DB::statement("SELECT indec.segmentar_equilibrado('e".$esquema."'::text,".$deseado.");") ){
                 // llamar generar r3 como tabla resultado de function indec.r3(agl)
                     ( DB::statement("SELECT indec.descripcion_segmentos('e".$esquema."');") );
                  flash('Resultado: '.self::juntar_segmentos('e'.$esquema));
