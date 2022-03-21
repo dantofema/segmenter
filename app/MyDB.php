@@ -131,14 +131,13 @@ class MyDB extends Model
                                         ') foo;')[0]->cant_segmentos;
               return $result;
             }catch(QueryException $e){
-              Log::error('ERROR Juntando segmentos del esquema-> '.$esquema.$e);
+              Log::error('ERROR Contando segmentos del esquema-> '.$esquema.$e);
               return -1;
             }
         }
 
-        //Crea el esquema si no existe y asigna los permisos.
-        // Junta los segmentos con 0 vivendas al segmneto menor cercano.
-        public static function juntar_segmentos($esquema)
+        // Junta los segmentos con 0 viviendas al segmento menor cercano.
+        public static function juntar_segmentos($esquema,$frac=null,$radio=null)
         {
             $_cant_segmentos_en_cero_antes = 0;
             $_cant_segmentos_en_cero = self::cantidad_segmentos($esquema,0);
@@ -146,18 +145,47 @@ class MyDB extends Model
             while ( $_cant_segmentos_en_cero>0 and $_cant_segmentos_en_cero!=$_cant_segmentos_en_cero_antes){
               $_cant_segmentos_en_cero_antes = $_cant_segmentos_en_cero;
               try{
-                $result = DB::statement("SELECT indec.juntar_segmentos('".$esquema."')");
+                if (($frac==null) and ($radio==null)){
+                  $result = DB::statement("SELECT indec.juntar_segmentos('".$esquema."')");
+                  $_cant_segmentos_en_cero = self::cantidad_segmentos($esquema,0);
+                }else{
+                  $result = DB::statement("SELECT indec.juntar_segmentos_ffrr('".$esquema."',".$frac.",".$radio.")");
+                  $_cant_segmentos_en_cero = self::cantidad_segmentos($esquema,$n);
+                }
                 Log::debug('Juntando segmentos del esquema-> '.$esquema.' Había: '.$_cant_segmentos_en_cero);
               }catch(QueryException $e){
                 Log::error('ERROR Juntando segmentos del esquema-> '.$esquema);
                 return false;
               }
-              $_cant_segmentos_en_cero = self::cantidad_segmentos($esquema,0);
             }
             flash('Se termino de juntar todos los segmentos en 0 que se pudo. Quedaron: '.$_cant_segmentos_en_cero)->success();            
             return $result;
 
         }
+
+        // Junta los segmentos con menos de $n viviendas al segmento menor cercano.
+        // En el esquema $esquema para el Radio: $frac,$radio
+        public static function juntar_segmentos_menos_de($esquema,$frac,$radio,$n)
+        {
+            $_cant_segmentos_antes = 0;
+            $_cant_segmentos = self::cantidad_segmentos($esquema,$n);
+            $result= 'Nada';
+            while ( $_cant_segmentos>0 and $_cant_segmentos!=$_cant_segmentos_antes){
+              $_cant_segmentos_antes = $_cant_segmentos;
+              try{
+                $result = DB::statement("SELECT indec.juntar_segmentos_con_menos_de_ffrr('".$esquema."',".$frac.",".$radio.",".$n.")");
+                Log::debug('Juntando segmentos del esquema-> '.$esquema.' F: '.$frac.' R: '.$radio.' Había: '.$_cant_segmentos);
+              }catch(QueryException $e){
+                Log::error('ERROR Juntando segmentos de menos de '.$n.' viviendas del esquema-> '.$esquema);
+                return false;
+              }
+              $_cant_segmentos_en_cero = self::cantidad_segmentos($esquema,);
+            }
+            flash('Se termino de juntar todos los segmentos en 0 que se pudo. Quedaron: '.$_cant_segmentos_en_cero)->success();            
+            return $result;
+
+        }
+
 
         //Crea el esquema si no existe y asigna los permisos.
         public static function createSchema($esquema)
