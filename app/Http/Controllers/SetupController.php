@@ -115,9 +115,14 @@ class SetupController extends Controller
         return view('home');
     }
 
-    public function georeferenciarEsquema($schema)
+    public function georeferenciarEsquema($schema,$force=false)
     {
-        MyDB::georeferenciar_listado($schema);
+        if ($force){
+            $desp=0;
+            MyDB::georeferenciar_listado($schema,$desp);
+        }else{
+            MyDB::georeferenciar_listado($schema);
+        }
         flash('Se georeferencio el listado del esquema '.$schema);
         return view('home');
     }
@@ -134,6 +139,13 @@ class SetupController extends Controller
     {
         MyDB::segmentar_equilibrado($schema,36);
         flash('Se segmento el listado del esquema '.$schema);
+        return view('home');
+    }
+
+    public function generarAdyacenciasEsquema($schema)
+    {
+        $cant = MyDB::generarAdyacencias($schema);
+        flash('Se generaron '.$cant.' adyacencias para el esquema '.$schema);
         return view('home');
     }
 

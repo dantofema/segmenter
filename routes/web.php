@@ -72,6 +72,8 @@ Route::get('/setup/index/id/{tabla}',
 'SetupController@addIndexId')->name('setup.indexId');
 Route::get('/setup/geo/{esquema}',
 'SetupController@georeferenciarEsquema')->name('setup.geo');
+Route::get('/setup/geo/{esquema}/{force}',
+'SetupController@georeferenciarEsquema')->name('setup.geo.force');
 Route::get('/setup/geoseg/{esquema}',
 'SetupController@georeferenciarSegmentacionEsquema')->name('setup.geoseg');
 Route::get('/setup/segmenta/{esquema}',
@@ -94,6 +96,8 @@ Route::get('/setup/updateTipoViv/{esquema}',
 'SetupController@tipoVivdeDescripcion')->name('setup.tipovivdescripcion');
 Route::get('/setup/update/R3',
 'SetupController@juntaR3')->name('setup.juntaR3');
+Route::get('/setup/adyacencias/{esquema}',
+'SetupController@generarAdyacenciasEsquema')->name('setup.adyacencias');
 
 
 Route::get('/inicio', 'HomeController@index')->name('inicio');
