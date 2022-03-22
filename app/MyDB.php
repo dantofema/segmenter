@@ -150,7 +150,7 @@ class MyDB extends Model
                   $_cant_segmentos_en_cero = self::cantidad_segmentos($esquema,0);
                 }else{
                   $result = DB::statement("SELECT indec.juntar_segmentos_ffrr('".$esquema."',".$frac.",".$radio.")");
-                  $_cant_segmentos_en_cero = self::cantidad_segmentos($esquema,$n);
+                  $_cant_segmentos_en_cero = self::cantidad_segmentos($esquema,0);
                 }
                 Log::debug('Juntando segmentos del esquema-> '.$esquema.' Había: '.$_cant_segmentos_en_cero);
               }catch(QueryException $e){
