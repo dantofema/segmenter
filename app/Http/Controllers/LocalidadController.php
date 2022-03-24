@@ -62,7 +62,7 @@ class LocalidadController extends Controller
             )
             ->addColumn(
                 'aglomerado', function (Localidad $loc) {
-                    return $loc->aglomerado->nombre;
+                    return '(' . $loc->aglomerado->codigo . ') ' . $loc->aglomerado->nombre;
                 }
             )
             ->toJson();
