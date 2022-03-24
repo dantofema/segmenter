@@ -52,17 +52,32 @@ class LocalidadController extends Controller
         return DataTables::eloquent($model)
             ->addColumn( 
                 'departamento', function (Localidad $loc) {
-                    return $loc->departamentos->first()->nombre;
+                    if ( $loc->departamentos->first() ) {
+                      return $loc->departamentos->first()->nombre;
+                    } else {
+                      Log::debug('Localidad sin depto '.$loc->codigo);
+                      return '(no definido)';
+                    }
                 }
             )
             ->addColumn(
                 'provincia', function (Localidad $loc) {
-                    return $loc->departamentos->first()->provincia->nombre;
+                    if ( $loc->departamentos->first()->provincia ) {
+                      return $loc->departamentos->first()->provincia->nombre;
+                    } else {
+                      Log::debug('Localidad sin depto/provincia '.$loc->codigo);
+                      return '(no definido)';
+                    }
                 }
             )
             ->addColumn(
                 'aglomerado', function (Localidad $loc) {
-                    return '(' . $loc->aglomerado->codigo . ') ' . $loc->aglomerado->nombre;
+                    if ( $loc->aglomerado ) {
+                      return '(' . $loc->aglomerado->codigo . ') ' . $loc->aglomerado->nombre;
+                    } else {
+                      Log::debug('Localidad sin aglo'.$loc->codigo);
+                      return '(no definido)';
+                    }
                 }
             )
             ->toJson();
