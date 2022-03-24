@@ -62,11 +62,13 @@ class LocalidadController extends Controller
             )
             ->addColumn(
                 'provincia', function (Localidad $loc) {
-                    if ( $loc->departamentos->first()->provincia ) {
-                      return $loc->departamentos->first()->provincia->nombre;
-                    } else {
-                      Log::debug('Localidad sin depto/provincia '.$loc->codigo);
-                      return '(no definido)';
+                    if ( $loc->departamentos->first() ) {
+                      if ( $loc->departamentos->first()->provincia ) {
+                        return $loc->departamentos->first()->provincia->nombre;
+                      } else {
+                        Log::debug('Localidad sin provincia '.$loc->codigo);
+                        return '(no definido)';
+                      }
                     }
                 }
             )
