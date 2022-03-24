@@ -24,6 +24,32 @@ class LocalidadController extends Controller
     }
 
     /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function list()
+    {
+        //  
+            return view('locas');
+    }
+
+    public function locasList()
+        {
+            $locasQuery = Localidad::query();
+            $codigo = (!empty($_REQUEST["codigo"])) ? ($_REQUEST["codigo"]) : ('');
+            if($codigo){
+            $locasQuery->where('codigo','=',$codigo);
+            }
+            $locas = $locasQuery->select('*')
+                                ->with(['departamentos'])
+                                ->withCount(['radios'])
+                                ->where('codigo','not like','%000');
+            return datatables()->of($locas)
+                ->make(true);
+    }
+
+    /**
      * Show the form for creating a new resource.
      *
      * @return \Illuminate\Http\Response

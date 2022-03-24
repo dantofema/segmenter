@@ -142,7 +142,10 @@ Route::get('depto/{departamento}','DepartamentoController@show');
 Route::post('depto/{departamento}','DepartamentoController@show_post');
 
 // ---------- LOCALIDADES --------
-Route::get('localidades','LocalidadController@index');
+Route::get('locas-list', 'LocalidadController@locasList');
+Route::post('locas-list', 'LocalidadController@locasList');
+Route::get('localidades','LocalidadController@list');
+Route::get('localidades_json','LocalidadController@index');
 Route::get('localidad/{localidad}','LocalidadController@show');
 Route::post('localidad-segmenta/{localidad}','LocalidadController@segmenta_post');
 Route::get('localidad-segmenta/{localidad}','LocalidadController@segmenta_post');
