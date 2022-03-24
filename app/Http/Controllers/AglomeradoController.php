@@ -29,7 +29,8 @@ use Illuminate\Support\Facades\Log;
             }
             $aglos = $aglosQuery->select('*', \DB::raw('false carto,false
             listado,false segmentadolistado,false segmentadolados'))
-                                ->withCount(['localidades']);
+                                ->withCount(['localidades'])
+                                ->where('codigo','not like','0000');
     //                            ->withCount(['radios']);
     //        $carto=$aglos->Carto;
     //        $listado=$aglos->Listado;
