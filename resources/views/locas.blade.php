@@ -62,7 +62,10 @@
           <tr>
              <th>Id</th>
              <th>Código</th>
+             <th>Provincia</th>
+             <th>Departamento</th>
              <th>Nombre</th>
+             <th>Aglomerado</th>
              <th>Cant. Radios</th>
           </tr>
        </thead>
@@ -121,7 +124,10 @@
          columns: [
                   { searchable: false, visible: false, data: 'id', name: 'id' },
                   { data: 'codigo', name: 'codigo' },
+                  { data: 'provincia', name: 'provincia' },
+                  { data: 'departamento', name: 'departamento' },
                   { data: 'nombre', name: 'nombre' },
+                  { data: 'aglomerado', name: 'aglomerado' },
                   { searchable: false, data: 'radios_count', name: 'radios_count' }
                ],
       });

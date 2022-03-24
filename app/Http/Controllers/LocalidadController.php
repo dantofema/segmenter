@@ -8,6 +8,7 @@ use App\MyDB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Auth;
+use DataTables;
 
 class LocalidadController extends Controller
 {
@@ -34,19 +35,49 @@ class LocalidadController extends Controller
             return view('locas');
     }
 
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function locasList()
-        {
-            $locasQuery = Localidad::query();
+    {
+           $model = Localidad::with(['aglomerado', 'departamentos.provincia' ,'departamentos'])
+               ->withCount(['radios'])
+               ->where('codigo', 'not like', '%000');
+           $codigo = (!empty($_REQUEST["codigo"])) ? ($_REQUEST["codigo"]) : ('');
+        if ($codigo) {
+            $model->where('codigo', '=', $codigo);
+        }
+        return DataTables::eloquent($model)
+            ->addColumn( 
+                'departamento', function (Localidad $loc) {
+                    return $loc->departamentos->first()->nombre;
+                }
+            )
+            ->addColumn(
+                'provincia', function (Localidad $loc) {
+                    return $loc->departamentos->first()->provincia->nombre;
+                }
+            )
+            ->addColumn(
+                'aglomerado', function (Localidad $loc) {
+                    return $loc->aglomerado->nombre;
+                }
+            )
+            ->toJson();
+        /*            $locasQuery = Localidad::query();
             $codigo = (!empty($_REQUEST["codigo"])) ? ($_REQUEST["codigo"]) : ('');
-            if($codigo){
-            $locasQuery->where('codigo','=',$codigo);
-            }
+        if ($codigo) {
+             $locasQuery->where('codigo', '=', $codigo);
+        }
             $locas = $locasQuery->select('*')
                                 ->with(['departamentos'])
                                 ->withCount(['radios'])
                                 ->where('codigo','not like','%000');
             return datatables()->of($locas)
                 ->make(true);
+        */
     }
 
     /**

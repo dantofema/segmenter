@@ -7,12 +7,40 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Log;
 use App\Model\Radio;
+use App\Model\Provincia;
 use Symfony\Component\Process\Process;
 use Auth;
 use Illuminate\Database\QueryException;
 
 class MyDB extends Model
 {
+
+    // Muestrea el esquema
+    //
+    public static function resumenProvincial(Provincia $oProv)
+    {
+      if( isset($oProv) ){
+        try{
+            $result = DB::select("select prov,dpto,codloc,d.nombre,l.nombre,
+                                     count(distinct frac::text||'-'||radio::text) radios_m_u ,
+                                     count(*) segmentos 
+                                     from r3 join departamentos d on 
+                                        d.codigo=lpad(prov::text,2,'0')||lpad(dpto::text,3,'0') 
+                                     join localidad l on 
+                                       l.codigo=lpad(prov::text,2,'0')||lpad(dpto::text,3,'0')||lpad(codloc::text,3,'0') 
+                                     join radio r on 
+                                       r.codigo=lpad(prov::text,2,'0')||lpad(dpto::text,3,'0')||lpad(frac::text,2,'0')||lpad(radio::text,2,'0') 
+                                     WHERE r.tipo_de_radio_id in (1,3) and prov='".$oProv->codigo."' group by 1,2,3,4,5 ;");
+        }catch(QueryException $e){
+                $result=null;
+                Log::error('No se pudo generar resuemn de la provincia ',[$oProv],$e);
+            }
+            Log::debug('Se consulto resumen de provincia '.$oProv->codigo);
+            return $result;
+       }else{
+         return 'no se seleccionó Provincia';
+       }
+    }
 
     // Muestrea el esquema
     //
@@ -30,7 +58,7 @@ class MyDB extends Model
             }
             Log::debug('Se muestreo el esquema '.$esquema.' !');
             return $result;
-        }
+    }
 
         // Segmenta a listado los lados excedidos segun umbral
         //
