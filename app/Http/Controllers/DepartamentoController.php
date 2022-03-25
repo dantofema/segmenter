@@ -84,7 +84,10 @@ class DepartamentoController extends Controller
     {   
 	    $deptos = $provincia->departamentos()
             ->with('localidades')
-            ->withCount(['localidades','fracciones','radios',
+            ->withCount(['localidades' =>function ($query) {
+                $query->where('codigo','not like','%000');
+              }
+              ,'fracciones','radios',
               'radios as segmentados' => function ($query) {
                 $query->whereNotNull('resultado');
               }])->get(); 
