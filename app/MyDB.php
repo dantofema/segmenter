@@ -145,20 +145,26 @@ class MyDB extends Model
         }
 
         // Consulta cantidad de segmentos con 0 vivendas o menos de x.
-        public static function cantidad_segmentos($esquema,$viviendas=0)
+        public static function cantidad_segmentos($esquema,$viviendas=0,$frac=null,$radio=null)
         {
-            try{
+            if ( ($frac==null) and ($radio==null) ){
+              $filtro = ' where (frac::integer,radio::integer)=('.$frac.','.$radio.') ';
+            } else {
+              $filtro = '';
+            }
+            try {
               $result = (int) DB::select('
                           SELECT count(*) cant_segmentos FROM ( 
                             select segmento_id, count(indec.contar_vivienda(tipoviv)) as vivs
                             from "' . $esquema . '".listado
                             join "' . $esquema . '".segmentacion
                             on listado.id = segmentacion.listado_id
+                            '.$filtro.'
                             group by segmento_id
                             having count(indec.contar_vivienda(tipoviv)) <= '.$viviendas.
                                         ') foo;')[0]->cant_segmentos;
               return $result;
-            }catch(QueryException $e){
+            } catch(QueryException $e) {
               Log::error('ERROR Contando segmentos del esquema-> '.$esquema.$e);
               return -1;
             }
@@ -186,30 +192,31 @@ class MyDB extends Model
                 return false;
               }
             }
-            flash('Se termino de juntar todos los segmentos en 0 que se pudo. Quedaron: '.$_cant_segmentos_en_cero)->success();            
+            flash('Se termino de juntar todos los segmentos en 0 que se pudo. Quedaron: '.$_cant_segmentos_en_cero)->success();
             return $result;
 
         }
 
         // Junta los segmentos con menos de $n viviendas al segmento menor cercano.
         // En el esquema $esquema para el Radio: $frac,$radio
-        public static function juntar_segmentos_menos_de($esquema,$frac,$radio,$n)
+        public static function juntar_segmentos_con_menos_de($esquema,$frac,$radio,$n)
         {
             $_cant_segmentos_antes = 0;
-            $_cant_segmentos = self::cantidad_segmentos($esquema,$n);
+            $_cant_segmentos = self::cantidad_segmentos($esquema,$n,$frac,$radio);
             $result= 'Nada';
             while ( $_cant_segmentos>0 and $_cant_segmentos!=$_cant_segmentos_antes){
               $_cant_segmentos_antes = $_cant_segmentos;
               try{
                 $result = DB::statement("SELECT indec.juntar_segmentos_con_menos_de_ffrr('".$esquema."',".$frac.",".$radio.",".$n.")");
-                Log::debug('Juntando segmentos del esquema-> '.$esquema.' F: '.$frac.' R: '.$radio.' Había: '.$_cant_segmentos);
+                Log::debug('Juntando segmentos del esquema-> '.$esquema.' F: '.$frac.' R: '.$radio.' Había: '.$_cant_segmentos.' Result:'.$result);
               }catch(QueryException $e){
                 Log::error('ERROR Juntando segmentos de menos de '.$n.' viviendas del esquema-> '.$esquema);
+                flash('Error juntando segmentos. Quedaron: '.$_cant_segmentos_en_antes)->error();
                 return false;
               }
-              $_cant_segmentos_en_cero = self::cantidad_segmentos($esquema,);
+              $_cant_segmentos = self::cantidad_segmentos($esquema,$n,$frac,$radio);
             }
-            flash('Se termino de juntar todos los segmentos en 0 que se pudo. Quedaron: '.$_cant_segmentos_en_cero)->success();            
+            flash('Se termino de juntar todos los segmentos que se pudieron. Quedaron: '.$_cant_segmentos)->success();
             return $result;
 
         }
@@ -799,7 +806,7 @@ FROM
             flash('Se creo el indice para radio en listado en '.$schema);
 
             if (self::cargarTopologia($schema)) {
-                flash('Se creo la topología para '.$schema);
+                flash('Se creo la topología para '.$schema)->succes()->important();
             }else{
                 flash('No se pudo validar la topología para '.$schema)->error()->important();
             }
