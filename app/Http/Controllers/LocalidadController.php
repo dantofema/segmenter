@@ -205,7 +205,7 @@ class LocalidadController extends Controller
             if(MyDB::segmentar_equilibrado($localidad->codigo,$request['vivs_deseadas'],$radio)) {
                flash('Segmentado el Radio '.$radio->codigo.' de ('.$localidad->codigo.') '.$localidad->nombre.
                      ' a '.$request['vivs_deseadas'].' viviendas!');
-                $radio->resultado = 'Segmentado a manzana independiente.
+                $radio->resultado = 'Segmentado a manzana independiente a '.$request['vivs_deseadas'].' viviendas deseadas.
         x '.$AppUser->name.' ('.$AppUser->email.') en '.date("Y-m-d H:i:s").
   '
   ----------------------- LOG ----------------------------
