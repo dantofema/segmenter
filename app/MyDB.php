@@ -806,7 +806,7 @@ FROM
             flash('Se creo el indice para radio en listado en '.$schema);
 
             if (self::cargarTopologia($schema)) {
-                flash('Se creo la topología para '.$schema)->succes()->important();
+                flash('Se creo la topología para '.$schema)->success()->important();
             }else{
                 flash('No se pudo validar la topología para '.$schema)->error()->important();
             }
