@@ -98,7 +98,8 @@ Route::get('/setup/update/R3',
 'SetupController@juntaR3')->name('setup.juntaR3');
 Route::get('/setup/adyacencias/{esquema}',
 'SetupController@generarAdyacenciasEsquema')->name('setup.adyacencias');
-
+Route::get('/setup/juntaMenores/{esquema}/{frac}/{radio}/{n}',
+'SetupController@juntarSegmentosMenores')->name('setup.junta_menores');
 
 Route::get('/inicio', 'HomeController@index')->name('inicio');
 Route::resource('/listado', 'ListadoController',['only' => [

@@ -164,6 +164,25 @@ class SetupController extends Controller
         return view('home');
     }
 
+    /**
+     * Show the index application dashboard.
+     * Junta Segmentos con menos de $n cantidad de viviendas
+     * en el $schema, para el $frac, $radio
+     *
+     * @schema text
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function juntarSegmentosMenores($schema, $frac, $radio, $n)
+    {
+      
+        for ($m=$n;$n>0;$n--) {
+            $result = MyDB::juntar_segmentos_con_menos_de($schema, $frac, $radio, $m-$n);
+            flash('Junto para '.$n.': '.$result);
+        }
+        return view('home');
+    }
+
 
     public function muestreaEsquema($schema)
     {
