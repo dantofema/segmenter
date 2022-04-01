@@ -74,6 +74,8 @@ Route::get('/setup/geo/{esquema}',
 'SetupController@georeferenciarEsquema')->name('setup.geo');
 Route::get('/setup/geo/{esquema}/{force}',
 'SetupController@georeferenciarEsquema')->name('setup.geo.force');
+Route::get('/setup/geo/{esquema}/{force}/{frac}',
+'SetupController@georeferenciarEsquema')->name('setup.geo.force.frac');
 Route::get('/setup/geoseg/{esquema}',
 'SetupController@georeferenciarSegmentacionEsquema')->name('setup.geoseg');
 Route::get('/setup/segmenta/{esquema}',

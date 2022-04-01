@@ -147,7 +147,7 @@ class MyDB extends Model
         // Consulta cantidad de segmentos con 0 vivendas o menos de x.
         public static function cantidad_segmentos($esquema,$viviendas=0,$frac=null,$radio=null)
         {
-            if ( ($frac==null) and ($radio==null) ){
+            if ( ($frac!=null) and ($radio!=null) ){
               $filtro = ' where (frac::integer,radio::integer)=('.$frac.','.$radio.') ';
             } else {
               $filtro = '';
@@ -433,6 +433,24 @@ FROM
          }
     }
 
+    // Devuelve link de deptos y cantidad de ocurrencias
+    public static function getDptos($tabla,$esquema)
+    {
+        try {
+            return (DB::select('SELECT prov||dpto as link,count(*) FROM
+                    "'.$esquema.'".'.$tabla.' group by prov||dpto order by count(*);'));
+        }catch (QueryException $exception) {
+           try {
+               return (DB::select('SELECT prov||depto as link,count(*) FROM
+                       "'.$esquema.'".'.$tabla.' group by prov||depto order by count(*);'));
+           }catch (QueryException $exception) {
+               Log::error('No se pudo encontrar departamentos: '.$exception);
+               return [];
+           }
+         }
+    }
+
+
     // Mueve de esquema temporal a otro
     public static function moverEsquema($de_esquema,$a_esquema)
     {
@@ -488,6 +506,24 @@ FROM
              DB::unprepared('CREATE TABLE "'.$a_esquema.'".arc AS SELECT * FROM "'.$de_esquema.'".arc '.$filtro);
              DB::unprepared('CREATE TABLE "'.$a_esquema.'".lab AS SELECT * FROM "'.$de_esquema.'".lab '.$filtro_lab);
              DB::commit();
+         }catch (QueryException $exception) {
+             DB::Rollback();
+             Log::error('Error: '.$exception);
+        }
+    }
+
+    // Copia de esquema temporal a otro
+    //
+    public static function copiaraEsquemaPais($de_esquema,$a_esquema,$depto_codigo=null)
+    {
+        if (isset($localidad_codigo)) {
+                  //JOIN CON TABLA LAB SEGUN FACE_ID =?
+                 $filtro=" WHERE substr(mzai,0,9)= '".$localidad_codigo."' or substr(mzad,0,9)= '".$localidad_codigo."' ";
+                 $filtro_lab=" WHERE prov || depto || codloc = '".$localidad_codigo."'";
+        } else { $filtro='';
+                 $filtro_lab=''; }
+         try {
+
          }catch (QueryException $exception) {
              DB::Rollback();
              Log::error('Error: '.$exception);
@@ -1143,16 +1179,42 @@ FROM
                                 GROUP BY  substr(lados.mza,1,12), seg ) foo
                                 GROUP BY vivs order by vivs asc;');
             // SQL retrun:
-            }
+    }
 
-            public static function
-            georeferenciar_listado($esquema,$desplazamiento_vereda=8)
-            {
-              $desp=-1*$desplazamiento_vereda;
+    /*
+    * Funcion que georreferencia el listado según la cartografía.
+    * Crea tabla para esquema o por fracción hace actualización.
+    */
+    public static function georeferenciar_listado(
+        $esquema,$desplazamiento_vereda=8,$frac=null,$radio=null
+    ) {
+        $desp=-1*$desplazamiento_vereda;
         //   --ALTER TABLE ' ".$esquema." '.arc alter column wkb_geometry type geometry('LineString',22182) USING (st_setsrid(wkb_geometry,22182));
+        if ($frac!=null) {
+            $filtro= ' where (l.frac::integer) =
+                      ('.$frac.') ';
+            $filtro_arcos = ' and substr(mza,9,2)::integer = '.$frac.' '; 
+            $insert_into = '';
+         if (Schema::hasTable($esquema.'.listado_geo')) {
+            $update_to = " INSERT INTO ".$esquema.".listado_geo ";
+         } else {
+            $update_to = "";
+            $insert_into = " INTO ".$esquema.".listado_geo ";
+         }
+        } else {
+            $filtro = '';
+            $filtro_arcos = ''; 
+            $update_to = '';
+            $insert_into = " INTO ".$esquema.".listado_geo ";
+        }
+
             try{
                 DB::beginTransaction();
+            if ($filtro=='' ) { 
                 DB::statement("DROP TABLE IF EXISTS ".$esquema.".listado_geo;");
+            } else {
+                DB::statement("DELETE FROM ".$esquema.".listado_geo l ".$filtro);
+            }
               $query="
                 WITH listado as (
                 SELECT id, l.prov, nom_provin, l.dpto, nom_dpto, l.codaglo, l.codloc,
@@ -1176,6 +1238,7 @@ FROM
             LEFT JOIN ".$esquema.".conteos c ON
             (c.prov,c.dpto,c.codloc,c.frac,c.radio,c.mza,c.lado)=
             (l.prov::integer,l.dpto::integer,l.codloc::integer,l.frac::integer,l.radio::integer,l.mza::integer,l.lado::integer)
+            ".$filtro."
             WINDOW w_nrocatastr AS (partition by l.frac, l.radio, l.mza, l.lado ,
             nrocatastr
             order by CASE WHEN orden_reco='' THEN 1::integer ELSE
@@ -1204,7 +1267,9 @@ FROM
         HAVING
         st_geometrytype(st_LineMerge(st_union(wkb_geometry)))='ST_LineString'
         and mza!=''
+        ".$filtro_arcos." 
     )
+        ".$update_to." 
     SELECT nro_en_lado, nro_en_numero, conteo,1.0*nro_en_lado/(conteo+1) interpolacion, l.orden_reco,
     case when 1.0*nro_en_lado/(conteo+1)>1 then
         ST_LineInterpolatePoint(st_reverse(st_offsetcurve(ST_LineSubstring(st_LineMerge(wkb_geometry),0.07,0.93),".$desp."-nro_en_lado)),0.5)
@@ -1248,8 +1313,8 @@ FROM
                     frac, radio, l.mza, l.lado, ccalle, ncalle, l.nrocatastr, piso,casa,dpto_habit,sector,edificio,entrada,tipoviv,
                     descripcio,descripci2,
                     cant_en_lado
-        INTO ".$esquema.".listado_geo
-        FROM arcos e JOIN listado l ON
+  ".$insert_into."      
+  FROM arcos e JOIN listado l ON
         --l.ccalle::integer=e.codigo20 and
             (l.lado::integer=e.lado and
                 e.mza like

@@ -115,15 +115,15 @@ class SetupController extends Controller
         return view('home');
     }
 
-    public function georeferenciarEsquema($schema,$force=false)
+    public function georeferenciarEsquema($schema,$force=false,$frac=null)
     {
         if ($force){
             $desp=0;
-            MyDB::georeferenciar_listado($schema,$desp);
+            MyDB::georeferenciar_listado($schema,$desp,$frac);
         }else{
-            MyDB::georeferenciar_listado($schema);
+            MyDB::georeferenciar_listado($schema,null,$frac);
         }
-        flash('Se georeferencio el listado del esquema '.$schema);
+        flash('Se georeferencio el listado del esquema '.$schema.' Fracción:'.$frac);
         return view('home');
     }
 
