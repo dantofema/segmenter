@@ -115,15 +115,15 @@ class SetupController extends Controller
         return view('home');
     }
 
-    public function georeferenciarEsquema($schema,$force=false,$frac=null)
+    public function georeferenciarEsquema($schema,$n=8,$frac=null)
     {
-        if ($force){
-            $desp=0;
-            MyDB::georeferenciar_listado($schema,$desp,$frac);
-        }else{
-            MyDB::georeferenciar_listado($schema,null,$frac);
+        if (is_numeric($n)) {
+            $desp=$n;
+            MyDB::georeferenciar_listado($schema, $desp, $frac);
+        } else {
+            MyDB::georeferenciar_listado($schema, 7, $frac);
         }
-        flash('Se georeferencio el listado del esquema '.$schema.' Fracción:'.$frac);
+        flash('Se georeferencio el listado del esquema '.$schema.' Fracción:'.$frac.' N:'.$n)->success()->important();
         return view('home');
     }
 
@@ -178,7 +178,7 @@ class SetupController extends Controller
       
         for ($m=$n;$n>0;$n--) {
             $result = MyDB::juntar_segmentos_con_menos_de($schema, $frac, $radio, $m-$n);
-            flash('Junto para '.$n.': '.$result);
+            flash('Juntando para '.$n.': '.$result);
         }
         return view('home');
     }

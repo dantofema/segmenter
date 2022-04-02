@@ -1186,7 +1186,7 @@ FROM
     * Crea tabla para esquema o por fracción hace actualización.
     */
     public static function georeferenciar_listado(
-        $esquema,$desplazamiento_vereda=8,$frac=null,$radio=null
+        $esquema, $desplazamiento_vereda=8, $frac=null, $radio=null
     ) {
         $desp=-1*$desplazamiento_vereda;
         //   --ALTER TABLE ' ".$esquema." '.arc alter column wkb_geometry type geometry('LineString',22182) USING (st_setsrid(wkb_geometry,22182));
@@ -1330,7 +1330,7 @@ FROM
                             flash('No se pudo georreferenciar el listado dentro
                             de la manzana para '.$esquema.'.
                             Reintentado a 1m del eje.')->warning();
-                            if($resultado = self::georeferenciar_listado($esquema,1)){
+                            if($resultado = self::georeferenciar_listado($esquema,1,$frac)){
                               flash('Se georreferenció el listado sobre el eje de
                               calle')->success()->important();
                             }
