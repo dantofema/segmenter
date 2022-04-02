@@ -1210,7 +1210,7 @@ FROM
 
             try{
                 DB::beginTransaction();
-            if ($filtro=='' ) { 
+            if ($update_to=='' ) { 
                 DB::statement("DROP TABLE IF EXISTS ".$esquema.".listado_geo;");
             } else {
                 DB::statement("DELETE FROM ".$esquema.".listado_geo l ".$filtro);
