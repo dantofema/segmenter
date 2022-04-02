@@ -115,15 +115,15 @@ class SetupController extends Controller
         return view('home');
     }
 
-    public function georeferenciarEsquema($schema,$force=false)
+    public function georeferenciarEsquema($schema,$n=8,$frac=null)
     {
-        if ($force){
-            $desp=0;
-            MyDB::georeferenciar_listado($schema,$desp);
-        }else{
-            MyDB::georeferenciar_listado($schema);
+        if (is_numeric($n)) {
+            $desp=$n;
+            MyDB::georeferenciar_listado($schema, $desp, $frac);
+        } else {
+            MyDB::georeferenciar_listado($schema, 7, $frac);
         }
-        flash('Se georeferencio el listado del esquema '.$schema);
+        flash('Se georeferencio el listado del esquema '.$schema.' Fracción:'.$frac.' N:'.$n)->success()->important();
         return view('home');
     }
 
@@ -161,6 +161,25 @@ class SetupController extends Controller
         flash('Resultado: '.MyDB::juntar_segmentos($schema));
         flash('Se juntaron los segmentos con 0 viviendas del esquema '.$schema);
         flash('Sincro R3: '.MyDB::grabarSegmentacion(substr($schema,1,strlen($schema)-1)));
+        return view('home');
+    }
+
+    /**
+     * Show the index application dashboard.
+     * Junta Segmentos con menos de $n cantidad de viviendas
+     * en el $schema, para el $frac, $radio
+     *
+     * @schema text
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function juntarSegmentosMenores($schema, $frac, $radio, $n)
+    {
+      
+        for ($m=$n;$n>0;$n--) {
+            $result = MyDB::juntar_segmentos_con_menos_de($schema, $frac, $radio, $m-$n);
+            flash('Juntando para '.$n.': '.$result);
+        }
         return view('home');
     }
 

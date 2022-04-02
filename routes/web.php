@@ -72,8 +72,10 @@ Route::get('/setup/index/id/{tabla}',
 'SetupController@addIndexId')->name('setup.indexId');
 Route::get('/setup/geo/{esquema}',
 'SetupController@georeferenciarEsquema')->name('setup.geo');
-Route::get('/setup/geo/{esquema}/{force}',
+Route::get('/setup/geo/{esquema}/{n}',
 'SetupController@georeferenciarEsquema')->name('setup.geo.force');
+Route::get('/setup/geo/{esquema}/{n}/{frac}',
+'SetupController@georeferenciarEsquema')->name('setup.geo.force.frac');
 Route::get('/setup/geoseg/{esquema}',
 'SetupController@georeferenciarSegmentacionEsquema')->name('setup.geoseg');
 Route::get('/setup/segmenta/{esquema}',
@@ -98,7 +100,8 @@ Route::get('/setup/update/R3',
 'SetupController@juntaR3')->name('setup.juntaR3');
 Route::get('/setup/adyacencias/{esquema}',
 'SetupController@generarAdyacenciasEsquema')->name('setup.adyacencias');
-
+Route::get('/setup/juntaMenores/{esquema}/{frac}/{radio}/{n}',
+'SetupController@juntarSegmentosMenores')->name('setup.junta_menores');
 
 Route::get('/inicio', 'HomeController@index')->name('inicio');
 Route::resource('/listado', 'ListadoController',['only' => [
