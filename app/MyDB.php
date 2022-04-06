@@ -21,16 +21,18 @@ class MyDB extends Model
     {
       if( isset($oProv) ){
         try{
-            $result = DB::select("select prov,dpto,codloc,d.nombre,l.nombre,
+            $result = DB::select("select prov,dpto,d.nombre,codloc,l.nombre,
                                      count(distinct frac::text||'-'||radio::text) radios_m_u ,
-                                     count(*) segmentos 
+                                     count(*) segmentos,
+                                     sum(viviendas) vivs, 
+                                     round(1.0*sum(viviendas)/count(*),2) prom
                                      from r3 join departamentos d on 
                                         d.codigo=lpad(prov::text,2,'0')||lpad(dpto::text,3,'0') 
                                      join localidad l on 
                                        l.codigo=lpad(prov::text,2,'0')||lpad(dpto::text,3,'0')||lpad(codloc::text,3,'0') 
                                      join radio r on 
                                        r.codigo=lpad(prov::text,2,'0')||lpad(dpto::text,3,'0')||lpad(frac::text,2,'0')||lpad(radio::text,2,'0') 
-                                     WHERE r.tipo_de_radio_id in (1,3) and prov='".$oProv->codigo."' group by 1,2,3,4,5 ;");
+                                     WHERE r.tipo_de_radio_id in (1,3) and prov='".$oProv->codigo."' and seg!='90' group by 1,2,3,4,5 ;");
         }catch(QueryException $e){
                 $result=null;
                 Log::error('No se pudo generar resuemn de la provincia ',[$oProv],$e);
@@ -1307,7 +1309,6 @@ FROM
         0.5 --deberia usarse la posicion del anterior.. tiro null quizas ?
         )
         END geom_segun_nro_catastral,
-
                     codigo10, nomencla, codigo20,
                     tipo, nombre, e.lado ladoe, desde, hasta,e.mza mzae,
                     frac, radio, l.mza, l.lado, ccalle, ncalle, l.nrocatastr, piso,casa,dpto_habit,sector,edificio,entrada,tipoviv,
@@ -1315,10 +1316,9 @@ FROM
                     cant_en_lado
   ".$insert_into."      
   FROM arcos e JOIN listado l ON
-        --l.ccalle::integer=e.codigo20 and
             (l.lado::integer=e.lado and
-                e.mza like
-                '%'||btrim(to_char(l.frac::integer, '09'::text))::character varying(3)||btrim(to_char(l.radio::integer, '09'::text))::character varying(3)||btrim(to_char(l.mza::integer, '099'::text))::character varying(3)
+                trim(e.mza) =
+                btrim(to_char(l.prov::integer,'09'::text))::character varying(2)||btrim(to_char(l.dpto::integer,'099'::text))::character varying(3)||btrim(to_char(l.codloc::integer,'099'::text))::character varying(3)||btrim(to_char(l.frac::integer, '09'::text))::character varying(2)||btrim(to_char(l.radio::integer, '09'::text))::character varying(2)||btrim(to_char(l.mza::integer, '099'::text))::character varying(3)
             );";
             $resultado= DB::select($query);
             DB::commit();
