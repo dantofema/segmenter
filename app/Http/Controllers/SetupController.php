@@ -178,7 +178,7 @@ class SetupController extends Controller
       
         for ($m=$n;$n>0;$n--) {
             $result = MyDB::juntar_segmentos_con_menos_de($schema, $frac, $radio, $m-$n);
-            flash('Juntando para '.$n.': '.$result);
+            flash('Juntado para '.$m-$n.': '.$result);
         }
         return view('home');
     }
