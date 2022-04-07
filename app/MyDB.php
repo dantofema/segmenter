@@ -1229,7 +1229,7 @@ FROM
                 nro_listad, ccalle, ncalle,
                 CASE WHEN l.nrocatastr='' or l.nrocatastr='S/N' THEN null::integer ELSE
                 l.nrocatastr::integer END nrocatastr,
-            piso, casa, dpto_habit, trm(sector) sector, trim(edificio) edificio, trim(entrada) entrada, tipoviv, descripcio, descripci2 ,
+            piso, casa, dpto_habit, trim(sector) sector, trim(edificio) edificio, trim(entrada) entrada, tipoviv, descripcio, descripci2 ,
             row_number() over w_lado as nro_en_lado,
             count(*) over w_lado as cant_en_lado,
             count(*) over w as conteo,
