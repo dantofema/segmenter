@@ -180,6 +180,7 @@ class SetupController extends Controller
             $result = MyDB::juntar_segmentos_con_menos_de($schema, $frac, $radio, $m-$n);
             flash('Juntado para '.($m-$n).': '.$result);
         }
+        flash('Sincro R3: '.MyDB::grabarSegmentacion(substr($schema,1,strlen($schema)-1),$frac,$radio));
         return view('home');
     }
 
