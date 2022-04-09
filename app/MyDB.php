@@ -999,6 +999,8 @@ FROM
             if ($frac!=null) {
               try{
                  DB::statement("select indec.sincro_r3_ffrr('e".$esquema."', $frac, $radio);");
+                 Log::info('Se actualizó la R3 para Eqsuema: '.$esquema.' F:'.$frac.' R:'.$radio.' !');
+                 return true;
               }catch(QueryException $e){
                  Log::error($e);
                  return false;
