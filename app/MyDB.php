@@ -188,7 +188,7 @@ class MyDB extends Model
                   $result = DB::statement("SELECT indec.juntar_segmentos_ffrr('".$esquema."',".$frac.",".$radio.")");
                   $_cant_segmentos_en_cero = self::cantidad_segmentos($esquema,0);
                 }
-                Log::debug('Juntando segmentos del esquema-> '.$esquema.' Había: '.$_cant_segmentos_en_cero);
+                Log::info('Juntando segmentos con 0 viviendas del esquema-> '.$esquema.' Había: '.$_cant_segmentos_en_cero);
               }catch(QueryException $e){
                 Log::error('ERROR Juntando segmentos del esquema-> '.$esquema);
                 return false;
@@ -210,7 +210,8 @@ class MyDB extends Model
               $_cant_segmentos_antes = $_cant_segmentos;
               try{
                 $result = DB::statement("SELECT indec.juntar_segmentos_con_menos_de_ffrr('".$esquema."',".$frac.",".$radio.",".$n.")");
-                Log::debug('Juntando segmentos del esquema-> '.$esquema.' F: '.$frac.' R: '.$radio.' Había: '.$_cant_segmentos.' Result:'.$result);
+                Log::info('Juntando segmentos con menos de '.$n.' viviendas del esquema-> '
+                            .$esquema.' F: '.$frac.' R: '.$radio.' Había: '.$_cant_segmentos.' Result:'.$result);
               }catch(QueryException $e){
                 Log::error('ERROR Juntando segmentos de menos de '.$n.' viviendas del esquema-> '.$esquema);
                 flash('Error juntando segmentos. Quedaron: '.$_cant_segmentos_en_antes)->error();
@@ -229,7 +230,7 @@ class MyDB extends Model
         {
             if (!DB::select('SELECT 1 from information_schema.schemata where schema_name = ?',['e'.$esquema])){
               DB::statement('CREATE SCHEMA IF NOT EXISTS "e'.$esquema.'"');
-              Log::debug('Creando esquema-> e'.$esquema);
+              Log::info('Creando esquema-> e'.$esquema);
               self::darPermisos('e'.$esquema);
               return true;
             }else{
@@ -999,7 +1000,7 @@ FROM
             if ($frac!=null) {
               try{
                  DB::statement("select indec.sincro_r3_ffrr('e".$esquema."', $frac, $radio);");
-                 Log::info('Se actualizó la R3 para Eqsuema: '.$esquema.' F:'.$frac.' R:'.$radio.' !');
+                 Log::info('Se actualizó la R3 para Esquema: '.$esquema.' F:'.$frac.' R:'.$radio.' !');
                  return true;
               }catch(QueryException $e){
                  Log::error($e);
@@ -1009,7 +1010,7 @@ FROM
       }else{
         DB::statement("SELECT indec.sincro_r3('e".$esquema."');");
             }
-            Log::info('Se actualizó la R3!');
+            Log::info('Se actualizó la R3! ('.$esquema.')');
             return true;
         }
 
