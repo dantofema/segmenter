@@ -67,11 +67,11 @@
           @include('flash::message')
         </div>
         <div class="flex-center position-ref full-height">
-            <div class="content" style="line-height: 1.2; 
+            <div class="content" style="line-height: 1.1; 
                                         background-image:url(/images/mandarinas.png); 
                                         background-repeat: no-repeat;
-                                        background-position: center;
-                                        background-opacity:75%;"><br />
+                                        background-position: center 75px;
+                                        background-opacity:0.75;"><br />
                 <a href="{{ route('home') }}">Inicio</a>
                 <h5>Ha finalizado el período de segmentación</h5>
                 <div class="title m-b-md"
