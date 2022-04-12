@@ -67,7 +67,11 @@
           @include('flash::message')
         </div>
         <div class="flex-center position-ref full-height">
-            <div class="content" style="line-height: 1.2"><br />
+            <div class="content" style="line-height: 1.2; 
+                                        background-image:url(/images/mandarinas.png); 
+                                        background-repeat: no-repeat;
+                                        background-position: center;
+                                        background-opacity:75%;"><br />
                 <a href="{{ route('home') }}">Inicio</a>
                 <h5>Ha finalizado el período de segmentación</h5>
                 <div class="title m-b-md"
@@ -76,7 +80,7 @@
                        -webkit-background-clip: text;" alt="Mandarinas Gracias!"  ><b>MUCHAS GRACIAS!</b>
                 </div>
                 <div class="m-b-md">
-                <img width="400px" src="/images/logo_censo2022.jpg" alt="Censo 2022 República Argentina">
+                <img width="500px" src="/images/logo_censo2022.png" alt="Censo 2022 República Argentina">
                 </div>
                 <a href="{{ route('home') }}">Inicio</a>
                 </div>
