@@ -72,8 +72,11 @@
                 <br />
                 <p>Ha finalizado el período de segmentación</p>
                 </div>
-                <div class="title m-b-md">
-                    GRACIAS!<br />
+                <div class="title m-b-md"
+                style="background: linear-gradient(to right, red, orange , yellow, green, cyan, blue, violet);
+                       color:transparent;
+                       background-clip: text;"><b>MUCHAS GRACIAS!</b>
+                <br />
                 <img width="600px" src="images/logo_censo2022.jpg" alt="Censo 2022 República Argentina">
                 </div>
             </div>
