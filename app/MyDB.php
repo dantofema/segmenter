@@ -1887,7 +1887,7 @@ order by 1,2
             }
             DB::statement("CREATE TABLE listados_segmentados AS SELECT * FROM indec.listados();");
             $result = DB::select("SELECT Count(*) from listados_segmentados;")[0]->count;
-            self::darPermisosTabla('listado_segmentados');
+            self::darPermisosTabla('listados_segmentados');
             DB::commit();
         }catch(QueryException $e){
             DB::Rollback();
@@ -1895,7 +1895,7 @@ order by 1,2
             Log::error('Error no se pudo actualizar los listados_segmentados '.$filtro.$e);
             return 'Listados Segmentados sin actualizar';
        }
-       return 'Se actualizo listado_segmentado con '.$result.' registros';
+       return 'Se actualizo listados_segmentado con '.$result.' registros';
     }
 
     // Junta r3 de todos los esquemas.
