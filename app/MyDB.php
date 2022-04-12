@@ -1877,6 +1877,27 @@ order by 1,2
        }
     }
 
+    // Junta listados de todos los esquemas con segmentacion.
+    public static function juntaListadosSegmentados($filtro=null)
+    {
+        try{
+            DB::beginTransaction();
+            if (Schema::hasTable('listados_segmentados')) {
+              DB::statement("DROP TABLE listados_segmentados;");
+            }
+            DB::statement("CREATE TABLE listados_segmentados AS SELECT * FROM indec.listados();");
+            $result = DB::select("SELECT Count(*) from listados_segmentados;")[0]->count;
+            self::darPermisosTabla('listado_segmentados');
+            DB::commit();
+        }catch(QueryException $e){
+            DB::Rollback();
+            $result=null;
+            Log::error('Error no se pudo actualizar los listados_segmentados '.$filtro.$e);
+            return 'Listados Segmentados sin actualizar';
+       }
+       return 'Se actualizo listado_segmentado con '.$result.' registros';
+    }
+
     // Junta r3 de todos los esquemas.
     public static function juntaR3($filtro=null)
     {
