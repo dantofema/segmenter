@@ -67,17 +67,16 @@
           @include('flash::message')
         </div>
         <div class="flex-center position-ref full-height">
-            <div class="content">
-                <div class=" m-b-md">
-                <br />
-                <p>Ha finalizado el período de segmentación</p>
-                </div>
+            <div class="content"><br />
+                <h5>Ha finalizado el período de segmentación</h5>
                 <div class="title m-b-md"
                 style="background: linear-gradient(to right, red, orange , yellow, green, cyan, blue, violet);
                        color:transparent;
                        background-clip: text;"><b>MUCHAS GRACIAS!</b>
-                <br />
-                <img width="600px" src="images/logo_censo2022.jpg" alt="Censo 2022 República Argentina">
+                </div>
+                <div class="m-b-md">
+                <img width="400px" src="/images/logo_censo2022.jpg" alt="Censo 2022 República Argentina">
+                </div>
                 </div>
             </div>
         </div>
