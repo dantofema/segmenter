@@ -72,8 +72,8 @@
                 <h5>Ha finalizado el período de segmentación</h5>
                 <div class="title m-b-md"
                 style="background: linear-gradient(to right, red, orange , yellow, green, cyan, blue, violet);
-                       color:transparent;
-                       background-clip: text;" alt="Mandarinas Gracias!"  ><b>MUCHAS GRACIAS!</b>
+                       color: transparent;
+                       -webkit-background-clip: text;" alt="Mandarinas Gracias!"  ><b>MUCHAS GRACIAS!</b>
                 </div>
                 <div class="m-b-md">
                 <img width="400px" src="/images/logo_censo2022.jpg" alt="Censo 2022 República Argentina">
