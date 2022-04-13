@@ -26,8 +26,8 @@ create or replace function indec.listados()
   sector text,
   edificio text,
   entrada text,
-  tipoviv text,
   orden_reco text, 
+  tipoviv text,
   created_at timestamp with time zone
 )
 language plpgsql volatile
