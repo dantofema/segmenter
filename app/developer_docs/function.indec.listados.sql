@@ -15,6 +15,8 @@ create or replace function indec.listados()
   localidad text,
   frac text, 
   radio text, 
+  mza text, 
+  lado text, 
   seg text, 
   ncalle text,
   nro_catast text, 
@@ -26,6 +28,7 @@ create or replace function indec.listados()
   sector text,
   edificio text,
   entrada text,
+  tipoviv text,
   orden_reco text, 
   created_at timestamp with time zone
 )
@@ -53,6 +56,8 @@ select
   loc.nombre::text localidad,
   l.frac::text, 
   l.radio::text, 
+  l.mza::text, 
+  l.lado::text, 
   seg::text, 
   ncalle::text,
   nro_catast::text, 
@@ -64,7 +69,8 @@ select
   sector::text,
   edificio::text,
   entrada::text,
-  orden_reco::text, 
+  orden_reco::text,
+  tipoviv::text,
   now() created_at 
 from ' || rec.table_schema || '.listado l join provincia p on p.codigo = prov 
 join departamentos d on d.codigo = prov || dpto 
