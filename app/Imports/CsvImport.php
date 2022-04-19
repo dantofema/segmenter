@@ -90,7 +90,7 @@ class CsvImport implements ToModel,WithHeadingRow, WithBatchInserts, WithChunkRe
     {
         return [
             'input_encoding' => 'UTF-8',
-            'delimieter' => ','
+            'delimiter' => ','
         ];
     }
 
