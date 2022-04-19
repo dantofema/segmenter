@@ -121,4 +121,17 @@ class ArchivoController extends Controller
 	    //
 	    return $archivo->descargar();
     }
+
+    /**
+     * Procesar archivo resource.
+     *
+     * @param  \App\Model\Archivo  $archivo
+     * @return \Illuminate\Http\Response
+     */
+    public function procesar(Archivo $archivo)
+    {
+	    //
+	    $mensaje = $archivo->procesar()?'ik0':'m4l';
+      return view('archivo.list');
+    }
 }
