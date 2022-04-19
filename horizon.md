@@ -5,7 +5,7 @@ Servidor redis y cliente redis en php instalados y funcionando.
 ## Supervisor
 Supervisor configuration files are typically stored within your server's /etc/supervisor/conf.d directory.
 
-Copiar (./horizon.conf)
+Copiar archivo de configuración [horizon.conf]
 
 ## Instalación y ejecución
 
