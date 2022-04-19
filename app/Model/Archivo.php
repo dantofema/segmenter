@@ -9,8 +9,8 @@ use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Exception\ProcessTimedOutException;
 use Symfony\Component\Process\Exception\RuntimeException; 
 use Illuminate\Support\Facades\Config;
-//use App\Imports\CsvImport;
-use Maatwebsite\Excel;
+use App\Imports\SegmentosImport;
+use Maatwebsite\Excel\Facades\Excel;
 use App\MyDB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -63,20 +63,28 @@ class Archivo extends Model
 
     }
 
-    public function procesar(){
-      if(!$this->procesado){
-       if ($this->tipo == 'csv' or $this->tipo == 'dbf'){
-            return $this->procesarC1();
-        }elseif($this->tipo == 'e00' or $this->tipo == 'bin') {
-            return $this->procesarGeomE00();
-        }else{
-            flash('No se encontro qué hacer para procesar '.$this->nombre_original )->warning();
-            return false;
-        }
-      }else{
-            flash('Archivo ya fue procesado: '.$this->nombre_original )->warning();
+    public function procesar()
+    {
+        if (!$this->procesadoi or true) {
+            if ($this->tipo == 'csv' or $this->tipo == 'dbf') {
+                if (( strtolower(substr($this->nombre_original, 0, 8)) == 'tablaseg')
+                    or ( strtolower(substr($this->nombre_original, 0, 7))  == 'segpais')
+                    or ( strtolower(substr($this->nombre_original, 0, 21))  == 'tabla_de_segmentacion')
+                ) {
+                    return $this->procesarSegmentos();
+                } else {
+                    return $this->procesarC1();
+                }
+            } elseif ($this->tipo == 'e00' or $this->tipo == 'bin') {
+                return $this->procesarGeomE00();
+            } else {
+                flash('No se encontro qué hacer para procesar '.$this->nombre_original)->warning();
+                return false;
+            }
+        } else {
+            flash('Archivo ya fue procesado: '.$this->nombre_original)->warning();
             return true;
-      }
+        }
     }
 
     public function procesarC1(){
@@ -118,7 +126,7 @@ class Archivo extends Model
       } catch (RuntimeException $exception) {
           Log::error($process->getErrorOutput().$exception);
       }
-  }else{
+    }else{
     flash($data['file']['csv_info'] = 'Se Cargo un archivo de formato
          no esperado!')->error()->important();
           $this->procesado=false;
@@ -222,9 +230,9 @@ class Archivo extends Model
     // Retorna Array $ppdddlls con codigos de localidades
     public function moverData(){
        // Busca dentro de la tabla las localidades
-       $ppdddllls=MyDB::getLocs($this->tabla,'public');
-       $count=0;
-       foreach ($ppdddllls as $ppdddlll){
+       $ppdddllls = MyDB::getLocs($this->tabla,'public');
+       $count = 0;
+           foreach ($ppdddllls as $ppdddlll){
             flash('Se encontró loc en C1: '.$ppdddlll->link);
             MyDB::createSchema($ppdddlll->link);
 
@@ -240,19 +248,32 @@ class Archivo extends Model
             }
             MyDB::moverDBF(storage_path().'/app/'.$this->nombre,$codigo_esquema,$ppdddlll->link);
             $count++;
-        }
-        Log::debug('C1 se copió en '.$count.' esquemas');
-        MyDB::borrarTabla($this->tabla);
-        return $ppdddllls;
+           }
+           Log::debug('C1 se copió en '.$count.' esquemas');
+           MyDB::borrarTabla($this->tabla);
+           return $ppdddllls;
     }
 
 
     // Pasa data geo, arcos y labels al esquema de las localidades encontradas
     // Retorna Array $ppdddlls con codigos de localidades
     public function pasarData(){
-             // Leo dentro de la tabla de etiquetas la/s localidades
-            $ppdddllls=MyDB::getLocs('lab','e_'.$this->tabla);
-            $count=0;
+       // Leo dentro de la tabla de etiquetas la/s localidades
+        $ppdddllls=MyDB::getLocs('lab','e_'.$this->tabla);
+        $count=0;
+        if ($ppdddllls==[]) {
+           // Intento cargar pais x depto :D
+           $coddeptos = MyDB::getDptos('lab','e_'.$this->tabla);
+           flash('Puede ser una pais con deptos: '.count($coddeptos));
+           foreach ($coddeptos as $coddepto){
+              flash('Se encontró Departamento : '.$coddepto->link);
+              MyDB::createSchema($coddepto->link);
+              MyDB::copiaraEsquemaPais('e_'.$this->tabla,'e'.$coddepto->link,$coddepto->link);
+              $count++;
+            }
+            MyDB::limpiar_esquema('e_'.$this->tabla);
+           return $coddeptos;
+        } else {
             foreach ($ppdddllls as $ppdddlll){
                flash('Se encontró loc Etiquetas: '.$ppdddlll->link);
               MyDB::createSchema($ppdddlll->link);
@@ -263,9 +284,24 @@ class Archivo extends Model
             flash('Se encontraron '.$count.' localidaes en la cartografía');
             MyDB::limpiar_esquema('e_'.$this->tabla);
             return $ppdddllls;
+       }
     }
 
     public function infoData(){
        return MyDB::infoDBF('listado',$this->tabla);
+    }
+
+
+    // Archivos csv con tabla de segmentación generada en modo manual.
+    // x provincia juntando /y corrigiendo) segmentación Urbana y Urbano-Mixta con
+    // segmentos Rural, Rural-Mixto.
+    public function procesarSegmentos() {
+            $mensaje = 'Se procesa un csv. Segmentos completos? Resultado: ';
+            $import = new SegmentosImport($this->user);
+            Excel::import($import, storage_path().'/app/'.$this->nombre);
+            $this->procesado=true;
+            $this->save();
+            flash($mensaje.$import->getRowCount());
+            return true;
     }
 }

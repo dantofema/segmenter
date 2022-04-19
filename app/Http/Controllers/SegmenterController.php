@@ -356,6 +356,23 @@ class SegmenterController extends Controller
       $data['file']['pxrad']='none';
     }
 
+    if ($request->hasFile('tabla_segmentos')) {
+     if($tabla_segmentos_file = Archivo::cargar($request->tabla_segmentos, Auth::user())) {
+         flash("Tabla de Segmentos Completa ")->info();
+         Log::debug('Tabla de Segmentos: '.$tabla_segmentos_file->tojson(JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+     } else {
+         flash("Error en el modelo cargar archivo, para tabla de segmentos completa")->error();
+     }
+     $tabla_segmentos_file->procesar();
+     if (!$tabla_segmentos_file->procesado) {
+         flash($data['file']['error']='Archivo '.$tabla_segmentos_file->nombre_original.' sin Procesar Tabla de Segmentos por error')->important();
+         Log::error($data['file']['error'],$tabla_segmentos_file);
+     }else{
+         $esquema=$tabla_segmentos_file->moverData();
+         Log::info('Tabla de Segmentos: '.$tabla_segmentos_file->tojson(JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+     }
+    }
+
       if(isset($oDepto)){
         //return redirect('/depto/'.$oDepto->id);
         return view('deptoview',['departamento' =>

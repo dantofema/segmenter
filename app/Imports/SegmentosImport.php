@@ -2,7 +2,8 @@
 
 namespace App\Imports;
 
-use App\Domicilio;
+use App\Model\Segmento;
+use App\User;
 use App\Notifications\ImportHasFailedNotification;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithBatchInserts;
@@ -13,20 +14,37 @@ use Maatwebsite\Excel\Concerns\WithProgressBar;
 use Maatwebsite\Excel\Concerns\Importable;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithEvents;
+//use Maatwebsite\Excel\Concerns\WithUpserts;
 use Maatwebsite\Excel\Concerns\RegistersEventListeners;
+use Maatwebsite\Excel\Imports\HeadingRowFormatter;
 
+HeadingRowFormatter::extend(
+    'custom', function ($value, $key) {
+        return trim(strtolower(explode(',', $value)[0])); 
+    }
+);
 
-class CsvImport implements ToModel,WithHeadingRow, WithBatchInserts, WithChunkReading, ShouldQueue, WithCustomCsvSettings, WithEvents //, WithProgressBar
+class SegmentosImport implements ToModel, WithHeadingRow, WithBatchInserts, WithChunkReading, ShouldQueue, WithCustomCsvSettings, WithEvents //, WithProgressBar
 {
     use Importable,RegistersEventListeners;
     private $rows = 0;
     private $importedBy;
 
-
     public function __construct(User $importedBy = null)
     {
         $this->importedBy = $importedBy;
     }
+
+    /**
+     * @return string|array
+     */
+    /*
+    Laravel 8 UPSERTS Eloquent
+    public function uniqueBy()
+    {
+        return 'prov, nom_prov, dpto, nom_dpto, codloc, nom_loc, codent, nom_ent, frac, radio, tipo, seg, vivs';
+    }
+    */
 
     /**
     * @param array $row
@@ -35,44 +53,25 @@ class CsvImport implements ToModel,WithHeadingRow, WithBatchInserts, WithChunkRe
     */
     public function model(array $row)
     {
-	 ++$this->rows;
-//	die(var_dump($row));
-        return new Domicilio([
-'prov' => $row['prov'],
-'listado_id' => $row['codaglo'] ?? '1',
-'nom_provin' => $row['nom_provin'] ?? $row['nom_provincia'],
-'dpto' => $row['dpto'],
-'nom_dpto' => $row['nom_dpto'],
-'codaglo' => $row['codaglo'],
-'codloc' => $row['codloc'],
-'nom_loc' => $row['nom_loc'],
-'codent' => $row['codent'],
-'nom_ent' => $row['nom_ent'],
-'frac' => $row['frac'],
-'radio' => $row['radio'],
-'mza' => $row['mza'],
-'lado' => $row['lado'],
-'nro_inicia' => $row['nro_inicia'],
-'nro_final' => $row['nro_final'],
-'orden_reco' => $row['orden_reco'] ?? $row['orden_recorrido_viv'],
-'nrolist' => $row['nrolist'] ?? $row['nro_listado'],
-'ccalle' => $row['ccalle'],
-'ncalle' => $row['ncalle'],
-'nrocatastr' => $row['nrocatastr'] ?? $row['nrocatastralredef'] ?? $row['nro_catastral'],
-'piso' => $row['pisoredef'] ?? $row['piso'],
-'casa' => $row['casa'],
-'dptohab' => $row['dptohab'] ?? $row['dpto_habitacion'],
-'sector' => $row['sector'],
-'edificio' => $row['edificio'],
-'entrada' => $row['entrada'],
-'tipoviv' => $row['tipovivredef'] ?? $row['tipoviv'] ?? null,
-'descrip' => $row['descrip'] ?? null,
-'descripl' => $row['descripl'] ?? null,
-'cpostal' => $row['cpostal'] ?? null,
-'ordrecmza' => $row['ordrecmza'] ?? null,
-'fechrele' => $row['fechrele'] ?? null,
-'tiptarea' => $row['tiptarea'] ?? null
-        ]);
+        ++$this->rows;
+    //    return Segmento::firstOrCreate(
+        return new Segmento(
+            [
+            'prov' => $row['prov'],
+            'nom_prov' => $row['nom_prov'] ?? $row['nomprov'],
+            'dpto' => $row['dpto'] ?? $row['depto'],
+            'nom_dpto' => $row['nom_dpto'] ?? $row['nomdepto'] ,
+            'codloc' => $row['codloc'],
+            'nom_loc' => $row['nom_loc'] ?? $row['nomloc'] ,
+            'codent' => $row['codent'] ?? 0,
+            'nom_ent' => $row['nom_ent'] ?? '',
+            'frac' => $row['frac'],
+            'radio' => $row['radio'],
+            'tipo' => $row['tipo'] ?? 'I',
+            'seg' => $row['segmento'] ?? $row['seg'],
+            'vivs' => $row['cantviv'] ?? 0,
+            ]
+        );
     }
 
 
@@ -90,7 +89,7 @@ class CsvImport implements ToModel,WithHeadingRow, WithBatchInserts, WithChunkRe
     {
         return [
             'input_encoding' => 'UTF-8',
-            'delimiter' => ','
+            'delimiter' => '|'
         ];
     }
 
@@ -111,7 +110,7 @@ class CsvImport implements ToModel,WithHeadingRow, WithBatchInserts, WithChunkRe
     public static function afterImport(AfterImport $event)
     {
         //
-	echo 'Rows: '.$this->rows;
+        echo 'Rows: '.$this->rows;
     }
 
     /**
@@ -120,13 +119,12 @@ class CsvImport implements ToModel,WithHeadingRow, WithBatchInserts, WithChunkRe
      * @return array
      */
     public function tags()
-    {	
-	if ($this->importedBy){
-	        return ['csv', 'user:'.$this->importedBy];
-	}
-	else{
-	        return ['csv', 'sin user'];
-	}
+    {
+        if ($this->importedBy) {
+            return ['csv', 'user:'.$this->importedBy];
+        } else {
+            return ['csv', 'sin user'];
+        }
     }
 
 }
