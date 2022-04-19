@@ -119,6 +119,7 @@
                   { orderable: false, searchable: false , data: function ( row, type, val, meta ) {
                              var html =  '<button type="button" class="btn_descarga btn-sm btn-primary" > Descargar </button> ';
                                  html +=  '<button type="button" class="btn_arch btn-sm btn-primary" > Ver </button>';
+                                 html +=  '<button type="button" class="btn_arch_procesar btn-sm btn-secondary" > Procesar </button>';
                                  html +=  '<button type="button" class="btn_arch_delete btn-sm btn-delete " > Borrar </button>';
                               return html;
                             }
@@ -150,6 +151,17 @@
       console.log('Ver Archivo: '+data.codigo);
         if (typeof data !== 'undefined') {
             url= "{{ url('archivo') }}"+"/"+data.id;
+            $(location).attr('href',url);
+           };
+    });
+
+// Función de botón Procesar.
+    table.on('click', '.btn_arch_procesar', function () {
+      var row = $(this).closest('tr');
+      var data = table.row( row ).data();
+      console.log('Procesar Archivo: '+data.codigo);
+        if (typeof data !== 'undefined') {
+            url= "{{ url('archivo') }}"+"/"+data.id+"/procesar";
             $(location).attr('href',url);
            };
     });
