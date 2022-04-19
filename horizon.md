@@ -8,6 +8,8 @@ Supervisor configuration files are typically stored within your server's `/etc/s
 Copiar archivo de configuración [https://github.com/manureta/segmenter/blob/master/horizon.conf]
 
 ## Instalación y ejecución
+Ubuntu/Debian
+```sudo apt-get install supervisor```
 
 Starting Supervisor
 
