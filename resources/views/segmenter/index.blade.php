@@ -109,7 +109,13 @@
                     <div class="col-sm-8">
                         <input type="file" class="form-control-file" id="pxrad" name="pxrad">
                     </div>
-		</div>
+		            </div>
+                <div class="form-group row bg-success">
+                    <label for="tabla_segmentos" class="col-sm-4 col-form-label ">tablaSegxxcompleta (provincial)</label>
+                    <div class="col-sm-8">
+                        <input type="file" class="form-control-file" id="tabla_segmentos" name="tabla_segmentos">
+                    </div>
+            		</div>
 		<div class="form-group">
 		  <div class="text-center">
                      <button type="submit" class="btn btn-primary">Enviar</button>

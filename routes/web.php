@@ -113,6 +113,13 @@ Route::get('/inicio', 'HomeController@index')->name('inicio');
 Route::resource('/listado', 'ListadoController',['only' => [
    'index', 'show', 'save'
 ]]);
+
+/**
+ * Segmentos
+ */
+Route::resource('/segmentos', 'SegmentoController',['only' => [
+   'index', 'show', 'save'
+]]);
 Route::post('/domicilio/guardar/','DomicilioController@save');
 /**
  * Segmenter
@@ -207,6 +214,7 @@ Route::get('archivos','ArchivoController@index');
 Route::get('archivo/{archivo}','ArchivoController@show');
 Route::delete('archivo/{archivo}','ArchivoController@destroy');
 Route::get('archivo/{archivo}/descargar','ArchivoController@descargar');
+Route::get('archivo/{archivo}/procesar','ArchivoController@procesar');
 
 
 // ---------- TABLERO ---------
