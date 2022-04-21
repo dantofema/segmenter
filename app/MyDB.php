@@ -1195,7 +1195,7 @@ FROM
     ) {
         $desp=-1*$desplazamiento_vereda;
         //   --ALTER TABLE ' ".$esquema." '.arc alter column wkb_geometry type geometry('LineString',22182) USING (st_setsrid(wkb_geometry,22182));
-        if ($frac!=null) {
+        if ($frac != null) {
             $filtro= ' where (l.frac::integer) =
                       ('.$frac.') ';
             $filtro_arcos = ' and substr(mza,9,2)::integer = '.$frac.' '; 
@@ -1205,6 +1205,12 @@ FROM
          } else {
             $update_to = "";
             $insert_into = " INTO ".$esquema.".listado_geo ";
+         }
+         if ($radio != null) {
+             $filtro .= ' and (l.radio::integer) =
+                       ('.$radio.') ';
+             $filtro_arcos .= ' and substr(mza,11,2)::integer = '.$radio.' '; 
+             $insert_into = '';
          }
         } else {
             $filtro = '';
@@ -1325,7 +1331,7 @@ FROM
             );";
             $resultado= DB::select($query);
             DB::commit();
-            flash('Se georreferenció el listado para '.$esquema)->success()->important();
+            flash('Se georreferenció el listado para '.$esquema.' F:'.$frac.' R:'.$radio)->success()->important();
 
             }catch(QueryException $e){
                 DB::Rollback();
@@ -1333,7 +1339,7 @@ FROM
                             flash('No se pudo georreferenciar el listado dentro
                             de la manzana para '.$esquema.'.
                             Reintentado a 1m del eje.')->warning();
-                            if($resultado = self::georeferenciar_listado($esquema,1,$frac)){
+                            if($resultado = self::georeferenciar_listado($esquema,1,$frac,$radio)){
                               flash('Se georreferenció el listado sobre el eje de
                               calle')->success()->important();
                             }
