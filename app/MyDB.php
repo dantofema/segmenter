@@ -1883,6 +1883,74 @@ order by 1,2
        }
     }
 
+    /* Junta listados de todos los esquemas con segmentacion. *\
+     * Genera vistas para aplicación censar.
+     */
+    public static function juntaListadosSegmentados($filtro=null)
+    {
+        try{
+            DB::beginTransaction();
+            if (Schema::hasTable('listados_segmentados')) {
+                DB::statement("DROP TABLE if exists public.listados_segmentados CASCADE;");
+            }
+            DB::statement("CREATE TABLE public.listados_segmentados AS SELECT * FROM indec.listados();");
+            $result = DB::select("SELECT Count(*) from listados_segmentados;")[0]->count;
+            self::darPermisosTabla('listados_segmentados');
+            $result_vista_censar = DB::unprepared(
+                "CREATE or REPLACE VIEW public.listado_pre_censar as 
+                 (select 
+                  prov as cod_provincia, provincia as desc_provincia, 
+                  dpto as cod_departamento, departamento as desc_departamento, 
+                  codloc as cod_localidad, localidad desc_localidad, 
+                  frac cod_fraccion, radio cod_radio, seg cod_segmento, 
+                  ncalle, nrocatastr nro_catast, piso, casa, dpto_habit, 
+                  sector, edificio, entrada, 
+                  row_number() over ( partition by prov,dpto,frac,radio,seg order by mza,lado,orden_reco) ordenamiento, 
+                  'C' estado, tipoviv 
+                from listados_segmentados)"
+            );
+            $result_vista_0 = DB::unprepared(
+                "create or replace view public.listado_pre_censar_seg_0 as 
+                             select cod_provincia, desc_provincia, 
+                                    cod_departamento, desc_departamento, 
+                                    cod_localidad, desc_localidad, 
+                                    cod_fraccion, cod_radio, cod_segmento, 
+                                    'Calle S N' ncalle, 'S/N' nro_catast, '' piso, 
+                                    '' casa, '' dpto_habit, '' sector, '' edificio, 
+                                    '' entrada, 0 ordenamiento, 'F' estado 
+                             from listado_pre_censar group by 1,2,3,4,5,6,7,8,9 
+                             having count( indec.contar_vivienda(tipoviv) ) = 0 ;"
+            );
+            $result_vista_1 = DB::unprepared(
+                "create or replace view public.listado_pre_censar_vivs AS 
+                   select cod_provincia, desc_provincia, 
+                          cod_departamento, desc_departamento, 
+                          cod_localidad, desc_localidad, 
+                          cod_fraccion, cod_radio, cod_segmento, 
+                          ncalle, nro_catast, piso, casa, dpto_habit, sector, edificio, 
+                          entrada, ordenamiento, estado 
+                    from listado_pre_censar 
+                where tipoviv=indec.contar_vivienda(tipoviv);"
+            );
+            DB::statement("DROP TABLE if exists public.listado_censar;");
+            $result_censar = DB::unprepared(
+                "CREATE TABLE public.listado_censar AS
+                    (select * from public.listado_pre_censar_vivs 
+                      union 
+                     select * from public.listado_pre_censar_seg_0);"
+            );
+            $count_censar = DB::select("SELECT Count(*) from public.listado_censar;")[0]->count;
+            DB::commit();
+            self::darPermisosTabla('listado_censar');
+        }catch(QueryException $e){
+            DB::Rollback();
+            $result=null;
+            Log::error('Error no se pudo actualizar los listados_segmentados '.$filtro.$e);
+            return 'Listados Segmentados sin actualizar';
+        }
+        return 'Se actualizo listados_segmentado con '.$result.' registros y para censar: '.$count_censar;
+    }
+
     // Junta r3 de todos los esquemas.
     public static function juntaR3($filtro=null)
     {

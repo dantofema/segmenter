@@ -108,6 +108,8 @@ Route::get('/setup/duplicadosLSV/{esquema}',
 'SetupController@limpiaListado')->name('setup.limpialistado');
 Route::get('/setup/updateTipoViv/{esquema}',
 'SetupController@tipoVivdeDescripcion')->name('setup.tipovivdescripcion');
+Route::get('/setup/update/LS',
+'SetupController@juntaListadosSegmentados')->name('setup.junta.listados');
 Route::get('/setup/update/R3',
 'SetupController@juntaR3')->name('setup.juntaR3');
 Route::get('/setup/adyacencias/{esquema}',

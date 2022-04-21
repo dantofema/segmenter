@@ -219,6 +219,12 @@ class SetupController extends Controller
         return view('home');
     }
 
+    public function juntaListadosSegmentados()
+    {
+        flash('Resultado: '.MyDB::juntaListadossegmentados());
+        return view('home');
+    }
+
     public function testFlash($texto='Mensaje de prueba.')
     {
         flash(' Normal  '.$texto);

@@ -43,14 +43,14 @@ class SegmenterController extends Controller
 
     public function index()
     {
-    //    $data['whoami'] = exec('whoami');
       $data=null;
-      //dd(App()->make('App\Model\Radio'));
+        return view('goodbye');
         return view('segmenter/index',['data' => $data,'epsgs'=> $this->epsgs]);
     }
 
     public function store(Request $request)
     {
+    return view('goodbye');
     if (! Auth::check()) {
         $mensaje='No tiene permiso para segmentar o no esta logueado';
         flash($mensaje)->error()->important();

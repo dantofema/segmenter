@@ -151,6 +151,9 @@ class LocalidadController extends Controller
 
     public function segmenta_post(Localidad $localidad)
     {
+            // Se cierra periodo de segmentación
+            return view('goodbye');
+
             //
             $carto=$localidad->Carto;
             $listado=$localidad->Listado;
@@ -160,6 +163,9 @@ class LocalidadController extends Controller
 
     public function run_segmentar(Request $request, Localidad $localidad)
     {
+            // Se cierra periodo de segmentación
+            return view('goodbye');
+
             if($request->optalgoritmo=='listado'){
                 // Segmentacion x listado
                 return $this->run_segmentar_equilibrado($request,$localidad);
@@ -195,6 +201,9 @@ class LocalidadController extends Controller
 
     public function run_segmentar_equilibrado(Request $request, Localidad $localidad)
     {
+            // Se cierra periodo de segmentación
+            return view('goodbye');
+
       if (Auth::check()) {
         $AppUser= Auth::user();
         if($request->radios){
@@ -275,6 +284,9 @@ class LocalidadController extends Controller
     public function run_segmentar_x_lado(Request $request, Localidad
     $localidad,Radio &$radio=null,$lucky=null)
     {
+            // Se cierra periodo de segmentación
+            return view('goodbye');
+
       if($request->checkallradios){
         Log::debug('Se van a segmentar todos los radios de la
         localidad: ('.$localidad->codigo.') '.$localidad->nombre );
