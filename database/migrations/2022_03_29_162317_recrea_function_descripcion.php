@@ -1,4 +1,4 @@
-database/migrations/2022_03_29_162317_recrea_function_descripcion.php<?php
+<?php
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
