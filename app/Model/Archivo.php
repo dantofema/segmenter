@@ -70,6 +70,7 @@ class Archivo extends Model
                 if (( strtolower(substr($this->nombre_original, 0, 8)) == 'tablaseg')
                     or ( strtolower(substr($this->nombre_original, 0, 7))  == 'segpais')
                     or ( strtolower(substr($this->nombre_original, 0, 21))  == 'tabla_de_segmentacion')
+                    or ( strtolower(substr($this->nombre_original, 0, 14))  == 'segmento_total')
                 ) {
                     return $this->procesarSegmentos();
                 } else {

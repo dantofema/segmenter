@@ -115,4 +115,17 @@ class RadioController extends Controller
         return $segmenta->ver_segmentacion($radio);
     }
 
+    /**
+     * Juntar segmentos con menos de n viviendas 
+     * 
+     */
+    public function juntarSegmentos(Radio $radio,$menos_n_viviendas)
+    {
+        //
+        $aglo=$radio->aglomerado->codigo();
+        $segmenta = new Segmentador();
+        $segmenta->juntarSegmentos($radio,$menos_n_viviendas);
+        return $segmenta->ver_segmentacion($radio);
+    }
+
 }
