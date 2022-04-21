@@ -11,7 +11,7 @@ create or replace function indec.listados()
   provincia text, 
   dpto text, 
   departamento text, 
-  codloc  text,
+  codloc text,
   localidad text,
   frac text, 
   radio text, 
