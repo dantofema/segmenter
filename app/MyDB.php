@@ -1922,7 +1922,7 @@ order by 1,2
                              having count( indec.contar_vivienda(tipoviv) ) = 0 ;"
             );
             $result_vista_1 = DB::unprepared(
-                "create or replace view public.listado_precensar_vivs AS 
+                "create or replace view public.listado_pre_censar_vivs AS 
                    select cod_provincia, desc_provincia, 
                           cod_departamento, desc_departamento, 
                           cod_localidad, desc_localidad, 
@@ -1935,16 +1935,13 @@ order by 1,2
             DB::statement("DROP TABLE if exists public.listado_censar;");
             $result_censar = DB::unprepared(
                 "CREATE TABLE public.listado_censar AS
-                    (select * from public.listado_precensar_vivs 
+                    (select * from public.listado_pre_censar_vivs 
                       union 
                      select * from public.listado_pre_censar_seg_0);"
             );
             $count_censar = DB::select("SELECT Count(*) from public.listado_censar;")[0]->count;
             DB::commit();
             self::darPermisosTabla('listado_censar');
-            self::darPermisosTabla('listados_pre_censar');
-            self::darPermisosTabla('listados_pre_censar_seg_0');
-            self::darPermisosTabla('listados_pre_censar_vivs');
         }catch(QueryException $e){
             DB::Rollback();
             $result=null;
