@@ -1236,7 +1236,7 @@ FROM
                 ::integer as nro_final,
                 CASE WHEN orden_reco='' THEN 0 ELSE orden_reco::integer END ::integer as orden_reco,
                 nro_listad, ccalle, ncalle,
-                CASE WHEN l.nrocatastr='' or l.nrocatastr='S/N' THEN null::integer ELSE
+                CASE WHEN l.nrocatastr in ('','S/N','S N') THEN null::integer ELSE
                 l.nrocatastr::integer END nrocatastr,
             piso, casa, dpto_habit, trim(sector) sector, trim(regexp_replace(replace(edificio,'Â¾','ó'),'â\u0096\u0091','°')) edificio, trim(entrada) entrada, tipoviv, descripcio, descripci2 ,
             row_number() over w_lado as nro_en_lado,
