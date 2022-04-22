@@ -32,7 +32,7 @@ class InstalarFunctionContarVivienda extends Migration
     {
         //
         Eloquent::unguard();
-        DB::statement('drop function if exists indec.contar_vivienda(aglomerado text)');
+        DB::statement('drop function if exists indec.contar_vivienda(aglomerado text) cascade');
     }
 }
 
