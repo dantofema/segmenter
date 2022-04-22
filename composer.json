@@ -19,6 +19,7 @@
         "laravel/horizon": "^3.4",
         "laravel/tinker": "^1.0",
         "maatwebsite/excel": "^3.1",
+        "monolog/monolog": "^2.5",
         "predis/predis": "^1.1",
         "yajra/laravel-datatables-oracle": "^9.8"
     },
