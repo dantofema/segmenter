@@ -1905,7 +1905,9 @@ order by 1,2
                   frac cod_fraccion, radio cod_radio, seg cod_segmento, 
                   ncalle, nrocatastr nro_catast, piso, casa, dpto_habit, 
                   sector, edificio, entrada, 
-                  row_number() over ( partition by prov,dpto,frac,radio,seg order by mza,lado,orden_reco::integer) ordenamiento, 
+                  row_number() over ( partition by prov,dpto,frac,radio,seg order by mza,lado,
+                               case when orden_reco!='' then orden_reco::integer else 0 end::integer
+                  ) ordenamiento, 
                   'C' estado, tipoviv 
                 from listados_segmentados)"
             );
