@@ -3,7 +3,7 @@
 <div class="row center"><div class="col-lg-12 text-center">
 <h4><a href="{{ url("/aglo/{$aglomerado->id}") }}" > ({{ $aglomerado->codigo}}) {{ $aglomerado->nombre}}</a></h4>
 <h5>
-@foreach ($radio->localidades as $loc)
+@foreach ($radio->localidades->sortBy('codigo') as $loc)
 @if ($loc and substr($loc->codigo,5,3)!='000')
 <a 
 @if ( $loc->id==$localidad->id ) 
