@@ -213,19 +213,8 @@
 
     table.on( 'click', 'tr', function (e) {
         var data = table.row( this ).data();
-        // AJAX request
-           $.ajax({
-            url: "{{ url('localidad') }}"+"/"+data.id,
-            type: 'post',
-            data: {id: data.id,format: 'html'},
-            success: function(response){ 
-              // Add response in Modal body
-              $('#modal-body-loc').html(response);
-
-              // Display Modal
-              $('#locModal').modal('show'); 
-            }
-           });
+        var url = "{{ url('localidad') }}"+"/"+data.id;
+        $(location).attr('href',url);
    });
 
 
