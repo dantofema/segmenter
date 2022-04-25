@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Eloquent\Builder;
 
 class Localidad extends Model
 {
@@ -24,6 +25,15 @@ class Localidad extends Model
     public $segmentadoListado;
     public $segmentadoLados;
 
+    // Order by codigo x default.
+    protected static function boot()
+    {
+        parent::boot();
+        // Order by name ASC
+        static::addGlobalScope('order', function (Builder $builder) {
+            $builder->orderBy('codigo', 'asc');
+        });
+    }
 
     /**
      * Relación con Departamento, una localidad puede estar en muchos departamentos (caso CABA).
