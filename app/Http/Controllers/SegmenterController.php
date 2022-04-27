@@ -43,14 +43,12 @@ class SegmenterController extends Controller
 
     public function index()
     {
-      $data=null;
-        return view('goodbye');
+        $data=null;
         return view('segmenter/index',['data' => $data,'epsgs'=> $this->epsgs]);
     }
 
     public function store(Request $request)
     {
-    return view('goodbye');
     if (! Auth::check()) {
         $mensaje='No tiene permiso para segmentar o no esta logueado';
         flash($mensaje)->error()->important();
