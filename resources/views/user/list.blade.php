@@ -11,13 +11,11 @@
 <div class="spinner-border text-dark"></div>
 <div class="spinner-border text-light"></div>
 <div class="text-primary">Gracias !</div>
-<ul class="card-columns text-center">
+<ul class="card-columns text-center d-flex p-5 nav nav-center list-inline mx-auto justify-content-center">
 @foreach (App\Models\User::all()->shuffle() as $user)
-<div class="card">
-  <div class="card-body">
+<li class= "btn border border-dark" > 
     {{ $user->name }}
-  </div>
-</div>
+</li>
 @endforeach
 </ul>
 <div class="spinner-border text-muted"></div>
