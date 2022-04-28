@@ -10,8 +10,9 @@
 <div class="spinner-border text-secondary"></div>
 <div class="spinner-border text-dark"></div>
 <div class="spinner-border text-light"></div>
+<div class="text-primary">Gracias !</div>
 <ul class="card-columns text-center">
-@foreach (App\Models\User::all()->sortBy('random()') as $user)
+@foreach (App\Models\User::all()->shuffle() as $user)
 <div class="card">
   <div class="card-body">
     {{ $user->name }}
@@ -19,6 +20,15 @@
 </div>
 @endforeach
 </ul>
+<div class="spinner-border text-muted"></div>
+<div class="spinner-border text-primary"></div>
+<div class="spinner-border text-success"></div>
+<div class="spinner-border text-info"></div>
+<div class="spinner-border text-warning"></div>
+<div class="spinner-border text-danger"></div>
+<div class="spinner-border text-secondary"></div>
+<div class="spinner-border text-dark"></div>
+<div class="spinner-border text-light"></div>
 </div>
 @endsection
 <?php // </body> </html> ?>
