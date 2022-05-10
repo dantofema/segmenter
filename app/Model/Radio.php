@@ -101,17 +101,19 @@ class Radio extends Model
   * Segmentar radio a lados completos
   *
   */
-  public function segmentar($esquema,$deseadas,$max,$min,$indivisible) {
+  public function segmentar($esquema, $deseadas, $max, $min, $indivisible) {
     if (Auth::check()) {
-      $AppUser= Auth::user();
-      $prov= substr(trim($this->codigo), 0, 2);
-      $dpto= substr(trim($this->codigo), 2, 3);
-      $frac= substr(trim($this->codigo), 5, 2);
-      $radio= substr(trim($this->codigo), 7, 2);
+      $AppUser = Auth::user();
+      $prov = substr(trim($this->codigo), 0, 2);
+      $dpto = substr(trim($this->codigo), 2, 3);
+      $frac = $this->CodigoFrac;
+      $radio = $this->CodigoRad;
       $segmenta = new Segmentador();
-      $segmenta->segmentar_a_lado_completo($esquema,$prov,$dpto,$frac,$radio,$deseadas,$max,$min,$indivisible);
+      $segmenta->segmentar_a_lado_completo(
+        $esquema, $prov, $dpto, $frac, $radio, $deseadas, $max, $min, $indivisible
+      );
       $segmenta->vista_segmentos_lados_completos($esquema);
-      $segmenta->lados_completos_a_tabla_segmentacion_ffrr($esquema,$frac,$radio);
+      $segmenta->lados_completos_a_tabla_segmentacion_ffrr($esquema, $frac, $radio);
       $this->resultado = 'Segmentado x método LADOS COMPLETOS: '.$segmenta->ver_segmentacion().'
       x '.$AppUser->name.' ('.$AppUser->email.') en '.date("Y-m-d H:i:s").
       '
@@ -121,7 +123,7 @@ class Radio extends Model
       return $this->resultado;
     } else {
       $mensaje='No tiene permiso para segmentar o no esta logueado';
-	  flash($mensaje)->error()->important();
+      flash($mensaje)->error()->important();
       return $mensaje;
     }
   }
@@ -130,17 +132,19 @@ class Radio extends Model
    * Segmentar radio con metodo magico.
    *
    */
-  public function segmentarLucky($esquema,$deseadas,$max,$min,$indivisible,$force=false) {
+  public function segmentarLucky($esquema, $deseadas, $max, $min, $indivisible, $force=false) {
     if (Auth::check()) {
       $AppUser = Auth::user();
       $prov = substr(trim($this->codigo), 0, 2);
       $dpto = substr(trim($this->codigo), 2, 3);
-      $frac = $this->CodigoFrac; //substr(trim($this->codigo), 5, 2);
-      $radio = $this->CodigoRad; //substr(trim($this->codigo), 7, 2);
+      $frac = $this->CodigoFrac;
+      $radio = $this->CodigoRad;
       $segmenta = new Segmentador();
-      $segmenta->segmentar_a_lado_completo($esquema,$prov,$dpto,$frac,$radio,$deseadas,$max,$min,$indivisible);
+      $segmenta->segmentar_a_lado_completo(
+        $esquema, $prov, $dpto, $frac, $radio, $deseadas, $max, $min, $indivisible
+      );
       $segmenta->vista_segmentos_lados_completos($esquema);
-      $segmenta->lados_completos_a_tabla_segmentacion_ffrr($esquema,$frac,$radio);
+      $segmenta->lados_completos_a_tabla_segmentacion_ffrr($esquema, $frac, $radio);
       // Calculo de umbral ...
     	// Según nuevo abordaje para forzar partir excedidos -h ...
     	// Valor por encima del 5% del máximo.
@@ -179,17 +183,11 @@ class Radio extends Model
    *
    */
   public function getisSegmentadoAttribute($value) {
-    if (! isset($this->_isSegmentado)) {
-      $result = MyDB::isSegmentado($this,$this->esquema);
-      return $this->_isSegmentado = $result;
-      if ($result > 0):
-        $this->_isSegmentado = true;
-      else:
-        $this->_isSegmentado = false;
-      endif;
-    } else {
-      return $this->_isSegmentado;
-    }
+    if (!isset($this->_isSegmentado)) {
+      $result = MyDB::isSegmentado($this, $this->esquema);
+      $this->_isSegmentado = $result;
+    } 
+    return $this->_isSegmentado;
   }
 
   public function getCodigoRadAttribute($value) {
@@ -218,8 +216,8 @@ class Radio extends Model
     $this->_esquema=$value;
   }
 
-  public function getEsquemasAttribute($value){
-    if (! $this->_esquemas) {
+  public function getEsquemasAttribute($value) {
+    if (!$this->_esquemas) {
       try {
         if (!$this->fraccion) {
           Log::error('Radio sin fracción? : '.collect($this)->toJson(JSON_PRETTY_PRINT));
@@ -227,19 +225,17 @@ class Radio extends Model
         } elseif ($this->fraccion->departamento->provincia->codigo == '06') {
           $esquemas[] = 'e'.$this->fraccion->departamento->codigo;
         } elseif ($this->localidades()->count() > 1) {
-          $loc_no_rural = $this->localidades()->whereHas('aglomerado', function($q) {
-            $q->where('codigo', 'not like', '%0000%');
-          })->get();
+          $loc_no_rural = $this->localidades()->whereHas('aglomerado', 
+            function($q) {
+              $q->where('codigo', 'not like', '%0000%');
+            })->get();
           if ($loc_no_rural->count() > 1) {
             Log::debug('Radio multilocalidades'.$this->localidades()->get()->toJson(JSON_PRETTY_PRINT));
             foreach($loc_no_rural as $localidad) {
-              Log::info('Posible esquema: e'.($localidad->codigo));
               $esquemas[] = 'e'.$localidad->codigo;
             }
             $esquemas[] = 'e'.$this->fraccion->departamento->codigo;
           } elseif ($loc_no_rural->count() == 1) {
-            Log::info('Buscando parte Urbana del Radio en el esquema de la única localidad:'.
-              ($loc_no_rural->first()->codigo));
             $esquemas[] = 'e'.$loc_no_rural->first()->codigo;
           } else { 
             Log::info('Varias localidades sin parte rural ? '.$loc_no_rural);
@@ -260,16 +256,16 @@ class Radio extends Model
       }
       Log::debug('Radio '.$this->codigo.' esperado en esquemas => '
         .collect($esquemas)->toJson(JSON_PRETTY_PRINT));
-      return $this->_esquemas = $esquemas; //$this->_esquema;
+      $this->_esquemas = $esquemas;
     }
-    return $this->_esquemas; //$this->_esquema;
+    return $this->_esquemas;
   }
 
   public function getSVG() {
     // return SVG Radio? Listado? Segmentación?
     //  Utiliza tablas listado_geo, r3 junto a segmentacion y manzanas.
     if (Schema::hasTable($this->esquema.'.listado_geo')) {
-      $height = 600;
+      // $height = 600;
       $width = 600;
       $escalar = false;
       $extent = DB::select("SELECT box2d(st_collect(wkb_geometry_lado)) box FROM
@@ -279,11 +275,11 @@ class Radio extends Model
       list($x0, $y0, $x1, $y1) = sscanf($extent,'BOX(%f %f,%f %f)');
       $Dx = $x1 - $x0; 
       $Dy = $y1 - $y0;
-      if (!$height and $width) 
+      if (!isSet($height) and $width) 
         $height = round($width*$Dy/$Dx);
-      if ($height and !$width) 
+      if ($height and !isSet($width)) 
         $width = round($height*$Dx/$Dy);
-      if (!$height and !$width) {
+      if (!isSet($height) and !isSet($width)) {
         $width = round($perimeter*$Dx/2/($Dx + $Dy)); 
         $height=round($width*$Dy/$Dx);
       }
@@ -297,37 +293,36 @@ class Radio extends Model
         $viewBox = $this->viewBox($extent,$epsilon,$height,$width); 
         $stroke = 2*$epsilon;
       }
-    if (Schema::hasTable($this->esquema.'.manzanas')){
-      $mzas = "
-        UNION
-         ( SELECT st_buffer(wkb_geometry,-5) geom, -1*mza::integer, 'mza' tipo
-           FROM ".$this->esquema.".manzanas
-           WHERE  prov||dpto||frac||radio='".$this->codigo."'
-         ) ";
-      $mzas_labels = "
-        UNION (SELECT '<text x=\"'||st_x(st_centroid(wkb_geometry))||'\"
-        y=\"-'||st_y(st_centroid(wkb_geometry))||'\">'||mza||'</text>'
-        as svg ,20 as orden
-        FROM ".$this->esquema.".manzanas
-        WHERE  prov||dpto||frac||radio='".$this->codigo."' )";
-    } else {
-      Log::debug('No se encontro grafica de manzanas. ');$mzas='';$mzas_labels='';
-    } 
-    if (Schema::hasTable($this->esquema.'.r3')) {
-      $r3_seg = 'r3.seg::integer';
-      $r3_join = "LEFT JOIN ".$this->esquema.".r3 ON s.segmento_id=r3.segmento_id";
-    } else {Log::debug('No se encontro R3. ');
-      $r3_seg = "'99'";
-      $r3_join = '';
-    } 
+      if (Schema::hasTable($this->esquema.'.manzanas')){
+        $mzas = "
+          UNION
+          ( SELECT st_buffer(wkb_geometry,-5) geom, -1*mza::integer, 'mza' tipo
+            FROM ".$this->esquema.".manzanas
+            WHERE  prov||dpto||frac||radio='".$this->codigo."'
+          ) ";
+        $mzas_labels = "
+          UNION (SELECT '<text x=\"'||st_x(st_centroid(wkb_geometry))||'\"
+          y=\"-'||st_y(st_centroid(wkb_geometry))||'\">'||mza||'</text>'
+          as svg ,20 as orden
+          FROM ".$this->esquema.".manzanas
+          WHERE  prov||dpto||frac||radio='".$this->codigo."' )";
+      } else {
+        Log::debug('No se encontro grafica de manzanas. ');$mzas='';$mzas_labels='';
+      } 
+      if (Schema::hasTable($this->esquema.'.r3')) {
+        $r3_seg = 'r3.seg::integer';
+        $r3_join = "LEFT JOIN ".$this->esquema.".r3 ON s.segmento_id=r3.segmento_id";
+      } else {Log::debug('No se encontro R3. ');
+        $r3_seg = "'99'";
+        $r3_join = '';
+      } 
 
-    //dd($viewBox.'/n'.$this->viewBox($extent,$epsilon,$height,$width).'/n'.$x0." -".$y0." ".$x1." -".$y1);
-    // Consulta que arma SVG de Radio, con lo que encuentra en esquema viendo tablas: listado_geo, manzanas, r3
-    /* Colores según javascript en grafo
+      // Consulta que arma SVG de Radio, con lo que encuentra en esquema viendo tablas: listado_geo, manzanas, r3
+      /* Colores según javascript en grafo
        let clusterColors = ['#FF0', '#0FF', '#F0F', '#4139dd', '#d57dba', '#8dcaa4'
           ,'#555','#CCC','#A00','#0A0','#00A','#F00','#0F0','#00F','#008','#800','#080'];
-     */
-    $svg = DB::select("
+       */
+      $svg = DB::select("
 WITH shapes (geom, attribute, tipo) AS (
   ( SELECT 
       CASE WHEN trim(lg.tipoviv) in ('','LSV') then 
