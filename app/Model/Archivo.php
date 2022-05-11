@@ -10,10 +10,12 @@ use Symfony\Component\Process\Exception\ProcessTimedOutException;
 use Symfony\Component\Process\Exception\RuntimeException; 
 use Illuminate\Support\Facades\Config;
 use App\Imports\SegmentosImport;
+use App\Imports\CsvImport;
 use Maatwebsite\Excel\Facades\Excel;
 use App\MyDB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use App\Exceptions\GeoestadisticaException;
 
 class Archivo extends Model
 {
@@ -65,7 +67,7 @@ class Archivo extends Model
 
     public function procesar()
     {
-        if (!$this->procesadoi or true) {
+        if (!$this->procesado or true) {
             if ($this->tipo == 'csv' or $this->tipo == 'dbf') {
                 if (( strtolower(substr($this->nombre_original, 0, 8)) == 'tablaseg')
                     or ( strtolower(substr($this->nombre_original, 0, 7))  == 'segpais')
@@ -74,10 +76,12 @@ class Archivo extends Model
                 ) {
                     return $this->procesarSegmentos();
                 } else {
-                    return $this->procesarC1();
+                    return $this->procesarDBF();
                 }
             } elseif ($this->tipo == 'e00' or $this->tipo == 'bin') {
                 return $this->procesarGeomE00();
+            } elseif ($this->tipo == 'pxrad/dbf') {
+                return $this->procesarPxRad();
             } else {
                 flash('No se encontro qué hacer para procesar '.$this->nombre_original)->warning();
                 return false;
@@ -88,23 +92,26 @@ class Archivo extends Model
         }
     }
 
-    public function procesarC1(){
+    public function procesarDBF()
+    {
         if ($this->tipo == 'csv'){
             $mensaje = 'Se Cargo un csv.';
             $import = new CsvImport;
+            $import->delimiter = "|";
             Excel::import($import, storage_path().'/app/'.$this->nombre);
-      $this->procesado=true;
-      $this->save();
-      return true;
-        }elseif ($this->tipo == 'dbf'){
+            $this->procesado=true;
+            $this->save();
+            return true;
+        } elseif ($this->tipo == 'dbf' or $this->tipo='pxrad/dbf' ){
             // Mensaje de subida de DBF.
             flash('Procesando DBF.')->info();
 
-      // Subo DBF con pgdbf a una tabla temporal.
-            $process = Process::fromShellCommandline('pgdbf -s latin1 $c1_dbf_file | psql -h $host -p $port -U $user $db');
+            // Subo DBF con pgdbf a una tabla temporal.
+            $process = Process::fromShellCommandline('pgdbf -s $encoding $dbf_file | psql -h $host -p $port -U $user $db');
             try {
                 $process->run(null, [
-                    'c1_dbf_file' => storage_path().'/app/'.$this->nombre,
+                    'encoding'=>'latin1',
+                    'dbf_file' => storage_path().'/app/'.$this->nombre,
                     'db'=>Config::get('database.connections.pgsql.database'),
                     'host'=>Config::get('database.connections.pgsql.host'),
                     'user'=>Config::get('database.connections.pgsql.username'),
@@ -113,10 +120,21 @@ class Archivo extends Model
                 //    $process->mustRun();
           // executes after the command finishes
           if (Str::contains($process->getErrorOutput(),['ERROR'])){
-            Log::error('Error cargando C1.',[$process->getOutput(),$process->getErrorOutput()]);
-            flash('Error cargando C1. '.$process->getErrorOutput())->important()->error();
-            return false;
-          }else{
+              $process->run(null, [
+                    'encoding'=>'utf8',
+                    'dbf_file' => storage_path().'/app/'.$this->nombre,
+                    'db'=>Config::get('database.connections.pgsql.database'),
+                    'host'=>Config::get('database.connections.pgsql.host'),
+                    'user'=>Config::get('database.connections.pgsql.username'),
+                    'port'=>Config::get('database.connections.pgsql.port'),
+                    'PGPASSWORD'=>Config::get('database.connections.pgsql.password')]);
+              Log::warning('Error cargando DBF.',[$process->getOutput(),$process->getErrorOutput()]);
+              if (Str::contains($process->getErrorOutput(),['ERROR'])){
+                  Log::error('Error cargando DBF.',[$process->getOutput(),$process->getErrorOutput()]);
+                  flash('Error cargando DBF. '.$process->getErrorOutput())->important()->error();
+                  return false;
+              }
+          } else {
             $this->procesado=true;
             $this->save();
             Log::debug($process->getOutput().$process->getErrorOutput());
@@ -304,5 +322,18 @@ class Archivo extends Model
             $this->save();
             flash($mensaje.$import->getRowCount());
             return true;
+    }
+
+    public function procesarPxRad() {
+        flash('TODO: Procesar PxRad en archivo');
+        $dbf = $this->procesarDBF();
+        try {
+            return $procesar_result = MyDB::procesarPxRad(strtolower($this->tabla),'public');
+        } catch ( GeoestadisticaException $e ) {
+            flash('('.$e->GetCode().') Error. NO SE PUDO PROCESAR PXRAD: '.$e->getMessage())->error()->important();
+            $data['file']['pxrad']='none';
+            Log::debug('Error cargando data Radio '.$e);
+            return view('segmenter/index', ['data' => $data,'epsgs'=> $this->epsgs]);
+        }
     }
 }
