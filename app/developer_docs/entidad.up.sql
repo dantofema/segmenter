@@ -63,7 +63,23 @@ ALTER SEQUENCE public.entidad_id_seq OWNED BY public.entidad.id;
 
 ALTER TABLE ONLY public.entidad ALTER COLUMN id SET DEFAULT nextval('public.entidad_id_seq'::regclass);
 
+--
+-- Name: entidad_id_index; Type: INDEX; Schema: public; Owner: -
+--
 
+CREATE INDEX entidad_id_index ON public.entidad USING btree (id);
+
+--
+-- Name: entidad_codigo_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX entidad_codigo_index ON public.entidad USING btree (codigo);
+
+--
+-- Name: entidad_localidad_id_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX entidad_localidad_id_index ON public.entidad USING btree (localidad_id);
 --
 -- PostgreSQL database dump complete
 --
