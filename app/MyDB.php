@@ -386,7 +386,7 @@ FROM
                 FROM
                 '.$esquema.'."'.$tabla.'" '.$filtro.' group by 1 HAVING count(distinct tiporad20)>1 '.
                 'order by codprov||coddepto||frac2020||radio2020 asc, count(*) desc ;'
-            )
+                )
             );
                   
         } catch (\Illuminate\Database\QueryException $e) {
@@ -398,6 +398,28 @@ FROM
                 'Más de un tipo distinto para el mismo código de radio. '.
                 collect($result)->toJson(JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)
                 , 1);
+        }
+            // Consulta por códigos de radio en más de una localidad que no es mixto.
+            $result = (DB::select(
+                'SELECT codprov||coddepto||frac2020||radio2020 as codigo,
+                    string_agg(distinct \' en \'||codloc,\',\') inconsistencia
+                FROM
+                '.$esquema.'."'.$tabla.'" '.
+                'where upper(tiporad20) != \'M\')'.
+                'group by 1 HAVING count(distinct codloc)>1'.
+                'order by codprov||coddepto||frac2020||radio2020 asc, count(*) desc ;'
+                )
+            );
+
+        } catch (\Illuminate\Database\QueryException $e) {
+            Log::error('Error en consulta para validar pxrad: '.$e->getMessage());
+        }
+        if (count($result) > 0) {
+            $ok = false;
+            throw new Exceptions\GeoestadisticaException(
+                'Más de una localidad en un radio que no es mixto. '.
+                collect($result)->toJson(JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)
+                , 2);
         }
         if ($ok) Log::info('Pxrad ok: '.$tabla);
         return $ok;
