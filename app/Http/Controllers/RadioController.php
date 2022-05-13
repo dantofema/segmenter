@@ -56,7 +56,7 @@ class RadioController extends Controller
     public function show(Radio $radio)
     {
         //
-        return $radio->load(['fraccion','localidades']);
+        return $radio->load(['fraccion','localidades','fraccion.departamento','fraccion.departamento.provincia','tipo']);
           flash(
                 ($radio
                     ->load(['fraccion','localidades'])
