@@ -56,7 +56,7 @@ class RadioController extends Controller
     public function show(Radio $radio)
     {
         //
-        return $radio->load(['fraccion','localidades']);
+        return $radio->load(['fraccion','localidades','tipo','fraccion.departamento','fraccion.departamento.provincia']);
           flash(
                 ($radio
                     ->load(['fraccion','localidades'])
@@ -68,6 +68,19 @@ class RadioController extends Controller
 
     }
 
+    public function show_codigo(string $codigo)
+    {
+        if (strlen($codigo)==9)
+        {
+            return Radio::where('codigo',$codigo)->get()
+                ->load(['fraccion','localidades','tipo','fraccion.departamento','fraccion.departamento.provincia']);
+        } else {
+            Log::error('Código mal formado para radio',[$codigo]);
+            return response()->json([
+                'message' => 'Código mal formado.'
+            ], 404);
+        }
+    }
     /**
      * Show the form for editing the specified resource.
      *
