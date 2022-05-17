@@ -399,6 +399,7 @@ FROM
                 collect($result)->toJson(JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE)
                 , 1);
         }
+        try {
             // Consulta por códigos de radio en más de una localidad que no es mixto.
             $result = (DB::select(
                 'SELECT codprov||coddepto||frac2020||radio2020 as codigo,
@@ -1776,12 +1777,12 @@ FROM
     {
         try{
             DB::statement(
-            "create index IF NOT EXISTS ".$esquema."_".$tabla." on ".$esquema.".".$tabla."
+            "create index IF NOT EXISTS ".$esquema."_".$tabla."_".str_replace(array(' ', ','),'_',$campos)." on ".$esquema.".".$tabla."
                (".$campos.");");
         }catch(QueryException $e){
-            Log::debug('No se pudo generar indice de lado en '.$esquema);
+            Log::debug('No se pudo generar indice de en '.$esquema.' para tabla '.$tabla.' para '.$campos);
         }
-     Log::debug('Se creo indice de lado en '.$esquema);
+     Log::debug('Se creo indice de en '.$esquema.'.'.$tabla.' para '.$campos);
     }
 
 // Generar indice en tabla de listados.
@@ -2034,6 +2035,29 @@ order by 1,2
             return 'R3 sin actualizar';
        }
        return 'Se actualizo r3 con '.$result.' registros';
+    }
+
+    // Junta Manznas de todos los esquemas.
+    public static function juntaManzanas($filtro=null)
+    {
+        try{
+            DB::beginTransaction();
+            if (Schema::hasTable('public.manzanas')) {
+              DB::statement("DROP TABLE public.manzanas;");
+            }
+            DB::statement("CREATE TABLE public.manzanas AS SELECT * FROM indec.manzanas();");
+            $result = DB::select("SELECT Count(*) from manzanas;")[0]->count;
+            self::darPermisosTabla('manzanas');
+            self::createIndex('public','manzanas','prov,dpto,frac,radio,mza');
+            self::createIndex('public','manzanas','wkb_geometry');
+            DB::commit();
+        }catch(QueryException $e){
+            DB::Rollback();
+            $result=null;
+            Log::error('Error no se pudo actualizar las Manzanas '.$filtro.$e);
+            return 'Manzanas sin actualizar';
+       }
+       return 'Se actualizo manzanas con '.$result.' registros';
     }
 
     // MVT de manzanas
