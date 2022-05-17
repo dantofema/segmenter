@@ -1773,14 +1773,16 @@ FROM
     }
 
     // Generar indice en tabla de listados.
-    public static function createIndex($esquema,$tabla,$campos)
+    public static function createIndex($esquema,$tabla,$campos,$tipo_indice='btree')
     {
         try{
             DB::statement(
             "create index IF NOT EXISTS ".$esquema."_".$tabla."_".str_replace(array(' ', ','),'_',$campos)." on ".$esquema.".".$tabla."
-               (".$campos.");");
+               USING ".$tipo_indice."
+               (".$campos.")"); 
         }catch(QueryException $e){
-            Log::debug('No se pudo generar indice de en '.$esquema.' para tabla '.$tabla.' para '.$campos);
+            Log::error('No se pudo generar indice de en '.$esquema.' para tabla '.$tabla.' para '.$campos,[$e]);
+            return;
         }
      Log::debug('Se creo indice de en '.$esquema.'.'.$tabla.' para '.$campos);
     }
@@ -2049,7 +2051,7 @@ order by 1,2
             $result = DB::select("SELECT Count(*) from manzanas;")[0]->count;
             self::darPermisosTabla('manzanas');
             self::createIndex('public','manzanas','prov,dpto,frac,radio,mza');
-            self::createIndex('public','manzanas','wkb_geometry');
+            self::createIndex('public','manzanas','wkb_geometry','gist');
             DB::commit();
         }catch(QueryException $e){
             DB::Rollback();
