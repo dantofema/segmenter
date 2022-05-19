@@ -336,4 +336,4 @@ class Archivo extends Model
         }
     }
 }
-:
+
