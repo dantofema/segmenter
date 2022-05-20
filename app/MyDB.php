@@ -2053,6 +2053,23 @@ order by 1,2
             self::createIndex('public','manzanas','prov,dpto,frac,radio,mza');
             self::createIndex('public','manzanas','wkb_geometry','gist');
             DB::commit();
+            // Tabla con geometría de localdiad y conteo de manzanas
+            DB::beginTransaction();
+            if (Schema::hasTable('public.localidad_geo')) {
+              DB::statement("DROP TABLE public.localidad_geo;");
+            }
+            DB::statement("
+                CREATE TABLE public.localidad_geo AS 
+                select st_union(wkb_geometry) wkb_geometry, prov, dpto, codloc, 
+                max(l.nombre) nombre,
+                sum(conteo) conteo, count(*) manzanas from public.manzanas 
+                left join public.localidad l on l.codigo=prov||dpto||codloc
+                group by prov, dpto, codloc order by prov, dpto, codloc;"
+            );
+            self::darPermisosTabla('localidad_geo');
+            self::createIndex('public','localidad_geo','prov,dpto,codloc');
+            self::createIndex('public','localidad_geo','wkb_geometry','gist');
+            DB::commit();
         }catch(QueryException $e){
             DB::Rollback();
             $result=null;
