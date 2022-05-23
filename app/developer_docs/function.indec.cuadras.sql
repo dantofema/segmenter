@@ -1,0 +1,101 @@
+/*
+junta arcos de todos los ePPDDLLL en cuadras
+autor: -h+m
+fecha: 2022-05-23 Lu
+*/
+
+DROP FUNCTION if exists indec.cuadras();
+create or replace function indec.cuadras()
+returns table (
+    geom public.geometry,
+    userid integer,
+    fnode_ integer,
+    tnode_ integer,
+    lpoly_ integer,
+    rpoly_ integer,
+    length double precision,
+    codigo10 integer,
+    nomencla character varying,
+    codigo20 integer,
+    ancho integer,
+    anchomed double precision,
+    tipo character varying,
+    nombre character varying,
+    ladoi integer,
+    ladod integer,
+    desdei integer,
+    desded integer,
+    hastai integer,
+    hastad integer,
+    mzai character varying,
+    mzad character varying,
+    codloc20 character varying,
+    nomencla10 character varying,
+    nomenclai character varying,
+    nomenclad character varying,
+    codinomb character varying,
+    segi integer,
+    segd integer,
+    created_at timestamp with time zone
+)
+language plpgsql volatile
+set client_min_messages = 'notice'
+as $function$
+declare
+strSQL text;
+rec record;
+count_loc integer;
+begin
+count_loc := 0;
+RAISE NOTICE 'Buscando arc de todas las localidades...';
+ FOR rec IN SELECT table_schema
+            FROM information_schema.tables
+            WHERE table_schema like 'e________' and table_name = 'arc'
+            GROUP BY table_schema
+ LOOP
+     strSQL := CONCAT_WS(' union ',strSQL,'
+select 
+    st_transform(wkb_geometry,4326) as geom, 
+    userid::integer,
+    fnode_::integer,
+    tnode_::integer,
+    lpoly_::integer,
+    rpoly_::integer,
+    length::double precision,
+    codigo10::integer,
+    nomencla::character varying,
+    codigo20::integer,
+    ancho::integer,
+    anchomed::double precision,
+    tipo::character varying,
+    nombre::character varying,
+    ladoi::integer,
+    ladod::integer,
+    desdei::integer,
+    desded::integer,
+    hastai::integer,
+    hastad::integer,
+    mzai::character varying,
+    mzad::character varying,
+    ''' || substr(rec.table_schema,2,8) || '''::character varying as codloc20,
+    nomencla10::character varying,
+    nomenclai::character varying,
+    nomenclad::character varying,
+    codinomb::character varying,
+    segi::integer,
+    segd::integer,
+    now() created_at 
+from ' || rec.table_schema || '.arc 
+  ');
+    count_loc := count_loc + 1;
+ END LOOP;
+
+RAISE NOTICE 'Juntando % localidades',count_loc;
+
+return query
+
+EXECUTE strSQL;
+
+end
+$function$
+
