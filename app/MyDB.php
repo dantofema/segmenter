@@ -2162,6 +2162,48 @@ order by 1,2
        return 'Se actualizo cuadras con '.$result.' registros';
     }
 
+    public static function radiosDeListados()
+    {
+        try{
+            DB::beginTransaction();
+            if (Schema::hasTable('public.radios_de_listados')) {
+              DB::statement("DROP TABLE public.radios_de_listados;");
+            }
+            DB::statement("CREATE TABLE public.radios_de_listados AS SELECT * FROM indec.radios_de_listados();");
+            $result = DB::select("SELECT Count(*) from radios_de_listados;")[0]->count;
+            self::darPermisosTabla('radios_de_listados');
+            self::createIndex('public','radios_de_listados','radio');
+            self::createIndex('public','radios_de_listados','localidad');
+            DB::commit();
+        }catch(QueryException $e){
+            DB::Rollback();
+            $result=null;
+            Log::error('Error no se pudo actualizar los Radios de ePPDDDLLL.listados '.$e);
+            return 'Radios de ePPDDDLLL.listados sin actualizar';
+       }
+       return 'Se actualizo radios_de_listados con '.$result.' registros';
+    }
 
+    public static function radiosDeArcs()
+    {
+        try{
+            DB::beginTransaction();
+            if (Schema::hasTable('public.radios_de_arcs')) {
+              DB::statement("DROP TABLE public.radios_de_arcs;");
+            }
+            DB::statement("CREATE TABLE public.radios_de_arcs AS SELECT * FROM indec.radios_de_arcs();");
+            $result = DB::select("SELECT Count(*) from radios_de_arcs;")[0]->count;
+            self::darPermisosTabla('radios_de_arcs');
+            self::createIndex('public','radios_de_arcs','radio');
+            self::createIndex('public','radios_de_arcs','localidad');
+            DB::commit();
+        }catch(QueryException $e){
+            DB::Rollback();
+            $result=null;
+            Log::error('Error no se pudo actualizar los Radios de ePPDDDLLL.arcs '.$e);
+            return 'Radios de ePPDDDLLL.arcs sin actualizar';
+       }
+       return 'Se actualizo radios_de_arcs con '.$result.' registros';
+    }
 }
 
