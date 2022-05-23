@@ -114,6 +114,8 @@ Route::get('/setup/update/R3',
 'SetupController@juntaR3')->name('setup.juntaR3');
 Route::get('/setup/update/Manzanas',
 'SetupController@juntaManzanas')->name('setup.manzanas');
+Route::get('/setup/update/Vias',
+'SetupController@juntaVias')->name('setup.juntaVias');
 Route::get('/setup/adyacencias/{esquema}',
 'SetupController@generarAdyacenciasEsquema')->name('setup.adyacencias');
 Route::get('/setup/juntaMenores/{esquema}/{frac}/{radio}/{n}',

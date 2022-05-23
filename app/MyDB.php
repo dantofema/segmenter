@@ -2079,6 +2079,29 @@ order by 1,2
        return 'Se actualizo manzanas con '.$result.' registros';
     }
 
+    // Junta Vias de todos los esquemas.
+    public static function juntaVias($filtro=null)
+    {
+        try{
+            DB::beginTransaction();
+            if (Schema::hasTable('public.vias')) {
+              DB::statement("DROP TABLE public.vias;");
+            }
+            DB::statement("CREATE TABLE public.vias AS SELECT * FROM indec.vias();");
+            $result = DB::select("SELECT Count(*) from vias;")[0]->count;
+            self::darPermisosTabla('vias');
+            self::createIndex('public','vias','codloc');
+            self::createIndex('public','vias','geom','gist');
+            DB::commit();
+        }catch(QueryException $e){
+            DB::Rollback();
+            $result=null;
+            Log::error('Error no se pudo actualizar las Vias '.$filtro.$e);
+            return 'Vias sin actualizar';
+       }
+       return 'Se actualizo vias con '.$result.' registros';
+    }
+
     // MVT de manzanas
     //
     public static function mvtManznas(Provincia $oProv)
