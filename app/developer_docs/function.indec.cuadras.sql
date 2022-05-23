@@ -8,7 +8,6 @@ DROP FUNCTION if exists indec.cuadras();
 create or replace function indec.cuadras()
 returns table (
     geom public.geometry,
-    userid integer,
     fnode_ integer,
     tnode_ integer,
     lpoly_ integer,
@@ -56,7 +55,6 @@ RAISE NOTICE 'Buscando arc de todas las localidades...';
      strSQL := CONCAT_WS(' union ',strSQL,'
 select 
     st_transform(wkb_geometry,4326) as geom, 
-    userid::integer,
     fnode_::integer,
     tnode_::integer,
     lpoly_::integer,
