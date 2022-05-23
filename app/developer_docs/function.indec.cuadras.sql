@@ -55,11 +55,14 @@ RAISE NOTICE 'Buscando arc de todas las localidades...';
      strSQL := CONCAT_WS(' union ',strSQL,'
 select 
     st_transform(wkb_geometry,4326) as geom, 
-    fnode_::integer,
-    tnode_::integer,
-    lpoly_::integer,
-    rpoly_::integer,
-    length::double precision,
+--    fnode_::integer,
+--    tnode_::integer,
+--    lpoly_::integer,
+--    rpoly_::integer,
+--    length::double precision,
+    Null::integer fnode_, Null::integer tnode_, Null::integer lpoly_, Null::integer rpoly_, 
+    Null::double precision length,
+--    en algunos esquemas .arc no tare estos datos, se conservan por legacy
     codigo10::integer,
     nomencla::character varying,
     codigo20::integer,
