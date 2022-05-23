@@ -33,8 +33,8 @@ returns table (
     nomenclai character varying,
     nomenclad character varying,
     codinomb character varying,
-    segi integer,
-    segd integer,
+--    segi integer,
+--    segd integer,
     created_at timestamp with time zone
 )
 language plpgsql volatile
@@ -60,10 +60,10 @@ select
 --    lpoly_::integer,
 --    rpoly_::integer,
 --    length::double precision,
+--    codigo10::integer,
     Null::integer fnode_, Null::integer tnode_, Null::integer lpoly_, Null::integer rpoly_, 
-    Null::double precision length,
+    Null::double precision length, Null::integer codigo10,
 --    en algunos esquemas .arc no tare estos datos, se conservan por legacy
-    codigo10::integer,
     nomencla::character varying,
     codigo20::integer,
     ancho::integer,
@@ -79,12 +79,12 @@ select
     mzai::character varying,
     mzad::character varying,
     ''' || substr(rec.table_schema,2,8) || '''::character varying as codloc20,
-    nomencla10::character varying,
+    Null::character varying nomencla10,
     nomenclai::character varying,
     nomenclad::character varying,
     codinomb::character varying,
-    segi::integer,
-    segd::integer,
+--    segi::integer,
+--    segd::integer,
     now() created_at 
 from ' || rec.table_schema || '.arc 
   ');
