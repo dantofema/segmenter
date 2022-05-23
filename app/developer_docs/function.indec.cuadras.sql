@@ -33,8 +33,8 @@ returns table (
     nomenclai character varying,
     nomenclad character varying,
     codinomb character varying,
-    segi integer,
-    segd integer,
+--    segi integer,
+--    segd integer,
     created_at timestamp with time zone
 )
 language plpgsql volatile
@@ -83,8 +83,8 @@ select
     nomenclai::character varying,
     nomenclad::character varying,
     codinomb::character varying,
-    segi::integer,
-    segd::integer,
+--    segi::integer,
+--    segd::integer,
     now() created_at 
 from ' || rec.table_schema || '.arc 
   ');
