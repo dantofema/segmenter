@@ -60,10 +60,10 @@ select
 --    lpoly_::integer,
 --    rpoly_::integer,
 --    length::double precision,
+--    codigo10::integer,
     Null::integer fnode_, Null::integer tnode_, Null::integer lpoly_, Null::integer rpoly_, 
-    Null::double precision length,
+    Null::double precision length, Null::integer codigo10,
 --    en algunos esquemas .arc no tare estos datos, se conservan por legacy
-    codigo10::integer,
     nomencla::character varying,
     codigo20::integer,
     ancho::integer,
