@@ -2039,7 +2039,7 @@ order by 1,2
        return 'Se actualizo r3 con '.$result.' registros';
     }
 
-    // Junta Manznas de todos los esquemas.
+    // Junta Manzanas de todos los esquemas.
     public static function juntaManzanas($filtro=null)
     {
         try{
@@ -2081,7 +2081,7 @@ order by 1,2
 
     // MVT de manzanas
     //
-    public static function mvtManznas(Provincia $oProv)
+    public static function mvtManzanas(Provincia $oProv)
     {
       if( isset($oProv) ){
         try{
