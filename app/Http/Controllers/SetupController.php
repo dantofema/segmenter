@@ -225,6 +225,12 @@ class SetupController extends Controller
         return view('home');
     }
 
+    public function juntaCuadras()
+    {
+        flash('Resultado: '.MyDB::juntaCuadras());
+        return view('home');
+    }
+
     public function juntaListadosSegmentados()
     {
         flash('Resultado: '.MyDB::juntaListadossegmentados());

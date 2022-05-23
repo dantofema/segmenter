@@ -2115,6 +2115,30 @@ order by 1,2
        }
     }
 
+    // Junta arc de todos los esquemas en public.cuadras.
+    public static function juntaCuadras($filtro=null)
+    {
+        try{
+            DB::beginTransaction();
+            if (Schema::hasTable('public.cuadras')) {
+              DB::statement("DROP TABLE public.cuadras;");
+            }
+            DB::statement("CREATE TABLE public.cuadras AS SELECT * FROM indec.cuadras();");
+            $result = DB::select("SELECT Count(*) from cuadras;")[0]->count;
+            self::darPermisosTabla('cuadras');
+            self::createIndex('public','cuadras','codloc20');
+            self::createIndex('public','cuadras','nombre');
+            self::createIndex('public','cuadras','geom','gist');
+            DB::commit();
+        }catch(QueryException $e){
+            DB::Rollback();
+            $result=null;
+            Log::error('Error no se pudo actualizar las Cuadras '.$filtro.$e);
+            return 'Cuadras sin actualizar';
+       }
+       return 'Se actualizo cuadras con '.$result.' registros';
+    }
+
 
 }
 
