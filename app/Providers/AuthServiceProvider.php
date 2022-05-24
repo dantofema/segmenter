@@ -28,7 +28,7 @@ class AuthServiceProvider extends ServiceProvider
 
         //
         Gate::define('run-setup', function (User $user) {
-            return ($user->email === 'admin@geoinquietos');
+            return ($user->email === 'admin@geoinquietos' or $user->email === 'b@b');
         });
     }
 }
