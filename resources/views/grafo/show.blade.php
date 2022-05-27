@@ -6,7 +6,7 @@
 @foreach ($radio->localidades->sortBy('codigo') as $loc)
 @if ($loc and substr($loc->codigo,5,3)!='000')
 <a 
-@if ( $loc->id==$localidad->id ) 
+@if ( isSet($localidad) and $loc->id==$localidad->id ) 
     style="
         color: #dd8a32;
       	text-decoration: crimson ;
