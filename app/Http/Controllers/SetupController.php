@@ -219,6 +219,36 @@ class SetupController extends Controller
         return view('home');
     }
 
+    public function juntaManzanas()
+    {
+        flash('Resultado: '.MyDB::juntaManzanas());
+        return view('home');
+    }
+
+    public function juntaVias()
+    {
+        flash('Resultado: '.MyDB::juntaVias());
+        return view('home');
+    }
+    
+    public function juntaCuadras()
+    {
+        flash('Resultado: '.MyDB::juntaCuadras());
+        return view('home');
+    }
+
+    public function radiosDeListados()
+    {
+        flash('Resultado: '.MyDB::radiosDeListados());
+        return view('home');
+    }
+
+    public function radiosDeArcs()
+    {
+        flash('Resultado: '.MyDB::radiosDeArcs());
+        return view('home');
+    }
+
     public function juntaListadosSegmentados()
     {
         flash('Resultado: '.MyDB::juntaListadossegmentados());

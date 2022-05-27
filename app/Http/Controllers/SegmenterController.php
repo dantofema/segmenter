@@ -21,6 +21,7 @@ use App\Model\Localidad;
 use App\Model\Radio;
 use App\Model\Fraccion;
 use App\Model\TipoRadio;
+use App\Exceptions\GeoestadisticaException;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
@@ -233,123 +234,96 @@ class SegmenterController extends Controller
           flash('Segmentado automáticamente a 36 viviendas x segmento')->important();
     }
     if ($request->hasFile('pxrad')) {
-     if($pxrad_file = Archivo::cargar($request->pxrad, Auth::user())) {
-         flash("Archivo PxRad ")->info();
-        } else {
+     if ($pxrad_file = Archivo::cargar($request->pxrad, Auth::user())) {
+        $pxrad_file->tipo = 'pxrad/dbf';
+        flash("Archivo PxRad ")->info();
+        $procesar_result = $pxrad_file->procesar();
+     } else {
+         $procesar_result = false;
          flash("Error en el modelo cargar archivo")->error();
      }
-        $random_name='t_'.$request->pxrad->hashName();
-        $data['file_pxrad']['pxrad'] = $request->pxrad->storeAs('segmentador', $random_name); //.'.'.$request->c1->getClientOriginalExtension());
-        $original_extension = strtolower($request->pxrad->getClientOriginalExtension());
-        $original_name = $request->pxrad->getClientOriginalName();
-
-        //Si no se cargo geometria tomo del nombre del listado los utilmos 8
-        //caracteres del nombre, puede ser fecha
-        $codaglo=isset($codaglo)?$codaglo:substr($original_name,-13,9);
-
-       if ($original_extension == 'csv'){
-    $data['file_pxrad']['csv_info'] = 'Se Cargo un csv en pxrad, no esperado.';
-       }
-       elseif ($original_extension == 'dbf'){
-    $data['file_pxrad']['dbf_info'] = 'Se Cargo una pxrad en formato dbf.';
-    // Subo DBF con pgdbf a una tabla temporal.
-              $process = Process::fromShellCommandline('pgdbf -s UTF8 $pxrad_dbf_file | psql -h $host -p $port -U $user $db');
-    $process->run(null, ['pxrad_dbf_file' => storage_path().'/app/'.$data['file_pxrad']['pxrad'],'db'=>Config::get('database.connections.pgsql.database'),'host'=>Config::get('database.connections.pgsql.host'),'user'=>Config::get('database.connections.pgsql.username'),'port'=>Config::get('database.connections.pgsql.port'),'PGPASSWORD'=>Config::get('database.connections.pgsql.password')]);
-        // executes after the command finishes
-        if (!$process->isSuccessful()) {
-            flash($data['file']['error']=$process->getErrorOutput())->important();
-  }else{
-            $tabla = strtolower(
-      substr($data['file_pxrad']['pxrad'],strrpos($data['file_pxrad']['pxrad'],'/')+1,-4) );
-      if (! Schema::hasTable($tabla)){
-          $process = Process::fromShellCommandline('pgdbf -s latin1 $pxrad_dbf_file | psql -h $host -p $port -U $user $db');
-          $process->run(null, ['pxrad_dbf_file' => storage_path().'/app/'.$data['file_pxrad']['pxrad'],'db'=>Config::get('database.connections.pgsql.database'),'host'=>Config::get('database.connections.pgsql.host'),'user'=>Config::get('database.connections.pgsql.username'),'port'=>Config::get('database.connections.pgsql.port'),'PGPASSWORD'=>Config::get('database.connections.pgsql.password')]);
-          flash('La PxRad dbf fue procesada como latin1')->warning()->important();
-            }
-      // Leo dentro de la tabla importada desde el dbf
-      flash($data['file_pxrad']['info']= 'Resultado carga dbf: '.$process->getOutput())->success()->important();
- 
-      try{
-            $procesar_result=MyDB::procesarPxRad($tabla,'public');
+      if ($procesar_result) 
+      {
+          $tabla = $pxrad_file->tabla;
             // Busco provincia encontrada en pxrad:
-            $prov=MyDB::getCodProv($tabla,'public');
-            if($prov==0){
-              flash('Error grave. Buscando provincia. NO SE PUDO PROCESAR PXRAD ! ')->error()->important();
-              $data['file']['pxrad']='No se pudo procesar PxRad! ';
+          try {
+              $prov=MyDB::getCodProv($tabla,'public');
+              if ($prov == 0) {
+                 flash('Error grave. Buscando provincia. NO SE PUDO PROCESAR PXRAD ! ')->error()->important();
+                 $data['file']['pxrad']='No se pudo procesar PxRad! ';
+                 return view('segmenter/index', ['data' => $data,'epsgs'=> $this->epsgs]);
+              }
+              $oProvincia= Provincia::where('codigo', $prov)->first();
+              if ($oProvincia==null){
+                  $prov_data=MyDB::getDataProv($tabla,'public');
+                  $oProvincia= new Provincia ($prov_data);
+                  if ($oProvincia->save())
+                  {
+                      flash('Se creó la provincia: '.
+                         $oProvincia->tojson(JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))
+                         ->warning()->important();
+                  }
+              } else {
+                  flash('Provincia: ('.$oProvincia->codigo.') '.$oProvincia->nombre)->success()->important();
+              }
+          } catch (Illuminate\Database\QueryException $e){
+              flash('Error grave. NO SE PUDO PROCESAR PXRAD '.$e)->error()->important();
+              $data['file']['pxrad']='none';
               return view('segmenter/index', ['data' => $data,'epsgs'=> $this->epsgs]);
-            }
-        $oProvincia= Provincia::where('codigo', $prov)->first();
-        if ($oProvincia==null){
-          $prov_data=MyDB::getDataProv($tabla,'public');
-          $oProvincia= new Provincia ($prov_data);
-          if ($oProvincia->save()){
-             flash('Se creó la provincia: '.$oProvincia->tojson(JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))->warning()->important();
-           }
-        }else{
-           flash('Provincia: ('.$oProvincia->codigo.') '.$oProvincia->nombre)->success()->important();
-        }
-      }catch (Illuminate\Database\QueryException $e){
-        flash('Error grave. NO SE PUDO PROCESAR PXRAD '.$e)->error()->important();
-        $data['file']['pxrad']='none';
-        return view('segmenter/index', ['data' => $data,'epsgs'=> $this->epsgs]);
-      }
-
-      $depto_data=MyDB::getDatadepto($tabla,'public');
-//      Log::debug('Deptos data: '.collect($depto_data) ); //.' cantidad: '.count($depto_data));
-      foreach($depto_data as $depto){
-        $depto->provincia_id=$oProvincia->id;
-        //:dd($depto);
-        $oProvincia->Departamentos()->save($oDepto = Departamento::firstOrCreate(['codigo'=>$depto->codigo
-        ],collect($depto)->toArray()));
-//        Log::debug('Depto: '.$oDepto->tojson(JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-
+          }
+          $depto_data=MyDB::getDatadepto($tabla,'public');
+          foreach ($depto_data as $depto){
+              $depto->provincia_id=$oProvincia->id;
+              $oProvincia->Departamentos()->save(
+                  $oDepto = Departamento::firstOrCreate(
+                      ['codigo'=>$depto->codigo
+                      ],collect($depto)->toArray()));
                     // Recorro Fracciones leídas del departamento
-        $frac_data=MyDB::getDataFrac($tabla,'public',$oDepto->codigo);
-        foreach($frac_data as $fraccion){
-            $oDepto->Fracciones()->save($oFraccion = Fraccion::firstOrCreate(['codigo'=>$fraccion->codigo
+              $frac_data=MyDB::getDataFrac($tabla,'public',$oDepto->codigo);
+              foreach($frac_data as $fraccion){
+                  $oDepto->Fracciones()->save($oFraccion = Fraccion::firstOrCreate(['codigo'=>$fraccion->codigo
                         ],collect($fraccion)->toArray()),false);
-        }
+              }
+              //Leo Localidades y recorro
+              $loc_data=MyDB::getDataLoc($tabla,'public',$oDepto->codigo);
+              foreach($loc_data as $localidad){
+                  $localidad->depto_id=$oDepto->id;
+                  $oDepto->load('localidades');
+                  $oDepto->Localidades()->sync($oLocalidad = Localidad::firstOrCreate(['codigo'=>$localidad->codigo
+                      ],collect($localidad)->toArray()),false);
+                  $estado = $oLocalidad->wasRecentlyCreated ? ' (nueva) ' : ' (guardada) ';
+                  // Busco Aglomerado de la localidad y asigno localidad al aglomerado
+                  $aglo_data=MyDB::getDataAglo($tabla,'public',$oLocalidad->codigo);
+                  $oLocalidad->Aglomerado()->associate(Aglomerado::firstorCreate(
+                       ['codigo'=>$aglo_data->codigo],
+                       collect($aglo_data)->toArray()));
+                  $oLocalidad->save();
 
-        //Leo Localidades y recorro
-        $loc_data=MyDB::getDataLoc($tabla,'public',$oDepto->codigo);
-        foreach($loc_data as $localidad){
-//            dd($oDepto,$localidad,Localidad::firstOrNew(collect($localidad)->toArray()));
-            $localidad->depto_id=$oDepto->id;
-            $oDepto->load('localidades');
-            $oDepto->Localidades()->sync($oLocalidad = Localidad::firstOrCreate(['codigo'=>$localidad->codigo
-      ],collect($localidad)->toArray()),false);
-      $estado=$oLocalidad->wasRecentlyCreated?' (nueva) ':' (guardada) ';
-//                  Log::debug('Localidad: '.$estado.$oLocalidad->tojson(JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-//      $aLocalidades[]=Localidad::firstOrNew(collect($localidad)->toArray());
+                  // Obtengo, recorro y cargo los radios
+                  try {
+                      $radio_data = MyDB::getDataRadio ($tabla, 'public', $oLocalidad->codigo);
+                  } catch ( GeoestadisticaException $e ) {
+                      flash('('.$e->GetCode().') Error. NO SE PUDO PROCESAR PXRAD: '.$e->getMessage())->error()->important();
+                      $data['file']['pxrad']='none';
+                      Log::debug('Error cargando data Radio '.$e);
+                      return view('segmenter/index', ['data' => $data,'epsgs'=> $this->epsgs]);
+                  }
 
-      // Busco Aglomerado de la localidad y asigno localidad al aglomerado
-      $aglo_data=MyDB::getDataAglo($tabla,'public',$oLocalidad->codigo);
-      $oLocalidad->Aglomerado()->associate(Aglomerado::firstorCreate(['codigo'=>$aglo_data->codigo],
-        collect($aglo_data)->toArray()));
-      $oLocalidad->save();
-
-                        // Obtengo, recorro y cargo los radios
-                  $radio_data=MyDB::getDataRadio($tabla,'public',$oLocalidad->codigo);
-      foreach($radio_data as $radio){
-                $radio->localidad_id=$oLocalidad->id;
-                            $oLocalidad->load('radios');
-                            $oLocalidad->Radios()->sync($oRadio = Radio::firstOrCreate(['codigo'=>$radio->codigo
-          ],collect($radio)->toArray()),false);
-
-          $estado=$oRadio->wasRecentlyCreated?' (nueva) ':' (guardada) ';
-          $oRadio->Fraccion()->associate(Fraccion::where('codigo',substr($radio->codigo,0,7))->firstorFail());
-          $oRadio->Tipo()->associate(TipoRadio::firstOrCreate(['nombre'=>$radio->tipo]));
-                            $oRadio->save();
-  //                          Log::debug('Radio: '.$estado.$oRadio->tojson(JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-                        }
-        }
+                  foreach($radio_data as $radio){
+                      $radio->localidad_id=$oLocalidad->id;
+                      $oLocalidad->load('radios');
+                      $oLocalidad->Radios()->sync($oRadio = Radio::firstOrCreate(
+                          ['codigo'=>$radio->codigo],collect($radio)->toArray()),false);
+                      $estado=$oRadio->wasRecentlyCreated?' (nueva) ':' (guardada) ';
+                      $oRadio->Fraccion()->associate(Fraccion::where('codigo',substr($radio->codigo,0,7))->firstorFail());
+                      $oRadio->Tipo()->associate(TipoRadio::firstOrCreate(['nombre'=>$radio->tipo]));
+                      $oRadio->save();
+                  }
+              }
+          }
       }
-
-//      Log::debug('Provincia: '.$oProvincia->tojson(JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-  }
-       }
       $data['file']['pxrad']='Si';
-    }else{
+    } else  {
       $data['file_pxrad']['pxrad']='none pxrad';
       $data['file']['pxrad']='none';
     }
