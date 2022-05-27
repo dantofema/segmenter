@@ -3,6 +3,8 @@
 namespace App\Model;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Arr;
 
 class Provincia extends Model
 {
@@ -12,6 +14,10 @@ class Provincia extends Model
     protected $fillable = [
         'id','codigo','nombre'
     ];
+
+    protected $url_json = 'https://geoservicios.indec.gob.ar/geoserver/sig/ows';
+    protected $params = ['service'=>'WFS','version'=>'1.0.0','request'=>'GetFeature',
+    'typeName'=>'sig:v_provincias','outputFormat'=>'application/json'];
 
     // Sin fecha de creación o modificación
     //
@@ -40,4 +46,14 @@ class Provincia extends Model
 //    {
 //        return $this->hasManyThrough('App\Model\Radio','App\Model\Departamento');
 //    }
+     /**
+     * Get the json geoservicios de la provincia.
+     */
+    public function geojson()
+    {
+        return Http::get($this->url_json,
+         Arr::add($this->params,"cql_filter","link =  '".$this->codigo."'")
+        );
+    }
+
 }
