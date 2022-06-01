@@ -87,7 +87,10 @@ class SegmenterController extends Controller
     }else {
             $epsg_def= '';
     }
-    $codaglo=isset($codaglo)?$codaglo:'temporal';
+    $temp = array();
+    $algo =  array('link' => 'temporal');
+    $temp[0] = (object) $algo;
+    $codaglo = isset($codaglo) ? $codaglo : $temp;
     $processOGR2OGR =
                 Process::fromShellCommandline('(/usr/bin/ogr2ogr -f \
                 "PostgreSQL" PG:"dbname=$db host=$host user=$user port=$port \
