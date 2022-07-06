@@ -58,6 +58,7 @@ class SegmenterController extends Controller
       $AppUser= Auth::user();
       $data = [];
       $segmenta_auto=false;
+      $pba=false;
       $epsg_id = $request->input('epsg_id')?$request->input('epsg_id'):'epsg:22183';
       $data['epsg']['id']=$epsg_id;
       flash('SRS: '.$data['epsg']['id']);
@@ -178,7 +179,16 @@ class SegmenterController extends Controller
                 if( $ppddllls=$shp_file->procesar() ) {
                       flash('Proceso');
                 }else{
-                      flash('la pifio')->error();
+                    $processOGR2OGR->run(null, ['capa'=>'arc',
+                     'epsg'=>$epsg_def,'file' => storage_path().'/app/'.$data['file']['shp'],
+                     'e00'=>$codaglo[0]->link,
+                     'db'=>Config::get('database.connections.pgsql.database'),
+                     'host'=>Config::get('database.connections.pgsql.host'),
+                     'user'=>Config::get('database.connections.pgsql.username'),
+                     'pass'=>Config::get('database.connections.pgsql.password'),
+                     'port'=>Config::get('database.connections.pgsql.port')]);                
+                      $pba = true; //maybe
+                      flash('la pifio')->warning();
                 }
             }
             if (!$processOGR2OGR->isSuccessful()) {
@@ -200,7 +210,7 @@ class SegmenterController extends Controller
       $mensajes='ERROR';
       $ppdddllls=[];
         }
-      if ($epsg_id=='sr-org:8333'){ // Si es CABA cargo sin epsg
+      if ($epsg_id=='sr-org:8333' or $pba){ // Si es CABA cargo sin epsg o provincia de Buenos Aires
             $processOGR2OGR = Process::fromShellCommandline('/usr/bin/ogr2ogr -f "PostgreSQL" PG:"dbname=$db host=$host user=$user port=$port active_schema=e$e00 password=$pass port=$port" --config PG_USE_COPY YES -lco OVERWRITE=YES --config OGR_TRUNCATE YES -dsco PRELUDE_STATEMENTS="SET client_encoding TO latin1;CREATE SCHEMA IF NOT EXISTS e$e00;" -dsco active_schema=e$e00 -lco PRECISION=NO -lco SCHEMA=e$e00 -skipfailures -addfields -overwrite $file ARC');
             $processOGR2OGR->setTimeout(3600);
             $processOGR2OGR->run(null, ['epsg' => $epsg_id, 'file' => storage_path().'/app/'.$data['file']['shp'],'e00'=>$codaglo[0]->link,'db'=>Config::get('database.connections.pgsql.database'),'host'=>Config::get('database.connections.pgsql.host'),'user'=>Config::get('database.connections.pgsql.username'),'pass'=>Config::get('database.connections.pgsql.password'),'port'=>Config::get('database.connections.pgsql.port')]);
