@@ -63,6 +63,16 @@ class SetupController extends Controller
         return view('home');
     }
 
+    /**
+     * Setear SRID y regenerar topología para el esquema.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function setSRIDSchema($schema,$srid)
+    {
+        MyDB::setSRID($schema,$srid);
+        return self::cargarTopologia($schema);
+    }
 
     public function grupoGeoestadistica($usuario)
     {
