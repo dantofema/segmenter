@@ -1875,7 +1875,7 @@ public static function getPxSeg($esquema)
         }catch(QueryException $e){
           dd($e);
         }
-        Log::error('Reintentar.', $e);
+        Log::error('Reintentar.', [$e]);
         return;
       }
     }
