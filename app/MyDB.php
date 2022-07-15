@@ -1870,7 +1870,12 @@ public static function getPxSeg($esquema)
                       geometry(POINT,".$srid_id.") USING st_setsrid(wkb_geometry,".$srid_id.");");
         return;
       }catch(QueryException $e){
-        dd($e);
+        try{
+          DB::statment("drop view if exists ".$esquema.".descripcion_segmentos cascade;");
+        }catch(QueryException $e){
+          dd($e);
+        }
+        Log::error('Reintentar.', $e);
         return;
       }
     }
