@@ -1873,6 +1873,7 @@ public static function getPxSeg($esquema)
         try{
           DB::statement("drop view if exists ".$esquema.".descripcion_segmentos cascade;");
           DB::statement("drop view if exists ".$esquema.".v_radios cascade;");
+          DB::statement("drop view if exists ".$esquema.".v_fracciones cascade;");
         }catch(QueryException $e){
           dd($e);
         }
