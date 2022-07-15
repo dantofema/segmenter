@@ -87,7 +87,7 @@ select
 --    segi::integer,
 --    segd::integer,
     now() created_at,
-    ' || rec.table_schema || '::character varying de_esquema,
+    ' || rec.table_schema || '::character varying de_esquema
 from ' || rec.table_schema || '.arc 
   ');
     count_loc := count_loc + 1;
