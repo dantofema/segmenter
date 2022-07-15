@@ -34,6 +34,7 @@ returns table (
     nomenclad character varying,
     codinomb character varying,
     de_esquema character varying,
+    srid integer,
 --    segi integer,
 --    segd integer,
     created_at timestamp with time zone
@@ -87,7 +88,8 @@ select
 --    segi::integer,
 --    segd::integer,
     now() created_at,
-    ' || rec.table_schema || '::character varying de_esquema
+    ''' || rec.table_schema || '''::character varying de_esquema,
+    st_srid(wkb_geometry) srid
 from ' || rec.table_schema || '.arc 
   ');
     count_loc := count_loc + 1;
