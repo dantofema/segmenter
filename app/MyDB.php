@@ -1870,8 +1870,9 @@ public static function getPxSeg($esquema)
                       geometry(POINT,".$srid_id.") USING st_setsrid(wkb_geometry,".$srid_id.");");
         return;
       }catch(QueryException $e){
-      dd($e);
-      return;
+        dd($e);
+        return;
+      }
     }
      Log::debug('Se estableció el SRS: '.$srid_id.' en '.$esquema);
     }
