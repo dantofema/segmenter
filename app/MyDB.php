@@ -1871,7 +1871,7 @@ public static function getPxSeg($esquema)
         return;
       }catch(QueryException $e){
         try{
-          DB::statment("drop view if exists ".$esquema.".descripcion_segmentos cascade;");
+          DB::statement("drop view if exists ".$esquema.".descripcion_segmentos cascade;");
         }catch(QueryException $e){
           dd($e);
         }
