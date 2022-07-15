@@ -1866,7 +1866,7 @@ public static function getPxSeg($esquema)
         DB::statement("ALTER TABLE ".$esquema.".arc ALTER COLUMN wkb_geometry SET DATA TYPE 
                       geometry(LINESTRING,".$srid_id.")
                       USING st_setsrid(wkb_geometry,".$srid_id.");");
-        DB::statement("ALTER TABLE ".$esquema.".lab  LATER COLUMN wkb_geometry TYPE
+        DB::statement("ALTER TABLE ".$esquema.".lab  ALTER COLUMN wkb_geometry TYPE
                       geometry(POINT,".$srid_id.") USING st_setsrid(wkb_geometry,".$srid_id.");");
         return;
       }catch(QueryException $e){
