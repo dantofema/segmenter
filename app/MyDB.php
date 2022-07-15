@@ -1864,7 +1864,7 @@ public static function getPxSeg($esquema)
       Log::warning('Problemas al establecer el SRS: '.$srid_id.' en '.$esquema.': '.$e);
       try{
         DB::statement("ALTER TABLE ".$esquema.".arc ALTER COLUMN wkb_geometry SET DATA TYPE 
-                      geometry(MULTILINESTRING,".$srid_id.")
+                      geometry(LINESTRING,".$srid_id.")
                       USING st_setsrid(wkb_geometry,".$srid_id.");");
         DB::statement("ALTER TABLE ".$esquema.".lab  LATER COLUMN wkb_geometry TYPE
                       geometry(POINT,".$srid_id.") USING st_setsrid(wkb_geometry,".$srid_id.");");
