@@ -87,9 +87,9 @@ select
     codinomb::character varying,
 --    segi::integer,
 --    segd::integer,
-    now() created_at,
     ''' || rec.table_schema || '''::character varying de_esquema,
-    st_srid(wkb_geometry) srid
+    st_srid(wkb_geometry) srid,
+    now() created_at
 from ' || rec.table_schema || '.arc 
   ');
     count_loc := count_loc + 1;
