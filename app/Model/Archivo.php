@@ -169,6 +169,7 @@ class Archivo extends Model
         );
         $processOGR2OGR->setTimeout(1800);
         
+        MyDB::createSchema('_'.$this->tabla);
 
 
         $this->procesado=false;

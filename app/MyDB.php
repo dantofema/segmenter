@@ -1879,7 +1879,6 @@ public static function getPxSeg($esquema)
           dd($e);
         }
         Log::error('Reintentar.', [$e]);
-        dd($e);
         return;
       }
     }
