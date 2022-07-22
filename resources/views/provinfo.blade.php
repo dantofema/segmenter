@@ -17,6 +17,8 @@
                </li>
 		@endforeach
     @endif
+    {{!! $provincia->svg() !!}}
+    {{ $provincia->geojson() }}
 <div/>
 @if($provincia->codigo =='30')         
 <div>
