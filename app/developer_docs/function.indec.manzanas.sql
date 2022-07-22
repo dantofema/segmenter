@@ -16,7 +16,9 @@ create or replace function indec.manzanas()
     wkb_geometry public.geometry,
     conteo integer,
     cant_lados integer,
-    created_at timestamp with time zone
+    created_at timestamp with time zone,
+    codent character varying,
+    noment character varying
 )
 language plpgsql volatile
 set client_min_messages = 'notice'
@@ -45,7 +47,9 @@ select
   st_transform(wkb_geometry,4326) as wkb_geometry,
   sum(conteo)::integer as conteo,
   count(distinct lado)::integer as cant_lados,
-  now() created_at 
+  now() created_at,
+  m.codent,
+  m.noment
 from ' || rec.table_schema || '.manzanas m left join ' || rec.table_schema || '.conteos c on 
     (c.prov,c.dpto,c.codloc,c.frac,c.radio,c.mza) = 
     (m.prov::integer,m.dpto::integer,m.codloc::integer,m.frac::integer,m.radio::integer,m.mza::integer)
@@ -56,6 +60,8 @@ group by
   m.frac,
   m.radio,
   m.mza,
+  m.codent,
+  m.noment,
   wkb_geometry ');
     count_loc := count_loc + 1;
  END LOOP;
