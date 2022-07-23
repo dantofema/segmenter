@@ -51,18 +51,19 @@ class SegmenterController extends Controller
     public function store(Request $request)
     {
     if (! Auth::check()) {
-        $mensaje='No tiene permiso para segmentar o no esta logueado';
+        $mensaje = 'No tiene permiso para cargar o no esta logueado';
         flash($mensaje)->error()->important();
         return $mensaje;
     }else{
-      $AppUser= Auth::user();
+      $AppUser = Auth::user();
       $data = [];
-      $segmenta_auto=false;
-      $pba=false;
+      $segmenta_auto = false;
+      $pba = false;
       $epsg_id = $request->input('epsg_id')?$request->input('epsg_id'):'epsg:22183';
-      $data['epsg']['id']=$epsg_id;
+      $data['epsg']['id'] = $epsg_id;
       flash('SRS: '.$data['epsg']['id']);
 
+    // Se procesa archivo de listado de viviendas C1
     if ($request->hasFile('c1')) {
      if($c1_file = Archivo::cargar($request->c1, Auth::user())) {
          flash("Archivo C1 ")->info();
@@ -88,6 +89,7 @@ class SegmenterController extends Controller
     }else {
             $epsg_def= '';
     }
+
     $temp = array();
     $algo =  array('link' => 'temporal');
     $temp[0] = (object) $algo;
