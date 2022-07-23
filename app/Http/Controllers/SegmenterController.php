@@ -106,9 +106,16 @@ class SegmenterController extends Controller
                 -skipfailures \
                 -overwrite $file )');
     $processOGR2OGR->setTimeout(3600);
+    // En caso de que vengan capa de etiquetas/poligonos
     if ($request->hasFile('shp_lab')) {
+     if($shp_lab_file = Archivo::cargar($request->shp_lab, Auth::user())) {
+       flash("Archivo Shp/E00 ")->info();
+     } else {
+       flash("Error en el modelo cargar archivo al procesar SHP/E00")->error();
+     }
       $original_name = $request->shp_lab->getClientOriginalName();
       $original_extension = strtolower($request->shp_lab->getClientOriginalExtension());
+        // En caso de ser un shapefile, almaceno todo con igual nombre según extensión.
         if ($original_extension == 'shp'){
             $random_name='t_'.$request->shp_lab->hashName();
             $data['file']['shp_lab'] = $request->shp_lab->storeAs('segmentador', $random_name.'.shp');
@@ -190,7 +197,7 @@ class SegmenterController extends Controller
                      'pass'=>Config::get('database.connections.pgsql.password'),
                      'port'=>Config::get('database.connections.pgsql.port')]);                
                       $pba = true; //maybe
-                      flash('la pifio')->warning();
+                      flash('la pifio, ver '.$codaglo[0]->link)->warning();
                 }
             }
             if (!$processOGR2OGR->isSuccessful()) {
