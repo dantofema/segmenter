@@ -51,17 +51,19 @@ class SegmenterController extends Controller
     public function store(Request $request)
     {
     if (! Auth::check()) {
-        $mensaje='No tiene permiso para segmentar o no esta logueado';
+        $mensaje = 'No tiene permiso para cargar o no esta logueado';
         flash($mensaje)->error()->important();
         return $mensaje;
     }else{
-      $AppUser= Auth::user();
+      $AppUser = Auth::user();
       $data = [];
-      $segmenta_auto=false;
+      $segmenta_auto = false;
+      $pba = false;
       $epsg_id = $request->input('epsg_id')?$request->input('epsg_id'):'epsg:22183';
-      $data['epsg']['id']=$epsg_id;
+      $data['epsg']['id'] = $epsg_id;
       flash('SRS: '.$data['epsg']['id']);
 
+    // Se procesa archivo de listado de viviendas C1
     if ($request->hasFile('c1')) {
      if($c1_file = Archivo::cargar($request->c1, Auth::user())) {
          flash("Archivo C1 ")->info();
@@ -87,6 +89,7 @@ class SegmenterController extends Controller
     }else {
             $epsg_def= '';
     }
+
     $temp = array();
     $algo =  array('link' => 'temporal');
     $temp[0] = (object) $algo;
@@ -103,9 +106,16 @@ class SegmenterController extends Controller
                 -skipfailures \
                 -overwrite $file )');
     $processOGR2OGR->setTimeout(3600);
+    // En caso de que vengan capa de etiquetas/poligonos
     if ($request->hasFile('shp_lab')) {
+     if($shp_lab_file = Archivo::cargar($request->shp_lab, Auth::user())) {
+       flash("Archivo Shp/E00 ")->info();
+     } else {
+       flash("Error en el modelo cargar archivo al procesar SHP/E00")->error();
+     }
       $original_name = $request->shp_lab->getClientOriginalName();
       $original_extension = strtolower($request->shp_lab->getClientOriginalExtension());
+        // En caso de ser un shapefile, almaceno todo con igual nombre según extensión.
         if ($original_extension == 'shp'){
             $random_name='t_'.$request->shp_lab->hashName();
             $data['file']['shp_lab'] = $request->shp_lab->storeAs('segmentador', $random_name.'.shp');
@@ -178,7 +188,16 @@ class SegmenterController extends Controller
                 if( $ppddllls=$shp_file->procesar() ) {
                       flash('Proceso');
                 }else{
-                      flash('la pifio')->error();
+                    $processOGR2OGR->run(null, ['capa'=>'arc',
+                     'epsg'=>$epsg_def,'file' => storage_path().'/app/'.$data['file']['shp'],
+                     'e00'=>$codaglo[0]->link,
+                     'db'=>Config::get('database.connections.pgsql.database'),
+                     'host'=>Config::get('database.connections.pgsql.host'),
+                     'user'=>Config::get('database.connections.pgsql.username'),
+                     'pass'=>Config::get('database.connections.pgsql.password'),
+                     'port'=>Config::get('database.connections.pgsql.port')]);                
+                      $pba = true; //maybe
+                      flash('la pifio, ver '.$codaglo[0]->link)->warning();
                 }
             }
             if (!$processOGR2OGR->isSuccessful()) {
@@ -200,7 +219,7 @@ class SegmenterController extends Controller
       $mensajes='ERROR';
       $ppdddllls=[];
         }
-      if ($epsg_id=='sr-org:8333'){ // Si es CABA cargo sin epsg
+      if ($epsg_id=='sr-org:8333' or $pba){ // Si es CABA cargo sin epsg o provincia de Buenos Aires
             $processOGR2OGR = Process::fromShellCommandline('/usr/bin/ogr2ogr -f "PostgreSQL" PG:"dbname=$db host=$host user=$user port=$port active_schema=e$e00 password=$pass port=$port" --config PG_USE_COPY YES -lco OVERWRITE=YES --config OGR_TRUNCATE YES -dsco PRELUDE_STATEMENTS="SET client_encoding TO latin1;CREATE SCHEMA IF NOT EXISTS e$e00;" -dsco active_schema=e$e00 -lco PRECISION=NO -lco SCHEMA=e$e00 -skipfailures -addfields -overwrite $file ARC');
             $processOGR2OGR->setTimeout(3600);
             $processOGR2OGR->run(null, ['epsg' => $epsg_id, 'file' => storage_path().'/app/'.$data['file']['shp'],'e00'=>$codaglo[0]->link,'db'=>Config::get('database.connections.pgsql.database'),'host'=>Config::get('database.connections.pgsql.host'),'user'=>Config::get('database.connections.pgsql.username'),'pass'=>Config::get('database.connections.pgsql.password'),'port'=>Config::get('database.connections.pgsql.port')]);

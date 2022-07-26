@@ -49,7 +49,7 @@ class Archivo extends Model
             'tabla' => $random_name,
             'tipo' => ($guess_extension!='bin' and $guess_extension!='')?$guess_extension:$original_extension,
             'checksum'=> md5_file($request_file->getRealPath()),
-            'size' => $request_file->getClientSize(),
+            'size' => $request_file->getSize(),
             'mime' => $request_file->getClientMimeType()
         ]);
     }
@@ -79,8 +79,10 @@ class Archivo extends Model
                 return $this->procesarGeomE00();
             } elseif ($this->tipo == 'pxrad/dbf') {
                 return $this->procesarPxRad();
+            } elseif ($this->tipo == 'shp') {
+                return $this->procesarGeomSHP();
             } else {
-                flash('No se encontro qué hacer para procesar '.$this->nombre_original)->warning();
+                flash('No se encontro qué hacer para procesar '.$this->nombre_original.'. tipo = '.$this->tipo)->warning();
                 return false;
             }
         } else {
@@ -152,7 +154,7 @@ class Archivo extends Model
     }
 
     public function procesarGeomSHP() {
-        flash('Procesando Geom . TODO: No implementado!')->error();
+        flash('Procesando Geom . TODO: No implementado!')->warning();
         $processOGR2OGR = Process::fromShellCommandline(
             '(/usr/bin/ogr2ogr -f \
             "PostgreSQL" PG:"dbname=$db host=$host user=$user port=$port \
@@ -166,6 +168,10 @@ class Archivo extends Model
             -overwrite $file )'
         );
         $processOGR2OGR->setTimeout(1800);
+        
+        MyDB::createSchema('_'.$this->tabla);
+
+
         $this->procesado=false;
         $this->save();
     }

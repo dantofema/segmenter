@@ -1862,7 +1862,25 @@ public static function getPxSeg($esquema)
         DB::statement("UPDATE ".$esquema.".lab SET wkb_geometry=st_setsrid(wkb_geometry,".$srid_id.");");
     }catch(QueryException $e){
       Log::warning('Problemas al establecer el SRS: '.$srid_id.' en '.$esquema.': '.$e);
-      return;
+      try{
+        DB::statement("ALTER TABLE ".$esquema.".arc ALTER COLUMN wkb_geometry SET DATA TYPE 
+                      geometry(LINESTRING,".$srid_id.")
+                      USING st_setsrid(wkb_geometry,".$srid_id.");");
+        DB::statement("ALTER TABLE ".$esquema.".lab  ALTER COLUMN wkb_geometry TYPE
+                      geometry(POINT,".$srid_id.") USING st_setsrid(wkb_geometry,".$srid_id.");");
+        return;
+      }catch(QueryException $e){
+        try{
+          DB::statement("drop view if exists ".$esquema.".descripcion_segmentos cascade;");
+          DB::statement("drop view if exists ".$esquema.".v_radios cascade;");
+          DB::statement("drop view if exists ".$esquema.".v_fracciones cascade;");
+          DB::statement("drop view if exists ".$esquema.".v_manzanas cascade;");
+        }catch(QueryException $e){
+          dd($e);
+        }
+        Log::error('Reintentar.', [$e]);
+        return;
+      }
     }
      Log::debug('Se estableció el SRS: '.$srid_id.' en '.$esquema);
     }

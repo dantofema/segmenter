@@ -33,6 +33,8 @@ returns table (
     nomenclai character varying,
     nomenclad character varying,
     codinomb character varying,
+    de_esquema character varying,
+    srid integer,
 --    segi integer,
 --    segd integer,
     created_at timestamp with time zone
@@ -63,7 +65,7 @@ select
 --    codigo10::integer,
     Null::integer fnode_, Null::integer tnode_, Null::integer lpoly_, Null::integer rpoly_, 
     Null::double precision length, Null::integer codigo10,
---    en algunos esquemas .arc no tare estos datos, se conservan por legacy
+--    en algunos esquemas .arc no trae estos datos, se conservan por legacy
     nomencla::character varying,
     codigo20::integer,
     ancho::integer,
@@ -85,7 +87,9 @@ select
     codinomb::character varying,
 --    segi::integer,
 --    segd::integer,
-    now() created_at 
+    ''' || rec.table_schema || '''::character varying de_esquema,
+    st_srid(wkb_geometry) srid,
+    now() created_at
 from ' || rec.table_schema || '.arc 
   ');
     count_loc := count_loc + 1;
