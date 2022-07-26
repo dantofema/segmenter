@@ -247,6 +247,12 @@ class SetupController extends Controller
         return view('home');
     }
 
+    public function cargaSrids()
+    {
+        flash('Resultado: '.MyDB::cargaSrids());
+        return view('home');
+    }
+
     public function radiosDeListados()
     {
         flash('Resultado: '.MyDB::radiosDeListados());

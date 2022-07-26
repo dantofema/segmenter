@@ -2180,6 +2180,30 @@ order by 1,2
        return 'Se actualizo cuadras con '.$result.' registros';
     }
 
+    // Crea tabla con los srids elegidos de las localidades cargadas
+    public static function cargaSrids($filtro=null)
+    {
+        try{
+            DB::beginTransaction();
+            if (Schema::hasTable('public.localidad_srid')) {
+              DB::statement("DROP TABLE public.localidad_srid;");
+            }
+            DB::statement("CREATE TABLE public.localidad_srid AS SELECT codloc20, srid FROM indec.localidad_srid();");
+            $result = DB::select("SELECT Count(*) from localidad_srid;")[0]->count;
+            self::darPermisosTabla('localidad_srid');
+            self::createIndex('public','localidad_srid','codloc20');
+            self::createIndex('public','localidad_srid','srid');
+            DB::commit();
+        }catch(QueryException $e){
+            DB::Rollback();
+            $result=null;
+            Log::error('Error no se pudo actualizar la relación localidad_srid '.$filtro.$e);
+            return 'localidad_srid sin actualizar';
+       }
+       return 'Se actualizo localidad_srid con '.$result.' registros';
+    }
+
+
     public static function radiosDeListados()
     {
         try{
