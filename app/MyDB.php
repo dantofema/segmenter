@@ -2188,7 +2188,7 @@ order by 1,2
             if (Schema::hasTable('public.localidad_srid')) {
               DB::statement("DROP TABLE public.localidad_srid;");
             }
-            DB::statement("CREATE TABLE public.localidad_srid AS SELECT codloc20, srid FROM indec.cuadras();");
+            DB::statement("CREATE TABLE public.localidad_srid AS SELECT distinct codloc20, srid FROM indec.cuadras();");
             $result = DB::select("SELECT Count(*) from localidad_srid;")[0]->count;
             self::darPermisosTabla('localidad_srid');
             self::createIndex('public','localidad_srid','codloc20');
