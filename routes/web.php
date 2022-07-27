@@ -120,6 +120,8 @@ Route::get('/setup/update/Vias',
 'SetupController@juntaVias')->name('setup.juntaVias');
 Route::get('/setup/update/localidad_srid',
 'SetupController@cargaSrids')->name('setup.cargaSrids');
+Route::get('/setup/update/corrige_localidad_srid',
+'SetupController@corrigeSrids')->name('setup.corrigeSrids');
 Route::get('/setup/update/Cuadras',
 'SetupController@juntaCuadras')->name('setup.cuadras');
 Route::get('/setup/update/RadiosDeListados',

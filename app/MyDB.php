@@ -2203,6 +2203,24 @@ order by 1,2
        return 'Se actualizo localidad_srid con '.$result.' registros';
     }
 
+    public static function corrigeSrids($filtro=null)
+    {
+        try {
+            MyDB::cargaSrids();
+            $result = DB::select("select 'e' || codloc20 as esquema, provincia.srid as srid_id
+                                    from localidad_srid join provincia
+                                    on codigo = substr(codloc20,1,2)
+                                    where localidad_srid.srid != provincia.srid;
+                                ");
+            foreach ($result as $registro) {
+                    MyDB::setSRID($registro['esquema'],$registro['srid_id']);
+            }
+        } catch (QueryException $e) {
+            Log::error('Error no se pudo corregir localidades con localidad_srid '.$filtro.$e);
+            return 'no se pudo corregir localidades con localidad_srid';   
+        }
+        return 'Se corrigieron '.count($result).' localidades';
+    }
 
     public static function radiosDeListados()
     {
