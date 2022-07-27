@@ -2218,6 +2218,8 @@ order by 1,2
                 }, $result);
             foreach ($result as $registro) {
                     self::setSRID($registro['esquema'], $registro['srid_id']);
+                    self::cargarTopologia($registro['esquema']);
+                    self::georeferenciar_listado($registro['esquema']); 
             }
         } catch (QueryException $e) {
             Log::error('Error no se pudo corregir localidades con localidad_srid '.$filtro.$e);

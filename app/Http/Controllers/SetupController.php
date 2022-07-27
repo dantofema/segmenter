@@ -71,7 +71,9 @@ class SetupController extends Controller
     public function setSRIDSchema($schema,$srid)
     {
         MyDB::setSRID($schema,$srid);
-        return self::cargarTopologia($schema);
+        self::cargarTopologia($schema);
+        self::georeferenciarEsquema($schema);
+        return view('home');
     }
 
     public function grupoGeoestadistica($usuario)
