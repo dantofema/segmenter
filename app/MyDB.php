@@ -2206,14 +2206,18 @@ order by 1,2
     public static function corrigeSrids($filtro=null)
     {
         try {
-            MyDB::cargaSrids();
+            self::cargaSrids();
             $result = DB::select("select 'e' || codloc20 as esquema, provincia.srid as srid_id
-                                    from localidad_srid join provincia
+                                    from localidad_srid
+                                    join provincia
                                     on codigo = substr(codloc20,1,2)
                                     where localidad_srid.srid != provincia.srid;
                                 ");
+            $result = array_map(function ($value) {
+                return (array)$value;
+                }, $result);
             foreach ($result as $registro) {
-                    MyDB::setSRID($registro['esquema'],$registro['srid_id']);
+                    self::setSRID($registro['esquema'], $registro['srid_id']);
             }
         } catch (QueryException $e) {
             Log::error('Error no se pudo corregir localidades con localidad_srid '.$filtro.$e);
