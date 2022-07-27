@@ -1,4 +1,3 @@
-alter table provincia add column srid integer;
 update provincia set srid = 8333 where codigo = '02'; -- 'Ciudad Autónoma de Buenos Aires'
 update provincia set srid = 22185 where codigo = '06'; -- 'Buenos Aires'
 update provincia set srid = 22183 where codigo = '10'; -- 'Catamarca'
