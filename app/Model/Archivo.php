@@ -35,12 +35,27 @@ class Archivo extends Model
     }
 
     // Funcion para cargar información de archivo en la base de datos.
-    public static function cargar($request_file, $user, $tipo=null) {
+    public static function cargar($request_file, $user, $tipo=null,
+                                  $shape_files = []) {
         $original_extension = strtolower($request_file->getClientOriginalExtension());
         $guess_extension = strtolower($request_file->guessClientExtension());
         $original_name = $request_file->getClientOriginalName();
         $random_name= 't_'.$request_file->hashName();
         $random_name = substr($random_name,0,strpos($random_name,'.'));
+        $file_storage = $request_file->storeAs('segmentador', $random_name.'.'.$request_file->getClientOriginalExtension());
+        if ($tipo == 'shape'){
+          if ($shape_files != null){
+            foreach ($shape_files as $shape_file) {
+                //Almacenar archivos asociados a shapefile con igual nombre
+                //según extensión.
+              if ($shape_file != null){
+                $extension = strtolower($shape_file->getClientOriginalExtension());
+                $data_files[] = $shape_file->storeAs('segmentador', 
+                                             $random_name.'.'.$extension);
+               };
+             }
+          }
+        }
         $file_storage = $request_file->storeAs('segmentador', $random_name.'.'.$request_file->getClientOriginalExtension());
         return self::create([
             'user_id' => $user->id,
@@ -81,6 +96,10 @@ class Archivo extends Model
                 return $this->procesarPxRad();
             } elseif ($this->tipo == 'shp') {
                 return $this->procesarGeomSHP();
+            } elseif ($this->tipo == 'shp/arc') {
+                return $this->procesarGeomSHP();
+            } elseif ($this->tipo == 'shp/lab') {
+                return $this->procesarGeomSHP('lab');
             } else {
                 flash('No se encontro qué hacer para procesar '.$this->nombre_original.'. tipo = '.$this->tipo)->warning();
                 return false;
@@ -153,25 +172,56 @@ class Archivo extends Model
         }
     }
 
-    public function procesarGeomSHP() {
+    public function procesarGeomSHP($capa = 'arc') {
         flash('Procesando Geom . TODO: No implementado!')->warning();
+        $mensajes = '';
         $processOGR2OGR = Process::fromShellCommandline(
             '(/usr/bin/ogr2ogr -f \
             "PostgreSQL" PG:"dbname=$db host=$host user=$user port=$port \
-            active_schema=e$e00 password=$pass" --config PG_USE_COPY YES \
+            active_schema=e$esquema password=$pass" --config PG_USE_COPY YES \
             -lco OVERWRITE=YES --config OGR_TRUNCATE YES -dsco \
             PRELUDE_STATEMENTS="SET client_encoding TO latin1;CREATE SCHEMA \
-            IF NOT EXISTS e$e00;" -dsco active_schema=e$e00 -lco \
-            PRECISION=NO -lco SCHEMA=e$e00 \
+            IF NOT EXISTS e$esquema;" -dsco active_schema=e$esquema -lco \
+            PRECISION=NO -lco SCHEMA=e$esquema \
             -nln $capa \
             -skipfailures \
             -overwrite $file )'
         );
         $processOGR2OGR->setTimeout(1800);
         
-        MyDB::createSchema('_'.$this->tabla);
+        //Cargo etiquetas
+        try{
+            $processOGR2OGR->run(null,[
+                'capa'=>$capa,
+                'epsg'=> $this->epsg_def,
+                'file' => storage_path().'/app/'.$this->nombre,
+                'esquema'=>'_'.$this->tabla,
+                'encoding'=>'cp1252',
+                'db'=>Config::get('database.connections.pgsql.database'),
+                'host'=>Config::get('database.connections.pgsql.host'),
+                'user'=>Config::get('database.connections.pgsql.username'),
+                'pass'=>Config::get('database.connections.pgsql.password'),
+                'port'=>Config::get('database.connections.pgsql.port')
+            ]);
+            $mensajes.='<br />'.$processOGR2OGR->getErrorOutput().'<br />'.$processOGR2OGR->getOutput();
+            flash($mensajes)->warning();
 
-
+            $this->procesado=true;
+        } catch (ProcessFailedException $exception) {
+            Log::error($processOGR2OGR->getErrorOutput());
+            flash('Error Importando Shape '.$this->nombre_original)->info();
+            $this->procesado=false;
+            return false;
+        } catch (RuntimeException $exception) {
+            Log::error($processOGR2OGR-->getErrorOutput().$exception);
+            flash('Error Importando Runtime Shape '.$this->nombre_original)->info();
+            $this->procesado=false;
+            return false;
+        } catch(ProcessTimedOutException $exception){
+            Log::error($processOGR2OGR->getErrorOutput().$exception);
+            flash('Se agotó el tiempo Importando Shape de... etiquetas '.$this->nombre_original)->info();
+            return false;
+        }
         $this->procesado=false;
         $this->save();
     }
