@@ -48,8 +48,8 @@ select
   sum(conteo)::integer as conteo,
   count(distinct lado)::integer as cant_lados,
   now() created_at,
-  m.codent,
-  m.noment
+  null m.codent,
+  null m.noment
 from ' || rec.table_schema || '.manzanas m left join ' || rec.table_schema || '.conteos c on 
     (c.prov,c.dpto,c.codloc,c.frac,c.radio,c.mza) = 
     (m.prov::integer,m.dpto::integer,m.codloc::integer,m.frac::integer,m.radio::integer,m.mza::integer)
