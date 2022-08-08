@@ -60,8 +60,8 @@ group by
   m.frac,
   m.radio,
   m.mza,
-  m.codent,
-  m.noment,
+  codent,
+  noment,
   wkb_geometry ');
     count_loc := count_loc + 1;
  END LOOP;
