@@ -72,6 +72,8 @@ Route::get('/setup/test', 'SetupController@testFlash')->name('setup.test');
 Route::get('/setup/{esquema}', 'SetupController@permisos')->name('setup.permisos');
 Route::get('/setup/fixSRID/{esquema}/{srid}',
 'SetupController@setSRIDSchema')->name('setup.srid.topologia');
+Route::get('/setup/topo/pais',
+'SetupController@cargarTopologiasPais')->name('setup.topologia.pais');
 Route::get('/setup/topo/{esquema}',
 'SetupController@cargarTopologia')->name('setup.topologia');
 Route::get('/setup/topo_drop/{esquema}',
@@ -118,6 +120,8 @@ Route::get('/setup/update/Manzanas',
 'SetupController@juntaManzanas')->name('setup.manzanas');
 Route::get('/setup/update/Vias',
 'SetupController@juntaVias')->name('setup.juntaVias');
+Route::get('/setup/update/Localidades',
+'SetupController@juntaLocalidades')->name('setup.juntaLocalidades');
 Route::get('/setup/update/localidad_srid',
 'SetupController@cargaSrids')->name('setup.cargaSrids');
 Route::get('/setup/update/corrige_localidad_srid',

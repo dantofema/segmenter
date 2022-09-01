@@ -249,6 +249,20 @@ class SetupController extends Controller
         return view('home');
     }
 
+    public function juntaLocalidades()
+    {
+        flash('Resultado: '.MyDB::juntaLocalidades());
+        return view('home');
+    }
+
+    // Carga todos los esquemas en topo_pais
+    // function   indec.cargarTopologiaPais
+    public function cargarTopologiasPais()
+    {
+        flash('Resultado: '.MyDB::cargarToposPais());
+        return view('home');
+    }
+
     public function cargaSrids()
     {
         flash('Resultado: '.MyDB::cargaSrids());

@@ -1710,6 +1710,32 @@ FROM
             return true;
         }
 
+        // Carga geometria en topologia pais genera fracciones y radios.
+        // Carga geometria en topologia y genera fracciones y radios pais.
+        // Necesita arc y lab.
+        public static function cargarTopologiaPais($esquema)
+        {
+            try{
+                DB::statement(" SELECT indec.cargar_topologia_pais(
+                '".$esquema."','arc');");
+                DB::beginTransaction();
+                DB::statement(" DROP TABLE if exists ".$esquema.".fracciones_pais;");
+                DB::statement(" CREATE TABLE ".$esquema.".fracciones_pais AS SELECT * FROM
+                ".$esquema.".v_fracciones_pais;");
+                DB::statement(" DROP TABLE if exists ".$esquema.".radios_pais;");
+                DB::statement(" CREATE TABLE ".$esquema.".radios_pais AS SELECT * FROM
+    ".$esquema.".v_radios_pais;");
+                DB::commit();
+
+            }catch(QueryException $e){
+                DB::Rollback();
+                Log::error('No se pudo cargar la topologia pais...'.$e);
+                return false;
+            }
+            Log::debug('Se generaron fracciones, radios y manzanas ');
+            return true;
+        }
+
         // DROPEA esquema de topologia si quedo desfazado por rollback mal
         // hecho
         public static function dropTopologia($esquema)
@@ -2072,8 +2098,23 @@ order by 1,2
             self::createIndex('public','manzanas','prov,dpto,frac,radio,mza');
             self::createIndex('public','manzanas','wkb_geometry','gist');
             DB::commit();
-            // Tabla con geometría de localdiad y conteo de manzanas
+        }catch(QueryException $e){
+            DB::Rollback();
+            $result=null;
+            Log::error('Error no se pudo actualizar las Manzanas '.$filtro.$e);
+            return 'Manzanas sin actualizar';
+       }
+       return 'Se actualizo manzanas con '.$result.' registros';
+    }
+
+
+    // Junta Localidad a partir de radios :D.
+    public static function juntaLocalidades($filtro=null)
+    {
+        // Tabla con geometría de localdiad y conteo de manzanas
+        try{
             DB::beginTransaction();
+            $result = DB::select("SELECT Count(*) from indec.radios();")[0]->count;
             if (Schema::hasTable('public.localidad_geo')) {
               DB::statement("DROP TABLE public.localidad_geo;");
             }
@@ -2081,7 +2122,7 @@ order by 1,2
                 CREATE TABLE public.localidad_geo AS 
                 select st_union(wkb_geometry) wkb_geometry, prov, dpto, codloc, 
                 max(l.nombre) nombre,
-                sum(conteo) conteo, count(*) manzanas from public.manzanas 
+                sum(conteo) conteo, sum(cant_mzas) manzanas, sum(cant_lados) lados from indec.radios()
                 left join public.localidad l on l.codigo=prov||dpto||codloc
                 group by prov, dpto, codloc order by prov, dpto, codloc;"
             );
@@ -2092,10 +2133,10 @@ order by 1,2
         }catch(QueryException $e){
             DB::Rollback();
             $result=null;
-            Log::error('Error no se pudo actualizar las Manzanas '.$filtro.$e);
-            return 'Manzanas sin actualizar';
+            Log::error('Error no se pudo actualizar las localidades '.$filtro.$e);
+            return 'Localidades sin actualizar';
        }
-       return 'Se actualizo manzanas con '.$result.' registros';
+       return 'Se actualizo localidades_geo con '.$result.' registros';
     }
 
     // Junta Vias de todos los esquemas.
@@ -2227,6 +2268,32 @@ order by 1,2
             return 'no se pudo corregir localidades con localidad_srid';   
         }
         return 'Se corrigieron '.count($result).' localidades';
+    }
+
+    public static function cargarToposPais($filtro=null)
+    {
+        try {
+            $result = DB::select("select 'e' || codloc20 as esquema, provincia.srid as srid_id
+                                    from localidad_srid
+                                    join provincia
+                                    on codigo = substr(codloc20,1,2)
+                                    ;
+                                ");
+            $result = array_map(function ($value) {
+                return (array)$value;
+                }, $result);
+            foreach ($result as $registro) {
+                  try {
+                    self::cargarTopologiaPais($registro['esquema']);
+                  } catch (Exception $e) {
+                    Log::error('Error al cargar localidad '.$registro['esquema'].$e);
+                  }
+            }
+        } catch (QueryException $e) {
+            Log::error('Error no se pudo cargar localidad a topo_pais '.$filtro.$e);
+            return 'No se pudo cargar nueva topo_pais';   
+        }
+        return 'Se procesaron '.count($result).' localidades';
     }
 
     public static function radiosDeListados()
