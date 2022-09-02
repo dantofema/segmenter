@@ -1706,7 +1706,7 @@ FROM
                 Log::error('No se pudo cargar la topologia...'.$e);
                 return false;
             }
-            Log::debug('Se generaron fracciones, radios y manzanas ');
+            Log::debug('Se generaron fracciones, radios y manzanas en '.$esquema);
             return true;
         }
 
@@ -1718,6 +1718,10 @@ FROM
             try{
                 DB::statement(" SELECT indec.cargar_topologia_pais(
                 '".$esquema."','arc');");
+                DB::statement(" ANALYZE pais_topo.edge;");
+                DB::statement(" ANALYZE pais_topo.edge_data;");
+                DB::statement(" ANALYZE pais_topo.node;");
+                DB::statement(" ANALYZE pais_topo.face");
                 DB::beginTransaction();
                 DB::statement(" DROP TABLE if exists ".$esquema.".fracciones_pais;");
                 DB::statement(" CREATE TABLE ".$esquema.".fracciones_pais AS SELECT * FROM
@@ -1732,7 +1736,9 @@ FROM
                 Log::error('No se pudo cargar la topologia pais...'.$e);
                 return false;
             }
-            Log::debug('Se generaron fracciones, radios y manzanas ');
+            Log::debug('Se generaron fracciones, radios pais en '.$esquema);
+            flash('Se cargó topología pais. Se generaron fracciones, radios pais en '.$esquema)
+                  ->success()->important();
             return true;
         }
 
