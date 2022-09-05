@@ -2297,7 +2297,7 @@ order by 1,2
                     $radios_pais = DB::select("select count(*) from ".
                         $registro['esquema'].".radios_pais;");
                     flash(' Se encontró cargado '.$registro['esquema'].' con '.$radios_pais[0]->count.' radios')->info()->important();
-                  } catch (Exception $e) {
+                  } catch (QueryException $e) {
                     self::cargarTopologiaPais($registro['esquema']);
                     Log::debug('Se cargó la localidad '.$registro['esquema'].$e);
                   }
