@@ -2289,20 +2289,27 @@ order by 1,2
                 return (array)$value;
                 }, $result);
         } catch (QueryException $e) {
-            Log::error('Error no se pudo cargar localidad a topo_pais '.$filtro.$e);
+            Log::error('Error no se pudo revisar las localidades a cargar en topo_pais '.$filtro.$e);
             return 'No se pudo cargar nueva topo_pais';   
         }
+            $se_encontro = 0; $nuevo = 0;
             foreach ($result as $registro) {
                   try {
-                    $radios_pais = DB::select("select count(*) from ".
-                        $registro['esquema'].".radios_pais;");
-                    flash(' Se encontró cargado '.$registro['esquema'].' con '.$radios_pais[0]->count.' radios')->info()->important();
+                    $radios_pais = DB::select("select count(*),sum(st_area(wkb_geometry)) sup from ".
+                        $registro['esquema'].".v_radios_pais;");
+                    $se_encontro = $se_encontro + 1 ;
+                    flash($se_encontro.'. Se encontró cargado '.$registro['esquema'].' con '.$radios_pais[0]->count.
+                          ' radios en '.round($radios_pais[0]->sup/100000,2).' sup.')->info()->important();
+                    
                   } catch (QueryException $e) {
+                    $nuevo = $nuevo + 1;
+                    flash('Cargando... '.$registro['esquema'])->warning()->important();
                     self::cargarTopologiaPais($registro['esquema']);
-                    Log::debug('Se cargó la localidad '.$registro['esquema'].$e);
+                    Log::debug('Se cargó la localidad '.$registro['esquema']);
                   }
             }
-        return 'Se procesaron '.count($result).' localidades';
+        return 'Se procesaron '.count($result).' localidades '.
+               'Se encontraron '.$se_encontro.' cargadas y '.$nuevo.' nuevas';
     }
 
     public static function radiosDeListados()
