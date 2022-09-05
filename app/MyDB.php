@@ -582,7 +582,7 @@ FROM
     {
         if (isset($localidad_codigo)) {
                   //JOIN CON TABLA LAB SEGUN FACE_ID =?
-                 $filtro=" WHERE substr(mzai,0,9)= '".$localidad_codigo."' or substr(mzad,0,9)= '".$localidad_codigo."' ";
+                 $filtro=" WHERE prov || depto || codloc= '".$localidad_codigo."' ";
                  $filtro_lab=" WHERE prov || depto || codloc = '".$localidad_codigo."'";
         } else { $filtro='';
                  $filtro_lab=''; }
@@ -2290,9 +2290,12 @@ order by 1,2
                 }, $result);
             foreach ($result as $registro) {
                   try {
-                    self::cargarTopologiaPais($registro['esquema']);
+                    $radios_pais = DB::select("select count(*) from ".
+                        $registro['esquema'].".radios_pais;");
+                    flash(' Se encontró cargado '.$registro['esquema'].' con '.$radios_pais[0]->count.' radios')->info()->important();
                   } catch (Exception $e) {
-                    Log::error('Error al cargar localidad '.$registro['esquema'].$e);
+                    self::cargarTopologiaPais($registro['esquema']);
+                    Log::debug('Se cargó la localidad '.$registro['esquema'].$e);
                   }
             }
         } catch (QueryException $e) {
