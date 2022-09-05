@@ -2288,6 +2288,10 @@ order by 1,2
             $result = array_map(function ($value) {
                 return (array)$value;
                 }, $result);
+        } catch (QueryException $e) {
+            Log::error('Error no se pudo cargar localidad a topo_pais '.$filtro.$e);
+            return 'No se pudo cargar nueva topo_pais';   
+        }
             foreach ($result as $registro) {
                   try {
                     $radios_pais = DB::select("select count(*) from ".
@@ -2298,10 +2302,6 @@ order by 1,2
                     Log::debug('Se cargó la localidad '.$registro['esquema'].$e);
                   }
             }
-        } catch (QueryException $e) {
-            Log::error('Error no se pudo cargar localidad a topo_pais '.$filtro.$e);
-            return 'No se pudo cargar nueva topo_pais';   
-        }
         return 'Se procesaron '.count($result).' localidades';
     }
 
