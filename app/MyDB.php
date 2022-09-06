@@ -2310,7 +2310,7 @@ order by 1,2
                     $nuevo = $nuevo + 1;
                     flash($nuevo.'. Cargando... '.$registro['esquema'])->warning()->important();
                     self::cargarTopologiaPais($registro['esquema']);
-                    Log::debug('Se cargó la localidad '.$registro['esquema'].' ('.$nuevo.'/ '.count($result)-$se_encontro).') ';
+                    Log::debug('Se cargó la localidad '.$registro['esquema'].' ('.$nuevo.'/ '.(int)count($result)-(int)$se_encontro.') ');
                   }
             }
         Log::debug('Se cargaron localidades: '.count($result));
