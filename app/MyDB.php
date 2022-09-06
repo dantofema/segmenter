@@ -2295,11 +2295,11 @@ order by 1,2
             $se_encontro = 0; $nuevo = 0;
             foreach ($result as $registro) {
                   try {
-                    $radios_pais = DB::select("select count(*),sum(st_area(wkb_geometry)) area from ".
+                    $radios_pais = DB::select("select count(*),sum(st_area(wkb_geometry)) area_m2 from ".
                         $registro['esquema'].".v_radios_pais;");
                     $se_encontro = $se_encontro + 1 ;
                     flash($se_encontro.'. Se encontró cargado '.$registro['esquema'].' con '.$radios_pais[0]->count.
-                          ' radios en '.round($radios_pais[0]->sup/10000,2).' ha sup.')->info()->important();
+                          ' radios en '.round($radios_pais[0]->area_m2/10000,2).' ha sup.')->info()->important();
                     
                   } catch (QueryException $e) {
                     $nuevo = $nuevo + 1;
