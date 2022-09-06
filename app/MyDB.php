@@ -1687,6 +1687,7 @@ FROM
         public static function cargarTopologia($esquema)
         {
             try{
+                DB::beginTransaction();
                 DB::statement(" SELECT indec.cargarTopologia(
                 '".$esquema."','arc');");
                 DB::beginTransaction();
@@ -1716,6 +1717,7 @@ FROM
         public static function cargarTopologiaPais($esquema)
         {
             try{
+                DB::beginTransaction();
                 DB::statement(" SELECT indec.cargar_topologia_pais(
                 '".$esquema."','arc');");
                 DB::statement(" ANALYZE pais_topo.edge;");
