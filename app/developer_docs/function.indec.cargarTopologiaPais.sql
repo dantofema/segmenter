@@ -19,7 +19,7 @@ CREATE OR REPLACE FUNCTION indec.cargar_topologia_pais(esquema character varying
       
       CREATE EXTENSION IF NOT EXISTS postgis_topology; 
       srid := 3857;
-      tolerancia := 0;
+      tolerancia := 1;
       topo_name := 'pais_topo';
       topo_sql := format('SELECT id FROM topology.topology WHERE name = ''%1$s'';'
                             ,topo_name); 
