@@ -1,92 +1,32 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-
-        <title>Mandarina</title>
-
-        <!-- Fonts -->
-        <link href="{{ asset('css/app.css') }}" rel="stylesheet"/>
-        <!-- Styles -->
-        <style>
-            html, body {
-                background-color: #fff;
-                color: #636b6f;
-                font-family: 'Nunito', sans-serif;
-                font-weight: 200;
-                height: 80vh;
-                margin: 0;
-            }
-
-            .full-height {
-                height: 80vh;
-            }
-
-            .flex-center {
-                align-items: center;
-                display: flex;
-                justify-content: center;
-            }
-
-            .position-ref {
-                position: relative;
-            }
-
-            .top-right {
-                position: absolute;
-                right: 10px;
-                top: 18px;
-            }
-
-            .content {
-                text-align: center;
-            }
-
-            .title {
-                font-size: 84px;
-            }
-
-            .links > a {
-                color: #636b6f;
-                padding: 0 25px;
-                font-size: 13px;
-                font-weight: 600;
-                letter-spacing: .1rem;
-                text-decoration: none;
-                text-transform: uppercase;
-            }
-
-            .m-b-md {
-                margin-bottom: 30px;
-            }
-        </style>
-    </head>
-    <body>
-        <div class="container">
-          @include('flash::message')
-        </div>
-        <div class="flex-center position-ref full-height">
-            <div class="content">
-                <div class=" m-b-md">
-                <br />
-                <p>Ha finalizado el período de segmentación</p>
-                </div>
-                <div class="note m-b-md">
-Gracias a:
-<ul>
-@foreach ($users as $key => $user) 
-<li> {{ $user->name }} </li>
-@endforeach 
+@extends ('layouts.app')
+@section ('content_main') 
+<div class="container text-center">
+<div class="spinner-border text-muted"></div>
+<div class="spinner-border text-primary"></div>
+<div class="spinner-border text-success"></div>
+<div class="spinner-border text-info"></div>
+<div class="spinner-border text-warning"></div>
+<div class="spinner-border text-danger"></div>
+<div class="spinner-border text-secondary"></div>
+<div class="spinner-border text-dark"></div>
+<div class="spinner-border text-light"></div>
+<div class="text-primary">Gracias !</div>
+<ul class="card-columns text-center d-flex m-1 p-5 nav nav-center list-inline mx-auto justify-content-center">
+@foreach ($users->shuffle() as $user)
+<li class= "btn border border-dark m-1 p-1" title="{{ $user->email }} "> 
+    {{ $user->name }}
+</li>
+@endforeach
 </ul>
-                    <br />
-                <img width="600px" src="images/logo_censo2022.jpg" alt="Censo 2022 República Argentina">
-                </div>
-            </div>
-        </div>
-        <div id="copyright" class="text-center justify-content-center"
-        style="display:block"><hr />© 2022 INDEC - Argentina - Geoestadística</div>
-        </div>
-    </body>
-</html>
-
+<div class="spinner-border text-muted"></div>
+<div class="spinner-border text-primary"></div>
+<div class="spinner-border text-success"></div>
+<div class="spinner-border text-info"></div>
+<div class="spinner-border text-warning"></div>
+<div class="spinner-border text-danger"></div>
+<div class="spinner-border text-secondary"></div>
+<div class="spinner-border text-dark"></div>
+<div class="spinner-border text-light"></div>
+</div>
+@endsection
+<?php // </body> </html> ?>

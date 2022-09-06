@@ -63,6 +63,18 @@ class SetupController extends Controller
         return view('home');
     }
 
+    /**
+     * Setear SRID y regenerar topología para el esquema.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function setSRIDSchema($schema,$srid)
+    {
+        MyDB::setSRID($schema,$srid);
+        self::cargarTopologia($schema);
+        self::georeferenciarEsquema($schema);
+        return view('home');
+    }
 
     public function grupoGeoestadistica($usuario)
     {
@@ -216,6 +228,62 @@ class SetupController extends Controller
     public function juntaR3()
     {
         flash('Resultado: '.MyDB::juntaR3());
+        return view('home');
+    }
+
+    public function juntaManzanas()
+    {
+        flash('Resultado: '.MyDB::juntaManzanas());
+        return view('home');
+    }
+
+    public function juntaVias()
+    {
+        flash('Resultado: '.MyDB::juntaVias());
+        return view('home');
+    }
+    
+    public function juntaCuadras()
+    {
+        flash('Resultado: '.MyDB::juntaCuadras());
+        return view('home');
+    }
+
+    public function juntaLocalidades()
+    {
+        flash('Resultado: '.MyDB::juntaLocalidades());
+        return view('home');
+    }
+
+    // Carga todos los esquemas en topo_pais
+    // function   indec.cargarTopologiaPais
+    public function cargarTopologiasPais()
+    {
+        flash('Resultado: '.MyDB::cargarToposPais());
+        return view('home');
+    }
+
+    public function cargaSrids()
+    {
+        flash('Resultado: '.MyDB::cargaSrids());
+        return view('home');
+    }
+
+    public function corrigeSrids()
+    {
+        flash('Resultado: '.MyDB::corrigeSrids());
+        return view('home');
+    }
+
+    public function radiosDeListados()
+    {
+        flash('Resultado: '.MyDB::radiosDeListados());
+        return view('home');
+    }
+
+    public function radiosDeArcs()
+    {
+        flash('Resultado: '.MyDB::radiosDeArcs());
         return view('home');
     }
 

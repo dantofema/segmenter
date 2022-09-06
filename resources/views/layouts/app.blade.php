@@ -46,6 +46,7 @@
                         <li class="nav-item"><a class="nav-link" href="{{ url('/home') }}"> Inicio </a> </li>
                         <li class="nav-item"><a class="nav-link" href="{{ url('/provs') }}"> Provincias </a> </li>
                         <li class="nav-item"><a class="nav-link" href="{{ url('/aglos') }}"> Aglomerados </a> </li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url('/localidades') }}"> Localidades </a> </li>
                         <li class="nav-item"><a class="nav-link" href="{{ url('/segmentador') }}"> Cargar </a> </li>
                         <li class="nav-item"><a class="nav-link" href="{{
                         url('https://github.com/bichav/salidagrafica-atlas/archive/master.zip')

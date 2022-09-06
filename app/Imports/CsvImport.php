@@ -14,7 +14,7 @@ use Maatwebsite\Excel\Concerns\Importable;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\RegistersEventListeners;
-
+use Illuminate\Support\Facades\Log;
 
 class CsvImport implements ToModel,WithHeadingRow, WithBatchInserts, WithChunkReading, ShouldQueue, WithCustomCsvSettings, WithEvents //, WithProgressBar
 {
@@ -37,9 +37,16 @@ class CsvImport implements ToModel,WithHeadingRow, WithBatchInserts, WithChunkRe
     {
 	 ++$this->rows;
 //	die(var_dump($row));
+/*
+/* Cabecesar de csv de PBA con problemas, vino latin1 y lo pase a utf8 con iconv.
+/* PROV, NOM_PROVIN, UPS, NRO_AREA, DPTO, NOM_DPTO, CODAGLO, CODLOC, NOM_LOC, CODENT, NOM_ENT, FRAC, RADIO, MZA, LADO, NRO_INICIA, NRO_FINAL, ORDEN_RECO, NRO_LISTAD, CCALLE, NCALLE, NROCATASTR, PISOREDEF, CASA, DPTO_HABIT, SECTOR, EDIFICIO, ENTRADA, COD_TIPO_V, DESCRIPCIO, DESCRIPCI2, COD_POSTAL, ORDEN_REC2, FECHA_RELE, SEGMENTO
+/*
+ */
+        dd($row);
+
         return new Domicilio([
-'prov' => $row['prov'],
-'listado_id' => $row['codaglo'] ?? '1',
+'prov' => $row['prov'] ?? $row['PROV'] ?? '99',
+'listado_id' => '0' ?? $row['codaglo'] ?? '1',
 'nom_provin' => $row['nom_provin'] ?? $row['nom_provincia'],
 'dpto' => $row['dpto'],
 'nom_dpto' => $row['nom_dpto'],
@@ -54,27 +61,27 @@ class CsvImport implements ToModel,WithHeadingRow, WithBatchInserts, WithChunkRe
 'lado' => $row['lado'],
 'nro_inicia' => $row['nro_inicia'],
 'nro_final' => $row['nro_final'],
-'orden_reco' => $row['orden_reco'] ?? $row['orden_recorrido_viv'],
-'nrolist' => $row['nrolist'] ?? $row['nro_listado'],
+'orden_reco' => $row['orden_reco'] ?? $row['orden_recorrido_viv'] ?? $row['orden_rec2'],
+'nrolist' => $row['nrolist'] ?? $row['nro_listad'] ?? $row['nro_listado'] ?? 0,
 'ccalle' => $row['ccalle'],
 'ncalle' => $row['ncalle'],
 'nrocatastr' => $row['nrocatastr'] ?? $row['nrocatastralredef'] ?? $row['nro_catastral'],
 'piso' => $row['pisoredef'] ?? $row['piso'],
 'casa' => $row['casa'],
-'dptohab' => $row['dptohab'] ?? $row['dpto_habitacion'],
+'dptohab' => $row['dptohab'] ?? $row['dpto_habitacion'] ?? $row['dpto_habit'],
 'sector' => $row['sector'],
 'edificio' => $row['edificio'],
 'entrada' => $row['entrada'],
-'tipoviv' => $row['tipovivredef'] ?? $row['tipoviv'] ?? null,
-'descrip' => $row['descrip'] ?? null,
-'descripl' => $row['descripl'] ?? null,
+'tipoviv' => $row['tipovivredef'] ?? $row['tipoviv'] ?? $row['cod_tipo_v'] ?? null,
+'descrip' => $row['descrip'] ?? $row['descripcio'] ?? null,
+'descripl' => $row['descripl'] ?? $row['descripci2'] ?? null,
 'cpostal' => $row['cpostal'] ?? null,
 'ordrecmza' => $row['ordrecmza'] ?? null,
-'fechrele' => $row['fechrele'] ?? null,
-'tiptarea' => $row['tiptarea'] ?? null
+'fechrele' => $row['fechrele'] ?? $row['fecha_rele'] ?? null,
+'tiptarea' => $row['tiptarea'] ?? null,
+'segmento' => $row['segmento'] ?? null
         ]);
     }
-
 
     public function batchSize(): int
     {
@@ -90,7 +97,8 @@ class CsvImport implements ToModel,WithHeadingRow, WithBatchInserts, WithChunkRe
     {
         return [
             'input_encoding' => 'UTF-8',
-            'delimiter' => ','
+            'delimiter' => '|',
+            'enclosure' => ''
         ];
     }
 
@@ -111,7 +119,7 @@ class CsvImport implements ToModel,WithHeadingRow, WithBatchInserts, WithChunkRe
     public static function afterImport(AfterImport $event)
     {
         //
-	echo 'Rows: '.$this->rows;
+	      echo 'Rows: '.$this->rows;
     }
 
     /**

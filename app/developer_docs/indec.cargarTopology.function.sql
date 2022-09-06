@@ -76,7 +76,7 @@
       miquery = format('-- CARGAR ARCOS y registrar arco junto a info
                        CREATE TABLE %1$s.arc_topology AS (
       SELECT a.*,topology.TopoGeo_AddLineString( ''%2$s'',
-       wkb_geometry) edge_id_postgis
+       wkb_geometry,8) edge_id_postgis
       FROM %3$s a);'
                        ,esquema,topo_name,estearc); 
       RAISE NOTICE 'SQL %',miquery;

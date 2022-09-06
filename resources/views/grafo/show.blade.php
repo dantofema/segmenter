@@ -3,16 +3,25 @@
 <div class="row center"><div class="col-lg-12 text-center">
 <h4><a href="{{ url("/aglo/{$aglomerado->id}") }}" > ({{ $aglomerado->codigo}}) {{ $aglomerado->nombre}}</a></h4>
 <h5>
-@foreach($radio->localidades as $localidad)
-@if($localidad and substr($localidad->codigo,5,3)!='000')
-<a href="{{ url("/localidad/{$localidad->id}") }}" > ({{
-$localidad->codigo}}) {{ $localidad->nombre}}</a>
+@foreach ($radio->localidades->sortBy('codigo') as $loc)
+@if ($loc and substr($loc->codigo,5,3)!='000')
+<a 
+@if ( isSet($localidad) and $loc->id==$localidad->id ) 
+    style="
+        color: #dd8a32;
+      	text-decoration: crimson ;
+      	font-weight: bolder;
+        font-size: 1.2rem;
+      "
+@endif
+href="{{ url("/localidad/{$loc->id}") }}" > ({{
+$loc->codigo}}) {{ $loc->nombre}}</a>
 @else
-<i>(parte urbana)</i>
+  <i>(parte urbana)</i>
 @endif
 @endforeach
 </h5>
-<h3>Radio: {{ $radio->codigo}}</h3>
+<h4>Radio: {{ substr($radio->codigo, 0, 2) }} {{ substr($radio->codigo, 2, 3) }} <b>{{ substr($radio->codigo, 5, 2) }} {{ substr($radio->codigo, 7, 2) }}</b></h4>
 @if($radio->tipo)	<p class="text-center">({{ $radio->tipo->nombre }}) {{ $radio->tipo->descripcion }}</p> @endif
 @if($radio->viviendas)	<p class="text-center">Con {{ $radio->viviendas }} viviendas.</p> @endif
 </div></div>

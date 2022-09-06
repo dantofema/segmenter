@@ -24,13 +24,13 @@ class Localidad extends Model
     public $segmentadoListado;
     public $segmentadoLados;
 
-
     /**
      * Relación con Departamento, una localidad puede estar en muchos departamentos (caso CABA).
      */
     public function departamentos()
     {
         return $this->belongsToMany('App\Model\Departamento','localidad_departamento');
+        // en el caso de CABA
     }
 
     /**

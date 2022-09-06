@@ -15,7 +15,7 @@
     <h3> ({{ $departamento->codigo }}) {{ $departamento->nombre }} </h3>
     {{ $departamento->localidades_count }} localidades.
     </div><div>
-    @foreach ($departamento->localidades as $localidad)
+    @foreach ($departamento->localidades->sortBy('codigo') as $localidad)
     <li class="btn  btn-outline-secondary" style="margin-bottom: 1px" >
         <a href="{{ url("/localidad/{$localidad->id}") }}" >({{ $localidad->codigo }})
     <b> {{ $localidad->nombre }} </b></a>
