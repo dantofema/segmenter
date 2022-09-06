@@ -1690,7 +1690,6 @@ FROM
                 DB::beginTransaction();
                 DB::statement(" SELECT indec.cargarTopologia(
                 '".$esquema."','arc');");
-                DB::beginTransaction();
                 DB::statement(" DROP TABLE if exists ".$esquema.".manzanas;");
                 DB::statement(" CREATE TABLE ".$esquema.".manzanas AS SELECT * FROM
                 ".$esquema.".v_manzanas;");
@@ -1724,7 +1723,6 @@ FROM
                 DB::statement(" ANALYZE pais_topo.edge_data;");
                 DB::statement(" ANALYZE pais_topo.node;");
                 DB::statement(" ANALYZE pais_topo.face");
-                DB::beginTransaction();
                 DB::statement(" DROP TABLE if exists ".$esquema.".fracciones_pais;");
                 DB::statement(" CREATE TABLE ".$esquema.".fracciones_pais AS SELECT * FROM
                 ".$esquema.".v_fracciones_pais;");
