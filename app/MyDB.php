@@ -1731,8 +1731,13 @@ FROM
     ".$esquema.".v_radios_pais;");
                 DB::commit();
 
-            }catch(QueryException $e){
+            }
+            catch(QueryException $e){
                 DB::Rollback();
+                Log::error('No se pudo cargar la topologia pais...'.$e);
+                return false;
+            }
+            catch(Exception $e){
                 Log::error('No se pudo cargar la topologia pais...'.$e);
                 return false;
             }
@@ -2303,11 +2308,12 @@ order by 1,2
                     
                   } catch (QueryException $e) {
                     $nuevo = $nuevo + 1;
-                    flash('Cargando... '.$registro['esquema'])->warning()->important();
+                    flash($nuevo.'. Cargando... '.$registro['esquema'])->warning()->important();
                     self::cargarTopologiaPais($registro['esquema']);
-                    Log::debug('Se cargó la localidad '.$registro['esquema']);
+                    Log::debug('Se cargó la localidad '.$registro['esquema'].' ('.$nuevo.'/ '.count($result)-$se_encontro).') ';
                   }
             }
+        Log::debug('Se cargaron localidades: '.count($result));
         return 'Se procesaron '.count($result).' localidades '.
                'Se encontraron '.$se_encontro.' cargadas y '.$nuevo.' nuevas';
     }
