@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Database\Seeder;
+use App\User;
 
 class UsersTableSeeder extends Seeder
 {
@@ -40,5 +41,11 @@ class UsersTableSeeder extends Seeder
             'password' => bcrypt('adminadmin'),
         ]);
      }
+     
+     User::create([
+      'name' => 'gerov',
+      'email' => 'gerogv612@gmail.com',
+      'password' => bcrypt('12345678')
+     ])->assignRole('adminLocalidades');
     }
 }

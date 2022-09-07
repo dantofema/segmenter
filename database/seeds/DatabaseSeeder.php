@@ -12,6 +12,7 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         $this->call([
+            RoleSeeder::class,
     		UsersTableSeeder::class,
 	        // Bunch of seeders using Eloquent
             // Provincias

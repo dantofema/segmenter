@@ -43,6 +43,11 @@
      @if ($carto && $listado)
        <button type="button" class="btn btn-primary" id="segmentar">Segmentar</button>
      @endif
+
+     @can('editarLocalidades')
+         <button type="button" class="btn btn-primary" id="editar">Editar</button>
+     @endcan
+     
     @endauth
     </div>
 </div>
