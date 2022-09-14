@@ -173,7 +173,8 @@ class Archivo extends Model
     }
 
     public function procesarGeomSHP($capa = 'arc') {
-        flash('Procesando Geom . TODO: No implementado!')->warning();
+        MyDB::createSchema('_'.$this->tabla);
+        flash('Procesando Geom desde Shape en reestructuración, disculpe las molestias, estamos trabajando!')->warning();
         $mensajes = '';
         $processOGR2OGR = Process::fromShellCommandline(
             '(/usr/bin/ogr2ogr -f \
@@ -204,7 +205,7 @@ class Archivo extends Model
                 'port'=>Config::get('database.connections.pgsql.port')
             ]);
             $mensajes.='<br />'.$processOGR2OGR->getErrorOutput().'<br />'.$processOGR2OGR->getOutput();
-            flash($mensajes)->warning();
+            flash($mensajes)->error();
 
             $this->procesado=true;
         } catch (ProcessFailedException $exception) {
@@ -380,7 +381,7 @@ class Archivo extends Model
     }
 
     public function procesarPxRad() {
-        flash('TODO: Procesar PxRad en archivo');
+        flash('TODO: Procesar PxRad en archivo')->warning();
         $dbf = $this->procesarDBF();
         try {
             return $procesar_result = MyDB::procesarPxRad(strtolower($this->tabla),'public');
