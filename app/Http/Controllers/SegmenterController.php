@@ -107,7 +107,7 @@ class SegmenterController extends Controller
     $shp_lab_file->tipo = 'shp/lab';
     $shp_lab_file->save();
      if( $ppddllls=$shp_lab_file->procesar(['epsg'=>$epsg_def]) ) {
-        flash('Proceso');
+        flash('Se cargaron las etiquetas/polígonos correctamente')->success();
      }else{
         flash('la pifio, ver '.$codaglo[0]->link)->warning();
      }
@@ -123,7 +123,8 @@ class SegmenterController extends Controller
      }
      $shp_file->epsg_def = $epsg_id;
      if( $ppddllls=$shp_file->procesar(['epsg'=>$epsg_def]) ) {
-        flash('Proceso');
+        flash('Se cargaron los arcos correctamente')->success();
+
      }else{
         flash('la pifio, ver '.$codaglo[0]->link)->warning();
      }
