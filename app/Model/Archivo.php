@@ -212,19 +212,17 @@ class Archivo extends Model
             Log::error($processOGR2OGR->getErrorOutput());
             flash('Error Importando Shape '.$this->nombre_original)->info();
             $this->procesado=false;
-            return false;
         } catch (RuntimeException $exception) {
             Log::error($processOGR2OGR-->getErrorOutput().$exception);
             flash('Error Importando Runtime Shape '.$this->nombre_original)->info();
             $this->procesado=false;
-            return false;
         } catch(ProcessTimedOutException $exception){
             Log::error($processOGR2OGR->getErrorOutput().$exception);
             flash('Se agotó el tiempo Importando Shape de... etiquetas '.$this->nombre_original)->info();
-            return false;
         }
         $this->procesado=false;
         $this->save();
+        return $this->procesado;
     }
 
     public function procesarGeomE00() {
