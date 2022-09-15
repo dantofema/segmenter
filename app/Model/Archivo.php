@@ -335,6 +335,7 @@ class Archivo extends Model
         // Leo dentro de la tabla de etiquetas la/s localidades
         $ppdddllls=MyDB::getLocs('lab','e_'.$this->tabla);
         $count=0;
+        // Si no encuentro localidades en lab.
         if ($ppdddllls==[]) {
             // Intento cargar pais x depto :D
             $coddeptos = MyDB::getDptos('lab', 'e_'.$this->tabla);
@@ -348,6 +349,8 @@ class Archivo extends Model
             MyDB::limpiar_esquema('e_'.$this->tabla);
             return $coddeptos;
         } else {
+            // Para cada localidad encontrada
+            // creo esquema y copio datos a esquema según codigo.
             foreach ($ppdddllls as $ppdddlll) {
                 flash('Se encontró loc Etiquetas: '.$ppdddlll->link);
                 MyDB::createSchema($ppdddlll->link);
