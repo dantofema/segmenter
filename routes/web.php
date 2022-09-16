@@ -10,6 +10,8 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
+Route::get('users', 'UserController@listarUsuarios')->name('admin.listarUsuarios');
+Route::get('users/{user}', 'UserController@editarRolUsuario')->name('admin.editarRolUsuario');
 
 Route::get('/', function () {
     return view('welcome');
