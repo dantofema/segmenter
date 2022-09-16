@@ -587,11 +587,19 @@ FROM
         } else { $filtro='';
                  $filtro_lab=''; }
          try {
-
+             DB::beginTransaction();
+             DB::unprepared('DROP TABLE IF EXISTS '.$a_esquema.'.arc CASCADE');
+             DB::unprepared('DROP TABLE IF EXISTS '.$a_esquema.'.lab CASCADE');
+             DB::unprepared('CREATE TABLE "'.$a_esquema.'".arc AS SELECT * FROM "'.$de_esquema.'".arc '.$filtro);
+             DB::unprepared('CREATE TABLE "'.$a_esquema.'".lab AS SELECT * FROM "'.$de_esquema.'".lab '.$filtro_lab);
+             DB::commit();
+          
          }catch (QueryException $exception) {
              DB::Rollback();
              Log::error('Error: '.$exception);
+             return false;
         }
+        return true;
     }
 
     public static function getEntidades($tabla,$esquema,$localidad=null)
@@ -2024,7 +2032,7 @@ order by 1,2
                   dpto as cod_departamento, departamento as desc_departamento, 
                   codloc as cod_localidad, localidad desc_localidad, 
                   frac cod_fraccion, radio cod_radio, seg cod_segmento, 
-                  ncalle, nrocatastr nro_catast, piso, casa, dpto_habit, 
+                  ccalle, ncalle, nrocatastr nro_catast, piso, casa, dpto_habit, 
                   sector, edificio, entrada, 
                   row_number() over ( partition by prov,dpto,frac,radio,seg order by mza,lado,
                                case when orden_reco!='' then orden_reco::integer else 0 end::integer
