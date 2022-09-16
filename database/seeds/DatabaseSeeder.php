@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
 	        // Bunch of seeders using Eloquent
             // Provincias
 	         SqlProvSeeder::class,
+            SqlProvinciaSridSeeder::class,
     //       SqlDeptoSeeder::class,
     //       SqlLocSeeder::class,
     //       SqlLocDeptoSeeder::class,
