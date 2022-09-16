@@ -3,6 +3,8 @@
 namespace App\Model;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Arr;
 
 class Provincia extends Model
 {
@@ -13,6 +15,13 @@ class Provincia extends Model
         'id','codigo','nombre'
     ];
 
+    protected $url_json = 'https://geoservicios.indec.gob.ar/geoserver/sig/ows';
+    protected $params = ['service'=>'WFS','version'=>'1.0.0','request'=>'GetFeature',
+    'typeName'=>'sig:v_provincias','outputFormat'=>'application/json'];
+    protected $url_svg = 'http://172.26.68.22:8080/geoserver/precenso/wms';
+    protected $params_svg = ['service'=>'WMS','version'=>'1.1.0','request'=>'GetMap','layers'=>'precenso:provincias',
+    'bbox'=>'-73.9999999999999,-90.000000029,-24.9999999999999,-21.780856764','width'=>'551','height'=>'768',
+    'srs'=>'EPSG:4326','format'=>'image/svg xml'];
     // Sin fecha de creación o modificación
     //
     public $timestamps = false;
@@ -40,4 +49,26 @@ class Provincia extends Model
 //    {
 //        return $this->hasManyThrough('App\Model\Radio','App\Model\Departamento');
 //    }
+
+    /**
+     * Get the json geoservicios de la provincia.
+     */
+    public function geojson()
+    {
+        return Http::get($this->url_json,
+         Arr::add($this->params,"cql_filter","link =  '".$this->codigo."'")
+        );
+    }
+
+
+    /**
+     * Get the json geoservicios de la provincia.
+     */
+    public function svg()
+    {
+        return Http::get($this->url_svg,
+         Arr::add($this->params_svg,"cql_filter","link =  '".$this->codigo."'")
+        );
+    }
+
 }
