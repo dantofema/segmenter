@@ -206,7 +206,7 @@ class Archivo extends Model
                 'port'=>Config::get('database.connections.pgsql.port')
             ]);
             $mensajes.='<br />'.$processOGR2OGR->getErrorOutput().'<br />'.$processOGR2OGR->getOutput();
-            flash($mensajes)->error();
+            flash($mensajes)->info();
             $this->procesado=true;
         } catch (ProcessFailedException $exception) {
             Log::error($processOGR2OGR->getErrorOutput());
