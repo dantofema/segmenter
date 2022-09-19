@@ -577,7 +577,7 @@ FROM
     public static function copiaraEsquema($de_esquema,$a_esquema,$localidad_codigo=null)
     {
         if (isset($localidad_codigo)) {
-                 $filtro=" WHERE substr(mzai,0,9)= '".$localidad_codigo."' or substr(mzad,0,9)= '".$localidad_codigo."' ";
+                 $filtro=" WHERE substr(mzai,1,8)= '".$localidad_codigo."' or substr(mzad,1,8)= '".$localidad_codigo."' ";
                  $filtro_lab=" WHERE prov || depto || codloc = '".$localidad_codigo."'";
         } else { $filtro='';
                  $filtro_lab=''; }
