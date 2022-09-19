@@ -42,7 +42,7 @@
                   Administrar Roles
                 </button>
 
-                <!-- Modal -->
+                <!-- Modal roles del usuario -->
                 <div class="modal fade" id="rolesModal{{$usuario->id}}" tabindex="-1" role="dialog" aria-labelledby="rolesModalLabel" aria-hidden="true">
                   <div class="modal-dialog" role="document">
                     <div class="modal-content">
@@ -62,6 +62,9 @@
                                   <label class="form-check-label" for="{{$rol->name}}">
                                     {{$rol->name}}
                                   </label>
+                                  <button type="button" class="btn-sm btn-secondary float-right" data-toggle="modal" data-dismiss="modal" data-target="#detailsModal{{$rol->id}}">
+                                    Detalles
+                                  </button>
                                 </td>                                
                                 <td class="col align-self-center">
                                   @if ($usuario->hasRole($rol->name))
@@ -80,6 +83,37 @@
                           <input type="submit" name="btn"  class="btn btn-primary" value="Guardar Cambios">
                         </div>
                       </form>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Modal de detalles del rol -->
+                <div class="modal fade" id="detailsModal{{$rol->id}}" aria-hidden="true" aria-labelledby="detailsModalLabel" tabindex="-1">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="detailsModalLabel">Permisos del rol {{$rol->name}}</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                      <table class="table">
+                        <tbody>
+                          @foreach ($rol->permissions as $permiso)
+                          <tr>
+                            <td class="col align-self-center">
+                              <label class="form-check-label" for="{{$rol->name}}">
+                                {{$permiso->name}}
+                              </label>
+                            </td>                                
+                          @endforeach
+                        </tbody>
+                      </table>
+                      </div>
+                      <div class="modal-footer">
+                        <button class="btn btn-primary" data-target="#rolesModal{{$usuario->id}}" data-toggle="modal" data-dismiss="modal">Volver</button>
+                      </div>
                     </div>
                   </div>
                 </div>
