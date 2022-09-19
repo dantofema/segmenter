@@ -91,6 +91,7 @@ class SegmenterController extends Controller
             $epsg_def= '';
     }
 
+    $mensajes = 'No hay mensajes';
     $temp = array();
     $algo =  array('link' => 'temporal');
     $temp[0] = (object) $algo;
