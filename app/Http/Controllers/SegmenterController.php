@@ -48,20 +48,21 @@ class SegmenterController extends Controller
         return view('segmenter/index',['data' => $data,'epsgs'=> $this->epsgs]);
     }
 
-    public function store(Request $request)
-    {
+  public function store(Request $request)
+  {
     if (! Auth::check()) {
         $mensaje = 'No tiene permiso para cargar o no esta logueado';
         flash($mensaje)->error()->important();
         return $mensaje;
-    }else{
-      $AppUser = Auth::user();
-      $data = [];
-      $segmenta_auto = false;
-      $pba = false;
-      $epsg_id = $request->input('epsg_id')?$request->input('epsg_id'):'epsg:22183';
-      $data['epsg']['id'] = $epsg_id;
-      flash('SRS: '.$data['epsg']['id']);
+    }
+    
+    $AppUser = Auth::user();
+    $data = [];
+    $segmenta_auto = false;
+    $pba = false;
+    $epsg_id = $request->input('epsg_id')?$request->input('epsg_id'):'epsg:22183';
+    $data['epsg']['id'] = $epsg_id;
+    flash('SRS: '.$data['epsg']['id']);
 
     // Se procesa archivo de listado de viviendas C1
     if ($request->hasFile('c1')) {
@@ -94,29 +95,11 @@ class SegmenterController extends Controller
     $algo =  array('link' => 'temporal');
     $temp[0] = (object) $algo;
     $codaglo = isset($codaglo) ? $codaglo : $temp;
-    
-    // En caso de que vengan capa de etiquetas/poligonos
-    if ($request->hasFile('shp_lab')) {
-     if($shp_lab_file = Archivo::cargar($request->shp_lab, Auth::user(),
-     'shape', [$request->shx_lab, $request->dbf_lab, $request->prj_lab])) {
-       flash("Archivo Shp ")->info();
-     } else {
-       flash("Error en el modelo cargar archivo al procesar SHP")->error();
-     }
-    $shp_lab_file->epsg_def = $epsg_id;
-    $shp_lab_file->tipo = 'shp/lab';
-    $shp_lab_file->save();
-     if( $ppddllls=$shp_lab_file->procesar() ) {
-        flash('Se cargaron las etiquetas/polígonos correctamente')->success();
-     }else{
-        flash('la pifio, ver '.$codaglo[0]->link)->warning();
-     }
-    
-    }
-
+   
+   // Carga de arcos o e00
     if ($request->hasFile('shp')) {
      if($shp_file = Archivo::cargar($request->shp, Auth::user(),
-     'shape', [$request->shx, $request->dbf, $request->prj])) {
+       'shape', [$request->shx, $request->dbf, $request->prj])) {
        flash("Archivo Shp ")->info();
      } else {
          flash("Error en el modelo cargar archivo al procesar SHP/E00")->error();
@@ -124,13 +107,34 @@ class SegmenterController extends Controller
      $shp_file->epsg_def = $epsg_id;
      $shp_file->save();
 
+    // En caso de que vengan capa de etiquetas/poligonos
+    if ($request->hasFile('shp_lab')) {
+      if($shp_lab_file = Archivo::cargar($request->shp_lab, Auth::user(),
+        'shape', [$request->shx_lab, $request->dbf_lab, $request->prj_lab])) {
+        flash("Archivo Shp Lab ")->info();
+      } else {
+       flash("Error en el modelo cargar archivo al procesar SHP")->error();
+      }
+      $shp_lab_file->epsg_def = $epsg_id;
+      $shp_lab_file->tipo = 'shp/lab';
+      //Que directamente suba las etuiquetas poligono junto donde subió los arcos
+      $shp_lab_file->tabla = $shp_file->tabla;
+      $shp_lab_file->save();
+      if( $ppddllls=$shp_lab_file->procesar() ) {
+        flash('Se cargaron las etiquetas/polígonos correctamente')->success();
+      }else{
+        flash('la pifio, ver '.$codaglo[0]->link)->warning();
+      }
+    }
+
      // PROCESAMIENTO PARA ARCHIVOS e00 o Shapes
      if( $mensajes=$shp_file->procesar() ) {
        flash('Procesó '.$shp_file->tipo)->important()->success();
-       $shp_file->asociar($shp_lab_file);
+       flash('2. '.$shp_file->tabla.' == '.$shp_lab_file->tabla);
        $ppdddllls=$shp_file->pasarData();
+       flash('333');
      }else{flash('No se pudo procesar la cartografía')->error()->important();
-       $mensajes='ERROR';
+       $mensajes.=' ERROR ';
        $ppdddllls=[];
      }
     }
@@ -148,11 +152,10 @@ class SegmenterController extends Controller
                MyDB::setSRID('e'.$codaglo[0]->link,98333);
             }
     }
-  }    
-    if($segmenta_auto==true) {
-          MyDB::segmentar_equilibrado($codaglo[0]->link,36);
-          flash('Segmentado automáticamente a 36 viviendas x segmento')->important();
-    }
+    //if($segmenta_auto==true) {
+    //      MyDB::segmentar_equilibrado($codaglo[0]->link,36);
+    //      flash('Segmentado automáticamente a 36 viviendas x segmento')->important();
+    //}
     if ($request->hasFile('pxrad')) {
      if ($pxrad_file = Archivo::cargar($request->pxrad, Auth::user())) {
         $pxrad_file->tipo = 'pxrad/dbf';
@@ -269,9 +272,8 @@ class SegmenterController extends Controller
         //return redirect('/depto/'.$oDepto->id);
         return view('deptoview',['departamento' =>
                            $oDepto->loadCount('localidades')]);
-      }else{
-          return view('segmenter/index', ['data' => $data,'epsgs'=> $this->epsgs]);
       }
-    }
+    return view('segmenter/index', ['data' => $data,'epsgs'=> $this->epsgs]);
+      
   }
 }
