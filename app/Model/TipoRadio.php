@@ -13,14 +13,14 @@ class TipoRadio extends Model
     //
     public $timestamps = false;
 
-     /**
-      * Relación con Radios, una TipoRadio tiene varios radios.
-      *
-      */
+    /**
+     * Relación con Radios, una TipoRadio tiene varios radios.
+     *
+     */
 
-     public function radios()
-     {
-         return $this->hasMany('App\Model\Radio','tipo_de_radio_id');
-     }
+    public function radios()
+    {
+        return $this->hasMany('App\Model\Radio','tipo_de_radio_id');
+    }
 
 }

@@ -12,7 +12,7 @@ return [
     |
     */
 
-    'Dashboard' => 'Panel Inicial',
+    'Dashboard' => 'Las Malvinas son argentinas',
     'Welcome' => 'Bienvenide al segmentador mandarina.',
 
 ];

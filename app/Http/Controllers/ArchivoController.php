@@ -20,17 +20,17 @@ class ArchivoController extends Controller
     {
 	    //
       if (Auth::check()) {
-            $AppUser=Auth::user();
-	    $archivos=Archivo::where('user_id',$AppUser->id);
-	    if ($request->ajax()) {
-	        return Datatables::of($archivos)->addIndexColumn()
-			->make(true);
-	    }
+          $AppUser=Auth::user();
+          $archivos=Archivo::where('user_id',$AppUser->id);
+	        if ($request->ajax()) {
+	            return Datatables::of($archivos)->addIndexColumn()
+            			->make(true);
+	        }  
       }else{
-             $archivos= null;
-             return redirect()->route('login');
+          $archivos= null;
+          return redirect()->route('login');
       }
-            return view('archivo.list')->with(['data'=>$archivos]);
+          return view('archivo.list')->with(['data'=>$archivos]);
     }
 
     /**
