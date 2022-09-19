@@ -100,6 +100,8 @@ class Archivo extends Model
                 return $this->procesarGeomSHP();
             } elseif ($this->tipo == 'shp/lab') {
                 return $this->procesarGeomSHP('lab');
+            } elseif ($this->tipo == 'shp/pol') {
+                return $this->procesarGeomSHP('pol');
             } else {
                 flash('No se encontro qué hacer para procesar '.$this->nombre_original.'. tipo = '.$this->tipo)->warning();
                 return false;
@@ -393,5 +395,14 @@ class Archivo extends Model
             return view('segmenter/index', ['data' => $data,'epsgs'=> $this->epsgs]);
         }
     }
+
+    public function asociar(Archivo $lab_file_asoc){
+        $resulta = MyDB::moverEsquema('e_'.$this->tabla,'e_'.$lab_file_asoc->tabla);
+        $this->tabla = $lab_file_asoc->tabla;
+        $this->save();
+        MyDB::limpiar_esquema('e_'.$this->tabla);
+        return $resulta;
+    }
+
 }
 

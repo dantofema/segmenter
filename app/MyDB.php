@@ -526,7 +526,6 @@ FROM
       try{
           DB::beginTransaction();
           (DB::unprepared('ALTER TABLE  "'.$de_esquema.'".arc SET SCHEMA "'.$a_esquema.'" '));
-          (DB::unprepared('ALTER TABLE  "'.$de_esquema.'".lab SET SCHEMA "'.$a_esquema.'" '));
           DB::commit();
       }catch (QueryException $exception) {
            if ($exception->getCode() == '42P07'){
@@ -535,10 +534,27 @@ FROM
              try{
                     DB::beginTransaction();
                     DB::unprepared('DROP TABLE IF EXISTS '.$a_esquema.'.arc CASCADE');
-                    DB::unprepared('DROP TABLE IF EXISTS '.$a_esquema.'.lab CASCADE');
                     DB::unprepared('ALTER TABLE  "'.$de_esquema.'".arc SET SCHEMA "'.$a_esquema.'" ');
+                    DB::commit();
+                  Log::info('Se movio tabla ARC a '.$a_esquema.' de  '.$de_esquema);
+              }catch (QueryException $exception) {
+                Log::error('Error: '.$exception);
+                DB::Rollback();
+              }
+          }
+      }
+      try{
+          DB::beginTransaction();
+          (DB::unprepared('ALTER TABLE  "'.$de_esquema.'".lab SET SCHEMA "'.$a_esquema.'" '));
+          DB::commit();
+      }catch (QueryException $exception) {
+           if ($exception->getCode() == '42P07'){
+             Log::warning('Ya hay tablas cargadas, se pisarán los datos! ');
+             DB::Rollback();
+             try{
+                    DB::beginTransaction();
+                    DB::unprepared('DROP TABLE IF EXISTS '.$a_esquema.'.lab CASCADE');
                     DB::unprepared('ALTER TABLE  "'.$de_esquema.'".lab SET SCHEMA "'.$a_esquema.'" ');
-                    DB::unprepared('DROP SCHEMA "'.$de_esquema.'"');
                     DB::commit();
                   Log::info('Se movieron tablas ARC Y LAB a '.$a_esquema.' y se borro el esquema '.$de_esquema);
               }catch (QueryException $exception) {

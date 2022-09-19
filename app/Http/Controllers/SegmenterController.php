@@ -106,7 +106,7 @@ class SegmenterController extends Controller
     $shp_lab_file->epsg_def = $epsg_id;
     $shp_lab_file->tipo = 'shp/lab';
     $shp_lab_file->save();
-     if( $ppddllls=$shp_lab_file->procesar(['epsg'=>$epsg_def]) ) {
+     if( $ppddllls=$shp_lab_file->procesar() ) {
         flash('Se cargaron las etiquetas/polígonos correctamente')->success();
      }else{
         flash('la pifio, ver '.$codaglo[0]->link)->warning();
@@ -122,23 +122,17 @@ class SegmenterController extends Controller
          flash("Error en el modelo cargar archivo al procesar SHP/E00")->error();
      }
      $shp_file->epsg_def = $epsg_id;
-     if( $ppddllls=$shp_file->procesar(['epsg'=>$epsg_def]) ) {
-        flash('Se cargaron los arcos correctamente')->success();
+     $shp_file->save();
 
-     }else{
-        flash('la pifio, ver '.$codaglo[0]->link)->warning();
+     // PROCESAMIENTO PARA ARCHIVOS e00 o Shapes
+     if( $mensajes=$shp_file->procesar() ) {
+       flash('Procesó '.$shp_file->tipo)->important()->success();
+       $shp_file->asociar($shp_lab_file);
+       $ppdddllls=$shp_file->pasarData();
+     }else{flash('No se pudo procesar la cartografía')->error()->important();
+       $mensajes='ERROR';
+       $ppdddllls=[];
      }
-    MyDB::agregarsegisegd($codaglo[0]->link);
-
-    // PROCESAMIENTO PARA ARCHIVOS e00 o Shapes
-    $shp_file->epsg_def = $epsg_id;
-    $shp_file->save();
-    if( $mensajes=$shp_file->procesar() ) {
-      flash('Procesó '.$shp_file->tipo)->important()->success();
-      $ppdddllls=$shp_file->pasarData();
-    }else{flash('No se pudo procesar la cartografía')->error()->important();
-      $mensajes='ERROR';
-      $ppdddllls=[];
     }
     if (!Str::contains($mensajes,['ERROR'])){
        flash('Se cargaron las Etiquetas y Arcos con éxito. ')->important()->success();
