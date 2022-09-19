@@ -566,8 +566,10 @@ FROM
 
     }else{
               Log::error('Error: '.$exception);
+              return false;
     }
    }
+   return true;
   }
 
     // Copia de esquema temporal a otro
