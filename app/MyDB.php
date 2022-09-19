@@ -1743,10 +1743,15 @@ FROM
             catch(QueryException $e){
                 DB::Rollback();
                 Log::error('No se pudo cargar la topologia pais...'.$e);
+                flash('Error cargando topología pais en '.$esquema)
+                  ->error()->important();
                 return false;
             }
             catch(Exception $e){
+                DB::Rollback();
                 Log::error('No se pudo cargar la topologia pais...'.$e);
+                flash('Error cargando topología pais en '.$esquema)
+                  ->error()->important();
                 return false;
             }
             Log::debug('Se generaron fracciones, radios pais en '.$esquema);
