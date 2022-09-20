@@ -1728,7 +1728,10 @@ FROM
                 DB::commit();
 
       }catch(QueryException $e){
-    DB::Rollback();
+                DB::Rollback();
+                if ($e->getCode()=='P0001'){
+                    self::setLabfromPol($esquema);
+                }
                 Log::error('No se pudo cargar la topologia...'.$e);
                 return false;
             }
@@ -1922,6 +1925,31 @@ public static function getPxSeg($esquema)
             return 'Sin pxseg';
        }
 }
+
+    public static function setLabfromPol($esquema,$srid_id=null)
+    {
+       try{
+         DB::beginTransaction();
+         $srid_id = DB::select("SELECT st_srid(wkb_geometry) from ".$esquema.".lab limit 1;")[0]->st_srid;
+         DB::statement("ALTER TABLE ".$esquema.".lab  ADD COLUMN IF NOT EXISTS wkb_geometry_lab
+                      geometry(POINT,".$srid_id.");");
+         DB::statement("UPDATE ".$esquema.".lab SET wkb_geometry_lab = st_transform(st_centroid(wkb_geometry),st_srid(wkb_geometry))");
+         DB::statement('ALTER TABLE '.$esquema.'.lab RENAME wkb_geometry TO wkb_geometry_pol');
+         DB::statement('ALTER TABLE '.$esquema.'.lab RENAME wkb_geometry_lab TO wkb_geometry');
+         DB::commit();
+       } catch(QueryException $e) {
+         Log::warning('Problemas al generar lab de pol srid: '.$srid_id.' en '.$esquema.': '.$e);
+         try{
+           DB::statement("ALTER TABLE ".$esquema.".lab ALTER COLUMN wkb_geometry SET DATA TYPE
+                      geometry(LINESTRING,".$srid_id.")
+                      USING st_setsrid(wkb_geometry,".$srid_id.");");
+           return;
+         } catch(QueryException $e) {
+           Log::debug('Se estableció el SRS: '.$srid_id.' en '.$esquema);
+         }
+      }
+    }
+
 
     public static function setSRID($esquema,$srid_id)
     {
