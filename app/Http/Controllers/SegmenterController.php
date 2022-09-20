@@ -96,6 +96,7 @@ class SegmenterController extends Controller
     $algo =  array('link' => 'temporal');
     $temp[0] = (object) $algo;
     $codaglo = isset($codaglo) ? $codaglo : $temp;
+    $ppdddllls=[];
    
    // Carga de arcos o e00
     if ($request->hasFile('shp')) {
@@ -136,7 +137,6 @@ class SegmenterController extends Controller
        flash('333');
      }else{flash('No se pudo procesar la cartografía')->error()->important();
        $mensajes.=' ERROR ';
-       $ppdddllls=[];
      }
     }
     if (!Str::contains($mensajes,['ERROR'])){
