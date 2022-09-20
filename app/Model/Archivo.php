@@ -317,7 +317,9 @@ class Archivo extends Model
                 $segmenta_auto=true;
             } elseif (substr($ppdddlll->link, 0, 2) == '06') {
                 flash($data['file']['data']='Se detecto PBA: '.$ppdddlll->link);
-                $codigo_esquema=substr($ppdddlll->link, 0, 5);
+                //$codigo_esquema=substr($ppdddlll->link, 0, 5);
+                // Se utiliza el código de localidad también para PBA
+                $codigo_esquema=$ppdddlll->link;
             } else {
                 $codigo_esquema=$ppdddlll->link;
             }
