@@ -1,5 +1,7 @@
 <?php
 
+namespace Database\Seeders;
+
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
@@ -14,11 +16,11 @@ class RoleSeeder extends Seeder
     public function run()
     {   
         try{
-            $asignarRoles = Permission::create(['name' => 'Asignar Roles']);
-            $quitarRoles = Permission::create(['name' => 'Quitar Roles']);
+            $asignarRoles = Permission::create(['name' => 'Asignar Roles'],'asignador');
+            $quitarRoles = Permission::create(['name' => 'Quitar Roles'],'vetador');
 
             $superAdmin = Role::create(['name' => 'Super Admin'])->syncPermissions([$asignarRoles, $quitarRoles]);
-        } catch (Exception $e) {
+        } catch ( Spatie\Permission\Exceptions $e) {
             echo _($e->getMessage());
         }
     }
