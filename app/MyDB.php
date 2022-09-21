@@ -1748,10 +1748,6 @@ FROM
                 DB::beginTransaction();
                 DB::statement(" SELECT indec.cargar_topologia_pais(
                 '".$esquema."','arc');");
-                DB::statement(" ANALYZE pais_topo.edge;");
-                DB::statement(" ANALYZE pais_topo.edge_data;");
-                DB::statement(" ANALYZE pais_topo.node;");
-                DB::statement(" ANALYZE pais_topo.face");
                 DB::statement(" DROP TABLE if exists ".$esquema.".fracciones_pais;");
                 DB::statement(" CREATE TABLE ".$esquema.".fracciones_pais AS SELECT * FROM
                 ".$esquema.".v_fracciones_pais;");
@@ -2368,8 +2364,15 @@ order by 1,2
                     $nuevo = $nuevo + 1;
                     flash($nuevo.'. Cargando... '.$registro['esquema'])->warning()->important();
                     self::cargarTopologiaPais($registro['esquema']);
-                    $por_hacer = (int) count($result) - (int) $se_encontro; 
-                    Log::debug('Se cargó la localidad '.$registro['esquema'].' ('.$nuevo.'/ '.$por_hacer.') ');
+                    Log::debug('Se cargó la localidad '.$registro['esquema'].' ('.$nuevo.') ');
+
+                    if ($nuevo  % 10 == 0)  {
+                      Log::debug('Se ANALYZE pais_topo');
+                      DB::statement(" ANALYZE pais_topo.edge;");
+                      DB::statement(" ANALYZE pais_topo.edge_data;");
+                      DB::statement(" ANALYZE pais_topo.node;");
+                      DB::statement(" ANALYZE pais_topo.face;");
+                    }
                   }
             }
         Log::debug('Se cargaron localidades: '.count($result));
