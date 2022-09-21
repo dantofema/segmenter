@@ -12,10 +12,14 @@ class RoleSeeder extends Seeder
      * @return void
      */
     public function run()
-    {
-        $asignarRoles = Permission::create(['name' => 'Asignar Roles']);
-        $quitarRoles = Permission::create(['name' => 'Quitar Roles']);
+    {   
+        try{
+            $asignarRoles = Permission::create(['name' => 'Asignar Roles']);
+            $quitarRoles = Permission::create(['name' => 'Quitar Roles']);
 
-        $superAdmin = Role::create(['name' => 'Super Admin'])->syncPermissions([$asignarRoles, $quitarRoles]);
+            $superAdmin = Role::create(['name' => 'Super Admin'])->syncPermissions([$asignarRoles, $quitarRoles]);
+        } catch (Exception $e) {
+            echo _($e->getMessage());
+        }
     }
 }

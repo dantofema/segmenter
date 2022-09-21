@@ -12,10 +12,15 @@ class DefaultUsersSeeder extends Seeder
      */
     public function run()
     {
-        User::create([
-            'name' => 'Super Admin',
-            'email' => 'superadmin@segmenter',
-            'password' => bcrypt('superadmin')
-           ])->assignRole('Super Admin');
+        try {
+            User::create([
+                'name' => 'Super Admin',
+                'email' => 'superadmin@segmenter',
+                'password' => bcrypt('superadmin')
+               ])->assignRole('Super Admin');
+        } catch (Exception $e) {
+            echo _($e->getMessage());
+        }
+        
     }
 }
