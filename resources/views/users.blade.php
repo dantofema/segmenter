@@ -25,7 +25,9 @@
             <tr>
               <th>Nombre</th>
               <th>Email</th>
+              @can('Asignar Roles', 'Quitar Roles')
               <th>Roles</th>
+              @endcan
             </tr>
           </thead>
           <tbody>
@@ -33,6 +35,7 @@
             <tr>
               <td>{{$usuario->name}}</td>
               <td>{{$usuario->email}}</td>
+              @can('Asignar Roles', 'Quitar Roles')
               <td>
                 <!-- Button trigger modal -->
                 <button type="button" class="btn-sm btn-primary" data-toggle="modal" data-target="#rolesModal{{$usuario->id}}">
@@ -115,6 +118,7 @@
                   </div>
                 </div>
               </td>
+              @endcan
           @endforeach
         </tr>
       </tbody>

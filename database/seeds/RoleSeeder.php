@@ -13,10 +13,9 @@ class RoleSeeder extends Seeder
      */
     public function run()
     {
-        $listLoc = Permission::create(['name' => 'listarLocalidades']);
-        $editLoc = Permission::create(['name' => 'editarLocalidades']);
-        $deleteLoc = Permission::create(['name' => 'eliminarLocalidades']);
+        $asignarRoles = Permission::create(['name' => 'Asignar Roles']);
+        $quitarRoles = Permission::create(['name' => 'Quitar Roles']);
 
-        $adminLoc = Role::create(['name' => 'adminLocalidades'])->syncPermissions([$listLoc, $editLoc, $deleteLoc]);
+        $superAdmin = Role::create(['name' => 'Super Admin'])->syncPermissions([$asignarRoles, $quitarRoles]);
     }
 }

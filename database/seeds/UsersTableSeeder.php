@@ -40,12 +40,6 @@ class UsersTableSeeder extends Seeder
             'email' => 'admin@geoinquietos',
             'password' => bcrypt('adminadmin'),
         ]);
-     }
-     
-     User::create([
-      'name' => 'gerov',
-      'email' => 'gerogv612@gmail.com',
-      'password' => bcrypt('12345678')
-     ])->assignRole('adminLocalidades');
+     };
     }
 }
