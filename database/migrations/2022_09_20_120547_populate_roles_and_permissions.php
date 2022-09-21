@@ -34,20 +34,21 @@ class PopulateRolesAndPermissions extends Migration
      */
     public function down()
     {
-        DB::transaction(function () {
+        DB::beginTransaction();
             /** le quito el rol al super admin y lo elimino */
-            $superAdmin = User::where('email','superadmin@segmenter')->first();
+            $superAdmin = User::where(['email'=>'superadmin@segmenter'])->first();
             $superAdmin->removeRole('Super Admin');
             $superAdmin->delete();
             
             /** le quito los permisos al rol y lo elimino*/
-            $superAdmin = Role::where(['name','Super Admin'])->first();
+            $superAdmin = Role::where(['name'=>'Super Admin'])->first();
             $superAdmin->syncPermissions([]);
             $superAdmin->delete();
 
             /** elimino los permisos */
-            $asignarRoles = Permission::where(['name', 'Asignar Roles'])->first()->delete();
-            $quitarRoles = Permission::create(['name', 'Quitar Roles'])->first()->delete();
-        });
+            $asignarRoles = Permission::where(['name'=>'Asignar Roles'])->first()->delete();
+            $quitarRoles = Permission::where(['name'=>'Quitar Roles'])->first()->delete();
+            DB::commit();
+        
     }
 }
