@@ -42,7 +42,7 @@
      <div>
      @if ($carto && $listado)
        <button type="button" class="btn btn-primary" id="segmentar">Segmentar</button>
-     @endif
+     @endif     
     @endauth
     </div>
 </div>

@@ -1,6 +1,10 @@
 <?php
 
+namespace Database\Seeders;
+
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use App\User;
 
 class UsersTableSeeder extends Seeder
 {
@@ -39,6 +43,6 @@ class UsersTableSeeder extends Seeder
             'email' => 'admin@geoinquietos',
             'password' => bcrypt('adminadmin'),
         ]);
-     }
+     };
     }
 }
