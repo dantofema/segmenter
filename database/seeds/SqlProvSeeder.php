@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Illuminate\Database\Eloquent;
+use Illuminate\Support\Facades\DB;
 
 class SqlProvSeeder extends Seeder
 {
@@ -14,7 +14,6 @@ class SqlProvSeeder extends Seeder
      */
     public function run()
     {
-        Eloquent::unguard();
         try{
           $this->command->info('Provincias table seed!');
           $path = 'app/developer_docs/provincias.sql';
