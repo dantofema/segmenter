@@ -1,6 +1,10 @@
 <?php
 
+namespace Database\Seeders;
+
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Database\QueryException;
 
 class SqlSubtipoViviendaSeeder extends Seeder
 {
@@ -11,12 +15,11 @@ class SqlSubtipoViviendaSeeder extends Seeder
      */
     public function run()
     {
-        Eloquent::unguard();
         $this->command->info('Sembrando subtipo_viviendas...');
         $path = 'app/developer_docs/subtipo_vivienda.sql';
         try{
             DB::unprepared(file_get_contents($path));
-            }catch(Exception $e){
+            }catch(QueryException $e){
                 if ($e->getCode()==23505){
                     $this->command->error('SubtipoViviendas NO fueron plantados!');
                     return 0;

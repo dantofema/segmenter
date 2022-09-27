@@ -1,6 +1,10 @@
 <?php
 
+namespace Database\Seeders;
+
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Database\QueryException;
 
 class SqlOperativosSeeder extends Seeder
 {
@@ -12,12 +16,11 @@ class SqlOperativosSeeder extends Seeder
     public function run()
     {
         //
-        Eloquent::unguard();
         $this->command->info('Sembrando operativos...');
         $path = 'app/developer_docs/operativos.sql';
         try{
             DB::unprepared(file_get_contents($path));
-            }catch(Exception $e){
+            }catch(QueryException $e){
                 if ($e->getCode()==23505){
                     $this->command->error('Operativos NO fueron plantados!');
                     return 0;
