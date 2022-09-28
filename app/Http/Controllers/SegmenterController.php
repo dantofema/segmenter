@@ -140,7 +140,7 @@ class SegmenterController extends Controller
      }
     }
     if (!Str::contains($mensajes,['ERROR'])){
-       flash('Se cargaron las Etiquetas y Arcos con éxito. ')->important()->success();
+       flash('No se encontraron problemas. ')->success();
     }else{
        flash($mensajes)->important()->error();
     }
