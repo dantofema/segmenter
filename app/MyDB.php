@@ -1767,7 +1767,7 @@ FROM
             catch(Exception $e){
                 DB::Rollback();
                 Log::error('No se pudo cargar la topologia pais...'.$e);
-                flash('Error cargando topología pais en '.$esquema)
+                flash('Error raro cargando topología pais en '.$esquema)
                   ->error()->important();
                 return false;
             }
