@@ -526,7 +526,6 @@ FROM
       try{
           DB::beginTransaction();
           (DB::unprepared('ALTER TABLE  "'.$de_esquema.'".arc SET SCHEMA "'.$a_esquema.'" '));
-          (DB::unprepared('ALTER TABLE  "'.$de_esquema.'".lab SET SCHEMA "'.$a_esquema.'" '));
           DB::commit();
       }catch (QueryException $exception) {
            if ($exception->getCode() == '42P07'){
@@ -535,10 +534,27 @@ FROM
              try{
                     DB::beginTransaction();
                     DB::unprepared('DROP TABLE IF EXISTS '.$a_esquema.'.arc CASCADE');
-                    DB::unprepared('DROP TABLE IF EXISTS '.$a_esquema.'.lab CASCADE');
                     DB::unprepared('ALTER TABLE  "'.$de_esquema.'".arc SET SCHEMA "'.$a_esquema.'" ');
+                    DB::commit();
+                  Log::info('Se movio tabla ARC a '.$a_esquema.' de  '.$de_esquema);
+              }catch (QueryException $exception) {
+                Log::error('Error: '.$exception);
+                DB::Rollback();
+              }
+          }
+      }
+      try{
+          DB::beginTransaction();
+          (DB::unprepared('ALTER TABLE  "'.$de_esquema.'".lab SET SCHEMA "'.$a_esquema.'" '));
+          DB::commit();
+      }catch (QueryException $exception) {
+           if ($exception->getCode() == '42P07'){
+             Log::warning('Ya hay tablas cargadas, se pisarán los datos! ');
+             DB::Rollback();
+             try{
+                    DB::beginTransaction();
+                    DB::unprepared('DROP TABLE IF EXISTS '.$a_esquema.'.lab CASCADE');
                     DB::unprepared('ALTER TABLE  "'.$de_esquema.'".lab SET SCHEMA "'.$a_esquema.'" ');
-                    DB::unprepared('DROP SCHEMA "'.$de_esquema.'"');
                     DB::commit();
                   Log::info('Se movieron tablas ARC Y LAB a '.$a_esquema.' y se borro el esquema '.$de_esquema);
               }catch (QueryException $exception) {
@@ -550,8 +566,10 @@ FROM
 
     }else{
               Log::error('Error: '.$exception);
+              return false;
     }
    }
+   return true;
   }
 
     // Copia de esquema temporal a otro
@@ -559,7 +577,7 @@ FROM
     public static function copiaraEsquema($de_esquema,$a_esquema,$localidad_codigo=null)
     {
         if (isset($localidad_codigo)) {
-                 $filtro=" WHERE substr(mzai,0,9)= '".$localidad_codigo."' or substr(mzad,0,9)= '".$localidad_codigo."' ";
+                 $filtro=" WHERE substr(mzai,1,8)= '".$localidad_codigo."' or substr(mzad,1,8)= '".$localidad_codigo."' ";
                  $filtro_lab=" WHERE prov || depto || codloc = '".$localidad_codigo."'";
         } else { $filtro='';
                  $filtro_lab=''; }
@@ -1710,7 +1728,10 @@ FROM
                 DB::commit();
 
       }catch(QueryException $e){
-    DB::Rollback();
+                DB::Rollback();
+                if ($e->getCode()=='P0001'){
+                    self::setLabfromPol($esquema);
+                }
                 Log::error('No se pudo cargar la topologia...'.$e);
                 return false;
             }
@@ -1727,10 +1748,6 @@ FROM
                 DB::beginTransaction();
                 DB::statement(" SELECT indec.cargar_topologia_pais(
                 '".$esquema."','arc');");
-                DB::statement(" ANALYZE pais_topo.edge;");
-                DB::statement(" ANALYZE pais_topo.edge_data;");
-                DB::statement(" ANALYZE pais_topo.node;");
-                DB::statement(" ANALYZE pais_topo.face");
                 DB::statement(" DROP TABLE if exists ".$esquema.".fracciones_pais;");
                 DB::statement(" CREATE TABLE ".$esquema.".fracciones_pais AS SELECT * FROM
                 ".$esquema.".v_fracciones_pais;");
@@ -1743,10 +1760,15 @@ FROM
             catch(QueryException $e){
                 DB::Rollback();
                 Log::error('No se pudo cargar la topologia pais...'.$e);
+                flash('Error cargando topología pais en '.$esquema)
+                  ->error()->important();
                 return false;
             }
             catch(Exception $e){
+                DB::Rollback();
                 Log::error('No se pudo cargar la topologia pais...'.$e);
+                flash('Error cargando topología pais en '.$esquema)
+                  ->error()->important();
                 return false;
             }
             Log::debug('Se generaron fracciones, radios pais en '.$esquema);
@@ -1899,6 +1921,31 @@ public static function getPxSeg($esquema)
             return 'Sin pxseg';
        }
 }
+
+    public static function setLabfromPol($esquema,$srid_id=null)
+    {
+       try{
+         DB::beginTransaction();
+         $srid_id = DB::select("SELECT st_srid(wkb_geometry) from ".$esquema.".lab limit 1;")[0]->st_srid;
+         DB::statement("ALTER TABLE ".$esquema.".lab  ADD COLUMN IF NOT EXISTS wkb_geometry_lab
+                      geometry(POINT,".$srid_id.");");
+         DB::statement("UPDATE ".$esquema.".lab SET wkb_geometry_lab = st_transform(st_centroid(wkb_geometry),st_srid(wkb_geometry))");
+         DB::statement('ALTER TABLE '.$esquema.'.lab RENAME wkb_geometry TO wkb_geometry_pol');
+         DB::statement('ALTER TABLE '.$esquema.'.lab RENAME wkb_geometry_lab TO wkb_geometry');
+         DB::commit();
+       } catch(QueryException $e) {
+         Log::warning('Problemas al generar lab de pol srid: '.$srid_id.' en '.$esquema.': '.$e);
+         try{
+           DB::statement("ALTER TABLE ".$esquema.".lab ALTER COLUMN wkb_geometry SET DATA TYPE
+                      geometry(LINESTRING,".$srid_id.")
+                      USING st_setsrid(wkb_geometry,".$srid_id.");");
+           return;
+         } catch(QueryException $e) {
+           Log::debug('Se estableció el SRS: '.$srid_id.' en '.$esquema);
+         }
+      }
+    }
+
 
     public static function setSRID($esquema,$srid_id)
     {
@@ -2308,18 +2355,24 @@ order by 1,2
             $se_encontro = 0; $nuevo = 0;
             foreach ($result as $registro) {
                   try {
-                    $radios_pais = DB::select("select count(*),sum(st_area(st_transform(wkb_geometry,22184))) area_m2 from ".
-                        $registro['esquema'].".v_radios_pais;");
+                    $radios_pais = DB::select("select * from ".
+                        $registro['esquema'].".v_radios_pais limit 1;");
                     $se_encontro = $se_encontro + 1 ;
-                    flash($se_encontro.'. Se encontró cargado '.$registro['esquema'].' con '.$radios_pais[0]->count.
-                          ' radios en '.round($radios_pais[0]->area_m2/10000,2).' ha sup.')->info()->important();
+                    flash($se_encontro.'. Se encontró cargado '.$registro['esquema'].' ')->info()->important();
                     
                   } catch (QueryException $e) {
                     $nuevo = $nuevo + 1;
                     flash($nuevo.'. Cargando... '.$registro['esquema'])->warning()->important();
                     self::cargarTopologiaPais($registro['esquema']);
-                    $por_hacer = (int) count($result) - (int) $se_encontro; 
-                    Log::debug('Se cargó la localidad '.$registro['esquema'].' ('.$nuevo.'/ '.$por_hacer.') ');
+                    Log::debug('Se cargó la localidad '.$registro['esquema'].' ('.$nuevo.') ');
+
+                    if ($nuevo  % 10 == 0)  {
+                      Log::debug('Se ANALYZE pais_topo');
+                      DB::statement(" ANALYZE pais_topo.edge;");
+                      DB::statement(" ANALYZE pais_topo.edge_data;");
+                      DB::statement(" ANALYZE pais_topo.node;");
+                      DB::statement(" ANALYZE pais_topo.face;");
+                    }
                   }
             }
         Log::debug('Se cargaron localidades: '.count($result));

@@ -1,6 +1,10 @@
 <?php
 
+namespace Database\Seeders;
+
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Database\QueryException;
 
 class SqlFuenteSeeder extends Seeder
 {
@@ -13,12 +17,11 @@ class SqlFuenteSeeder extends Seeder
     {
         //
         //
-        Eloquent::unguard();
         $this->command->info('Sembrando fuentes...');
         $path = 'app/developer_docs/fuente.sql';
         try{
             DB::unprepared(file_get_contents($path));
-            }catch(Exception $e){
+            }catch(QueryException $e){
                 if ($e->getCode()==23505){
                     $this->command->error('Fuentes NO fueron plantadas!');
                     return 0;

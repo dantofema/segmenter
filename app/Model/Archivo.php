@@ -25,7 +25,6 @@ class Archivo extends Model
     ];
     protected $attributes = [
         'procesado' => false,
-        'tabla' => null,
         'epsg_def' => 'epsg:22195'
     ];
 
@@ -100,6 +99,8 @@ class Archivo extends Model
                 return $this->procesarGeomSHP();
             } elseif ($this->tipo == 'shp/lab') {
                 return $this->procesarGeomSHP('lab');
+            } elseif ($this->tipo == 'shp/pol') {
+                return $this->procesarGeomSHP('pol');
             } else {
                 flash('No se encontro qué hacer para procesar '.$this->nombre_original.'. tipo = '.$this->tipo)->warning();
                 return false;
@@ -205,8 +206,7 @@ class Archivo extends Model
                 'port'=>Config::get('database.connections.pgsql.port')
             ]);
             $mensajes.='<br />'.$processOGR2OGR->getErrorOutput().'<br />'.$processOGR2OGR->getOutput();
-            flash($mensajes)->error();
-
+            flash($mensajes)->info();
             $this->procesado=true;
         } catch (ProcessFailedException $exception) {
             Log::error($processOGR2OGR->getErrorOutput());
@@ -219,8 +219,8 @@ class Archivo extends Model
         } catch(ProcessTimedOutException $exception){
             Log::error($processOGR2OGR->getErrorOutput().$exception);
             flash('Se agotó el tiempo Importando Shape de... etiquetas '.$this->nombre_original)->info();
+            $this->procesado=false;
         }
-        $this->procesado=false;
         $this->save();
         return $this->procesado;
     }
@@ -317,7 +317,9 @@ class Archivo extends Model
                 $segmenta_auto=true;
             } elseif (substr($ppdddlll->link, 0, 2) == '06') {
                 flash($data['file']['data']='Se detecto PBA: '.$ppdddlll->link);
-                $codigo_esquema=substr($ppdddlll->link, 0, 5);
+                //$codigo_esquema=substr($ppdddlll->link, 0, 5);
+                // Se utiliza el código de localidad también para PBA
+                $codigo_esquema=$ppdddlll->link;
             } else {
                 $codigo_esquema=$ppdddlll->link;
             }
@@ -393,5 +395,15 @@ class Archivo extends Model
             return view('segmenter/index', ['data' => $data,'epsgs'=> $this->epsgs]);
         }
     }
+
+    public function asociar(Archivo $lab_file_asoc){
+        $resulta = MyDB::moverEsquema('e_'.$this->tabla,'e_'.$lab_file_asoc->tabla);
+        $ex_tabla = $this->tabla;
+        $this->tabla = Str($lab_file_asoc->tabla);
+        $this->save();
+        MyDB::limpiar_esquema('e_'.$ex_tabla);
+        return $resulta;
+    }
+
 }
 
