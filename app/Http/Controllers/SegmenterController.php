@@ -66,10 +66,20 @@ class SegmenterController extends Controller
 
     // Se procesa archivo de listado de viviendas C1
     if ($request->hasFile('c1')) {
-     if($c1_file = Archivo::cargar($request->c1, Auth::user())) {
-         flash("Archivo C1 ")->info();
+     $c1_file = Archivo::where('checksum', '=', md5_file(($request->c1)->getRealPath()))->first();
+     if (!$c1_file) {
+      flash("Nuevo archivo C1");
+      if($c1_file = Archivo::cargar($request->c1, $AppUser)) {
+        $AppUser->visible_files()->attach($c1_file->id);
+        flash("Archivo C1 cargado ")->info();
+      } else {
+        flash("Error en el modelo cargar archivo")->error();
+      }
      } else {
-         flash("Error en el modelo cargar archivo")->error();
+      if (!$AppUser->visible_files()->get()->contains($c1_file)){
+        $AppUser->visible_files()->attach($c1_file->id);
+      }
+      flash("Archivo C1 ya existente. No se cargará de nuevo ")->info();
      }
      $c1_file->procesar();
      if (!$c1_file->procesado) {

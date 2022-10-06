@@ -21,7 +21,7 @@ class ArchivoController extends Controller
 	    //
       if (Auth::check()) {
           $AppUser=Auth::user();
-          $archivos=Archivo::where('user_id',$AppUser->id);
+          $archivos=$AppUser->visible_files();
 	        if ($request->ajax()) {
 	            return Datatables::of($archivos)->addIndexColumn()
             			->make(true);
