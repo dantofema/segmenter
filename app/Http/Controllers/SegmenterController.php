@@ -164,7 +164,7 @@ class SegmenterController extends Controller
         $procesar_result = $pxrad_file->procesar();
      } else {
          $procesar_result = false;
-         flash("Error en el modelo cargar archivo")->error();
+         flash("Error en el modelo archivo al cargar PxRad")->error();
      }
       if ($procesar_result) 
       {
