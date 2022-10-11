@@ -2186,9 +2186,9 @@ order by 1,2
             }
             DB::statement("
                 CREATE TABLE public.localidad_geo AS 
-                select st_union(wkb_geometry) wkb_geometry, prov, dpto, codloc, 
+                select st_transform(st_union(wkb_geometry),22184) wkb_geometry, prov, dpto, codloc, 
                 max(l.nombre) nombre,
-                sum(conteo) conteo, sum(cant_mzas) manzanas, sum(cant_lados) lados from indec.radios()
+                sum(conteo) conteo, count(*) manzanas, sum(cant_lados) lados from public.manzanas
                 left join public.localidad l on l.codigo=prov||dpto||codloc
                 group by prov, dpto, codloc order by prov, dpto, codloc;"
             );
