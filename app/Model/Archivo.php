@@ -68,6 +68,8 @@ class Archivo extends Model
         ]);
     }
 
+    // Descarga del archivo cargado con nombre: mandarina_ + time() + _nombre_original
+    // TODO: ver shape de descargar conjunto de archivos.
     public function descargar() {
         flash('Descargando... '.$this->nombre_original);
         $file = storage_path().'/app/'.$this->nombre;
@@ -76,9 +78,9 @@ class Archivo extends Model
         return response()->download($file, $name, $headers);
     }
 
-    public function procesar()
+    public function procesar(bool $force = true)
     {
-        if (!$this->procesado or true) {
+        if (!$this->procesado or $force) {
             if ($this->tipo == 'csv' or $this->tipo == 'dbf') {
                 if (( strtolower(substr($this->nombre_original, 0, 8)) == 'tablaseg')
                     or ( strtolower(substr($this->nombre_original, 0, 7))    == 'segpais')
