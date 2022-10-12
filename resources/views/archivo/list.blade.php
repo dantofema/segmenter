@@ -116,14 +116,7 @@
                   { data: 'mime', name: 'mime' },
                   { data: 'checksum', name: 'checksum' },
                   { data: 'size', name: 'size' },
-                  { orderable: false, searchable: false , data: function ( row, type, val, meta ) {
-                             var html =  '<button type="button" class="btn_descarga btn-sm btn-primary" > Descargar </button> ';
-                                 html +=  '<button type="button" class="btn_arch btn-sm btn-primary" > Ver </button>';
-                                 html +=  '<button type="button" class="btn_arch_procesar btn-sm btn-secondary" > Procesar </button>';
-                                 html +=  '<button type="button" class="btn_arch_delete btn-sm btn-delete " > Borrar </button>';
-                              return html;
-                            }
-                }
+                  { data: 'action', name: 'action', ordenable: 'false'}
         ]
       });
 

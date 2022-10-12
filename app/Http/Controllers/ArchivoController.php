@@ -21,10 +21,21 @@ class ArchivoController extends Controller
 	    //
       if (Auth::check()) {
           $AppUser=Auth::user();
-          $archivos=$AppUser->visible_files();
+          $archivos=$AppUser->visible_files()->get();
 	        if ($request->ajax()) {
-	            return Datatables::of($archivos)->addIndexColumn()
-            			->make(true);
+	            return Datatables::of($archivos)
+                    ->addIndexColumn()
+                    ->addColumn('action', function($data){
+                        $button = '<button type="button" class="btn_descarga btn-sm btn-primary" > Descargar </button> ';
+                        $button .= '<button type="button" class="btn_arch btn-sm btn-primary" > Ver </button>';
+                        $button .= '<button type="button" class="btn_arch_procesar btn-sm btn-secondary" > Procesar </button>';
+                        if ($data->user_id == Auth::user()->id) {
+                            $button .= '<button type="button" class="btn_arch_delete btn-sm btn-danger " > Borrar </button>';
+                        }     
+                        return $button;
+                    })
+                    ->rawColumns(['action'])
+            	    ->make(true);
 	        }  
       }else{
           $archivos= null;
