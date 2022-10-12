@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "53df0b93a8ce7b06bda5a4c3e011adee",
+    "content-hash": "0145f88f01ea07c13a52aefa65cee4b5",
     "packages": [
         {
             "name": "brick/math",
@@ -1629,16 +1629,16 @@
         },
         {
             "name": "hnhdigital-os/laravel-git-info",
-            "version": "v1.0.3",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/hnhdigital-os/laravel-git-info.git",
-                "reference": "68aa557eb09a967c041f26b882e5af5f98bb7991"
+                "reference": "538b1072ed53b7a9837db8437a35b276015ac7e2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/hnhdigital-os/laravel-git-info/zipball/68aa557eb09a967c041f26b882e5af5f98bb7991",
-                "reference": "68aa557eb09a967c041f26b882e5af5f98bb7991",
+                "url": "https://api.github.com/repos/hnhdigital-os/laravel-git-info/zipball/538b1072ed53b7a9837db8437a35b276015ac7e2",
+                "reference": "538b1072ed53b7a9837db8437a35b276015ac7e2",
                 "shasum": ""
             },
             "require": {
@@ -1651,6 +1651,7 @@
                 "phpunit/phpunit": "5.*",
                 "squizlabs/php_codesniffer": "^2.0"
             },
+            "default-branch": true,
             "type": "library",
             "extra": {
                 "laravel": {
@@ -1685,7 +1686,7 @@
                 "issues": "https://github.com/hnhdigital-os/laravel-git-info/issues",
                 "source": "https://github.com/hnhdigital-os/laravel-git-info/tree/master"
             },
-            "time": "2018-04-09T04:51:41+00:00"
+            "time": "2022-07-26T03:36:01+00:00"
         },
         {
             "name": "laracasts/flash",
@@ -9504,7 +9505,9 @@
     ],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": [],
+    "stability-flags": {
+        "hnhdigital-os/laravel-git-info": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
