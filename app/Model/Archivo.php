@@ -34,38 +34,48 @@ class Archivo extends Model
     }
 
     // Funcion para cargar información de archivo en la base de datos.
-    public static function cargar($request_file, $user, $tipo=null,
-                                  $shape_files = []) {
+    public static function cargar($request_file, $user, $tipo=null, $shape_files = []) {
         $original_extension = strtolower($request_file->getClientOriginalExtension());
-        $guess_extension = strtolower($request_file->guessClientExtension());
-        $original_name = $request_file->getClientOriginalName();
-        $random_name= 't_'.$request_file->hashName();
-        $random_name = substr($random_name,0,strpos($random_name,'.'));
-        $file_storage = $request_file->storeAs('segmentador', $random_name.'.'.$request_file->getClientOriginalExtension());
-        if ($tipo == 'shape'){
-          if ($shape_files != null){
-            foreach ($shape_files as $shape_file) {
-                //Almacenar archivos asociados a shapefile con igual nombre
-                //según extensión.
-              if ($shape_file != null){
-                $extension = strtolower($shape_file->getClientOriginalExtension());
-                $data_files[] = $shape_file->storeAs('segmentador', 
-                                             $random_name.'.'.$extension);
-               };
-             }
-          }
+        
+        $file = self::where('checksum', '=', md5_file(($request_file)->getRealPath()))->first();
+        if (!$file) {
+            flash("Nuevo archivo ".$original_extension);
+            $guess_extension = strtolower($request_file->guessClientExtension());
+            $original_name = $request_file->getClientOriginalName();
+            $random_name= 't_'.$request_file->hashName();
+            $random_name = substr($random_name,0,strpos($random_name,'.'));
+            $file_storage = $request_file->storeAs('segmentador', $random_name.'.'.$request_file->getClientOriginalExtension());
+            if ($tipo == 'shape'){
+                if ($shape_files != null){
+                    foreach ($shape_files as $shape_file) {
+                        //Almacenar archivos asociados a shapefile con igual nombre
+                        //según extensión.
+                        if ($shape_file != null){
+                            $extension = strtolower($shape_file->getClientOriginalExtension());
+                            $data_files[] = $shape_file->storeAs('segmentador', $random_name.'.'.$extension);
+                        };
+                    }
+                }
+            }
+            $file_storage = $request_file->storeAs('segmentador', $random_name.'.'.$request_file->getClientOriginalExtension());
+            $file = self::create([
+                'user_id' => $user->id,
+                'nombre_original' => $original_name,
+                'nombre' => $file_storage,
+                'tabla' => $random_name,
+                'tipo' => ($guess_extension!='bin' and $guess_extension!='')?$guess_extension:$original_extension,
+                'checksum'=> md5_file($request_file->getRealPath()),
+                'size' => $request_file->getSize(),
+                'mime' => $request_file->getClientMimeType()
+            ]);
+            $user->visible_files()->attach($file->id);
+        } else {
+            if (!$user->visible_files()->get()->contains($file)){
+                $user->visible_files()->attach($file->id);
+            }
+            flash("Archivo ".$original_extension." ya existente. No se cargará de nuevo ")->info();
         }
-        $file_storage = $request_file->storeAs('segmentador', $random_name.'.'.$request_file->getClientOriginalExtension());
-        return self::create([
-            'user_id' => $user->id,
-            'nombre_original' => $original_name,
-            'nombre' => $file_storage,
-            'tabla' => $random_name,
-            'tipo' => ($guess_extension!='bin' and $guess_extension!='')?$guess_extension:$original_extension,
-            'checksum'=> md5_file($request_file->getRealPath()),
-            'size' => $request_file->getSize(),
-            'mime' => $request_file->getClientMimeType()
-        ]);
+        return $file;
     }
 
     // Descarga del archivo cargado con nombre: mandarina_ + time() + _nombre_original

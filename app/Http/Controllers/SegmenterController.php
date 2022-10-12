@@ -66,11 +66,11 @@ class SegmenterController extends Controller
 
     // Se procesa archivo de listado de viviendas C1
     if ($request->hasFile('c1')) {
-     if($c1_file = Archivo::cargar($request->c1, Auth::user())) {
-         flash("Archivo C1 ")->info();
-     } else {
-         flash("Error en el modelo cargar archivo")->error();
-     }
+      if($c1_file = Archivo::cargar($request->c1, $AppUser)) {
+        flash("Archivo C1 cargado ")->info();
+      } else {
+        flash("Error en el modelo cargar archivo")->error();
+      }
      $c1_file->procesar();
      if (!$c1_file->procesado) {
             flash($data['file']['error']='Archivo '.$c1_file->nombre_original.' sin Procesar por error')->important();
@@ -100,44 +100,46 @@ class SegmenterController extends Controller
    
    // Carga de arcos o e00
     if ($request->hasFile('shp')) {
-     if($shp_file = Archivo::cargar($request->shp, Auth::user(),
-       'shape', [$request->shx, $request->dbf, $request->prj])) {
-       flash("Archivo Shp ")->info();
-     } else {
-         flash("Error en el modelo cargar archivo al procesar SHP/E00")->error();
-     }
-     $shp_file->epsg_def = $epsg_id;
-     $shp_file->save();
-
-    // En caso de que vengan capa de etiquetas/poligonos
-    if ($request->hasFile('shp_lab')) {
-      if($shp_lab_file = Archivo::cargar($request->shp_lab, Auth::user(),
-        'shape', [$request->shx_lab, $request->dbf_lab, $request->prj_lab])) {
-        flash("Archivo Shp Lab ")->info();
+      if($shp_file = Archivo::cargar($request->shp, Auth::user(),
+        'shape', [$request->shx, $request->dbf, $request->prj])) {
+        flash("Archivo Shp ")->info();
       } else {
-       flash("Error en el modelo cargar archivo al procesar SHP")->error();
+          flash("Error en el modelo cargar archivo al procesar SHP/E00")->error();
       }
-      $shp_lab_file->epsg_def = $epsg_id;
-      $shp_lab_file->tipo = 'shp/lab';
-      //Que directamente suba las etuiquetas poligono junto donde subió los arcos
-      $shp_lab_file->tabla = $shp_file->tabla;
-      $shp_lab_file->save();
-      if( $ppddllls=$shp_lab_file->procesar() ) {
-        flash('Se cargaron las etiquetas/polígonos correctamente')->success();
-      }else{
-        flash('la pifio, ver '.$codaglo[0]->link)->warning();
-      }
-    }
+      $shp_file->epsg_def = $epsg_id;
+      $shp_file->save();
 
-     // PROCESAMIENTO PARA ARCHIVOS e00 o Shapes
-     if( $mensajes=$shp_file->procesar() ) {
-       flash('Procesó '.$shp_file->tipo)->important()->success();
-       flash('2. '.$shp_file->tabla.' == '.$shp_lab_file->tabla);
-       $ppdddllls=$shp_file->pasarData();
-       flash('333');
-     }else{flash('No se pudo procesar la cartografía')->error()->important();
-       $mensajes.=' ERROR ';
-     }
+      // En caso de que vengan capa de etiquetas/poligonos
+      if ($request->hasFile('shp_lab')) {
+        if($shp_lab_file = Archivo::cargar($request->shp_lab, Auth::user(),
+          'shape', [$request->shx_lab, $request->dbf_lab, $request->prj_lab])) {
+          flash("Archivo Shp Lab ")->info();
+        } else {
+        flash("Error en el modelo cargar archivo al procesar SHP")->error();
+        }
+        $shp_lab_file->epsg_def = $epsg_id;
+        $shp_lab_file->tipo = 'shp/lab';
+        //Que directamente suba las etuiquetas poligono junto donde subió los arcos
+        $shp_lab_file->tabla = $shp_file->tabla;
+        $shp_lab_file->save();
+        if( $ppddllls=$shp_lab_file->procesar() ) {
+          flash('Se cargaron las etiquetas/polígonos correctamente')->success();
+        }else{
+          flash('la pifio, ver '.$codaglo[0]->link)->warning();
+        }
+      }
+
+      // PROCESAMIENTO PARA ARCHIVOS e00 o Shapes
+      if( $mensajes=$shp_file->procesar() ) {
+        flash('Procesó '.$shp_file->tipo)->important()->success();
+        if (isset($shp_lab_file)){
+          flash('2. '.$shp_file->tabla.' == '.$shp_lab_file->tabla);
+        }
+        $ppdddllls=$shp_file->pasarData();
+        flash('333');
+      }else{flash('No se pudo procesar la cartografía')->error()->important();
+        $mensajes.=' ERROR ';
+      }
     }
     if (!Str::contains($mensajes,['ERROR'])){
        flash('No se encontraron problemas. ')->success();
