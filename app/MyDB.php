@@ -1844,7 +1844,7 @@ FROM
     {
         try{
             DB::statement(
-            "create index IF NOT EXISTS ".$esquema."_".$tabla."_".str_replace(array(' ', ','),'_',$campos)." on ".$esquema.".".$tabla."
+            "create index IF NOT EXISTS ".$esquema."_".$tabla."_".str_replace(array(' ', ',','(',')'),'_',$campos)." on ".$esquema.".".$tabla."
                USING ".$tipo_indice."
                (".$campos.")"); 
         }catch(QueryException $e){
