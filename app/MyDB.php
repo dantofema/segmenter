@@ -1731,6 +1731,7 @@ FROM
                 DB::Rollback();
                 if ($e->getCode()=='P0001'){
                     self::setLabfromPol($esquema);
+                    self::cargarTopologia($esquema);
                 }
                 Log::error('No se pudo cargar la topologia...'.$e);
                 return false;
@@ -1932,6 +1933,7 @@ public static function getPxSeg($esquema)
          DB::statement("UPDATE ".$esquema.".lab SET wkb_geometry_lab = st_transform(st_centroid(wkb_geometry),st_srid(wkb_geometry))");
          DB::statement('ALTER TABLE '.$esquema.'.lab RENAME wkb_geometry TO wkb_geometry_pol');
          DB::statement('ALTER TABLE '.$esquema.'.lab RENAME wkb_geometry_lab TO wkb_geometry');
+
          DB::commit();
        } catch(QueryException $e) {
          Log::warning('Problemas al generar lab de pol srid: '.$srid_id.' en '.$esquema.': '.$e);
