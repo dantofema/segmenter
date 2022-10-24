@@ -133,7 +133,6 @@ class SegmenterController extends Controller
      // PROCESAMIENTO PARA ARCHIVOS e00 o Shapes
      if( $mensajes=$shp_file->procesar() ) {
        flash('Procesó '.$shp_file->tipo)->important()->success();
-       flash('2. '.$shp_file->tabla.' == '.$shp_lab_file->tabla);
        $ppdddllls=$shp_file->pasarData();
        flash('333');
      }else{flash('No se pudo procesar la cartografía')->error()->important();
