@@ -110,6 +110,7 @@ class SegmenterController extends Controller
       $shp_file->save();
 
       // En caso de que vengan capa de etiquetas/poligonos
+      $shp_lab_file = null;
       if ($request->hasFile('shp_lab')) {
         if($shp_lab_file = Archivo::cargar($request->shp_lab, Auth::user(),
           'shape', [$request->shx_lab, $request->dbf_lab, $request->prj_lab])) {

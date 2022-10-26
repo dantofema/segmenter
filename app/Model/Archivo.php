@@ -98,7 +98,10 @@ class Archivo extends Model
                     or ( strtolower(substr($this->nombre_original, 0, 14))    == 'segmento_total')
                 ) {
                     return $this->procesarSegmentos();
-                } else {
+                } elseif ($this->tipo == 'csv') {
+                    return $this->procesarViviendas();
+                  }
+                  else {
                     return $this->procesarDBF();
                 }
             } elseif ($this->tipo == 'e00' or $this->tipo == 'bin') {
@@ -417,5 +420,15 @@ class Archivo extends Model
         return $resulta;
     }
 
-}
+    // Archivos csv con tabla de viviendas generada en modo manual.
+    // x provincia (para PBA) juntando /y corrigiendo)
+    public function procesarViviendas() {
+        $mensaje = 'Se procesa un csv. Viviendas completos? Resultado: ';
+        Excel::import($import, storage_path().'/app/'.$this->nombre);
+        $this->procesado=true;
+        $this->save();
+        flash($mensaje.$import->getRowCount());
+        return true;
+    }
 
+}
