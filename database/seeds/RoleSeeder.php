@@ -5,6 +5,8 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Exceptions\PermissionAlreadyExists;
+use Spatie\Permission\Exceptions;
 
 class RoleSeeder extends Seeder
 {
@@ -23,8 +25,13 @@ class RoleSeeder extends Seeder
             $this->command->info('Creando rol Super Admin y asignando permisos...');
             $superAdmin = Role::create(['name' => 'Super Admin'])->syncPermissions([$asignarRoles, $quitarRoles]);
             $this->command->info('Rol Super Admin creado.');
+        } catch ( Spatie\Permission\Exceptions\PermissionAlreadyExists $e) {
+            $this->command->error('Permisos del Super Admin existentes...');
+
+//            echo _($e->getMessage());
         } catch ( Spatie\Permission\Exceptions $e) {
-            echo _($e->getMessage());
+            $this->command->error('Permisos del Super Admin desconocido');
+//            echo _($e->getMessage());
         }
     }
 }
