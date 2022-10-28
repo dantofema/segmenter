@@ -598,10 +598,10 @@ FROM
     //
     public static function copiaraEsquemaPais($de_esquema,$a_esquema,$depto_codigo=null)
     {
-        if (isset($localidad_codigo)) {
+        if (isset($depto_codigo)) {
                   //JOIN CON TABLA LAB SEGUN FACE_ID =?
-                 $filtro=" WHERE prov || depto || codloc= '".$localidad_codigo."' ";
-                 $filtro_lab=" WHERE prov || depto || codloc = '".$localidad_codigo."'";
+                 $filtro=" WHERE prov || depto = '".$depto_codigo."' ";
+                 $filtro_lab=" WHERE prov || depto = '".$depto_codigo."'";
         } else { $filtro='';
                  $filtro_lab=''; }
          try {
