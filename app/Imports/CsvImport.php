@@ -38,14 +38,14 @@ class CsvImport implements ToModel,WithHeadingRow, WithBatchInserts, WithChunkRe
 	 ++$this->rows;
 //	die(var_dump($row));
 /*
-/* Cabecesar de csv de PBA con problemas, vino latin1 y lo pase a utf8 con iconv.
+/* Cabecera de csv de PBA con problemas, vino latin1 y lo pase a utf8 con iconv.
 /* PROV, NOM_PROVIN, UPS, NRO_AREA, DPTO, NOM_DPTO, CODAGLO, CODLOC, NOM_LOC, CODENT, NOM_ENT, FRAC, RADIO, MZA, LADO, NRO_INICIA, NRO_FINAL, ORDEN_RECO, NRO_LISTAD, CCALLE, NCALLE, NROCATASTR, PISOREDEF, CASA, DPTO_HABIT, SECTOR, EDIFICIO, ENTRADA, COD_TIPO_V, DESCRIPCIO, DESCRIPCI2, COD_POSTAL, ORDEN_REC2, FECHA_RELE, SEGMENTO
 /*
  */
-        dd($row);
-
+        // toLowerCase 
+        $row = array_change_key_case($row, CASE_LOWER);
         return new Domicilio([
-'prov' => $row['prov'] ?? $row['PROV'] ?? '99',
+'prov' => $row['prov'] ?? '99',
 'listado_id' => '0' ?? $row['codaglo'] ?? '1',
 'nom_provin' => $row['nom_provin'] ?? $row['nom_provincia'],
 'dpto' => $row['dpto'],
@@ -75,8 +75,8 @@ class CsvImport implements ToModel,WithHeadingRow, WithBatchInserts, WithChunkRe
 'tipoviv' => $row['tipovivredef'] ?? $row['tipoviv'] ?? $row['cod_tipo_v'] ?? null,
 'descrip' => $row['descrip'] ?? $row['descripcio'] ?? null,
 'descripl' => $row['descripl'] ?? $row['descripci2'] ?? null,
-'cpostal' => $row['cpostal'] ?? null,
-'ordrecmza' => $row['ordrecmza'] ?? null,
+'cpostal' => $row['cpostal'] ?? $row['cod_postal'] ?? null,
+'ordrecmza' => $row['ordrecmza'] ?? $row['orden_rec2'] ?? null,
 'fechrele' => $row['fechrele'] ?? $row['fecha_rele'] ?? null,
 'tiptarea' => $row['tiptarea'] ?? null,
 'segmento' => $row['segmento'] ?? null
