@@ -24,9 +24,12 @@ class RoleSeeder extends Seeder
             //if ( Count(Permission::findByName('Asignar Roles')->get()) == 0 )
             if ( !in_array('Asignar Roles', $allPermissions) )
               $asignarRoles = Permission::create(['name' => 'Asignar Roles'],'asignador');
-
+            else
+              $asignarRoles = $allPermissions['Asignar Roles'];
             if ( !in_array('Quitar Roles', $allPermissions) )
               $quitarRoles = Permission::create(['name' => 'Quitar Roles'],'vetador');
+            else
+              $quitarRoles = $allPermissions['Quitar Roles'];
 
             $this->command->info('Creando rol Super Admin y asignando permisos...');
             if ( !in_array('Super Admin',$allRoles)) {
