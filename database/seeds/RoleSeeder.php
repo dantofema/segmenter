@@ -25,11 +25,11 @@ class RoleSeeder extends Seeder
             if ( !in_array('Asignar Roles', $allPermissions) )
               $asignarRoles = Permission::create(['name' => 'Asignar Roles'],'asignador');
             else
-              $asignarRoles = $allPermissions['Asignar Roles'];
+              $asignarRoles = Permission::findByName('Asignar Roles')->get(); //$allPermissions['Asignar Roles'];
             if ( !in_array('Quitar Roles', $allPermissions) )
               $quitarRoles = Permission::create(['name' => 'Quitar Roles'],'vetador');
             else
-              $quitarRoles = $allPermissions['Quitar Roles'];
+              $quitarRoles = Permission::findByName('Quitar Roles')->get(); //allPermissions['Quitar Roles'];
 
             $this->command->info('Creando rol Super Admin y asignando permisos...');
             if ( !in_array('Super Admin',$allRoles)) {
@@ -45,6 +45,7 @@ class RoleSeeder extends Seeder
         } catch ( Spatie\Permission\Exceptions $e) {
             $this->command->info('Permisos del Super Admin desconocido');
 //            echo _($e->getMessage());
-        }
+        } catch ( Error $e){$this->command->error('Ooops '.$e->getMessage());}
+
     }
 }
