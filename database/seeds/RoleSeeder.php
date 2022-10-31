@@ -34,7 +34,7 @@ class RoleSeeder extends Seeder
 
 //            echo _($e->getMessage());
         } catch ( Spatie\Permission\Exceptions $e) {
-            $this->command->error('Permisos del Super Admin desconocido');
+            $this->command->info('Permisos del Super Admin desconocido');
 //            echo _($e->getMessage());
         }
     }
