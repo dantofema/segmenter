@@ -17,6 +17,9 @@ class RoleSeeder extends Seeder
      */
     public function run()
     {   
+        // Reset cached roles and permissions
+        app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
+
         $this->command->info('Creando permisos del Super Admin...');
         $allPermissions = Permission::all()->pluck('name')->toArray();
         $allRoles = Role::all()->pluck('name')->toArray();
