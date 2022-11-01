@@ -17,11 +17,11 @@ class RoleSeeder extends Seeder
     {   
         $this->command->info('Creando permisos del Super Admin...');
         try{
-            $asignarRoles = Permission::create(['name' => 'Asignar Roles'],'asignador');
-            $quitarRoles = Permission::create(['name' => 'Quitar Roles'],'vetador');
+            $asignarRoles = Permission::firstOrcreate(['name' => 'Asignar Roles']);
+            $quitarRoles = Permission::firstOrcreate(['name' => 'Quitar Roles']);
 
             $this->command->info('Creando rol Super Admin y asignando permisos...');
-            $superAdmin = Role::create(['name' => 'Super Admin'])->syncPermissions([$asignarRoles, $quitarRoles]);
+            $superAdmin = Role::firstOrcreate(['name' => 'Super Admin'])->syncPermissions([$asignarRoles, $quitarRoles]);
             $this->command->info('Rol Super Admin creado.');
         } catch ( Spatie\Permission\Exceptions $e) {
             echo _($e->getMessage());
