@@ -21,34 +21,16 @@ class RoleSeeder extends Seeder
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
         $this->command->info('Creando permisos del Super Admin...');
-        $allPermissions = Permission::all()->pluck('name')->toArray();
-        $allRoles = Role::all()->pluck('name')->toArray();
         try{
-            //if ( Count(Permission::findByName('Asignar Roles')->get()) == 0 )
-            if ( !in_array('Asignar Roles', $allPermissions) )
-              $asignarRoles = Permission::create(['name' => 'Asignar Roles']);
-            else
-              $asignarRoles = Permission::findByName('Asignar Roles')->get(); //$allPermissions['Asignar Roles'];
-            if ( !in_array('Quitar Roles', $allPermissions) )
-              $quitarRoles = Permission::create(['name' => 'Quitar Roles']);
-            else
-              $quitarRoles = Permission::findByName('Quitar Roles')->get(); //allPermissions['Quitar Roles'];
+            $asignarRoles = Permission::firstOrcreate(['name' => 'Asignar Roles']);
+            $quitarRoles = Permission::firstOrcreate(['name' => 'Quitar Roles']);
 
             $this->command->info('Creando rol Super Admin y asignando permisos...');
-            if ( !in_array('Super Admin',$allRoles)) {
-              $superAdmin = Role::create(['name' => 'Super Admin'])->syncPermissions([$asignarRoles, $quitarRoles]);
-              $this->command->info('Rol Super Admin creado.');
-            }
-        } catch ( PermissionDoesNotExist $e) {
-            $this->command->info('Permiso no existe...'.$e->getMessage());
-        } catch ( PermissionAlreadyExists $e) {
-            $this->command->info('Permisos del Super Admin existentes...');
-
-//            echo _($e->getMessage());
-        } catch ( Exceptions $e) {
-            $this->command->info('Permisos del Super Admin desconocido');
-//            echo _($e->getMessage());
-        } catch ( Error $e) {$this->command->error('Ooops '.$e->getMessage());}
-
+            $superAdmin = Role::firstOrcreate(['name' => 'Super Admin'])->syncPermissions([$asignarRoles, $quitarRoles]);
+            $this->command->info('Rol Super Admin creado.');
+        } catch ( Spatie\Permission\Exceptions $e) {
+            $this->command->error('Error creando permisos del Super Admin...');
+            echo _($e->getMessage());
+        }
     }
 }
