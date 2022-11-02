@@ -14,7 +14,7 @@ class PermissionSeeder extends Seeder
      */
     public function run()
     {
-        $arrayOfPermissionNames = ['Editar Radio', 'Probando123'];
+        $arrayOfPermissionNames = ['Ver Archivos', 'Administrar Archivos'];
         
         $permissions = collect($arrayOfPermissionNames)->map(function ($permission) {
             return ['name' => $permission, 'guard_name' => 'web'];
@@ -23,10 +23,10 @@ class PermissionSeeder extends Seeder
         foreach ($permissions as $permission) {
             $this->command->info('Creando permiso '.$permission['name']);
             try{
-                echo _("HOLA");
-                Permission::create($permission);
+                Permission::firstOrcreate($permission);
                 $this->command->info('Permiso '.$permission['name'].' creado.');
             } catch ( Spatie\Permission\Exception $e) {
+                $this->command->error('Error creando permiso '.$permission['name'].'...');
                 echo _($e->getMessage());
             }
         }
