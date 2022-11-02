@@ -11,7 +11,8 @@
 |
 */
 Route::get('users', 'UserController@listarUsuarios')->name('admin.listarUsuarios');
-Route::get('users/{user}', 'UserController@editarRolUsuario')->name('admin.editarRolUsuario');
+Route::get('users/{user}/roles', 'UserController@editarRolUsuario')->name('admin.editarRolUsuario');
+Route::get('users/{user}/permission', 'UserController@editarPermisoUsuario')->name('admin.editarPermisoUsuario');
 
 Route::get('/', function () {
     return view('welcome');

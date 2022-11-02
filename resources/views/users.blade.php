@@ -26,7 +26,11 @@
               <th>Nombre</th>
               <th>Email</th>
               @can('Asignar Roles', 'Quitar Roles')
-              <th>Roles</th>
+              <th> Permisos </th>
+              <th>
+                Roles
+                <a href="#" class="badge badge-pill badge-primary">+</a>
+              </th>
               @endcan
             </tr>
           </thead>
@@ -36,6 +40,63 @@
               <td>{{$usuario->name}}</td>
               <td>{{$usuario->email}}</td>
               @can('Asignar Roles', 'Quitar Roles')
+              <td>
+                <!-- Button trigger modal -->
+                <button type="button" class="btn-sm btn-primary" data-toggle="modal" data-target="#permisosModal{{$usuario->id}}">
+                  Administrar Permisos
+                </button>
+
+                <!-- Modal roles del usuario -->
+                <div class="modal fade" id="permisosModal{{$usuario->id}}" tabindex="-1" role="dialog" aria-labelledby="permisoModalLabel" aria-hidden="true">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="permisoModalLabel">Permisos de {{$usuario->name}}</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <form action="{{route('admin.editarPermisoUsuario', $usuario->id)}}" method="put">
+                        <div class="modal-body">
+                          <table class="table">
+                            <tbody>
+                              @php 
+                                $user_permissions = $usuario->getPermissionsViaRoles()->pluck('name');
+                              @endphp
+                              @foreach ($permisos as $permiso)
+                              <tr>                                         
+                                <td class="col align-self-center">
+                                  @if ($user_permissions->contains($permiso->name))
+                                    <input type="checkbox" disabled checked id="{{$permiso->name}}" name="permisos[]" value="{{$permiso->id}}" data-on="Si" data-off="No" data-toggle="toggle" data-size="sm">
+                                  @else
+                                    @if ($usuario->hasPermissionTo($permiso->name))
+                                      <input type="checkbox" checked id="{{$permiso->name}}" name="permisos[]" value="{{$permiso->id}}" data-on="Si" data-off="No" data-toggle="toggle" data-size="sm">
+                                    @else
+                                      <input type="checkbox" id="{{$permiso->name}}" name="permisos[]" value="{{$permiso->id}}" data-on="Si" data-off="No" data-toggle="toggle" data-size="sm">
+                                    @endif
+                                  @endif
+                                    <label class="form-check-label" for="{{$permiso->name}}">
+                                      {{$permiso->name}}
+                                    </label>
+                                    @if ($user_permissions->contains($permiso->name))
+                                      <span class="badge badge-pill badge-danger">Heredado de rol</span>
+                                    @endif
+                                  </td>
+                              </tr> 
+                              @endforeach
+                            </tbody>
+                          </table>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                          <input type="submit" name="btn"  class="btn btn-primary" value="Guardar Cambios">
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+
+              </td>
               <td>
                 <!-- Button trigger modal -->
                 <button type="button" class="btn-sm btn-primary" data-toggle="modal" data-target="#rolesModal{{$usuario->id}}">
