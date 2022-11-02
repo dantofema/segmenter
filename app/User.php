@@ -42,6 +42,11 @@ class User extends Authenticatable
 
     public function visible_files()
     {
-        return $this->belongsToMany(Archivo::class, 'file_viewer');
+       return $this->belongsToMany(Archivo::class, 'file_viewer');
+    }
+    
+    public function mis_files()
+    {
+      return $this->hasMany(Archivo::class);
     }
 }

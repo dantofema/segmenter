@@ -20,8 +20,9 @@ class ArchivoController extends Controller
     {
 	    //
       if (Auth::check()) {
-          $AppUser=Auth::user();
-          $archivos=$AppUser->visible_files()->get();
+          $AppUser = Auth::user();
+          $archivos = $AppUser->visible_files()->get();
+          $archivos = $archivos->merge($AppUser->mis_files()->get());
 	        if ($request->ajax()) {
 	            return Datatables::of($archivos)
                     ->addIndexColumn()
