@@ -126,8 +126,10 @@
       <h1>No hay usuarios registrados</h1>
       @endif
     </table>
+    <div class="row justify-content-center">
+      {{ $usuarios->links("pagination::bootstrap-4") }}
+    </div>
 	</div>
 </div>
-</div>
-</div>
+
 @endsection

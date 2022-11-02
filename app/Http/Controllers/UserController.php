@@ -13,7 +13,7 @@ class UserController extends Controller
 {
 
   public function listarUsuarios(){
-    $usuarios = User::paginate();
+    $usuarios = User::paginate(15);
     $roles = Role::all();
     return view('users', compact('usuarios', 'roles'));
   }
