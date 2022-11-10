@@ -5,6 +5,7 @@ namespace App\Model;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Arr;
+use Illuminate\Http\Client\ConnectionException;
 
 class Provincia extends Model
 {
@@ -55,9 +56,21 @@ class Provincia extends Model
      */
     public function geojson()
     {
-        return Http::get($this->url_json,
-         Arr::add($this->params,"cql_filter","link =  '".$this->codigo."'")
+      try {
+        $response = Http::timeout(5)->get(
+          $this->url_json,
+          Arr::add($this->params,"cql_filter","link =  '".$this->codigo."'")
         );
+      } catch ( ConnectionException $e) {
+        flash('Timeout de 5 seg. a: '.$this->url_json)->warning();
+        return null;
+      }
+         if ($response->ok()) {
+           return $response;
+         } else {
+           return $response->headers()->json;
+         }
+
     }
 
 
@@ -66,9 +79,19 @@ class Provincia extends Model
      */
     public function svg()
     {
-        return Http::get($this->url_svg,
+      try {
+       $response = Http::timeout(5)->get($this->url_svg,
          Arr::add($this->params_svg,"cql_filter","link =  '".$this->codigo."'")
         );
+      } catch ( ConnectionException $e) {
+        flash('Timeout de 5 seg. a: '.$this->url_svg)->warning();
+        return null;
+      }
+        if ($response->ok()) {
+          return $response;
+        } else {
+          return $response->headers();
+        }
     }
 
 }
