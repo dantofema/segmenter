@@ -607,16 +607,25 @@ FROM
          try {
              DB::beginTransaction();
              DB::unprepared('DROP TABLE IF EXISTS '.$a_esquema.'.arc CASCADE');
-             DB::unprepared('DROP TABLE IF EXISTS '.$a_esquema.'.lab CASCADE');
              DB::unprepared('CREATE TABLE "'.$a_esquema.'".arc AS SELECT * FROM "'.$de_esquema.'".arc '.$filtro);
-             DB::unprepared('CREATE TABLE "'.$a_esquema.'".lab AS SELECT * FROM "'.$de_esquema.'".lab '.$filtro_lab);
              DB::commit();
-          
          }catch (QueryException $exception) {
              DB::Rollback();
              Log::error('Error: '.$exception);
-             return false;
-        }
+             flash('Error procesando arc '.$excepcion->getMessage())->error()->important();
+             $error = true;
+         }
+         try {
+             DB::beginTransaction();
+             DB::unprepared('DROP TABLE IF EXISTS '.$a_esquema.'.lab CASCADE');
+             DB::unprepared('CREATE TABLE "'.$a_esquema.'".lab AS SELECT * FROM "'.$de_esquema.'".lab '.$filtro_lab);
+             DB::commit();
+         }catch (QueryException $exception) {
+             DB::Rollback();
+             Log::error('Error: '.$exception);
+             flash('Error procesando lab '.$excepcion->getMessage())->error()->important();
+             $error = true;
+         }
         return true;
     }
 
