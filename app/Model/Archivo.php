@@ -356,7 +356,8 @@ class Archivo extends Model
         if ($ppdddllls==[]) {
             // Intento cargar pais x depto :D
             $coddeptos = MyDB::getDptos('lab', 'e_'.$this->tabla);
-            flash('Puede ser una pais con deptos: '.count($coddeptos));
+            $coddeptos_pol = MyDB::getDptos('arc', 'e_'.$this->tabla);
+            flash('Puede ser una pais con deptos: '.count($coddeptos).' o '.count($coddeptos_pol));
             foreach ($coddeptos as $coddepto){
                 flash('Se encontró Departamento : '.$coddepto->link);
                 MyDB::createSchema($coddepto->link);
