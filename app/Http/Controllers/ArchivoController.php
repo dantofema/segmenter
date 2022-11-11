@@ -8,6 +8,7 @@ use DataTables;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 use Auth;
+use Spatie\Permission\Models\Permission;
 
 class ArchivoController extends Controller
 {
@@ -21,7 +22,7 @@ class ArchivoController extends Controller
 	    //
       if (Auth::check()) {
         $AppUser = Auth::user();
-        if ($AppUser->hasPermissionTo('Ver Archivos')){
+        if (Permission::findByName('Ver Archivos')->get() != null && $AppUser->hasPermissionTo('Ver Archivos')){
             $archivos = Archivo::all();
         } else {
             $archivos = $AppUser->visible_files()->get();
@@ -34,7 +35,7 @@ class ArchivoController extends Controller
                     $button = '<button type="button" class="btn_descarga btn-sm btn-primary" > Descargar </button> ';
                     $button .= '<button type="button" class="btn_arch btn-sm btn-primary" > Ver </button>';
                     $button .= '<button type="button" class="btn_arch_procesar btn-sm btn-secondary" > Procesar </button>';
-                    if ($data->user_id == Auth::user()->id || Auth::user()->hasPermissionTo('Administrar Archivos')) {
+                    if ($data->user_id == Auth::user()->id || (Permission::findByName('Administrar Archivos')->get() != null && Auth::user()->hasPermissionTo('Administrar Archivos'))) {
                         $button .= '<button type="button" class="btn_arch_delete btn-sm btn-danger " > Borrar </button>';
                     }     
                     return $button;
