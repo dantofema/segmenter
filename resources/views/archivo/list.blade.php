@@ -22,6 +22,12 @@
    </div>
 
   <div class="container">
+    @if(Session::has('message'))
+      <div class="alert alert-danger alert-dismissible" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        {{Session::get('message')}}
+      </div>
+    @endif
    <h2>Listado de Archivos</h2>
    <br>
    <div class="row">

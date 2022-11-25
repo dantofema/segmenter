@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 use Auth;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Exceptions\PermissionDoesNotExist;
+use Session;
 
 class ArchivoController extends Controller
 {
@@ -22,12 +24,15 @@ class ArchivoController extends Controller
 	    //
       if (Auth::check()) {
         $AppUser = Auth::user();
-        if (Permission::findByName('Ver Archivos')->get() != null && $AppUser->hasPermissionTo('Ver Archivos')){
-            $archivos = Archivo::all();
-        } else {
-            $archivos = $AppUser->visible_files()->get();
-            $archivos = $archivos->merge($AppUser->mis_files()->get());
-        }
+        $archivos = $AppUser->visible_files()->get();
+        $archivos = $archivos->merge($AppUser->mis_files()->get());
+        try {
+            if ($AppUser->hasPermissionTo('Ver Archivos')) {
+                $archivos = Archivo::all();
+            }
+        } catch (PermissionDoesNotExist $e) {
+            Session::flash('message', 'No existe el permiso "Ver Archivos"');
+        }  
         if ($request->ajax()) {
             return Datatables::of($archivos)
                 ->addIndexColumn()
@@ -35,15 +40,23 @@ class ArchivoController extends Controller
                     $button = '<button type="button" class="btn_descarga btn-sm btn-primary" > Descargar </button> ';
                     $button .= '<button type="button" class="btn_arch btn-sm btn-primary" > Ver </button>';
                     $button .= '<button type="button" class="btn_arch_procesar btn-sm btn-secondary" > Procesar </button>';
-                    if ($data->user_id == Auth::user()->id || (Permission::findByName('Administrar Archivos')->get() != null && Auth::user()->hasPermissionTo('Administrar Archivos'))) {
+                    if ($data->user_id == Auth::user()->id) {
                         $button .= '<button type="button" class="btn_arch_delete btn-sm btn-danger " > Borrar </button>';
-                    }     
+                    } else {
+                        try {
+                            if (Auth::user()->hasPermissionTo('Administrar Archivos')){
+                                $button .= '<button type="button" class="btn_arch_delete btn-sm btn-danger " > Borrar </button>';
+                            }
+                        } catch (PermissionDoesNotExist $e) {
+                            Session::flash('message', 'No existe el permiso "Administrar Archivos"');
+                        }
+                    }    
                     return $button;
                 })
                 ->rawColumns(['action'])
                 ->make(true);
         }
-      }else{
+      } else {
           $archivos= null;
           return redirect()->route('login');
       }
