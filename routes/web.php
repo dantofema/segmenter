@@ -247,6 +247,7 @@ Route::post('archivos','ArchivoController@index');
 Route::get('archivos','ArchivoController@index');
 Route::get('archivo/{archivo}','ArchivoController@show');
 Route::delete('archivo/{archivo}','ArchivoController@destroy');
+Route::put('archivo/{archivo}/detach','ArchivoController@detach');
 Route::get('archivo/{archivo}/descargar','ArchivoController@descargar');
 Route::get('archivo/{archivo}/procesar','ArchivoController@procesar');
 

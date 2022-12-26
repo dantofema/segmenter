@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use DataTables;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 use Auth;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Exceptions\PermissionDoesNotExist;
@@ -46,9 +47,12 @@ class ArchivoController extends Controller
                         try {
                             if (Auth::user()->hasPermissionTo('Administrar Archivos')){
                                 $button .= '<button type="button" class="btn_arch_delete btn-sm btn-danger " > Borrar </button>';
+                            } else {
+                                $button .= '<button type="button" class="btn_arch_detach btn-sm btn-danger " > Dejar de ver </button>';
                             }
                         } catch (PermissionDoesNotExist $e) {
                             Session::flash('message', 'No existe el permiso "Administrar Archivos"');
+                            $button .= '<button type="button" class="btn_arch_detach btn-sm btn-danger " > Dejar de ver </button>';
                         }
                     }    
                     return $button;
@@ -128,16 +132,24 @@ class ArchivoController extends Controller
     public function destroy(Archivo $archivo)
     {
 	    // Borro el archivo del storage
-	    // 
-            $file= $archivo->nombre;
-            if(Storage::delete($file)){
-		    Log::info('Se borró el archivo: '.$archivo->nombre_original);
-	    }else{
-		    Log::error('NO se borró el archivo: '.$file);
-	    }
-	    $archivo->delete();
-	    return 'ok';
+	    //
+        DB::table('file_viewer')->where('archivo_id', $archivo->id)->delete();
+        $file= $archivo->nombre;
+        if(Storage::delete($file)){
+            Log::info('Se borró el archivo: '.$archivo->nombre_original);
+        }else{
+            Log::error('NO se borró el archivo: '.$file);
+        }
+        $archivo->delete();
+        return 'ok';
+    }
 
+    public function detach(Archivo $archivo)
+    {
+	    // Borro el archivo del storage
+	    //
+        Auth::user()->visible_files()->detach($archivo->id);
+        return 'ok';
     }
 
     /**

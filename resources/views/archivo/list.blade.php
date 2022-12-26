@@ -195,11 +195,41 @@
 	     if(response.statusCode==405){
 	          alert("Error al intentar borrar");
 	     }
-            if(response.statusCode==500){
-                  alert("Error al intentar borrar. En el servidor");
-             }
+      if(response.statusCode==500){
+            alert("Error al intentar borrar. En el servidor");
+        }
+      alert("Se eliminó el registro del archivo");
+	     row.fadeOut().remove();
+	     $('.modal-body').html(response);
 
-	     alert("Se elimino el registro del archivo");
+           }
+      });
+      };
+    });
+
+  // Función de botón Dejar de ver.
+  table.on('click', '.btn_arch_detach', function () {
+      var $ele = $(this).parent().parent();
+      var row = $(this).closest('tr');
+      var data = table.row( row ).data();
+      if (typeof data !== 'undefined') {
+      $.ajax({
+         url: "{{ url('archivo') }}"+"\\"+data.id+"/detach",
+         type: "PUT",
+	 data: {id: data.id,
+                _token:'{{ csrf_token() }}'},
+         success: function(response){ 
+	     // Add response in Modal body
+	     if(response.statusCode==200){
+	          row.fadeOut().remove();
+	     }
+	     if(response.statusCode==405){
+	          alert("Error al intentar borrar");
+	     }
+      if(response.statusCode==500){
+            alert("Error al intentar borrar. En el servidor");
+        }
+      alert("Ya no se visualizará el archivo");
 	     row.fadeOut().remove();
 	     $('.modal-body').html(response);
 
