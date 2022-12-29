@@ -29,6 +29,9 @@
       </div>
     @endif
    <h2>Listado de Archivos</h2>
+   @can('Administrar Archivos')
+   <h4><a href="{{route('limpiar_archivos')}}" class="badge badge-pill badge-danger"> Eliminar repetidos</a></h4>
+   @endcan
    <br>
    <div class="row">
     <div class="form-group col-md-6">

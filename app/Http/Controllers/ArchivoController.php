@@ -47,7 +47,7 @@ class ArchivoController extends Controller
                         try {
                             if (Auth::user()->hasPermissionTo('Administrar Archivos')){
                                 $button .= '<button type="button" class="btn_arch_delete btn-sm btn-danger " > Borrar </button>';
-                            } else {
+                            } else if (Auth::user()->visible_files()->get()->contains($data)){
                                 $button .= '<button type="button" class="btn_arch_detach btn-sm btn-danger " > Dejar de ver </button>';
                             }
                         } catch (PermissionDoesNotExist $e) {
@@ -175,5 +175,36 @@ class ArchivoController extends Controller
 	    //
 	    $mensaje = $archivo->procesar()?'ik0':'m4l';
       return view('archivo.list');
+    }
+
+    public function eliminar_repetidos() {
+        if (Auth::check()){
+            try {
+                if (Auth::user()->hasPermissionTo('Administrar Archivos')){
+                    $archivos = Archivo::all();
+                    $eliminados = 0;
+                    foreach ($archivos as $archivo){
+                        error_log("-----------------------------------------------------------------------");
+                        error_log("Archivo " . $archivo->id . ". Checksum: " . $archivo->checksum);
+                        $min_id = Archivo::where('checksum',$archivo->checksum)->min('id');
+                        if ($min_id != $archivo->id){
+                            error_log("Es copia");
+                            $archivo->limpiar_copia($min_id);
+                            $eliminados = $eliminados + 1;
+                        } else {
+                            error_log("Es el archivo original");
+                        }
+                    }
+                    flash($eliminados . " archivos eliminados.")->info();
+                } else {
+                    Session::flash('message', 'No tienes permiso para hacer eso.');
+                }
+            } catch (PermissionDoesNotExist $e) {
+                Session::flash('message', 'No existe el permiso "Administrar Archivos"');
+            }
+            return view('archivo.list');
+        } else {
+            return redirect()->route('login');
+        }        
     }
 }
