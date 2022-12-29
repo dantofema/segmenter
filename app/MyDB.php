@@ -945,7 +945,7 @@ FROM
             if (self::cargarTopologia($schema)) {
                 flash('Se creo la topología para '.$schema)->success()->important();
             }else{
-                flash('No se pudo validar la topología para '.$schema)->error()->important();
+                flash('No se pudo validar la topología para '.$schema)->warning()->important();
             }
 
             self::georeferenciar_listado($schema);
@@ -1741,8 +1741,10 @@ FROM
                 if ($e->getCode()=='P0001'){
                     self::setLabfromPol($esquema);
                     self::cargarTopologia($esquema);
+                    Log::warning('Se pudo cargar la topologia creando etiquetas desde los poligonos para '.$esquema .' -> '.$e);
+                    return true;
                 }
-                Log::error('No se pudo cargar la topologia...'.$e);
+                Log::error('No se pudo cargar la topologia para '.$esquema.' ! '.$e);
                 return false;
             }
             Log::debug('Se generaron fracciones, radios y manzanas en '.$esquema);
