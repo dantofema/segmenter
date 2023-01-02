@@ -1,6 +1,9 @@
 <?php
+namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Database\QueryException;
 
 class SqlDeptoSeeder extends Seeder
 {
@@ -11,9 +14,6 @@ class SqlDeptoSeeder extends Seeder
      */
     public function run()
     {
-        Eloquent::unguard();
-
-//        $this->call('SqlSeeder');
         $this->command->info('Sembrando departamentos...');
         $path = 'app/developer_docs/departamentos.sql';
         DB::unprepared(file_get_contents($path));
