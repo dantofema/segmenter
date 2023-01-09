@@ -69,7 +69,7 @@
                                   @if ($user_permissions->contains($permiso->name))
                                     <input type="checkbox" disabled checked id="{{$permiso->name}}" name="permisos[]" value="{{$permiso->id}}" data-on="Si" data-off="No" data-toggle="toggle" data-size="sm">
                                   @else
-                                    @if ($usuario->hasPermissionTo($permiso->name))
+                                    @if ($usuario->hasPermissionTo($permiso->name, $permiso->guard_name ))
                                       <input type="checkbox" checked id="{{$permiso->name}}" name="permisos[]" value="{{$permiso->id}}" data-on="Si" data-off="No" data-toggle="toggle" data-size="sm">
                                     @else
                                       <input type="checkbox" id="{{$permiso->name}}" name="permisos[]" value="{{$permiso->id}}" data-on="Si" data-off="No" data-toggle="toggle" data-size="sm">

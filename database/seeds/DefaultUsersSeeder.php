@@ -2,6 +2,7 @@
 
 namespace Database\seeders;
 
+use Illuminate\Database\QueryException;
 use Illuminate\Database\Seeder;
 use App\User;
 
@@ -16,7 +17,7 @@ class DefaultUsersSeeder extends Seeder
     {
         $this->command->info('Creando usuario Super Admin...');
         try {
-            User::create([
+            User::Create([
                 'name' => 'Super Admin',
                 'email' => 'superadmin@segmenter',
                 'password' => bcrypt('superadmin')
@@ -24,6 +25,13 @@ class DefaultUsersSeeder extends Seeder
             $this->command->info('Usuario Super Admin creado.');
         } catch (Exception $e) {
             echo _($e->getMessage());
+        
+        } catch (QueryException $e) {
+            if ($e->getCode() == 23505) {
+              User::where('email','superadmin@segmenter')->first()->assignRole('Super Admin');
+            }else {
+              echo _($e->getMessage());
+            }
         }
         
     }
