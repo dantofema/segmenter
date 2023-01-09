@@ -113,7 +113,7 @@
           url: "{{ url('archivos') }}",
           type: 'GET',
           data: function (d) {
-          d.codigo = $('#codigo').val();
+          d.codigo = $('#nombre').val();
           }
          },
          columns: [

@@ -246,6 +246,7 @@ Route::get('radio/{localidad}/{radio}/','SegmentacionController@ver_grafo')->nam
 Route::post('archivos','ArchivoController@index');
 Route::get('archivos','ArchivoController@index');
 Route::get('archivo/{archivo}','ArchivoController@show');
+Route::post('archivo/{archivo}','ArchivoController@show');
 Route::delete('archivo/{archivo}','ArchivoController@destroy');
 Route::put('archivo/{archivo}/detach','ArchivoController@detach');
 Route::get('archivo/{archivo}/descargar','ArchivoController@descargar');

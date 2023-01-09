@@ -91,13 +91,20 @@ class ArchivoController extends Controller
     /**
      * Display the specified resource.
      *
+     * @param  \Illuminate\Http\Request  $request
      * @param  \App\Model\Archivo  $archivo
      * @return \Illuminate\Http\Response
      */
-    public function show(Archivo $archivo)
+    public function show(Request $request, Archivo $archivo)
     {
-	//
-	return $archivo->load('user');
+    	//
+///      return response($request->format);
+      $result = $archivo->load('user');
+      if ($request->format == 'html') {
+        $result = $result->toJson(JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+      } 
+     	return $result;
+          
     }
 
     /**
