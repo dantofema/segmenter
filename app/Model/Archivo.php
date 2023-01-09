@@ -16,6 +16,7 @@ use App\MyDB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use App\Exceptions\GeoestadisticaException;
+use App\User;
 
 class Archivo extends Model
 {
@@ -430,6 +431,24 @@ class Archivo extends Model
         $this->save();
         flash($mensaje.$import->getRowCount());
         return true;
+    }
+
+    public function limpiar_copia($id_original){
+        $original = self::find($id_original);
+        $owner = User::find($this->user_id);
+        error_log("Soy " . $this->id . " y pertenezco al user " . $owner->id);
+        error_log("Mi original es " . $id_original . " y pertenece al user " . $original->user_id);
+        if (($original->user_id != $owner->id) and (!$owner->visible_files()->get()->contains($original))){
+            $owner->visible_files()->attach($id_original);
+            error_log("Agregado a file_viewer");
+        }
+        if(Storage::delete($this->nombre)){
+            Log::info('Se borró el archivo: '.$this->nombre_original);
+        }else{
+            Log::error('NO se borró el archivo: '.$this->nombre);
+        }
+        $this->delete();
+        error_log("Se eliminó el registro");
     }
 
 }
