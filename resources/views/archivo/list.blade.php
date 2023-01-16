@@ -192,19 +192,22 @@
                 _token:'{{ csrf_token() }}'},
          success: function(response){ 
 	     // Add response in Modal body
-	     if(response.statusCode==200){
+       if(response=='ok'){
+        if(response.statusCode==200){
 	          row.fadeOut().remove();
-	     }
-	     if(response.statusCode==405){
-	          alert("Error al intentar borrar");
-	     }
-      if(response.statusCode==500){
-            alert("Error al intentar borrar. En el servidor");
         }
-      alert("Se eliminó el registro del archivo");
-	     row.fadeOut().remove();
-	     $('.modal-body').html(response);
-
+        if(response.statusCode==405){
+              alert("Error al intentar borrar");
+        }
+        if(response.statusCode==500){
+              alert("Error al intentar borrar. En el servidor");
+          }
+        alert("Se eliminó el registro del archivo");
+        row.fadeOut().remove();
+        $('.modal-body').html(response);
+       } else {
+        alert("El archivo es utilizado por " + response + " usuario(s). No se eliminará");
+       }
            }
       });
       };
