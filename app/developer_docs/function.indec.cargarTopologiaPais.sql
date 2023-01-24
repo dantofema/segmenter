@@ -69,7 +69,7 @@ CREATE OR REPLACE FUNCTION indec.cargar_topologia_pais(esquema character varying
       miquery = format('-- CARGAR ARCOS y registrar arco junto a info
                        CREATE TABLE %1$s.arc_topology_pais AS (
       SELECT a.*,topology.TopoGeo_AddLineString( ''%2$s'',
-       st_transform(wkb_geometry,%4$s)) edge_id_postgis
+       st_transform(wkb_geometry,%4$s),1) edge_id_postgis
       FROM %3$s a);'
                        ,esquema,topo_name,estearc,srid); 
       RAISE NOTICE 'SQL %',miquery;
