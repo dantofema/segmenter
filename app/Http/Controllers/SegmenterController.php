@@ -137,7 +137,7 @@ class SegmenterController extends Controller
           flash('2. '.$shp_file->tabla.' == '.$shp_lab_file->tabla);
         }
         $ppdddllls=$shp_file->pasarData();
-        flash('333');
+        flash('3. Se pasó Data de '.count($ppdddllls));
       }else{flash('No se pudo procesar la cartografía')->error()->important();
         $mensajes.=' ERROR ';
       }

@@ -612,7 +612,7 @@ FROM
          }catch (QueryException $exception) {
              DB::Rollback();
              Log::error('Error: '.$exception);
-             flash('Error procesando arc '.$excepcion->getMessage())->error()->important();
+             flash('Error procesando arc '.$exception->getMessage())->error()->important();
              $error = true;
          }
          try {
@@ -623,7 +623,7 @@ FROM
          }catch (QueryException $exception) {
              DB::Rollback();
              Log::error('Error: '.$exception);
-             flash('Error procesando lab '.$excepcion->getMessage())->error()->important();
+             flash('Error procesando lab '.$exception->getMessage())->error()->important();
              $error = true;
          }
         return true;

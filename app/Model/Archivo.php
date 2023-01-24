@@ -110,6 +110,9 @@ class Archivo extends Model
             } elseif ($this->tipo == 'pxrad/dbf') {
                 return $this->procesarPxRad();
             } elseif ($this->tipo == 'shp') {
+                if ( strtolower(substr($this->nombre_original, 0, 11)) == 'Localidades') {
+                  return $this->procesarGeomSHP('localidades');
+                }
                 return $this->procesarGeomSHP();
             } elseif ($this->tipo == 'shp/arc') {
                 return $this->procesarGeomSHP();
@@ -365,6 +368,13 @@ class Archivo extends Model
                 MyDB::copiaraEsquemaPais('e_'.$this->tabla,'e'.$coddepto->link,$coddepto->link);
                 $count++;
             }
+            foreach ($coddeptos_pol as $coddepto){
+                flash('Se encontró Departamentos en arc/pol : '.$coddepto->link);
+                MyDB::createSchema($coddepto->link);
+                MyDB::copiaraEsquemaPais('e_'.$this->tabla,'e'.$coddepto->link,$coddepto->link);
+                $count++;
+            }
+            
             MyDB::limpiar_esquema('e_'.$this->tabla);
             return $coddeptos;
         } else {
