@@ -138,6 +138,8 @@ class ArchivoController extends Controller
      */
     public function destroy(Archivo $archivo)
     {
+        $this->middleware('auth');
+        $this->middleware('can:run-setup');      
 	    // Borro el archivo del storage
 	    //
         DB::table('file_viewer')->where('archivo_id', $archivo->id)->delete();
