@@ -187,6 +187,8 @@ class ArchivoController extends Controller
     }
 
     public function eliminar_repetidos() {
+        $this->middleware('auth');
+        $this->middleware('can:run-setup');
         if (Auth::check()){
             try {
                 if (Auth::user()->hasPermissionTo('Administrar Archivos')){
