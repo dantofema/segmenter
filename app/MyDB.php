@@ -1750,7 +1750,7 @@ FROM
                     return true;
                 }
                 if ($e->getCode()=='XX000'){
-                    if (is_null($tolerancia) {
+                    if (is_null($tolerancia)) {
                        if (self::cargarTopologia($esquema,1)) {
                           Log::warning('Se pudo cargar la topologia utilizando tolerancia de 1 '.$esquema .' -> '.$e);
                           return true;
