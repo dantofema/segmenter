@@ -1719,12 +1719,17 @@ FROM
 
         // Carga geometria en topologia y genera manzanas, fracciones y radios.
         // Necesita arc y lab.
-        public static function cargarTopologia($esquema)
+        public static function cargarTopologia($esquema, $tolerancia = null)
         {
             try{
                 DB::beginTransaction();
-                DB::statement(" SELECT indec.cargarTopologia(
-                '".$esquema."','arc');");
+                if (is_numeric($tolerancia)) {
+                  DB::statement(" SELECT indec.cargarTopologia(
+                  '".$esquema."','arc',$tolerancia);");
+                } else {
+                  DB::statement(" SELECT indec.cargarTopologia(
+                  '".$esquema."','arc');");
+                }
                 DB::statement(" DROP TABLE if exists ".$esquema.".manzanas;");
                 DB::statement(" CREATE TABLE ".$esquema.".manzanas AS SELECT * FROM
                 ".$esquema.".v_manzanas;");
@@ -1742,6 +1747,11 @@ FROM
                     self::setLabfromPol($esquema);
                     self::cargarTopologia($esquema);
                     Log::warning('Se pudo cargar la topologia creando etiquetas desde los poligonos para '.$esquema .' -> '.$e);
+                    return true;
+                }
+                if ($e->getCode()=='XX000'){
+                    self::cargarTopologia($esquema,1);
+                    Log::warning('Se pudo cargar la topologia utilizando tolerancia de 1 '.$esquema .' -> '.$e);
                     return true;
                 }
                 Log::error('No se pudo cargar la topologia para '.$esquema.' ! '.$e);

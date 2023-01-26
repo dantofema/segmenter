@@ -79,6 +79,8 @@ Route::get('/setup/topo/pais',
 'SetupController@cargarTopologiasPais')->name('setup.topologia.pais');
 Route::get('/setup/topo/{esquema}',
 'SetupController@cargarTopologia')->name('setup.topologia');
+Route::get('/setup/topo/{esquema}/{tolerancia}',
+'SetupController@cargarTopologia')->name('setup.topologia');
 Route::get('/setup/topo_drop/{esquema}',
 'SetupController@dropTopologia')->name('setup.drop.topologia');
 Route::get('/setup/index/{esquema}',

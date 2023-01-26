@@ -89,9 +89,13 @@ class SetupController extends Controller
         return view('home');
     }
 
-    public function cargarTopologia($schema)
+    public function cargarTopologia($schema, $tolerancia = null)
     {
-        MyDB::cargarTopologia($schema);
+        if (is_numeric($tolerancia)) {
+          MyDB::cargarTopologia($schema, $tolerancia);
+        } else {
+          MyDB::cargarTopologia($schema);
+        }
         flash('Se creo la topología para '.$schema);
         return view('home');
     }
