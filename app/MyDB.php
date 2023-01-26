@@ -1754,12 +1754,13 @@ FROM
                        if (self::cargarTopologia($esquema,1)) {
                           Log::warning('Se pudo cargar la topologia utilizando tolerancia de 1 '.$esquema .' -> '.$e);
                           return true;
-                        } else {
-                          Log::error('No se pudo cargar la topologia ni utilizando tolerancia de '.$tolerancia.' para '.$esquema .' -> '.$e);
-                        }
-                     }
-                    return false;
-                }
+                       }
+                    } else {
+                      Log::error('No se pudo cargar la topologia ni utilizando tolerancia de '.$tolerancia.' para '.$esquema .' -> '.$e);
+                    }
+                 }
+                return false;
+            }
                 Log::error('No se pudo cargar la topologia para '.$esquema.' ! '.$e);
                 return false;
             }
