@@ -28,8 +28,8 @@ class CreateFilesPermissions extends Migration
     {
         DB::beginTransaction();
             /** elimino los permisos */
-            //Permission::where(['name'=>'Ver Archivos'])->first()->delete();
-            //Permission::where(['name'=>'Administrar Archivos'])->first()->delete();
+            Permission::where(['name'=>'Ver Archivos'])->first()->delete();
+            Permission::where(['name'=>'Administrar Archivos'])->first()->delete();
             DB::commit();
     }
 }
