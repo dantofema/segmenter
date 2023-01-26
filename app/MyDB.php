@@ -1719,8 +1719,8 @@ FROM
 
         // Carga geometria en topologia y genera manzanas, fracciones y radios.
         // Necesita arc y lab.
-        public static function cargarTopologia($esquema, $tolerancia = null)
-        {
+   public static function cargarTopologia($esquema, $tolerancia = null)
+     {
             try{
                 DB::beginTransaction();
                 if (is_numeric($tolerancia)) {
@@ -1741,32 +1741,30 @@ FROM
     ".$esquema.".v_radios;");
                 DB::commit();
 
-      }catch(QueryException $e){
-                DB::Rollback();
-                if ($e->getCode()=='P0001'){
-                    self::setLabfromPol($esquema);
-                    self::cargarTopologia($esquema);
-                    Log::warning('Se pudo cargar la topologia creando etiquetas desde los poligonos para '.$esquema .' -> '.$e);
-                    return true;
-                }
-                if ($e->getCode()=='XX000'){
-                    if (is_null($tolerancia)) {
-                       if (self::cargarTopologia($esquema,1)) {
-                          Log::warning('Se pudo cargar la topologia utilizando tolerancia de 1 '.$esquema .' -> '.$e);
-                          return true;
-                       }
-                    } else {
-                      Log::error('No se pudo cargar la topologia ni utilizando tolerancia de '.$tolerancia.' para '.$esquema .' -> '.$e);
-                    }
-                 }
-                return false;
-            }
-                Log::error('No se pudo cargar la topologia para '.$esquema.' ! '.$e);
-                return false;
-            }
-            Log::debug('Se generaron fracciones, radios y manzanas en '.$esquema);
-            return true;
-        }
+      } catch(QueryException $e) {
+          DB::Rollback();
+          if ($e->getCode()=='P0001'){
+              self::setLabfromPol($esquema);
+              self::cargarTopologia($esquema);
+              Log::warning('Se pudo cargar la topologia creando etiquetas desde los poligonos para '.$esquema .' -> '.$e);
+              return true;
+          }
+          if ($e->getCode()=='XX000'){
+              if (is_null($tolerancia)) {
+                 if (self::cargarTopologia($esquema,1)) {
+                     Log::warning('Se pudo cargar la topologia utilizando tolerancia de 1 '.$esquema .' -> '.$e);
+                     return true;
+                  }
+               } else {
+                  Log::error('No se pudo cargar la topologia ni utilizando tolerancia de '.$tolerancia.' para '.$esquema .' -> '.$e);
+               }
+          }
+          Log::error('No se pudo cargar la topologia para '.$esquema.' ! '.$e);
+          return false;
+     }
+     Log::info('Se generaron fracciones, radios y manzanas en '.$esquema);
+     return true;
+   }
 
         // Carga geometria en topologia pais genera fracciones y radios.
         // Carga geometria en topologia y genera fracciones y radios pais.
