@@ -327,7 +327,7 @@ WITH shapes (geom, attribute, tipo) AS (
             CASE WHEN trim(lg.tipoviv) in ('','LSV') then 
             st_buffer(st_LineSubstring(st_offsetcurve(lg.wkb_geometry_lado,-5),0.05,0.95),1,'endcap=flat join=round')
             ELSE st_buffer(lg.wkb_geometry,2) END    wkb_geometry, 
-         ".$r3_seg." as attribute,
+         ".$r3_seg."::integer as attribute,
     lg.tipoviv tipo
     FROM ".$this->esquema.".listado_geo lg JOIN ".$this->esquema.".segmentacion
     s ON s.listado_id=id_list 
