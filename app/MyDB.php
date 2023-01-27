@@ -1757,6 +1757,9 @@ FROM
                   }
                } else {
                   Log::error('No se pudo cargar la topologia ni utilizando tolerancia de '.$tolerancia.' para '.$esquema .' -> '.$e);
+                  $result = DB::select("SELECT * from indec.crossTopologia('".$esquema."')")->get();
+                  $cross_result = collect($result)->toJson(JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+                  flash('Arco con problemas: '.$cross_result)->error()->important();
                }
           }
           Log::error('No se pudo cargar la topologia para '.$esquema.' ! '.$e);
