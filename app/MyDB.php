@@ -980,12 +980,12 @@ FROM
 
         public static function limpiar_esquema($esquema)
         {
-        // Comienzan limíeza de esquema
+        // Comienzan limpieza de esquema
         try {
                DB::beginTransaction();
-              DB::statement('DROP SCHEMA "'.$esquema.'" CASCADE;');
+               DB::statement('RENAME SCHEMA '.$esquema.'" TO h_'.$esquema.'";');
               DB::commit();
-               Log::info('Se eliminó el esquema '.$esquema);
+               Log::info('Se renombró el esquema '.$esquema);
               return true;
                 }catch (\Illuminate\Database\QueryException $exception) {
                     Log::error('No se pudo limpiar el esquema: '.$exception);
