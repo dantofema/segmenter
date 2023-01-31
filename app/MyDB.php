@@ -983,14 +983,14 @@ FROM
         // Comienzan limpieza de esquema
         try {
                DB::beginTransaction();
-               DB::statement('RENAME SCHEMA '.$esquema.'" TO h_'.$esquema.'";');
+               DB::statement('ALTER SCHEMA "'.$esquema.'" RENAME TO "h_'.$esquema.'";');
               DB::commit();
                Log::info('Se renombró el esquema '.$esquema);
               return true;
                 }catch (\Illuminate\Database\QueryException $exception) {
                     Log::error('No se pudo limpiar el esquema: '.$exception);
                     DB::Rollback();
-              return false;
+                    return false;
                 }
         }
 
