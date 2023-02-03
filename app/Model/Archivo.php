@@ -34,11 +34,28 @@ class Archivo extends Model
         return $this->belongsTo('App\User');
     }
 
+
+    // Funciona para recalcular checksum shape (varios files)
+    private static function checksumCalculate($request_file, $shape_files = []){
+        // Recalcular checksum de grupo de archivos ?
+        // O generar archivo comprimido de una vez :/
+        // DO IT
+        $checksum = md5_file($request_file->getRealPath());
+        if ($shape_files != null){
+            $checksums[] = $checksum;
+            foreach ($shape_files as $shape_file) {
+                $checksums[] =  md5_file($shape_file->getRealPath());
+            }
+            $checksum = md5(implode('',$checksums));
+        } 
+        return $checksum;
+    }
+
     // Funcion para cargar información de archivo en la base de datos.
     public static function cargar($request_file, $user, $tipo=null, $shape_files = []) {
         $original_extension = strtolower($request_file->getClientOriginalExtension());
         
-        $file = self::where('checksum', '=', md5_file(($request_file)->getRealPath()))->first();
+        $file = self::where('checksum', '=', self::checksumCalculate($request_file, $shape_files))->first();
         if (!$file) {
             flash("Nuevo archivo ".$original_extension);
             $guess_extension = strtolower($request_file->guessClientExtension());
@@ -46,8 +63,10 @@ class Archivo extends Model
             $random_name= 't_'.$request_file->hashName();
             $random_name = substr($random_name,0,strpos($random_name,'.'));
             $file_storage = $request_file->storeAs('segmentador', $random_name.'.'.$request_file->getClientOriginalExtension());
+            $checksum = self::checksumCalculate($request_file, $shape_files);
             if ($tipo == 'shape'){
                 if ($shape_files != null){
+                    $data_files[] = null;
                     foreach ($shape_files as $shape_file) {
                         //Almacenar archivos asociados a shapefile con igual nombre
                         //según extensión.
@@ -58,14 +77,14 @@ class Archivo extends Model
                     }
                 }
             }
-            $file_storage = $request_file->storeAs('segmentador', $random_name.'.'.$request_file->getClientOriginalExtension());
+
             $file = self::create([
                 'user_id' => $user->id,
                 'nombre_original' => $original_name,
                 'nombre' => $file_storage,
                 'tabla' => $random_name,
                 'tipo' => ($guess_extension!='bin' and $guess_extension!='')?$guess_extension:$original_extension,
-                'checksum'=> md5_file($request_file->getRealPath()),
+                'checksum'=> $checksum,
                 'size' => $request_file->getSize(),
                 'mime' => $request_file->getClientMimeType()
             ]);
