@@ -198,6 +198,7 @@ Route::post('locas-list', 'LocalidadController@locasList');
 Route::get('localidades','LocalidadController@list');
 Route::get('localidades_json','LocalidadController@index');
 Route::get('localidad/{localidad}','LocalidadController@show');
+Route::get('localidad/codigo/{codigo}','LocalidadController@show_codigo');
 Route::post('localidad/{localidad}','LocalidadController@segmenta_post');
 Route::post('localidad-segmenta/{localidad}','LocalidadController@segmenta_post');
 Route::get('localidad-segmenta/{localidad}','LocalidadController@segmenta_post');

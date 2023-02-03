@@ -97,9 +97,33 @@ class LocalidadController extends Controller
         */
     }
 
+
+    public function show_codigo(Request $request, string $codigo)
+    {
+        if (strlen($codigo)==8)
+        {
+            $model = Localidad::where('codigo',$codigo) 
+                ->with(['aglomerado','departamentos','departamentos.provincia'])
+                ->withCount(['radios'])
+                ->get();
+            if ( $request->isMethod('get') ){
+              // Redirige al primer registro encontrado con ese código.
+              return redirect()->action([LocalidadController::class,'show'], [$model->first()] );
+            } else {
+              return $model;
+            }
+
+        } else {
+            Log::error('Código mal formado para localidad',[$codigo]);
+            return response()->json([
+                'message' => 'Código mal formado.'
+            ], 404);
+        }
+    }
+
     /**
      * Show the form for creating a new resource.
-     *
+     
      * @return \Illuminate\Http\Response
      */
     public function create()
