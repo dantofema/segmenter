@@ -1,7 +1,10 @@
  CREATE OR REPLACE FUNCTION indec.crosstopologia(esquema character varying, tabla character varying)
    RETURNS table (
     ogc_fid integer,
-    wkb_geometry public.geometry
+    toponame character varying,
+    edge_id integer,
+    wkb_geometry public.geometry,
+    geom public.geometry
   )
          LANGUAGE plpgsql
        AS $function$
@@ -49,8 +52,9 @@
       
       --ARCOS que cruzan topologia.
       edge_sql=format('--ARCOS desde topologia.
-                      SELECT ogc_fid, wkb_geometry from %1$s.arc a JOIN "%2$s".edge b 
-on a.wkb_geometry && b.geom and st_crosses(a.wkb_geometry,b.geom)'
+                      SELECT distinct ogc_fid, ''%2$s''::character varying toponame, b.edge_id, wkb_geometry, geom 
+                      from %1$s.arc a JOIN "%2$s".edge b 
+                      on a.wkb_geometry && b.geom and st_crosses(a.wkb_geometry,b.geom)'
        ,esquema,topo_name);
        
        RETURN query EXECUTE edge_sql;
