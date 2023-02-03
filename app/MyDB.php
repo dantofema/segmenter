@@ -529,14 +529,15 @@ FROM
           DB::commit();
       }catch (QueryException $exception) {
            if ($exception->getCode() == '42P07'){
-             Log::warning('Ya hay tablas cargadas, se pisarán los datos! ');
+             Log::warning('Ya hay tablas cargadas, NO se pisarán los datos! ');
              DB::Rollback();
              try{
-                    DB::beginTransaction();
-                    DB::unprepared('DROP TABLE IF EXISTS '.$a_esquema.'.arc CASCADE');
-                    DB::unprepared('ALTER TABLE  "'.$de_esquema.'".arc SET SCHEMA "'.$a_esquema.'" ');
-                    DB::commit();
-                  Log::info('Se movio tabla ARC a '.$a_esquema.' de  '.$de_esquema);
+//                    DB::beginTransaction();
+//                    DB::unprepared('DROP TABLE IF EXISTS '.$a_esquema.'.arc CASCADE');
+//                    DB::unprepared('ALTER TABLE  "'.$de_esquema.'".arc SET SCHEMA "'.$a_esquema.'" ');
+//                    DB::commit();
+
+                  Log::info('NO Se movio tabla ARC a '.$a_esquema.' de  '.$de_esquema);
               }catch (QueryException $exception) {
                 Log::error('Error: '.$exception);
                 DB::Rollback();
@@ -549,14 +550,14 @@ FROM
           DB::commit();
       }catch (QueryException $exception) {
            if ($exception->getCode() == '42P07'){
-             Log::warning('Ya hay tablas cargadas, se pisarán los datos! ');
+             Log::warning('Ya hay tablas cargadas, NO se pisarán los datos! ');
              DB::Rollback();
              try{
-                    DB::beginTransaction();
-                    DB::unprepared('DROP TABLE IF EXISTS '.$a_esquema.'.lab CASCADE');
-                    DB::unprepared('ALTER TABLE  "'.$de_esquema.'".lab SET SCHEMA "'.$a_esquema.'" ');
-                    DB::commit();
-                  Log::info('Se movieron tablas ARC Y LAB a '.$a_esquema.' y se borro el esquema '.$de_esquema);
+//                    DB::beginTransaction();
+//                    DB::unprepared('DROP TABLE IF EXISTS '.$a_esquema.'.lab CASCADE');
+//                    DB::unprepared('ALTER TABLE  "'.$de_esquema.'".lab SET SCHEMA "'.$a_esquema.'" ');
+//                    DB::commit();
+                  Log::info('NO Se movió la tabla LAB a '.$a_esquema.' y no se borro el esquema '.$de_esquema);
               }catch (QueryException $exception) {
                 Log::error('Error: '.$exception);
                 DB::Rollback();
@@ -577,20 +578,51 @@ FROM
     public static function copiaraEsquema($de_esquema,$a_esquema,$localidad_codigo=null)
     {
         if (isset($localidad_codigo)) {
-                 $filtro=" WHERE substr(mzai,1,8)= '".$localidad_codigo."' or substr(mzad,1,8)= '".$localidad_codigo."' ";
-                 $filtro_lab=" WHERE prov || depto || codloc = '".$localidad_codigo."'";
+                 $filtro=" WHERE substr(a.mzai,1,8)= '".$localidad_codigo."' or substr(a.mzad,1,8)= '".$localidad_codigo."' ";
+                 $filtro_lab=" WHERE a.prov || a.depto || a.codloc = '".$localidad_codigo."'";
         } else { $filtro='';
                  $filtro_lab=''; }
         try {
              DB::beginTransaction();
-             DB::unprepared('DROP TABLE IF EXISTS '.$a_esquema.'.arc CASCADE');
-             DB::unprepared('DROP TABLE IF EXISTS '.$a_esquema.'.lab CASCADE');
-             DB::unprepared('CREATE TABLE "'.$a_esquema.'".arc AS SELECT * FROM "'.$de_esquema.'".arc '.$filtro);
-             DB::unprepared('CREATE TABLE "'.$a_esquema.'".lab AS SELECT * FROM "'.$de_esquema.'".lab '.$filtro_lab);
+             DB::unprepared('CREATE TABLE "'.$a_esquema.'".arc AS SELECT * FROM "'.$de_esquema.'".arc a '.$filtro);
              DB::commit();
-         }catch (QueryException $exception) {
+         }catch (QueryException $e) {
              DB::Rollback();
+             if ($e->getCode() == '42P07'){
+               // Tabla duplicada
+               self::comparaEsquema($de_esquema,$a_esquema,'arc',$filtro);
+             } else {
+               //DB::unprepared('DROP TABLE IF EXISTS '.$a_esquema.'.arc CASCADE');
+               Log::error('Error: '.$e);
+             }
+        }
+        try {
+             DB::beginTransaction();
+             DB::unprepared('CREATE TABLE "'.$a_esquema.'".lab AS SELECT * FROM "'.$de_esquema.'".lab a '.$filtro_lab);
+             DB::commit();
+         }catch (QueryException $e) {
+             DB::Rollback();
+             if ($e->getCode() == '42P07'){
+               // Tabla duplicada
+               self::comparaEsquema($de_esquema,$a_esquema,'lab',$filtro_lab);
+             } else {
+               //DB::unprepared('DROP TABLE IF EXISTS '.$a_esquema.'.lab CASCADE');
+               Log::error('Error: '.$e);
+             }
+        }
+    }
+
+    // Compara un esquema con otro
+    //
+    public static function comparaEsquema($de_esquema,$a_esquema,$tabla,$filtro=null) {
+        try {
+             $result = DB::select('SELECT count(*) total, count( distinct a.ogc_fid) en_a, count( distinct de.ogc_fid) en_de from '.
+                       ' "'.$a_esquema.'"."'.$tabla.'" a join "'.$de_esquema.'"."'.$tabla.'" de using(ogc_fid) '.$filtro);
+            flash('Se encontró información ya cargada: '.
+                  collect($result)->toJson(JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))->info()->important();
+         }catch (QueryException $exception) {
              Log::error('Error: '.$exception);
+             return false;
         }
     }
 
@@ -606,7 +638,6 @@ FROM
                  $filtro_lab=''; }
          try {
              DB::beginTransaction();
-             DB::unprepared('DROP TABLE IF EXISTS '.$a_esquema.'.arc CASCADE');
              DB::unprepared('CREATE TABLE "'.$a_esquema.'".arc AS SELECT * FROM "'.$de_esquema.'".arc '.$filtro);
              DB::commit();
          }catch (QueryException $exception) {
@@ -614,10 +645,10 @@ FROM
              Log::error('Error: '.$exception);
              flash('Error procesando arc '.$exception->getMessage())->error()->important();
              $error = true;
+             //DB::unprepared('DROP TABLE IF EXISTS '.$a_esquema.'.arc CASCADE');
          }
          try {
              DB::beginTransaction();
-             DB::unprepared('DROP TABLE IF EXISTS '.$a_esquema.'.lab CASCADE');
              DB::unprepared('CREATE TABLE "'.$a_esquema.'".lab AS SELECT * FROM "'.$de_esquema.'".lab '.$filtro_lab);
              DB::commit();
          }catch (QueryException $exception) {
@@ -625,6 +656,7 @@ FROM
              Log::error('Error: '.$exception);
              flash('Error procesando lab '.$exception->getMessage())->error()->important();
              $error = true;
+             //DB::unprepared('DROP TABLE IF EXISTS '.$a_esquema.'.lab CASCADE');
          }
         return true;
     }
@@ -700,10 +732,10 @@ FROM
         $tabla = strtolower( substr($file_name,strrpos($file_name,'/')+1,-4) );
         $esquema = 'e'.$esquema;
         Log::debug('Cargando dbf en esquema-> '.$esquema);
+        try{
             DB::beginTransaction();
 //            DB::unprepared('ALTER TABLE "'.$tabla.'" SET SCHEMA '.$esquema);
             DB::unprepared('CREATE TABLE "'.$esquema.'"."'.$tabla.'" AS SELECT * FROM "'.$tabla.'" '.$filtro);
-            DB::unprepared('DROP TABLE IF EXISTS '.$esquema.'.listado CASCADE');
             DB::unprepared('ALTER TABLE "'.$esquema.'"."'.$tabla.'" RENAME TO listado');
             DB::unprepared('ALTER TABLE "'.$esquema.'".listado ADD COLUMN id serial');
             if (! Schema::hasColumn($esquema.'.listado' , 'tipoviv')){
@@ -815,6 +847,17 @@ FROM
                 DB::commit();
             self::eliminaRepetidosListado($esquema);
             self::eliminaLSVconViviendasEnListado($esquema);
+         } catch (QueryException $e) {
+             DB::Rollback();
+             if ($e->getCode() == '42P07'){
+               // Tabla duplicada
+               //self::comparaEsquema($esquema,$a_esquema,'listado');
+               flash('Ya existe un listado cargado en '.$esquema)->warning();
+             } else {
+               Log::error('Error: '.$e);
+               //DB::unprepared('DROP TABLE IF EXISTS '.$esquema.'.listado CASCADE');
+            }
+        }
             self::juntaListadoGeom($esquema);
         }
 
@@ -908,6 +951,8 @@ FROM
                             Log::error('No se pudieron cargar lados '.$exception);
                             DB::Rollback();
                     };
+
+              if ( (! Schema::hasTable($esquema.'.conteos')) or (! Schema::hasTable($esquema.'.lados')) ) {
                 DB::beginTransaction();
                     try {
                         DB::unprepared("Select indec.cargar_lados('".$esquema."')");
@@ -916,32 +961,36 @@ FROM
                         self::generarAdyacencias($esquema);
                         Log::info('Se procesaron lados, conteos y adyacencias!');
                         DB::commit();
+           
+                    // Comienzan posprocesos de carga
+                       DB::beginTransaction();
+                        try {
+                           DB::unprepared("Select indec.descripcion_segmentos('".$esquema."')");
+                           DB::commit();
+                        }catch (\Illuminate\Database\QueryException $exception) {
+                           Log::error('No se pudo crear la descripcion de los segmentos: '.$exception);
+                           DB::Rollback();
+                       }
+                    self::addSequenceSegmentos($esquema);
+                    self::generarSegmentacionNula($esquema);
+
+                    // Indices y georef.
+                    $schema=$esquema;
+                    self::addIndexListado($schema);
+                    flash('Se creo el indice para lados en listado en '.$schema);
+                    self::addIndexListadoId($schema);
+                    flash('Se creo el indice para id listado en '.$schema);
+                    self::addIndexListadoRadio($schema);
+                    flash('Se creo el indice para radio en listado en '.$schema);
+
                     }catch (\Illuminate\Database\QueryException $exception) {
                             Log::error('No se pudieron cargar lados '.$exception);
                             DB::Rollback();
                     };
-                // Comienzan posprocesos de carga
-                DB::beginTransaction();
-                    try {
-                        DB::unprepared("Select indec.descripcion_segmentos('".$esquema."')");
-                DB::commit();
-                    }catch (\Illuminate\Database\QueryException $exception) {
-                        Log::error('No se pudo crear la descripcion de los segmentos: '.$exception);
-                        DB::Rollback();
-                    }
-                self::addSequenceSegmentos($esquema);
-                self::generarSegmentacionNula($esquema);
+                }
 
 
-            // Indices y georef.
             $schema=$esquema;
-            self::addIndexListado($schema);
-            flash('Se creo el indice para lados en listado en '.$schema);
-            self::addIndexListadoId($schema);
-            flash('Se creo el indice para id listado en '.$schema);
-            self::addIndexListadoRadio($schema);
-            flash('Se creo el indice para radio en listado en '.$schema);
-
             if (self::cargarTopologia($schema)) {
                 flash('Se creo la topología para '.$schema)->success()->important();
             }else{
@@ -982,10 +1031,18 @@ FROM
         {
         // Comienzan limpieza de esquema
         try {
-               DB::beginTransaction();
-               DB::statement('ALTER SCHEMA "'.$esquema.'" RENAME TO "h_'.$esquema.'";');
+             // si el nombre del esquema tiene mas de 20 caracteres, es temporal :/
+             if (strlen($esquema) < 40 ) { 
+                  $query_limpieza = 'ALTER SCHEMA "'.$esquema.'" RENAME TO "h_'.$esquema.'";';
+                  $mensaje = 'Se renombró el esquema '.$esquema;
+              } else {
+                  $query_limpieza = 'DROP SCHEMA "'.$esquema.'" CASCADE;';
+                  $mensaje = 'Se borró el esquema '.$esquema;
+              }
+              DB::beginTransaction();
+              DB::statement($query_limpieza);
               DB::commit();
-               Log::info('Se renombró el esquema '.$esquema);
+              Log::info($mensaje);
               return true;
                 }catch (\Illuminate\Database\QueryException $exception) {
                     Log::error('No se pudo limpiar el esquema: '.$exception);
@@ -1320,7 +1377,9 @@ FROM
             try{
                 DB::beginTransaction();
             if ($update_to=='' ) { 
-                DB::statement("DROP TABLE IF EXISTS ".$esquema.".listado_geo;");
+                // DB::statement("DROP TABLE IF EXISTS ".$esquema.".listado_geo;");
+                // No se dropea más.
+                flash('Se encontró listado georreferenciado, no se dropea más, se puede actualizar x frac, o radio')->warning();
             } else {
                 DB::statement("DELETE FROM ".$esquema.".listado_geo l ".$filtro);
             }
@@ -1433,6 +1492,10 @@ FROM
 
             }catch(QueryException $e){
                 DB::Rollback();
+                if ($e->getCode() == '42P07'){ //Tabla duplicada
+                        flash('Ya existe. No se pudo georrefernciar el listado '.$esquema)->warning()->important();
+                        return false;
+                }
                     if ($desplazamiento_vereda==8){
                             flash('No se pudo georreferenciar el listado dentro
                             de la manzana para '.$esquema.'.
@@ -1442,6 +1505,7 @@ FROM
                               calle')->success()->important();
                             }
                     }else{
+
                         flash('No se pudo georrefernciar el listado para '.$esquema)->error()->important();
                         Log::error('No se pudo georreferenciar el
                         listado.',[$e->getMessage()]);
@@ -1451,7 +1515,7 @@ FROM
             try{
                 DB::statement("GRANT SELECT ON TABLE  ".$esquema.".listado_geo TO geoestadistica");
             }catch(QueryException $e){
-                Log::error('No se pudo dar permiso a geoestadistica sobre el listado.'.$e);
+                Log::warning('No se pudo dar permiso a geoestadistica sobre el listado.'.$e);
             }
             Log::debug('Georreferenciado: '.$esquema);
             return $resultado;
@@ -1721,6 +1785,11 @@ FROM
         // Necesita arc y lab.
    public static function cargarTopologia($esquema, $tolerancia = null)
      {
+          if (Schema::hasTable($esquema.'.arc_topology')){
+                Log::Debug('NO Se carga topo ya existente '.$esquema);
+                flash('NO Se carga topo ya existente '.$esquema)->warning();
+                return false;
+          }
             try{
                 DB::beginTransaction();
                 if (is_numeric($tolerancia)) {
@@ -1757,9 +1826,9 @@ FROM
                   }
                } else {
                   Log::error('No se pudo cargar la topologia ni utilizando tolerancia de '.$tolerancia.' para '.$esquema .' -> '.$e);
-                  $result = DB::select("SELECT * from indec.crossTopologia('".$esquema."','arc') arc_cross join ".$esquema.".arc a using (ogc_fid)");
+                  $result = DB::select("SELECT distinct a.* from indec.crossTopologia('".$esquema."','arc') arc_cross join ".$esquema.".arc a using (ogc_fid)");
                   $cross_result = collect($result)->toJson(JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-                  flash('Arco con problemas: '.$cross_result)->error()->important();
+                  flash('Arcos con posibles problemas (a revisar): '.$cross_result)->error()->important();
                }
           }
           Log::error('No se pudo cargar la topologia para '.$esquema.' ! '.$e);
