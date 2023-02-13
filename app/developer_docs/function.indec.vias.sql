@@ -51,7 +51,7 @@ RAISE NOTICE 'Buscando vias de todas las localidades...';
           max(hastad)::varchar hastad,
           coalesce(substr(mzai,0,9), substr(mzad,0,9))::varchar codloc,
           null::varchar codaglo,
-          (nomencla||nombre)::varchar link,
+          (nomencla||nombre||tipo)::varchar link,
           now() created_at 
         from ' || rec.table_schema || '.arc a 
         group by 
