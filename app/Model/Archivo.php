@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use App\Exceptions\GeoestadisticaException;
 use App\User;
+use Illuminate\Support\Facades\DB;
 
 class Archivo extends Model
 {
@@ -54,8 +55,8 @@ class Archivo extends Model
     // Funcion para cargar información de archivo en la base de datos.
     public static function cargar($request_file, $user, $tipo=null, $shape_files = []) {
         $original_extension = strtolower($request_file->getClientOriginalExtension());
-        
-        $file = self::where('checksum', '=', self::checksumCalculate($request_file, $shape_files))->first();
+        # Ordeno por id para que, de ser necesario, el registro en file_viewer se cree sobre el archivo original y no una copia
+        $file = self::where('checksum', '=', self::checksumCalculate($request_file, $shape_files))->orderBy('id', 'asc')->first();
         if (!$file) {
             flash("Nuevo archivo ".$original_extension);
             $guess_extension = strtolower($request_file->guessClientExtension());
@@ -88,9 +89,9 @@ class Archivo extends Model
                 'size' => $request_file->getSize(),
                 'mime' => $request_file->getClientMimeType()
             ]);
-            $user->visible_files()->attach($file->id);
         } else {
-            if (!$user->visible_files()->get()->contains($file)){
+            # Si no es su archivo y no está en sus archivos visibles lo agrego
+            if (!$user->visible_files()->get()->contains($file) and !$user->mis_files()->get()->contains($file)){
                 $user->visible_files()->attach($file->id);
             }
             flash("Archivo ".$original_extension." ya existente. No se cargará de nuevo ")->info();
@@ -467,17 +468,40 @@ class Archivo extends Model
         $owner = User::find($this->user_id);
         error_log("Soy " . $this->id . " y pertenezco al user " . $owner->id);
         error_log("Mi original es " . $id_original . " y pertenece al user " . $original->user_id);
+        # En caso de ser necesario le permito al usuario ver el archivo original
         if (($original->user_id != $owner->id) and (!$owner->visible_files()->get()->contains($original))){
             $owner->visible_files()->attach($id_original);
             error_log("Agregado a file_viewer");
         }
-        if(Storage::delete($this->nombre)){
-            Log::info('Se borró el archivo: '.$this->nombre_original);
-        }else{
-            Log::error('NO se borró el archivo: '.$this->nombre);
+        # Verifico si existe o no el archivo original en el storage
+        if(Storage::exists($original->nombre)) {
+            # si existe entonces elimino la copia
+            error_log("Existe el archivo original. Eliminando copia del storage");
+            if(Storage::delete($this->nombre)){
+                Log::info('Se borró el archivo: '.$this->nombre_original);
+            }else{
+                Log::error('NO se borró el archivo: '.$this->nombre);
+            }
+        } else {
+            # si no existe entonces este archivo reemplaza al original en el storage (son el mismo por lo que no hay problema)
+            error_log("No existe el archivo original. Reutilizando copia del storage");
+            self::find($id_original)->update(['nombre' => $this->nombre]);
+        }
+        # Si hay registros en fileviewer apuntando a la copia
+        $vistas_copia = DB::table('file_viewer')->where('archivo_id', $this->id)->get();
+        foreach ($vistas_copia as $vista_copia){
+            if (DB::table('file_viewer')->where('archivo_id', $id_original)->where('user_id',$vista_copia->user_id)->get()){
+                # Si existe un registro apuntando al original elimino el que apunta a la copia
+                DB::table('file_viewer')->where('archivo_id', $this->id)->where('user_id',$vista_copia->user_id)->delete();
+                error_log("Se eliminó la vista de la copia");
+            } else {
+                # Si no actualizo el registro para que apunte al original
+                DB::table('file_viewer')->where('archivo_id', $this->id)->where('user_id',$vista_copia->user_id)->update(['archivo_id' => $id_original]);
+                error_log("Se eliminó la vista de la copia y se creó la vista del original");
+            }
         }
         $this->delete();
-        error_log("Se eliminó el registro");
+        Log::info("Se eliminó el registro");
     }
 
 }

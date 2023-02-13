@@ -142,15 +142,20 @@ class ArchivoController extends Controller
         $this->middleware('can:run-setup');      
 	    // Borro el archivo del storage
 	    //
-        DB::table('file_viewer')->where('archivo_id', $archivo->id)->delete();
-        $file= $archivo->nombre;
-        if(Storage::delete($file)){
-            Log::info('Se borró el archivo: '.$archivo->nombre_original);
-        }else{
-            Log::error('NO se borró el archivo: '.$file);
+        $vistas = DB::table('file_viewer')->where('archivo_id', $archivo->id)->count();
+        if ($vistas == 0){
+            $file= $archivo->nombre;
+            if(Storage::delete($file)){
+                Log::info('Se borró el archivo: '.$archivo->nombre_original);
+            }else{
+                Log::error('NO se borró el archivo: '.$file);
+            }
+            $archivo->delete();
+            return 'ok';
+        } else {
+            return $vistas;
         }
-        $archivo->delete();
-        return 'ok';
+        
     }
 
     public function detach(Archivo $archivo)
@@ -208,10 +213,10 @@ class ArchivoController extends Controller
                     }
                     flash($eliminados . " archivos eliminados.")->info();
                 } else {
-                    Session::flash('message', 'No tienes permiso para hacer eso.');
+                    flash('message', 'No tienes permiso para hacer eso.')->error();
                 }
             } catch (PermissionDoesNotExist $e) {
-                Session::flash('message', 'No existe el permiso "Administrar Archivos"');
+                flash('message', 'No existe el permiso "Administrar Archivos"')->error();
             }
             return view('archivo.list');
         } else {
