@@ -29,11 +29,12 @@ class ArchivoController extends Controller
         $archivos = $archivos->merge($AppUser->mis_files()->get());
         try {
             if ($AppUser->hasPermissionTo('Ver Archivos')) {
-                $archivos = Archivo::all();
+                $archivos->merge(Archivo::all());
             }
         } catch (PermissionDoesNotExist $e) {
             Session::flash('message', 'No existe el permiso "Ver Archivos"');
         }  
+        $count_archivos = $archivos->count();
         if ($request->ajax()) {
             return Datatables::of($archivos)
                 ->addIndexColumn()
@@ -54,10 +55,11 @@ class ArchivoController extends Controller
                             Session::flash('message', 'No existe el permiso "Administrar Archivos"');
                             $button .= '<button type="button" class="btn_arch_detach btn-sm btn-danger " > Dejar de ver </button>';
                         }
-                    }    
+                    } 
                     return $button;
                 })
                 ->rawColumns(['action'])
+                ->setTotalRecords($count_archivos)
                 ->make(true);
         }
       } else {
@@ -197,21 +199,29 @@ class ArchivoController extends Controller
         if (Auth::check()){
             try {
                 if (Auth::user()->hasPermissionTo('Administrar Archivos')){
+                    // Para todos los archivos
                     $archivos = Archivo::all();
                     $eliminados = 0;
+                    error_log("------------- ELIMINAR ARCHIVOS REPETIDOS -----------------------------");
                     foreach ($archivos as $archivo){
-                        error_log("-----------------------------------------------------------------------");
-                        error_log("Archivo " . $archivo->id . ". Checksum: " . $archivo->checksum);
-                        $min_id = Archivo::where('checksum',$archivo->checksum)->min('id');
-                        if ($min_id != $archivo->id){
-                            error_log("Es copia");
-                            $archivo->limpiar_copia($min_id);
-                            $eliminados = $eliminados + 1;
+                        $repeticiones = Archivo::where('checksum',$archivo->checksum)->count();
+                        if ( $repeticiones > 1 ){
+                        // Archivo repetido
+                          $min_id = Archivo::where('checksum',$archivo->checksum)->min('id');
+                          if ($min_id != $archivo->id){
+                              $mensaje = "Copia de archivo id: ".$min_id.".";
+                              $archivo->limpiar_copia($min_id);
+                              $eliminados = $eliminados + 1;
+                          } else {
+                              $mensaje = "Es el archivo original.";
+                          }
                         } else {
-                            error_log("Es el archivo original");
+                          $mensaje = "Archivo no repetido.";  
                         }
+                        error_log("Archivo " . $archivo->id . ". Checksum: " . $archivo->checksum.". ".$mensaje );
+                        $archivo->checkChecksum();
                     }
-                    flash($eliminados . " archivos eliminados.")->info();
+                    flash($eliminados . " archivos eliminados de ".$archivos->count()." encontrados.")->info();
                 } else {
                     flash('message', 'No tienes permiso para hacer eso.')->error();
                 }

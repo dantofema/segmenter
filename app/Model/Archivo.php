@@ -52,6 +52,41 @@ class Archivo extends Model
         return $checksum;
     }
 
+    // isMultiArchivo, si es del tipo que son muchos archivos.
+    public function ismultiArchivo() {
+      if ( in_array($this->tipo,['shp','shp/lab']) ) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+
+    // Funciona para verificar y actualizar checksum según función (varios files)
+    public function checkChecksum(){
+        // Recalcular checksum de grupo de archivos ?
+        // DO IT
+        $result = false;
+        if (Storage::exists($this->nombre) ){
+          if ( $this->checksum == md5( Storage::get($this->nombre) ) ){
+            if ( $this->isMultiArchivo() ){
+              error_log($this->tipo.' Checksum deprecated!');
+              $result = false;
+            } else {
+              error_log($this->tipo.' Checksum ok!');
+              $result = true;
+            }
+          } else {
+            if ( $this->isMultiArchivo() ){
+               //TODO Recalcular archivos asociados, checksum sumado
+            }
+         }
+        } else {
+         error_log($this->tipo.' WARNING! No existe el archivo en el Storage "'.$this->nombre.'" !!');
+         $result = false;
+       }
+       return $result;
+    }
+
     // Funcion para cargar información de archivo en la base de datos.
     public static function cargar($request_file, $user, $tipo=null, $shape_files = []) {
         $original_extension = strtolower($request_file->getClientOriginalExtension());
