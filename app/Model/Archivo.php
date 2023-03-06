@@ -45,7 +45,10 @@ class Archivo extends Model
         if ($shape_files != null){
             $checksums[] = $checksum;
             foreach ($shape_files as $shape_file) {
-                $checksums[] =  md5_file($shape_file->getRealPath());
+                // Hay e00 con shapefiles con valor null
+                if ($shape_file != null){
+                    $checksums[] =  md5_file($shape_file->getRealPath());
+                }
             }
             $checksum = md5(implode('',$checksums));
         } 
@@ -498,6 +501,51 @@ class Archivo extends Model
         return true;
     }
 
+    public function buscarArchivosSHP($original, $copia){
+        // elimino la extension .shp
+        $nombre_original = explode(".",$original->nombre)[0];
+        $nombre_copia = explode(".",$copia->nombre)[0];
+
+        // busco para cada extension
+        $extensiones = [".dbf", ".shx", ".prj"];
+        foreach ($extensiones as $extension) { 
+            $o = $nombre_original . $extension;
+            $c = $nombre_copia . $extension;
+            if(Storage::exists($c)) {
+                if(Storage::exists($o)) {
+                    # si existe el archivo original entonces elimino la copia
+                    error_log("Existe el archivo original. Eliminando copia del storage");
+                    if(Storage::delete($c)){
+                        Log::info('Se borró el archivo: '.  $copia->nombre_original . " extension " . $extension);
+                    }else{
+                        Log::error('NO se borró el archivo: '.$copia->nombre_original . " extension " . $extension);
+                    }
+                } else {
+                    # si no existe entonces el archivo copia reemplaza al original en el storage (son el mismo por lo que no hay problema)
+                    error_log("No existe el archivo original. Reutilizando copia del storage");
+                    # renombro a la copia con el nombre del original inexistente
+                    Storage::move($c, $o);
+                }
+            }
+        }
+    }
+    
+    public function chequearStorage($original, $copia){
+        if(Storage::exists($original->nombre)) {
+            # si existe el archivo original entonces elimino la copia
+            error_log("Existe el archivo original. Eliminando copia del storage");
+            if(Storage::delete($copia->nombre)){
+                Log::info('Se borró el archivo: '.$copia->nombre_original);
+            }else{
+                Log::error('NO se borró el archivo: '.$copia->nombre_original);
+            }
+        } else {
+            # si no existe entonces el archivo copia reemplaza al original en el storage (son el mismo por lo que no hay problema)
+            error_log("No existe el archivo original. Reutilizando copia del storage");
+            self::find($original->id)->update(['nombre' => $copia->nombre]);
+        }
+    }
+
     public function limpiar_copia($id_original){
         $original = self::find($id_original);
         $owner = User::find($this->user_id);
@@ -508,20 +556,14 @@ class Archivo extends Model
             $owner->visible_files()->attach($id_original);
             error_log("Agregado a file_viewer");
         }
-        # Verifico si existe o no el archivo original en el storage
-        if(Storage::exists($original->nombre)) {
-            # si existe entonces elimino la copia
-            error_log("Existe el archivo original. Eliminando copia del storage");
-            if(Storage::delete($this->nombre)){
-                Log::info('Se borró el archivo: '.$this->nombre_original);
-            }else{
-                Log::error('NO se borró el archivo: '.$this->nombre);
-            }
-        } else {
-            # si no existe entonces este archivo reemplaza al original en el storage (son el mismo por lo que no hay problema)
-            error_log("No existe el archivo original. Reutilizando copia del storage");
-            self::find($id_original)->update(['nombre' => $this->nombre]);
+
+        # Verifico que existan los archivos originales en el storage
+        $this->chequearStorage($original, $this);
+        # si es multiarchivo elimino tambien las copias de los demas archivos
+        if ($this->ismultiArchivo()){
+            $this->buscarArchivosSHP($original, $this);
         }
+
         # Si hay registros en fileviewer apuntando a la copia
         $vistas_copia = DB::table('file_viewer')->where('archivo_id', $this->id)->get();
         foreach ($vistas_copia as $vista_copia){
@@ -538,5 +580,5 @@ class Archivo extends Model
         $this->delete();
         Log::info("Se eliminó el registro");
     }
-
+    
 }
