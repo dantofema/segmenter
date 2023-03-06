@@ -2268,7 +2268,7 @@ order by 1,2
             DB::Rollback();
             $result=null;
             Log::error('Error no se pudo actualizar las Manzanas '.$filtro.$e);
-            return 'Manzanas sin actualizar';
+            return 'Manzanas sin actualizar: '.$e->getMessage();
        }
        return 'Se actualizo manzanas con '.$result.' registros';
     }
