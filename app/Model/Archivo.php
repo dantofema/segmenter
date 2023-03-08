@@ -35,6 +35,10 @@ class Archivo extends Model
         return $this->belongsTo('App\User');
     }
 
+    public function viewers()
+    {
+       return $this->belongsToMany(User::class, 'file_viewer');
+    }
 
     // Funciona para recalcular checksum shape (varios files)
     private static function checksumCalculate($request_file, $shape_files = []){
