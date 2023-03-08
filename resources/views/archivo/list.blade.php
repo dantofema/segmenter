@@ -127,11 +127,11 @@
                   { data: 'tipo', name: 'tipo' },
                   { visible: false, data: 'mime', name: 'mime' },
                   { visible: false, data: 'checksum', name: 'checksum' },
-                  { data: 'size_h', name: 'size', ordenable: 'size'},
-                  { data: 'created_at_h', name: 'created_at', ordenable: 'created_at' },
+                  { data: 'size_h', name: 'size'},
+                  { data: 'created_at_h', name: 'created_at'},
                   { data: 'usuario', name: 'usuario' },
                   { data: 'viewers_count', name: 'viewers_count' },
-                  { data: 'action', name: 'action', ordenable: 'updated_at'}
+                  { data: 'action', name: 'action', orderable: false}
         ]
       });
 
