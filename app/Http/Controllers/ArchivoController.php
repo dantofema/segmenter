@@ -221,10 +221,10 @@ class ArchivoController extends Controller
                         $repeticiones = Archivo::where('checksum',$archivo->checksum)->count();
                         if ( $repeticiones > 1 ){
                         // Archivo repetido
-                          $min_id = Archivo::where('checksum',$archivo->checksum)->min('id');
-                          if ($min_id != $archivo->id){
-                              $mensaje = "Copia de archivo id: ".$min_id.".";
-                              $archivo->limpiar_copia($min_id);
+                          $original = Archivo::where('checksum',$archivo->checksum)->orderby('id','asc')->first();
+                          if ($original != $archivo){
+                              $mensaje = "Copia de archivo id: ".$original->id.".";
+                              $archivo->limpiar_copia($original);
                               $eliminados = $eliminados + 1;
                           } else {
                               $mensaje = "Es el archivo original.";

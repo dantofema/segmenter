@@ -136,7 +136,7 @@ class Archivo extends Model
             if (!$user->visible_files()->get()->contains($file) and !$user->mis_files()->get()->contains($file)){
                 $user->visible_files()->attach($file->id);
             }
-            flash("Archivo ".$original_extension." ya existente. No se cargará de nuevo ")->info();
+            flash("Archivo ".$original_extension." ya existe. Cargado el  ".$file->created_at->format('Y-m-d').' por '.$file->user->name)->info();
         }
         return $file;
     }
@@ -256,7 +256,7 @@ class Archivo extends Model
 
     public function procesarGeomSHP($capa = 'arc') {
         MyDB::createSchema('_'.$this->tabla);
-        flash('Procesando Geom desde Shape en reestructuración, disculpe las molestias, estamos trabajando!')->warning();
+        flash('Procesando Geom desde Shape '.$capa.'...')->warning();
         $mensajes = '';
         $processOGR2OGR = Process::fromShellCommandline(
             '(/usr/bin/ogr2ogr -f \
@@ -414,6 +414,7 @@ class Archivo extends Model
 
     // Pasa data geo, arcos y labels al esquema de las localidades encontradas
     // Retorna Array $ppdddlls con codigos de localidades
+    // TODO: Separar o manejar arc or lab x separado
     public function pasarData(){
         // Leo dentro de la tabla de etiquetas la/s localidades
         $ppdddllls=MyDB::getLocs('lab','e_'.$this->tabla);
@@ -505,6 +506,8 @@ class Archivo extends Model
         return true;
     }
 
+
+    // @gerov: esto dice buscar, pero elimina ?
     public function buscarArchivosSHP($original, $copia){
         // elimino la extension .shp
         $nombre_original = explode(".",$original->nombre)[0];
@@ -550,9 +553,9 @@ class Archivo extends Model
         }
     }
 
-    public function limpiar_copia($id_original){
-        $original = self::find($id_original);
-        $owner = User::find($this->user_id);
+    public function limpiar_copia(Archivo $original){
+//        $original = self::find($id_original);
+        $owner = $this->user->id; //User::find($this->user_id);
         error_log("Soy " . $this->id . " y pertenezco al user " . $owner->id);
         error_log("Mi original es " . $id_original . " y pertenece al user " . $original->user_id);
         # En caso de ser necesario le permito al usuario ver el archivo original
