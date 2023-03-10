@@ -537,38 +537,38 @@ class Archivo extends Model
         }
     }
     
-    public function chequearStorage($original, $copia){
+    public function chequearStorage(Archivo $original){
+        $copia = $this;
         if(Storage::exists($original->nombre)) {
             # si existe el archivo original entonces elimino la copia
             error_log("Existe el archivo original. Eliminando copia del storage");
             if(Storage::delete($copia->nombre)){
-                Log::info('Se borró el archivo: '.$copia->nombre_original);
+                Log::info('Se borró el archivo: '.$copia->nombre. ' nombre original:'. $copia->nombre_original);
             }else{
-                Log::error('NO se borró el archivo: '.$copia->nombre_original);
+                Log::error('NO se borró el archivo: '.$copia->nombre. ' nombre original:'.$copia->nombre_original);
             }
         } else {
             # si no existe entonces el archivo copia reemplaza al original en el storage (son el mismo por lo que no hay problema)
-            error_log("No existe el archivo original. Reutilizando copia del storage");
-            self::find($original->id)->update(['nombre' => $copia->nombre]);
+            Log::error("No existe el archivo original. Reutilizando copia del storage");
+            $original->update(['nombre' => $copia->nombre]);
         }
     }
 
     public function limpiar_copia(Archivo $original){
-//        $original = self::find($id_original);
-        $owner = $this->user->id; //User::find($this->user_id);
+        $owner = $this->user;
         error_log("Soy " . $this->id . " y pertenezco al user " . $owner->id);
-        error_log("Mi original es " . $id_original . " y pertenece al user " . $original->user_id);
+        error_log("Mi original es " . $original->id . " y pertenece al user " . $original->user->id);
         # En caso de ser necesario le permito al usuario ver el archivo original
         if (($original->user_id != $owner->id) and (!$owner->visible_files()->get()->contains($original))){
-            $owner->visible_files()->attach($id_original);
+            $owner->visible_files()->attach($original->id);
             error_log("Agregado a file_viewer");
         }
 
         # Verifico que existan los archivos originales en el storage
-        $this->chequearStorage($original, $this);
+        $this->chequearStorage($original);
         # si es multiarchivo elimino tambien las copias de los demas archivos
         if ($this->ismultiArchivo()){
-            $this->buscarArchivosSHP($original, $this);
+            $this->buscarArchivosSHP($original);
         }
 
         # Si hay registros en fileviewer apuntando a la copia
