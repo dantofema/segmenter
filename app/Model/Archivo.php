@@ -507,8 +507,8 @@ class Archivo extends Model
     }
 
 
-    // @gerov: esto dice buscar, pero elimina ?
-    public function buscarArchivosSHP($original, $copia){
+    // Busca los archivos asociados al .shp repetidos para elimiarlos/reutilizarlos
+    public function buscarYBorrarArchivosSHP($original, $copia){
         // elimino la extension .shp
         $nombre_original = explode(".",$original->nombre)[0];
         $nombre_copia = explode(".",$copia->nombre)[0];
@@ -568,7 +568,7 @@ class Archivo extends Model
         $this->chequearStorage($original);
         # si es multiarchivo elimino tambien las copias de los demas archivos
         if ($this->ismultiArchivo()){
-            $this->buscarArchivosSHP($original);
+            $this->buscarYBorrarArchivosSHP($original);
         }
 
         # Si hay registros en fileviewer apuntando a la copia
