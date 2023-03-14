@@ -18,6 +18,7 @@ use Illuminate\Support\Str;
 use App\Exceptions\GeoestadisticaException;
 use App\User;
 use Illuminate\Support\Facades\DB;
+use ZipArchive;
 
 class Archivo extends Model
 {
@@ -144,12 +145,56 @@ class Archivo extends Model
     // Descarga del archivo cargado con nombre: mandarina_ + time() + _nombre_original
     // TODO: ver shape de descargar conjunto de archivos.
     public function descargar() {
+
+        if ( $this->isMultiArchivo() ) {
+            return $this->downloadZip();
+        }
         flash('Descargando... '.$this->nombre_original);
         $file = storage_path().'/app/'.$this->nombre;
         $name = 'mandarina_'.time().'_'.$this->nombre_original;
         $headers = ['Content-Type: '.$this->mime];
         return response()->download($file, $name, $headers);
     }
+
+    public function downloadZip()
+    {
+        $zip = new ZipArchive;
+
+        $fileName = 'mandarina_'.time().'_'.$this->nombre_original.'.zip';
+
+        if ($zip->open(public_path($fileName), ZipArchive::CREATE) === TRUE) {
+
+            $files = $this->getArchivosSHP();
+
+            foreach ($files as $key => $value) {
+                try {
+                  $relativeNameInZipFile = $key; //basename($value);
+                  $zip->addFile($value, $relativeNameInZipFile);
+                } catch (ErrorException $e) {
+                  Log::error('No se encontreo el archivo:'.$e->getMessage());
+                  dd($value);
+                }
+            }
+
+            $zip->close();
+        }
+
+        return response()->download(public_path($fileName));
+    }
+
+    public function getArchivosSHP() {
+        $nombre = substr($this->nombre,0,-4);
+        $nombre_original = substr($this->nombre_original,0,-4);
+        // busco para cada extension
+        $extensiones = [".shp", ".dbf", ".shx", ".prj"];
+        foreach ($extensiones as $extension) { 
+            $o = storage_path().'/app/'.$nombre . $extension;
+            $key = 'mandarina_'.$nombre_original . $extension;
+            $archivos[$key]= $o;
+        }
+        return $archivos;
+    }
+
 
     public function procesar(bool $force = true)
     {
@@ -537,7 +582,7 @@ class Archivo extends Model
         }
     }
     
-    public function chequearStorage(Archivo $original){
+    public function chequearYBorrarStorage(Archivo $original){
         $copia = $this;
         if(Storage::exists($original->nombre)) {
             # si existe el archivo original entonces elimino la copia
@@ -565,7 +610,7 @@ class Archivo extends Model
         }
 
         # Verifico que existan los archivos originales en el storage
-        $this->chequearStorage($original);
+        $this->chequearYBorrarStorage($original);
         # si es multiarchivo elimino tambien las copias de los demas archivos
         if ($this->ismultiArchivo()){
             $this->buscarYBorrarArchivosSHP($original);
