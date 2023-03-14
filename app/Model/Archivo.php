@@ -168,7 +168,7 @@ class Archivo extends Model
 
             foreach ($files as $key => $value) {
                 try {
-                  $relativeNameInZipFile = $key; //basename($value);
+                  $relativeNameInZipFile = $key;
                   $zip->addFile($value, $relativeNameInZipFile);
                 } catch (ErrorException $e) {
                   Log::error('No se encontreo el archivo:'.$e->getMessage());
@@ -185,7 +185,8 @@ class Archivo extends Model
     public function getArchivosSHP() {
         $nombre = substr($this->nombre,0,-4);
         $nombre_original = substr($this->nombre_original,0,-4);
-        // busco para cada extension
+
+        // genero nombre para cada extension
         $extensiones = [".shp", ".dbf", ".shx", ".prj"];
         foreach ($extensiones as $extension) { 
             $o = storage_path().'/app/'.$nombre . $extension;
