@@ -616,9 +616,9 @@ FROM
     //
     public static function comparaEsquema($de_esquema,$a_esquema,$tabla,$filtro=null) {
         try {
-             $result = DB::select('SELECT count(*) total, count( distinct a.ogc_fid) en_a, count( distinct de.ogc_fid) en_de from '.
-                       ' "'.$a_esquema.'"."'.$tabla.'" a join "'.$de_esquema.'"."'.$tabla.'" de using(ogc_fid) '.$filtro);
-            flash('Se encontró información ya cargada: '.
+             $result = DB::select('SELECT count(*) total, count( distinct a.ogc_fid) en_base, count( distinct de.ogc_fid) en_archivo from '.
+                       ' "'.$a_esquema.'"."'.$tabla.'" a full join "'.$de_esquema.'"."'.$tabla.'" de using(ogc_fid) '.$filtro);
+            flash('Se encontró información ya cargada para '.$tabla.' en '.$a_esquema.' : '.
                   collect($result)->toJson(JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))->info()->important();
          }catch (QueryException $exception) {
              Log::error('Error: '.$exception);
