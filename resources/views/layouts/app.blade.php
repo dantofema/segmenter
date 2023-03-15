@@ -12,10 +12,6 @@
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}" ></script>
 
-    <!-- Fonts -->
-    <!-- link rel="dns-prefetch" href="//fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet" -->
-
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
 
@@ -48,6 +44,7 @@
                         <li class="nav-item"><a class="nav-link" href="{{ url('/aglos') }}"> Aglomerados </a> </li>
                         <li class="nav-item"><a class="nav-link" href="{{ url('/localidades') }}"> Localidades </a> </li>
                         <li class="nav-item"><a class="nav-link" href="{{ url('/segmentador') }}"> Cargar </a> </li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url('/archivos') }}"> Archivos </a> </li>
                         <li class="nav-item"><a class="nav-link" href="{{
                         url('https://github.com/bichav/salidagrafica-atlas/archive/master.zip')
                         }}"> Descargar plugin </a> </li>
@@ -68,7 +65,7 @@
                                 </li>
                             @endif
                         @else
-                            <li class="nav-item">
+                            <li class="nav-item btn">
                                     <a class="nav-link" alt="Ver/Ocultar mensajes"
                                     title="Ver/Ocultar Menaajes flash"
                                     onclick="$('div.alert').toggle();">
@@ -83,6 +80,9 @@
 
                                 <div id=logout class="dropdown-menu dropdown-menu-right collapse"
                                 aria-labelledby="navbarDropdownLogin">
+                                <!-- DropDown Of Side Navbar -->
+                                <ul class="navbar-nav ml-auto">
+                                <li class="nav-item dropdown">
                                     <a class="dropdown-item" href="{{ route('logout') }}"
                                        onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">
@@ -92,7 +92,13 @@
                                     <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                                         @csrf
                                     </form>
-                                </div>
+                                </li>
+                                <li class="nav-item dropdown">
+                                  <a class="dropdown-item" href="{{ route('archivos') }}">{{ __('Archivos') }}</a>
+                                </li>
+                              </ul>
+                             </div>
+
                             </li>
                         @endguest
                     </ul>
@@ -111,18 +117,12 @@
             <div>{{ Git::submoduleStatus() }}</div>
 
             </div>
-<!-- If using flash()->important() or flash()->overlay(), you'll need to pull in the JS for Twitter Bootstrap. -->
-<!--script src="//code.jquery.com/jquery.js"></script>
-<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script -->
 <script>
    $(document).ready( function () {
     $('#flash-overlay-modal').modal();
-    $('div.alert').not('.alert-important').delay(5000).fadeOut(350);
+    $('div.alert').not('.alert-important').delay(6000).fadeOut(2000);
 });
 </script>
     @yield ('footer_scripts')
-<script>
-$('div.alert').not('.alert-important').delay(3000).fadeOut(350);
-</script>
 </body>
 </html>

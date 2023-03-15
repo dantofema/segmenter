@@ -55,7 +55,10 @@ class ArchivoController extends Controller
                 ->addColumn('action', function($data){
                     $button = '<button type="button" class="btn_descarga btn-sm btn-primary" > Descargar </button> ';
                     $button .= '<button type="button" class="btn_arch btn-sm btn-primary" > Ver </button>';
-                    $button .= '<button type="button" class="btn_arch_procesar btn-sm btn-secondary" > Procesar </button>';
+                    $button .= '<button type="button" class="btn_arch_procesar btn-sm btn-secondary" > ReProcesar </button>';
+                    /*
+                    Si botón de eliminar archivo por el momento
+
                     if ($data->user_id == Auth::user()->id) {
                         $button .= '<button type="button" class="btn_arch_delete btn-sm btn-danger " > Borrar </button>';
                     } else {
@@ -66,10 +69,10 @@ class ArchivoController extends Controller
                                 $button .= '<button type="button" class="btn_arch_detach btn-sm btn-danger " > Dejar de ver </button>';
                             }
                         } catch (PermissionDoesNotExist $e) {
-                            Session::flash('message', 'No existe el permiso "Administrar Archivos"');
-                            $button .= '<button type="button" class="btn_arch_detach btn-sm btn-danger " > Dejar de ver </button>';
+                            Log::error('No existe el permiso "Administrar Archivos"');
                         }
                     } 
+                    */
                     return $button;
                 })
                 ->rawColumns(['action'])
@@ -154,6 +157,13 @@ class ArchivoController extends Controller
      */
     public function destroy(Archivo $archivo)
     {
+
+
+        flash('Función no implementada x seguridad...')->warning()->important();
+        return view('archivo.list');
+        //Aún falta testeo
+
+
         $this->middleware('auth');
         $this->middleware('can:run-setup');      
 	    // Borro el archivo del storage
@@ -178,8 +188,8 @@ class ArchivoController extends Controller
     {
 	    // Borro el archivo del storage
 	    //
-        Auth::user()->visible_files()->detach($archivo->id);
-        return 'ok';
+      //  Auth::user()->visible_files()->detach($archivo->id);
+        return false;
     }
 
     /**
@@ -208,6 +218,13 @@ class ArchivoController extends Controller
     }
 
     public function eliminar_repetidos() {
+
+
+        flash('Función aún en testeo...')->warning()->important();
+        return view('archivo.list');
+        //Aún falta testeo
+
+
         $this->middleware('auth');
         $this->middleware('can:run-setup');
         if (Auth::check()){
