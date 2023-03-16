@@ -51,7 +51,8 @@ class Archivo extends Model
             $checksums[] = $checksum;
             foreach ($shape_files as $shape_file) {
                 // Hay e00 con shapefiles con valor null
-                if ($shape_file != null){
+                if ($shape_file != null and $shape_file != ''){
+                    log::debug($shape_file);
                     $checksums[] =  md5_file($shape_file->getRealPath());
                 }
             }
@@ -107,20 +108,22 @@ class Archivo extends Model
             $random_name= 't_'.$request_file->hashName();
             $random_name = substr($random_name,0,strpos($random_name,'.'));
             $file_storage = $request_file->storeAs('segmentador', $random_name.'.'.$request_file->getClientOriginalExtension());
-            $checksum = self::checksumCalculate($request_file, $shape_files);
+            $size_total = $request_file->getSize();
             if ($tipo == 'shape'){
                 if ($shape_files != null){
                     $data_files[] = null;
                     foreach ($shape_files as $shape_file) {
                         //Almacenar archivos asociados a shapefile con igual nombre
                         //según extensión.
-                        if ($shape_file != null){
+                        if ($shape_file != null and $shape_file != ''){
                             $extension = strtolower($shape_file->getClientOriginalExtension());
                             $data_files[] = $shape_file->storeAs('segmentador', $random_name.'.'.$extension);
+                            $size_total =+ $shape_file->getSize();
                         };
                     }
                 }
             }
+            $checksum = self::checksumCalculate($request_file, $shape_files);
 
             $file = self::create([
                 'user_id' => $user->id,
@@ -129,7 +132,7 @@ class Archivo extends Model
                 'tabla' => $random_name,
                 'tipo' => ($guess_extension!='bin' and $guess_extension!='')?$guess_extension:$original_extension,
                 'checksum'=> $checksum,
-                'size' => $request_file->getSize(),
+                'size' => $size_total,
                 'mime' => $request_file->getClientMimeType()
             ]);
         } else {
@@ -145,11 +148,11 @@ class Archivo extends Model
     // Descarga del archivo cargado con nombre: mandarina_ + time() + _nombre_original
     // TODO: ver shape de descargar conjunto de archivos.
     public function descargar() {
+        flash('Descargando... '.$this->nombre_original);
 
         if ( $this->isMultiArchivo() ) {
             return $this->downloadZip();
         }
-        flash('Descargando... '.$this->nombre_original);
         $file = storage_path().'/app/'.$this->nombre;
         $name = 'mandarina_'.time().'_'.$this->nombre_original;
         $headers = ['Content-Type: '.$this->mime];
