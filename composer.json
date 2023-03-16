@@ -10,7 +10,6 @@
     "require": {
         "php": "^8.1",
         "doctrine/dbal": "^2.10",
-        "fideloper/proxy": "^4.0",
         "fruitcake/laravel-cors": "^3.0",
         "guzzlehttp/guzzle": "^7.4",
         "hnhdigital-os/laravel-git-info": "dev-master",
