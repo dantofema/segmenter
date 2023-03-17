@@ -468,9 +468,9 @@ FROM
             return (DB::select('SELECT codprov||coddepto||codloc as codigo,nomloc as nombre FROM
             '.$esquema.'.'.$tabla.' '.$filtro.' group by 1,2 order by codprov||coddepto||codloc asc, count(*) desc ;'));
         }catch (\Illuminate\Database\QueryException $exception) {
-    Log::error('Error: '.$exception);
-    //Supongo codprov sin Nombre
-    //
+          Log::error('Error: '.$exception);
+      //Sin data de localidad
+      //
       return null;;
   }
     }
@@ -491,8 +491,13 @@ FROM
                return (DB::select('SELECT prov||depto||codloc as link,count(*) FROM
                        "'.$esquema.'".'.$tabla.' group by prov||depto||codloc order by count(*);'));
            }catch (QueryException $exception) {
+              try {
+                  return (DB::select('SELECT link,count(*) FROM
+                          "'.$esquema.'".'.$tabla.' group by link order by count(*);'));
+              }catch (QueryException $exception) {
                Log::error('No se pudo encontrar localidades: '.$exception);
                return [];
+              }
            }
          }
     }
