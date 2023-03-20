@@ -255,6 +255,7 @@ Route::put('archivo/{archivo}/detach','ArchivoController@detach');
 Route::get('archivo/{archivo}/descargar','ArchivoController@descargar');
 Route::get('archivo/{archivo}/procesar','ArchivoController@procesar');
 Route::get('archivos/limpiar','ArchivoController@eliminar_repetidos')->name('limpiar_archivos');
+Route::get('archivos/repetidos','ArchivoController@listar_repetidos')->name('archivos_repetidos');
 
 // ---------- TABLERO ---------
 

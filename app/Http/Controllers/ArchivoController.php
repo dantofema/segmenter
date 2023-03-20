@@ -264,4 +264,27 @@ class ArchivoController extends Controller
             return redirect()->route('login');
         }        
     }
+
+    public function listar_repetidos(){
+        $archivos = Archivo::all();
+        $repetidos = [];
+        foreach ($archivos as $archivo){
+            $repeticiones = Archivo::where('checksum',$archivo->checksum)->count();
+            if ( $repeticiones > 1 ){
+            // Archivo repetido
+                $original = Archivo::where('checksum',$archivo->checksum)->orderby('id','asc')->first();
+                if ($original != $archivo){
+                    $mensaje = "Copia de archivo id: ".$original->id.".";
+                    $repetidos[] = [$original,$archivo];
+                } else {
+                    $mensaje = "Es el archivo original.";
+                }
+            } else {
+                $mensaje = "Archivo no repetido.";  
+            }
+            error_log("Archivo " . $archivo->id . ". Checksum: " . $archivo->checksum.". ".$mensaje );
+            return $repetidos;
+        }
+    }
+
 }
