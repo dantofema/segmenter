@@ -259,7 +259,7 @@ class ArchivoController extends Controller
             } catch (PermissionDoesNotExist $e) {
                 flash('message', 'No existe el permiso "Administrar Archivos"')->error();
             }
-            return view('archivo.list');
+            return back();
         } else {
             return redirect()->route('login');
         }        

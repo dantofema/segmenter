@@ -557,10 +557,10 @@ class Archivo extends Model
 
 
     // Busca los archivos asociados al .shp repetidos para elimiarlos/reutilizarlos
-    public function buscarYBorrarArchivosSHP($original, $copia){
+    public function buscarYBorrarArchivosSHP(Archivo $original){
         // elimino la extension .shp
         $nombre_original = explode(".",$original->nombre)[0];
-        $nombre_copia = explode(".",$copia->nombre)[0];
+        $nombre_copia = explode(".",$this->nombre)[0];
 
         // busco para cada extension
         $extensiones = [".dbf", ".shx", ".prj"];
@@ -572,9 +572,9 @@ class Archivo extends Model
                     # si existe el archivo original entonces elimino la copia
                     error_log("Existe el archivo original. Eliminando copia del storage");
                     if(Storage::delete($c)){
-                        Log::info('Se borró el archivo: '.  $copia->nombre_original . " extension " . $extension);
+                        Log::info('Se borró el archivo: '.  $this->nombre_original . " extension " . $extension);
                     }else{
-                        Log::error('NO se borró el archivo: '.$copia->nombre_original . " extension " . $extension);
+                        Log::error('NO se borró el archivo: '.$this->nombre_original . " extension " . $extension);
                     }
                 } else {
                     # si no existe entonces el archivo copia reemplaza al original en el storage (son el mismo por lo que no hay problema)
@@ -620,19 +620,21 @@ class Archivo extends Model
             $this->buscarYBorrarArchivosSHP($original);
         }
 
-        # Si hay registros en fileviewer apuntando a la copia
-        $vistas_copia = DB::table('file_viewer')->where('archivo_id', $this->id)->get();
-        foreach ($vistas_copia as $vista_copia){
-            if (DB::table('file_viewer')->where('archivo_id', $id_original)->where('user_id',$vista_copia->user_id)->get()){
-                # Si existe un registro apuntando al original elimino el que apunta a la copia
-                DB::table('file_viewer')->where('archivo_id', $this->id)->where('user_id',$vista_copia->user_id)->delete();
-                error_log("Se eliminó la vista de la copia");
-            } else {
-                # Si no actualizo el registro para que apunte al original
-                DB::table('file_viewer')->where('archivo_id', $this->id)->where('user_id',$vista_copia->user_id)->update(['archivo_id' => $id_original]);
-                error_log("Se eliminó la vista de la copia y se creó la vista del original");
+        # Si la copia es vista por otros usuarios
+        $viewers = $this->viewers()->get();
+        if ($viewers != null){
+            foreach ($viewers as $viewer){
+                if (!$viewer->visible_files()->get()->contains($original)){
+                    # Si el viewer no es viewer del archivo original creo la relación
+                    $viewer->visible_files()->attach($original->id);
+                    
+                }
             }
-        }
+            error_log("Los viewers de la copia ". $this->id ." ahora son viewers del archivo original ".$original->id);
+            # Elimino la relación con todos los viewers
+            $this->viewers()->detach();
+            error_log("Se eliminaron los viewers de la copia.");
+        } 
         $this->delete();
         Log::info("Se eliminó el registro");
     }
