@@ -30,7 +30,7 @@
     @endif
    <h2>Listado de Archivos</h2>
    @can('Administrar Archivos')
-   <h4><a href="{{route('limpiar_archivos')}}" class="badge badge-pill badge-danger"> Eliminar repetidos</a></h4>
+   <h4><a href="{{route('limpiar_archivos')}}" onclick="return confirmarLimpieza()" class="badge badge-pill badge-danger"> Eliminar repetidos</a></h4>
    @endcan
    <br>
    <div class="row">
@@ -256,5 +256,11 @@
 
 } );
 
+</script>
+
+<script type="text/javascript">
+  function confirmarLimpieza(){
+    return confirm("¿Estás seguro de que deseas eliminar todos los archivos repetidos? Esta acción es irreversible.");
+  };
 </script>
 @endsection
