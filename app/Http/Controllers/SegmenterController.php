@@ -102,7 +102,7 @@ class SegmenterController extends Controller
     if ($request->hasFile('shp')) {
       if($shp_file = Archivo::cargar($request->shp, Auth::user(),
         'shape', [$request->shx, $request->dbf, $request->prj])) {
-        flash("Archivo Shp ")->info();
+        flash("Archivo de geodatos SHP/E00. Identificado: ".$shp_file->tipo)->info();
       } else {
           flash("Error en el modelo cargar archivo al procesar SHP/E00")->error();
       }
@@ -114,13 +114,13 @@ class SegmenterController extends Controller
       if ($request->hasFile('shp_lab')) {
         if($shp_lab_file = Archivo::cargar($request->shp_lab, Auth::user(),
           'shape', [$request->shx_lab, $request->dbf_lab, $request->prj_lab])) {
-          flash("Archivo Shp Lab ")->info();
+          flash("Archivo de etiquetas Shp Lab o Pol ")->info();
         } else {
-        flash("Error en el modelo cargar archivo al procesar SHP")->error();
+        flash("Error en el modelo cargar archivo al procesar SHP lab/pol")->error();
         }
         $shp_lab_file->epsg_def = $epsg_id;
         $shp_lab_file->tipo = 'shp/lab';
-        //Que directamente suba las etuiquetas poligono junto donde subió los arcos
+        //Que directamente suba las etiquetas poligono junto donde subió los arcos
         $shp_lab_file->tabla = $shp_file->tabla;
         $shp_lab_file->save();
         if( $ppddllls=$shp_lab_file->procesar() ) {

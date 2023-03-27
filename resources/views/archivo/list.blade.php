@@ -60,6 +60,9 @@
              <th>Mime</th>
              <th>Checksum</th>
              <th>Tamaño</th>
+             <th>Creación</th>
+             <th>Cargador</th>
+             <th alt="Observadores" >(o)</th>
              <th> * </th>
           </tr>
        </thead>
@@ -122,10 +125,13 @@
                   { visible: false, data: 'nombre', name: 'nombre' },
                   { visible: false, data: 'user_id', name: 'user_id' },
                   { data: 'tipo', name: 'tipo' },
-                  { data: 'mime', name: 'mime' },
-                  { data: 'checksum', name: 'checksum' },
-                  { data: 'size', name: 'size' },
-                  { data: 'action', name: 'action', ordenable: 'false'}
+                  { visible: false, data: 'mime', name: 'mime' },
+                  { visible: false, data: 'checksum', name: 'checksum' },
+                  { data: 'size_h', name: 'size'},
+                  { data: 'created_at_h', name: 'created_at'},
+                  { data: 'usuario', name: 'usuario' },
+                  { data: 'viewers_count', name: 'viewers_count' },
+                  { data: 'action', name: 'action', orderable: false}
         ]
       });
 

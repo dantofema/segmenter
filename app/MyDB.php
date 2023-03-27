@@ -468,9 +468,9 @@ FROM
             return (DB::select('SELECT codprov||coddepto||codloc as codigo,nomloc as nombre FROM
             '.$esquema.'.'.$tabla.' '.$filtro.' group by 1,2 order by codprov||coddepto||codloc asc, count(*) desc ;'));
         }catch (\Illuminate\Database\QueryException $exception) {
-    Log::error('Error: '.$exception);
-    //Supongo codprov sin Nombre
-    //
+          Log::error('Error: '.$exception);
+      //Sin data de localidad
+      //
       return null;;
   }
     }
@@ -491,8 +491,13 @@ FROM
                return (DB::select('SELECT prov||depto||codloc as link,count(*) FROM
                        "'.$esquema.'".'.$tabla.' group by prov||depto||codloc order by count(*);'));
            }catch (QueryException $exception) {
+              try {
+                  return (DB::select('SELECT link,count(*) FROM
+                          "'.$esquema.'".'.$tabla.' group by link order by count(*);'));
+              }catch (QueryException $exception) {
                Log::error('No se pudo encontrar localidades: '.$exception);
                return [];
+              }
            }
          }
     }
@@ -616,9 +621,9 @@ FROM
     //
     public static function comparaEsquema($de_esquema,$a_esquema,$tabla,$filtro=null) {
         try {
-             $result = DB::select('SELECT count(*) total, count( distinct a.ogc_fid) en_a, count( distinct de.ogc_fid) en_de from '.
-                       ' "'.$a_esquema.'"."'.$tabla.'" a join "'.$de_esquema.'"."'.$tabla.'" de using(ogc_fid) '.$filtro);
-            flash('Se encontró información ya cargada: '.
+             $result = DB::select('SELECT count(*) total, count( distinct a.ogc_fid) en_base, count( distinct de.ogc_fid) en_archivo from '.
+                       ' "'.$a_esquema.'"."'.$tabla.'" a full join "'.$de_esquema.'"."'.$tabla.'" de using(ogc_fid) '.$filtro);
+            flash('Se encontró información ya cargada para '.$tabla.' en '.$a_esquema.' : '.
                   collect($result)->toJson(JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE))->info()->important();
          }catch (QueryException $exception) {
              Log::error('Error: '.$exception);
