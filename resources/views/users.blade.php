@@ -14,11 +14,6 @@
             {{Session::get('info')}}
           </div>
         @endif
-        <!-- <div class="card-header col-20">
-          <div class="input-group-prepend">
-            <input type="text" class="form-control" placeholder="Buscar por nombre o email">
-          </div>  
-        </div> -->
         <table class="table table-bordered">
           @if($usuarios[0] !== null)
           <thead>
@@ -46,7 +41,7 @@
                   Administrar Permisos
                 </button>
 
-                <!-- Modal roles del usuario -->
+                <!-- Modal permisos del usuario -->
                 <div class="modal fade" id="permisosModal{{$usuario->id}}" tabindex="-1" role="dialog" aria-labelledby="permisoModalLabel" aria-hidden="true">
                   <div class="modal-dialog" role="document">
                     <div class="modal-content">
@@ -56,7 +51,7 @@
                           <span aria-hidden="true">&times;</span>
                         </button>
                       </div>
-                      <form action="{{route('admin.editarPermisoUsuario', $usuario->id)}}" method="put">
+                      <form action="{{route('admin.editarPermisoUsuario', $usuario->id)}}" method="put" id="form-permisos">
                         <div class="modal-body">
                           <table class="table">
                             <tbody>
@@ -89,7 +84,7 @@
                         </div>
                         <div class="modal-footer">
                           <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                          <input type="submit" name="btn"  class="btn btn-primary" value="Guardar Cambios">
+                          <input type="submit" name="btn"  class="btn btn-primary" value="Guardar Cambios" onclick="return confirmarCambios('permisos')">
                         </div>
                       </form>
                     </div>
@@ -113,7 +108,7 @@
                           <span aria-hidden="true">&times;</span>
                         </button>
                       </div>
-                      <form action="{{route('admin.editarRolUsuario', $usuario->id)}}" method="put">
+                      <form action="{{route('admin.editarRolUsuario', $usuario->id)}}" method="put" id="form-roles">
                         <div class="modal-body">
                           <table class="table">
                             <tbody>
@@ -141,7 +136,7 @@
                         </div>
                         <div class="modal-footer">
                           <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                          <input type="submit" name="btn"  class="btn btn-primary" value="Guardar Cambios">
+                          <input type="submit" name="btn"  class="btn btn-primary" value="Guardar Cambios" onclick="return confirmarCambios('roles')">
                         </div>
                       </form>
                     </div>
@@ -193,4 +188,11 @@
 	</div>
 </div>
 
+@endsection
+@section('footer_scripts')
+<script type="text/javascript">
+  function confirmarCambios(tipo){
+    return confirm("¿Estás seguro de que deseas guardar los nuevos " + tipo + "?");
+  };
+</script>
 @endsection
