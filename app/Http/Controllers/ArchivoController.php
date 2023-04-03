@@ -35,6 +35,18 @@ class ArchivoController extends Controller
             Session::flash('message', 'No existe el permiso "Ver Archivos"');
         }  
         $count_archivos = $archivos->count();
+        // cuento los archivos repetidos
+        $count_archivos_repetidos = 0;
+        foreach ($archivos as $archivo){
+            $repeticiones = Archivo::where('checksum',$archivo->checksum)->count();
+            if ( $repeticiones > 1 ){
+            // Archivo repetido
+                $original = Archivo::where('checksum',$archivo->checksum)->orderby('id','asc')->first();
+                if ($original != $archivo){
+                    $count_archivos_repetidos++;
+                }
+            }
+        }
         if ($request->ajax()) {
             return Datatables::of($archivos)
                 ->addIndexColumn()
@@ -83,7 +95,7 @@ class ArchivoController extends Controller
           $archivos= null;
           return redirect()->route('login');
       }
-          return view('archivo.list')->with(['data'=>$archivos]);
+          return view('archivo.list')->with(['data'=>$archivos, 'repetidos'=>$count_archivos_repetidos]);
     }
 
     /**
@@ -221,7 +233,7 @@ class ArchivoController extends Controller
 
 
         flash('Función aún en testeo...')->warning()->important();
-        return view('archivo.list');
+        return back();
         //Aún falta testeo
 
 

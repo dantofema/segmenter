@@ -30,7 +30,10 @@
     @endif
    <h2>Listado de Archivos</h2>
    @can('Administrar Archivos')
-   <h4><a href="{{route('limpiar_archivos')}}" onclick="return confirmarLimpieza()" class="badge badge-pill badge-danger"> Eliminar repetidos</a></h4>
+   @if($repetidos > 0)
+    <h4><a href="{{route('archivos_repetidos')}}" class="badge badge-pill badge-info"> Ver repetidos ({{$repetidos}})</a></h4>
+    <h4><a href="{{route('limpiar_archivos')}}" onclick="return confirmarLimpieza()" class="badge badge-pill badge-danger"> Eliminar repetidos</a></h4>
+   @endif
    @endcan
    <br>
    <div class="row">
