@@ -232,8 +232,8 @@ class ArchivoController extends Controller
     public function eliminar_repetidos() {
 
 
-        flash('Función aún en testeo...')->warning()->important();
-        return back();
+        //flash('Función aún en testeo...')->warning()->important();
+        //return back();
         //Aún falta testeo
 
 
@@ -245,23 +245,23 @@ class ArchivoController extends Controller
                     // Para todos los archivos
                     $archivos = Archivo::all();
                     $eliminados = 0;
-                    error_log("------------- ELIMINAR ARCHIVOS REPETIDOS -----------------------------");
+                    Log::error("------------- ELIMINAR ARCHIVOS REPETIDOS -----------------------------");
                     foreach ($archivos as $archivo){
                         $repeticiones = Archivo::where('checksum',$archivo->checksum)->count();
                         if ( $repeticiones > 1 ){
                         // Archivo repetido
                           $original = Archivo::where('checksum',$archivo->checksum)->orderby('id','asc')->first();
                           if ($original != $archivo){
-                              $mensaje = "Copia de archivo id: ".$original->id.".";
+                              // Logs repetidos pero es necesario ya que este log debe mostrarse antes que los de limpiar_copia()
+                              Log::error("Archivo " . $archivo->id . ". Checksum: " . $archivo->checksum.". Copia de archivo id: ".$original->id."." );
                               $archivo->limpiar_copia($original);
                               $eliminados = $eliminados + 1;
                           } else {
-                              $mensaje = "Es el archivo original.";
+                              Log::info("Archivo " . $archivo->id . ". Checksum: " . $archivo->checksum.". Es el archivo original." );
                           }
                         } else {
-                          $mensaje = "Archivo no repetido.";  
+                          Log::info("Archivo " . $archivo->id . ". Checksum: " . $archivo->checksum.". Archivo no repetido." );
                         }
-                        error_log("Archivo " . $archivo->id . ". Checksum: " . $archivo->checksum.". ".$mensaje );
                         $archivo->checkChecksum();
                     }
                     flash($eliminados . " archivos eliminados de ".$archivos->count()." encontrados.")->info();
