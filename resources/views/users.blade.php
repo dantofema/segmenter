@@ -115,20 +115,31 @@
                               @foreach ($roles as $rol)
                               <tr>
                                 <td class="col align-self-center">
+                                  @if ($rol->name == 'Super Admin')
+                                    @if ($usuario->hasRole($rol->name))
+                                      @if ($usuario->email != Auth::user()->email || $superadmins == 1)
+                                      <input type="checkbox" disabled checked id="{{$rol->name}}" name="roles[]" value="{{$rol->id}}" data-on="Si" data-off="No" data-toggle="toggle" data-size="sm">
+                                      @else
+                                      <input type="checkbox" checked id="{{$rol->name}}" name="roles[]" value="{{$rol->id}}" data-on="Si" data-off="No" data-toggle="toggle" data-size="sm">
+                                      @endif
+                                    @else
+                                      <input type="checkbox" id="{{$rol->name}}" name="roles[]" value="{{$rol->id}}" data-on="Si" data-off="No" data-toggle="toggle" data-size="sm">
+                                    @endif
+                                  @endif
                                   <label class="form-check-label" for="{{$rol->name}}">
                                     {{$rol->name}}
                                   </label>
-                                  <button type="button" class="btn-sm btn-secondary float-right" data-toggle="modal" data-dismiss="modal" data-target="#detailsModal{{$rol->id}}">
+                                  @if ($usuario->hasRole($rol->name))
+                                    @if ($usuario->email != Auth::user()->email)
+                                    <span class="badge badge-pill badge-danger">No se puede quitar este rol</span>
+                                    @elseif ($superadmins == 1)
+                                    <span class="badge badge-pill badge-danger">Único Super Admin</span>
+                                    @endif
+                                  @endif
+                                  <button type="button" class="btn-sm btn-info float-right" data-toggle="modal" data-dismiss="modal" data-target="#detailsModal{{$rol->id}}">
                                     Detalles
                                   </button>
                                 </td>                                
-                                <td class="col align-self-center">
-                                  @if ($usuario->hasRole($rol->name))
-                                    <input type="checkbox" checked id="{{$rol->name}}" name="roles[]" value="{{$rol->id}}" data-on="Si" data-off="No" data-toggle="toggle" data-size="sm">
-                                  @else
-                                    <input type="checkbox" id="{{$rol->name}}" name="roles[]" value="{{$rol->id}}" data-on="Si" data-off="No" data-toggle="toggle" data-size="sm">
-                                  @endif
-                                </td>
                               </tr> 
                               @endforeach
                             </tbody>

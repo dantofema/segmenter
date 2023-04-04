@@ -17,7 +17,8 @@ class UserController extends Controller
     $usuarios = User::paginate(15);
     $roles = Role::all();
     $permisos = Permission::all();
-    return view('users', compact('usuarios', 'roles', 'permisos'));
+    $superadmins = User::role('Super Admin')->count();
+    return view('users', compact('usuarios', 'roles', 'permisos', 'superadmins'));
   }
 
   public function editarRolUsuario(Request $request, User $user){
