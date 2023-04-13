@@ -1,13 +1,13 @@
 @extends('layouts.app')
 
-@section('title', 'Archivos Repetidos')
+@section('title', 'Deprecated Checksums')
 
 @section('content')
 <div class="container">
-<h2>Listado de archivos repetidos </h2>
+<h2>Listado de archivos con checksums obsoletos </h2>
   @can('Administrar Archivos', 'Ver Archivos')
-    @if(count($repetidos) > 0)
-    <h4><a href="{{route('limpiar_archivos')}}" onclick="return confirmarLimpieza()" class="btn btn-danger"> Limpiar ({{count($repetidos)}})</a></h4>
+    @if(count($checksums_obsoletos) > 0)
+    <h4><a href="{{route('recalcular_checksums')}}" onclick="return confirmarCalculo()" class="btn btn-danger"> Recalcular ({{count($checksums_obsoletos)}})</a></h4>
     @endif
   @endcan
   <br>
@@ -20,45 +20,41 @@
             {{Session::get('info')}}
           </div>
         @endif
-        <table class="table table-bordered" id="tabla-repetidos">
-          @if($repetidos !== null)
+        <table class="table table-bordered" id="tabla-obsoletos">
+          @if($checksums_obsoletos !== null)
           <thead>
             <tr>
-              <th>Nombre original</th>
-              <th>Nombre copia</th>
-              <th>Creación original</th>
-              <th>Creación copia</th>
-              <th>Cargador original</th>
-              <th>Cargador copia</th>
+              <th>Nombre</th>
+              <th>Creación</th>
+              <th>Cargador</th>
+              <th>Checksum</th>
             </tr>
           </thead>
           <tbody>
-            @foreach ($repetidos as $archivo)
+            @foreach ($checksums_obsoletos as $archivo)
             <tr>
-              <td>{{$archivo[0]->nombre_original}}</td>
-              <td>{{$archivo[1]->nombre_original}}</td>
-              <td>{{$archivo[0]->created_at->format('d-M-Y')}}</td>
-              <td>{{$archivo[1]->created_at->format('d-M-Y')}}</td>
-              <td>{{$archivo[0]->user->name}}</td>
-              <td>{{$archivo[1]->user->name}}</td>
+              <td>{{$archivo->nombre_original}}</td>
+              <td>{{$archivo->created_at->format('d-M-Y')}}</td>
+              <td>{{$archivo->user->name}}</td>
+              <td>{{$archivo->checksum}}</td>
             </tr>
             @endforeach
           </tbody>
           @else
-          <h1>No hay archivos repetidos</h1>
+          <h1>No hay checksums obsoletos</h1>
           @endif
         </table>
       </div>
     </div>
 	</div>
 </div>
-@endsection
 
+@endsection
 @section('footer_scripts')
 <script>src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"</script>
 <script>src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap4.min.js"</script>
 <script>
-  $('#tabla-repetidos').DataTable({
+  $('#tabla-obsoletos').DataTable({
     language: {
       "sProcessing":     "Procesando...",
       "sLengthMenu":     "Mostrar _MENU_ registros",
@@ -90,8 +86,8 @@
   });
 </script>
 <script type="text/javascript">
-  function confirmarLimpieza(){
-    return confirm("¿Estás seguro de que deseas eliminar todos los archivos repetidos? Esta acción es irreversible.");
+  function confirmarCalculo(){
+    return confirm("¿Estás seguro de que deseas recalcular el checksum? Esta acción es irreversible.");
   };
 </script>
 @endsection

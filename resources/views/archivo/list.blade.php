@@ -29,10 +29,12 @@
       </div>
     @endif
    <h2>Listado de Archivos</h2>
-   @can('Administrar Archivos')
+   @can('Administrar Archivos', 'Ver Archivos')
+   @if($deprecated_checksums > 0)
+   <h4><a href="{{route('checksums_obsoletos')}}" class="badge badge-pill badge-danger"> Ver checksums obsoletos ({{$deprecated_checksums}})</a></h4>
+   @endif
    @if($repetidos > 0)
-    <h4><a href="{{route('archivos_repetidos')}}" class="badge badge-pill badge-info"> Ver repetidos ({{$repetidos}})</a></h4>
-    <h4><a href="{{route('limpiar_archivos')}}" onclick="return confirmarLimpieza()" class="badge badge-pill badge-danger"> Eliminar repetidos</a></h4>
+  <h4><a href="{{route('archivos_repetidos')}}" class="badge badge-pill badge-warning"> Ver archivos repetidos ({{$repetidos}})</a></h4>
    @endif
    @endcan
    <br>
@@ -66,6 +68,7 @@
              <th>Creación</th>
              <th>Cargador</th>
              <th alt="Observadores" >(o)</th>
+             <th>Estado</th>
              <th> * </th>
           </tr>
        </thead>
@@ -134,6 +137,7 @@
                   { data: 'created_at_h', name: 'created_at'},
                   { data: 'usuario', name: 'usuario' },
                   { data: 'viewers_count', name: 'viewers_count' },
+                  { data: 'status', name: 'status' },
                   { data: 'action', name: 'action', orderable: false}
         ]
       });
@@ -258,12 +262,5 @@
   });
 
 } );
-
-</script>
-
-<script type="text/javascript">
-  function confirmarLimpieza(){
-    return confirm("¿Estás seguro de que deseas eliminar todos los archivos repetidos? Esta acción es irreversible.");
-  };
 </script>
 @endsection

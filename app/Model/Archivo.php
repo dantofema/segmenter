@@ -41,9 +41,8 @@ class Archivo extends Model
        return $this->belongsToMany(User::class, 'file_viewer');
     }
 
-    // Funciona para recalcular checksum shape (varios files)
+    // Funciona para checksum shape (varios files)
     private static function checksumCalculate($request_file, $shape_files = []){
-        // Recalcular checksum de grupo de archivos ?
         // O generar archivo comprimido de una vez :/
         // DO IT
         $checksum = md5_file($request_file->getRealPath());
@@ -52,13 +51,29 @@ class Archivo extends Model
             foreach ($shape_files as $shape_file) {
                 // Hay e00 con shapefiles con valor null
                 if ($shape_file != null and $shape_file != ''){
-                    log::debug($shape_file);
                     $checksums[] =  md5_file($shape_file->getRealPath());
                 }
             }
             $checksum = md5(implode('',$checksums));
         } 
         return $checksum;
+    }
+
+    //recalcula el checksum según corresponda para archivos con checksums obsoletos
+    public function checksumRecalculate(){
+        if ($this->isMultiArchivo()){
+            // si soy multiarchivo calculo el checksum en base a mis shapefiles
+            $shape_files = $this->getArchivosSHP();
+            $checksums_shp = [];
+            foreach ($shape_files as $key => $value) {
+                //value contiene el path del archivo
+                $checksums_shp[] =  md5_file($value);
+            }
+            $this->checksum = md5(implode('',$checksums_shp));
+        } else {
+            $this->checksum = md5(Storage::get($this->nombre));
+        }
+        $this->save();
     }
 
     // isMultiArchivo, si es del tipo que son muchos archivos.
@@ -70,29 +85,69 @@ class Archivo extends Model
       }
     }
 
-    // Funciona para verificar y actualizar checksum según función (varios files)
+    // Funciona para verificar que es checksum del archivo esté actualizado
     public function checkChecksum(){
-        // Recalcular checksum de grupo de archivos ?
-        // DO IT
-        $result = false;
+        $result = true;
         if (Storage::exists($this->nombre) ){
-          if ( $this->checksum == md5( Storage::get($this->nombre) ) ){
-            if ( $this->isMultiArchivo() ){
-              error_log($this->tipo.' Checksum deprecated!');
-              $result = false;
+            if ( $this->checksum == md5( Storage::get($this->nombre) ) ){
+                if ( $this->isMultiArchivo() ){
+                    // si el checksum corresponde al nombre del archivo solamente y soy multiarchivo está mal
+                    error_log($this->tipo.' Checksum deprecated!');
+                    $result = false;
+                } else {
+                    error_log($this->tipo.' Checksum ok!');
+                }
             } else {
-              error_log($this->tipo.' Checksum ok!');
-              $result = true;
+                if ( $this->isMultiArchivo() ){
+                    // si soy multiarchivo verifico que el checksum se corresponda con mis shapefiles
+                    $shape_files = $this->getArchivosSHP();
+                    $checksums_shp = [];
+                    foreach ($shape_files as $key => $value) {
+                        //value contiene el path del archivo
+                        $checksums_shp[] =  md5_file($value);
+                    }
+                    $checksum_shape_files = md5(implode('',$checksums_shp));
+                    if ($this->checksum == $checksum_shape_files) {
+                        error_log($this->tipo.' Checksum ok!');
+                    } else {
+                        error_log($this->tipo.' Checksum deprecated!');
+                        $result = false;
+                    }
+                } else {
+                    // si el checksum no corresponde al nombre del archivo solamente y no soy multiarchivo está mal
+                    error_log($this->tipo.' Checksum deprecated!');
+                    $result = false;
+                }
             }
-          } else {
-            if ( $this->isMultiArchivo() ){
-               //TODO Recalcular archivos asociados, checksum sumado
-            }
-         }
         } else {
          error_log($this->tipo.' WARNING! No existe el archivo en el Storage "'.$this->nombre.'" !!');
-         $result = false;
-       }
+        }
+        return $result;
+    }
+
+    public function checkStorage(){
+        $result = true;
+        if ( $this->isMultiArchivo() ){
+            $nombre = explode(".",$this->nombre)[0];
+            // busco para cada extension
+            $extensiones = [".dbf", ".shx", ".prj"];
+            foreach ($extensiones as $extension) { 
+                $n = $nombre . $extension;
+                if(Storage::exists($n)) {
+                    error_log($this->tipo.' Storage ok!');
+                } else {
+                    error_log($this->tipo.' Storage missing!');
+                    $result = false;
+                }
+            }
+        } else {
+            if (Storage::exists($this->nombre)){
+                error_log($this->tipo.' Storage ok!');
+            } else {
+                error_log($this->tipo.' Storage missing!');
+                $result = false;
+            }
+        }
        return $result;
     }
 
@@ -638,6 +693,16 @@ class Archivo extends Model
         } 
         $this->delete();
         Log::info("Se eliminó el registro perteneciente a la copia");
+    }
+
+    public function repetido(){
+        $repeticiones = Archivo::where('checksum',$this->checksum)->count();
+        return $repeticiones > 1;
+    }
+
+    public function es_copia(){
+        $original = Archivo::where('checksum',$this->checksum)->orderby('id','asc')->first();
+        return $original->id != $this->id;
     }
     
 }
