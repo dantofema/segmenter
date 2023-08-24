@@ -3,7 +3,7 @@ name: Sangria Censo Ronda 2020
 on:
   push:
     branches:
-        - main
+        - master
 
 jobs:
   build:
