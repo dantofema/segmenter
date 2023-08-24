@@ -15,5 +15,8 @@ jobs:
       - name: Instalar dependencias
         run: npm install
 
+      - name: Composer dependencias
+        run: composer install
+
       - name: Crear paquete
         run: npm run prod
