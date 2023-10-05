@@ -165,7 +165,7 @@ class Archivo extends Model
 
         $fileName = 'mandarina_'.time().'_'.$this->nombre_original.'.zip';
 
-        if ($zip->open(public_path($fileName), ZipArchive::CREATE) === TRUE) {
+        if ($zip->open(storage_path().'/app/'.$fileName, ZipArchive::CREATE) === TRUE) {
 
             $files = $this->getArchivosSHP();
 
