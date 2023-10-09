@@ -182,7 +182,7 @@ class Archivo extends Model
             $zip->close();
         }
 
-        return response()->download(public_path($fileName));
+        return response()->download(storage_path().'/app/'.$fileName);
     }
 
     public function getArchivosSHP() {
