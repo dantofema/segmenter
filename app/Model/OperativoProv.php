@@ -11,11 +11,11 @@ class OperativoProv extends Model
 
 
     /**
-     * Relación con Radios, una TipoRadio tiene varios radios.
+     * Relación con Provincias, un Operativo puede estar en varias provincias.
      *
      */
 
-    public function operativos()
+    public function provincias()
     {
         return $this->hasMany('App\Model\Provincia','provincia_id');
     }
