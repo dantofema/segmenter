@@ -30,7 +30,7 @@ class CreateProvinciaTableOperativo extends Migration
 
  If (! Schema::hasTable('operativo_provincia')){
     Schema::create('operativo_provincia', function (Blueprint $table) {
-        $table->increments('id')->primary();
+        $table->increments('id');
         $table->BigInteger('provincia_id')->index();
         $table->BigInteger('operativo_id')->index();
         $table->timestamps();
