@@ -23,7 +23,7 @@ class CreateProvinciaTableOperativo extends Migration
  // Agrego primary key en tabla operativo
  If (Schema::hasTable('operativo')){
     Schema::table('operativo', function (Blueprint $table) {
-        $table->primary(id)->change();
+        $table->primary('id')->change();
     });
  
 }
