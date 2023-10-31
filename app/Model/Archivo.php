@@ -473,11 +473,11 @@ class Archivo extends Model
             // Intento cargar pais x depto :D
             $coddeptos = MyDB::getDptos('lab', 'e_'.$this->tabla);
             $coddeptos_pol = MyDB::getDptos('arc', 'e_'.$this->tabla);
-            $codprov = MyDB::getProv('lab', 'e_'.$this->tabla);
-            $codprov_pol = MyDB::getProv('arc', 'e_'.$this->tabla);
+            $codprovs = MyDB::getProv('lab', 'e_'.$this->tabla);
+            $codprovs_pol = MyDB::getProv('arc', 'e_'.$this->tabla);
 
             flash('Puede ser una "pais" de la prov '.$codprov.' con deptos: '.count($coddeptos).' o '.count($coddeptos_pol));
-            foreach ($coddeptos as $coddepto){
+            foreach ($codprovs as $codprov){
                 flash('Se encontró Departamento : '.$coddepto->link);
 //                MyDB::createSchema($coddepto->link);
 //                MyDB::copiaraEsquemaPais('e_'.$this->tabla,'e'.$coddepto->link,$coddepto->link);
@@ -486,7 +486,7 @@ class Archivo extends Model
 
                 $count++;
             }
-            foreach ($coddeptos_pol as $coddepto){
+            foreach ($codprovs_pol as $codprov){
                 flash('Se encontró Departamentos en arc/pol : '.$coddepto->link);
 //                MyDB::createSchema($coddepto->link);
 //                MyDB::copiaraEsquemaPais('e_'.$this->tabla,'e'.$coddepto->link,$coddepto->link);
