@@ -643,6 +643,7 @@ FROM
                 //JOIN CON TABLA LAB SEGUN FACE_ID =?
                $filtro=" WHERE prov  = '".$prov_codigo."' ";
             } else { $filtro=''; }
+        }
          try {
              DB::beginTransaction();
              DB::unprepared('CREATE TABLE "'.$a_esquema.'".'.$tipo.' AS SELECT * FROM "'.$de_esquema.'".'.$tipo.' '.$filtro);
