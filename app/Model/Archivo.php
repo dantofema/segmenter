@@ -483,7 +483,7 @@ class Archivo extends Model
 //                MyDB::createSchema($coddepto->link);
 //                MyDB::copiaraEsquemaPais('e_'.$this->tabla,'e'.$coddepto->link,$coddepto->link);
                 MyDB::createSchema($codprov);
-                MyDB::copiaraEsquemaPais('e_'.$this->tabla,'e'.$codprov,'arc',null,$codprov);
+                MyDB::copiaraEsquemaPais('e_'.$this->tabla,'e'.$codprov,'lab',null,$codprov);
                 $count++;
             }
            
@@ -492,7 +492,7 @@ class Archivo extends Model
 //                MyDB::createSchema($coddepto->link);
 //                MyDB::copiaraEsquemaPais('e_'.$this->tabla,'e'.$coddepto->link,$coddepto->link);
                 MyDB::createSchema($codprov_pol);
-                MyDB::copiaraEsquemaPais('e_'.$this->tabla,'e'.$codprov_pol,'lab',null,$codprov_pol);
+                MyDB::copiaraEsquemaPais('e_'.$this->tabla,'e'.$codprov_pol,'arc',null,$codprov_pol);
                 $count++;
                 $codprov=$codprob_pol;
             }
