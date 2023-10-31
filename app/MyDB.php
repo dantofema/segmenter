@@ -316,7 +316,7 @@ FROM
         }catch (\Illuminate\Database\QueryException $exception) {
                 Log::error('Error: '.$exception);
                 //Supongo codprov sin Nombre
-                return ['link'=>null];
+                return null;
         }
     }
 
