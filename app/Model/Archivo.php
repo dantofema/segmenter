@@ -476,9 +476,9 @@ class Archivo extends Model
             $codprovs = MyDB::getProv('lab', 'e_'.$this->tabla);
             $codprovs_pol = MyDB::getProv('arc', 'e_'.$this->tabla);
 
-            flash('Puede ser una "pais" x prov con deptos: '.count($coddeptos).' o '.count($coddeptos_pol));
-            if ($codprovs != null){
+            flash('Puede ser una "pais" x prov con deptos: '.count($coddeptos).' o '.count($coddeptos_pol));            
             foreach ($codprovs as $codprov){
+            if ($codprov != null){    
                 flash('Se encontró Provincia : '.$codprov->link);
 //                MyDB::createSchema($coddepto->link);
 //                MyDB::copiaraEsquemaPais('e_'.$this->tabla,'e'.$coddepto->link,$coddepto->link);
@@ -487,8 +487,8 @@ class Archivo extends Model
 
                 $count++;
             }}
-            if ($codprovs_pol != null){
             foreach ($codprovs_pol as $codprov){
+            if ($codprov != null){    
                 flash('Se encontró Departamentos en arc/pol : '.$codprov->link);
 //                MyDB::createSchema($coddepto->link);
 //                MyDB::copiaraEsquemaPais('e_'.$this->tabla,'e'.$coddepto->link,$coddepto->link);
