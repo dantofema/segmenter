@@ -478,7 +478,7 @@ class Archivo extends Model
 
             flash('Puede ser una "pais" x prov con deptos: '.count($coddeptos).' o '.count($coddeptos_pol));
             foreach ($codprovs as $codprov){
-                flash('Se encontró Departamento : '.$coddepto->link);
+                flash('Se encontró Provincia : '.$codprov->link);
 //                MyDB::createSchema($coddepto->link);
 //                MyDB::copiaraEsquemaPais('e_'.$this->tabla,'e'.$coddepto->link,$coddepto->link);
                 MyDB::createSchema($codprov->link);
