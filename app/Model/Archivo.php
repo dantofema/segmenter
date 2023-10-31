@@ -494,10 +494,11 @@ class Archivo extends Model
                 MyDB::createSchema($codprov_pol);
                 MyDB::copiaraEsquemaPais('e_'.$this->tabla,'e'.$codprov_pol,'lab',null,$codprov_pol);
                 $count++;
+                $codprov=$codprob_pol;
             }
             
             MyDB::limpiar_esquema('e_'.$this->tabla);
-            return $codprovs;
+            return $codprov;
         } else {
             // Para cada localidad encontrada
             // creo esquema y copio datos a esquema según codigo.
