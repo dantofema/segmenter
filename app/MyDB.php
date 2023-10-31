@@ -312,7 +312,7 @@ FROM
     {
         try {
             return (DB::select('SELECT prov as link FROM
-            '.$esquema.'.'.$tabla.' Limit 1;')[0]->link);
+            "'.$esquema.'".'.$tabla.' Limit 1;')[0]->link);
         }catch (\Illuminate\Database\QueryException $exception) {
                 Log::error('Error: '.$exception);
                 //Supongo codprov sin Nombre
