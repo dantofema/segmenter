@@ -476,7 +476,7 @@ class Archivo extends Model
             $codprovs = MyDB::getProv('lab', 'e_'.$this->tabla);
             $codprovs_pol = MyDB::getProv('arc', 'e_'.$this->tabla);
 
-            flash('Puede ser una "pais" de la prov '.$codprov.' con deptos: '.count($coddeptos).' o '.count($coddeptos_pol));
+            flash('Puede ser una "pais" de la prov '.$codprovs[0]->link.' con deptos: '.count($coddeptos).' o '.count($coddeptos_pol));
             foreach ($codprovs as $codprov){
                 flash('Se encontró Departamento : '.$coddepto->link);
 //                MyDB::createSchema($coddepto->link);
