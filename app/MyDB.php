@@ -310,8 +310,14 @@ FROM
 
     public static function getProv($tabla,$esquema)
     {
-        return (DB::select('SELECT prov as link FROM
-        '.$esquema.'.'.$tabla.' Limit 1;')[0]->link);
+        try {
+            return (DB::select('SELECT prov as link FROM
+            '.$esquema.'.'.$tabla.' Limit 1;')[0]->link);
+        }catch (\Illuminate\Database\QueryException $exception) {
+                Log::error('Error: '.$exception);
+                //Supongo codprov sin Nombre
+                return ['link'=>null];
+        }
     }
 
     public static function getDataProv($tabla,$esquema)
