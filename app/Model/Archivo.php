@@ -487,7 +487,7 @@ class Archivo extends Model
                 $count++;
             }
             foreach ($codprovs_pol as $codprov){
-                flash('Se encontró Departamentos en arc/pol : '.$coddepto->link);
+                flash('Se encontró Departamentos en arc/pol : '.$codprov->link);
 //                MyDB::createSchema($coddepto->link);
 //                MyDB::copiaraEsquemaPais('e_'.$this->tabla,'e'.$coddepto->link,$coddepto->link);
                 MyDB::createSchema($codprov->link);
@@ -496,7 +496,7 @@ class Archivo extends Model
             }
             
             MyDB::limpiar_esquema('e_'.$this->tabla);
-            return $coddeptos;
+            return $codprovs;
         } else {
             // Para cada localidad encontrada
             // creo esquema y copio datos a esquema según codigo.
