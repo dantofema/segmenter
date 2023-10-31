@@ -494,7 +494,7 @@ class Archivo extends Model
                 MyDB::createSchema($codprov_pol);
                 MyDB::copiaraEsquemaPais('e_'.$this->tabla,'e'.$codprov_pol,'arc',null,$codprov_pol);
                 $count++;
-                $codprov=$codprob_pol;
+                $codprov=$codprov_pol;
             }
             
             MyDB::limpiar_esquema('e_'.$this->tabla);
