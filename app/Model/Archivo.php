@@ -498,7 +498,7 @@ class Archivo extends Model
             }
             
             MyDB::limpiar_esquema('e_'.$this->tabla);
-            return $codprov;
+            return $resultado['link']=$codprov;
         } else {
             // Para cada localidad encontrada
             // creo esquema y copio datos a esquema según codigo.
