@@ -150,7 +150,7 @@ class SegmenterController extends Controller
     {
       if ($ppdddlll != null){
         if (strlen($ppdddlll->link)==2) {
-          flash('Se cargo una provincia. La '.$ppdddlll->link)->info()-important();
+          flash('Se cargo una provincia. La '.$ppdddlll->link)->info()->important();
         } else {
           flash('Preparando localidad '.$ppdddlll->link.'. Agrego segi, segd e Intenta juntar Geom y Listado')->info();
           MyDB::agregarsegisegd($ppdddlll->link);
