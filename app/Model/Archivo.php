@@ -498,7 +498,7 @@ class Archivo extends Model
             }
             
             MyDB::limpiar_esquema('e_'.$this->tabla);
-            $resultado['link']=$codprov;
+            $resultado[]->link=$codprov;
             return $resultado;
         } else {
             // Para cada localidad encontrada
