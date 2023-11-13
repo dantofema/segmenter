@@ -149,10 +149,10 @@ class SegmenterController extends Controller
     foreach($ppdddllls as $ppdddlll)
     {
       if ($ppdddlll != null){
-        if (strlen($ppdddll)==2) {
-          flash('Se cargo una provincia. La '.$ppdddll->link)->info()-important();
+        if (strlen($ppdddlll->link)==2) {
+          flash('Se cargo una provincia. La '.$ppdddlll->link)->info()-important();
         } else {
-          flash('Preparando localidad '.$ppdddll->link.'. Agrego segi, segd e Intenta juntar Geom y Listado')->info();
+          flash('Preparando localidad '.$ppdddlll->link.'. Agrego segi, segd e Intenta juntar Geom y Listado')->info();
           MyDB::agregarsegisegd($ppdddlll->link);
           MyDB::juntaListadoGeom('e'.$ppdddlll->link);
         }
