@@ -149,7 +149,7 @@ class SegmenterController extends Controller
     foreach($ppdddllls as $ppdddlll)
     {
       if ($ppdddlll != null){
-        if (length($ppdddll==2)) {
+        if (length($ppdddll)==2) {
           flash('Se cargo una provincia ? La '.$ppdddll)->warning();
         } else {
           flash('Preparando localidad '.$ppdddll.'. Agrego segi, segd e Intenta juntar Geom y Listado')->info();
