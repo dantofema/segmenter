@@ -119,7 +119,7 @@ class Provincia extends Model
      * @param  \App\Model\Provincia  $archivo
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Provincia $provincia)
+    public static function destroy(Provincia $provincia)
     {    
       $this->middleware('auth');
       $this->middleware('can:run-setup');  
