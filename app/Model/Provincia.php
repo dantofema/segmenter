@@ -120,20 +120,6 @@ class Provincia extends Model
      */
     public function delete()
     { 
-      $_info = $this->codigo.' '.$this->nombre;
-      $deptos = count($this->departamentos);
-      if ($deptos == 0){
-        if (Provincia::destroy($this)) {
-              Log::info('Se borró la provincia: '.$_info);
-              $respuesta = ['status'=> 200,'message' => 'Se eliminó la provincia: '.$_info];
-          }else{
-              Log::error('NO se borró la provincia: '.$_info);
-              $respuesta = ['status'=> 304,'message' => 'NO se eliminó la provincia: '.$_info];
-          }          
-      } else {
-          $respuesta = ['status'=> 304,'message' => 'Existen '.$deptos.' departamentos que dependen de ésta provincia. '.$_info];
-      }
-      return response()->json($respuesta);
       
   }      
 }
