@@ -123,7 +123,7 @@ class Provincia extends Model
       $_info = $this->codigo.' '.$this->nombre;
       $deptos = count($this->departamentos);
       if ($deptos == 0){
-        if ($this->delete()) {
+        if (Provincia::destroy($this)) {
               Log::info('Se borró la provincia: '.$_info);
               $respuesta = ['status'=> 200,'message' => 'Se eliminó la provincia: '.$_info];
           }else{
