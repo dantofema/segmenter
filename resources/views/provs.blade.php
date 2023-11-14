@@ -117,7 +117,7 @@
                                  html +=  '<button type="button" class="btn_prov btn-sm btn-primary" > Ver Botones </button>';
                               return html;
                             }
-                  }
+                  },
                   { searchable: false , data: 'action', name: 'action' },
         ]
       });
