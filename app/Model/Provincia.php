@@ -116,17 +116,16 @@ class Provincia extends Model
  /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Model\Provincia  $provincia_id
      * @return \Illuminate\Http\Response
      */
-    public function delete(Provincia $provincia)
+    public function delete()
     {    
-      $deptos = count($provincia->departamentos);
+      $deptos = count($this->departamentos);
       if ($deptos == 0){
-        if ($provincia->delete()) {
-              Log::info('Se borró la provincia: '.$provincia->codigo.' '.$provincia->nombre);
+        if ($this->delete()) {
+              Log::info('Se borró la provincia: '.$this->codigo.' '.$this->nombre);
           }else{
-              Log::error('NO se borró la provincia: '.$provincia->codigo.' '.$provincia->nombre);
+              Log::error('NO se borró la provincia: '.$this->codigo.' '.$this->nombre);
           }
           return true;
       } else {
