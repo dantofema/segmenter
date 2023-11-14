@@ -198,7 +198,7 @@ table.on('click', '.btn_prov_delete', function () {
        } else {
         alert("La Provincia " + response + ". No se eliminará");
        }
-       console.log(response);
+       console.log(response.statusCode);
            }
       });
       };
