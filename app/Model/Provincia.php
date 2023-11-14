@@ -129,7 +129,7 @@ class Provincia extends Model
         if ($provincia->delete()) {
               Log::info('Se borró la provincia: '.$provincia->codigo.' '.$provincia->nombre);
           }else{
-              Log::error('NO se borró la provincia: '.$provincia->codigo.' '.$provincia->nombre;
+              Log::error('NO se borró la provincia: '.$provincia->codigo.' '.$provincia->nombre);
           }
           return true;
       } else {
