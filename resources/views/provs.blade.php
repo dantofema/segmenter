@@ -181,25 +181,23 @@ table.on('click', '.btn_prov_delete', function () {
 	 data: {id: data.id,
                 _token:'{{ csrf_token() }}'},
          success: function(response){ 
-	     // Add response in Modal body
-       if(response=='ok'){
-        if(response.statusCode==200){
-	          row.fadeOut().remove();
-        }
-        if(response.statusCode==405){
-              alert("Error al intentar borrar");
-        }
-        if(response.statusCode==500){
-              alert("Error al intentar borrar. En el servidor");
+          // Add response in Modal body       
+            if(response.statusCode==200){
+                row.fadeOut().remove();
+                alert("Se eliminó el registro de la provincia");       
+                $('.modal-body').html(response.message);                
+            }
+            elseif(response.statusCode==405){
+                  alert("Error al intentar borrar");
+            }
+            elseif(response.statusCode==500){
+                  alert("Error al intentar borrar. En el servidor");
+              }            
+          } else {
+            alert("La Provincia " + response.message + ". No se eliminará");
           }
-        alert("Se eliminó el registro de la provincia");
-        row.fadeOut().remove();
-        $('.modal-body').html(response);
-       } else {
-        alert("La Provincia " + response + ". No se eliminará");
-       }
-       console.log(response.statusCode);
-           }
+          console.log(response);
+        }
       });
       };
     });  
