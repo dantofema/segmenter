@@ -88,7 +88,7 @@ class ProvinciaController extends Controller
                             $button .= '<button type="button" class="btn_arch_delete btn-sm btn-danger " > Borrar </button>';
                         }
                     } catch (PermissionDoesNotExist $e) {
-                    Log::error('No existe el permiso "Borrar Provincia"');
+                    Log::warning('No existe el permiso "Borrar Provincia"');
                     }
                     return $button;
                 })
