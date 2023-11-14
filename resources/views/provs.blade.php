@@ -51,6 +51,7 @@
 @section('footer_scripts')
  <script>
  $(document).ready( function () {
+  var catch = false;
      $.ajaxSetup({
           headers: {
               'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -125,7 +126,7 @@
 
    table.on( 'click', 'tr', function () {
     var data = table.row( this ).data();
-   if ( data != null ){
+   if (( data != null ) && (catch == false)){
     // AJAX request
    $.ajax({
     url: "{{ url('prov') }}"+"/"+data.id,
@@ -171,6 +172,7 @@
 
 // Función de botón Borrar.
 table.on('click', '.btn_prov_delete', function () {
+      catch = true;
       var $ele = $(this).parent().parent();
       var row = $(this).closest('tr');
       var data = table.row( row ).data();
@@ -193,9 +195,10 @@ table.on('click', '.btn_prov_delete', function () {
             else if(response.statusCode==500){
                   alert("Error al intentar borrar. En el servidor");               
           } else {
-            alert("La Provincia " + response.message + ". No se eliminará");
+            alert("No se eliminará: " + response.message);
           }
           console.log(response);
+          catch = false;
         }
       });
       };
