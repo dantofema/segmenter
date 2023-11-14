@@ -119,7 +119,7 @@ class Provincia extends Model
      * @param  \App\Model\Provincia  $provincia_id
      * @return \Illuminate\Http\Response
      */
-    public static function destroy(int $provincia_id)
+    public static function delete($provincia_id)
     {    
       $provincia = self::find($provincia_id);
       $deptos = count($provincia->departamentos);
