@@ -169,5 +169,8 @@ class ProvinciaController extends Controller
     public function destroy(Provincia $provincia)
     {
         //
+        $this->middleware('auth');
+        $this->middleware('can:run-setup');  
+        
     }
 }

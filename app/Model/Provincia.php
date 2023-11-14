@@ -116,14 +116,12 @@ class Provincia extends Model
  /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Model\Provincia  $archivo
+     * @param  \App\Model\Provincia  $provincia_id
      * @return \Illuminate\Http\Response
      */
-    public static function destroy(Provincia $provincia)
+    public static function destroy(int $provincia_id)
     {    
-      $this->middleware('auth');
-      $this->middleware('can:run-setup');  
-
+      $provincia = self::find($provincia_id);
       $deptos = count($provincia->departamentos);
       if ($deptos == 0){
         if ($provincia->delete()) {
