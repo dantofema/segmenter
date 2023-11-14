@@ -7,7 +7,7 @@ use App\Model\Departamento;
 use Illuminate\Http\Request;
 use Redirect,Response,DB,Config;
 use Datatables;
-
+use Auth;
 
 class ProvinciaController extends Controller
 {
