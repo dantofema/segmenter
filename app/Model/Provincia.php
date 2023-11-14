@@ -119,9 +119,8 @@ class Provincia extends Model
      * @param  \App\Model\Provincia  $provincia_id
      * @return \Illuminate\Http\Response
      */
-    public static function delete($provincia_id)
+    public function delete(Provincia $provincia)
     {    
-      $provincia = self::find($provincia_id);
       $deptos = count($provincia->departamentos);
       if ($deptos == 0){
         if ($provincia->delete()) {
