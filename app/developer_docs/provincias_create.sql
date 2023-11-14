@@ -27,8 +27,8 @@ CREATE TABLE public.provincia (
 -- Name: provincia_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.provincia_id_seq
-    START WITH 1
+CREATE OR REPLACE SEQUENCE public.provincia_id_seq
+    START WITH 25
     INCREMENT BY 1
     NO MINVALUE
     NO MAXVALUE
