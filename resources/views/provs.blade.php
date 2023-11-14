@@ -51,7 +51,7 @@
 @section('footer_scripts')
  <script>
  $(document).ready( function () {
-  var catch = false;
+  var propagacion = false;
      $.ajaxSetup({
           headers: {
               'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -126,7 +126,7 @@
 
    table.on( 'click', 'tr', function () {
     var data = table.row( this ).data();
-   if (( data != null ) && (catch == false)){
+   if (( data != null ) && (propagacion == false)){
     // AJAX request
    $.ajax({
     url: "{{ url('prov') }}"+"/"+data.id,
@@ -172,7 +172,7 @@
 
 // Función de botón Borrar.
 table.on('click', '.btn_prov_delete', function () {
-      catch = true;
+      propagacion = true;
       var $ele = $(this).parent().parent();
       var row = $(this).closest('tr');
       var data = table.row( row ).data();
@@ -198,7 +198,7 @@ table.on('click', '.btn_prov_delete', function () {
             alert("No se eliminará: " + response.message);
           }
           console.log(response);
-          catch = false;
+          propagacion = false;
         }
       });
       };
