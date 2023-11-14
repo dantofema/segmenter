@@ -133,7 +133,7 @@ class Provincia extends Model
       } else {
           $respuesta = ['status'=> 304,'message' => 'Existen '.$deptos.' departamentos que dependen de ésta provincia. '.$_info];
       }
-      return response()->json($respuesta;
+      return response()->json($respuesta);
       
   }      
 }
