@@ -57,7 +57,7 @@ class ArchivoController extends Controller
                     $button .= '<button type="button" class="btn_arch btn-sm btn-primary" > Ver </button>';
                     $button .= '<button type="button" class="btn_arch_procesar btn-sm btn-secondary" > ReProcesar </button>';
                     /*
-                    Si botón de eliminar archivo por el momento
+                    Sin botón de eliminar archivo por el momento
 
                     if ($data->user_id == Auth::user()->id) {
                         $button .= '<button type="button" class="btn_arch_delete btn-sm btn-danger " > Borrar </button>';
