@@ -119,13 +119,14 @@ class Provincia extends Model
      * @return \Illuminate\Http\Response
      */
     public function delete()
-    {    
+    { 
+      $_info = $this->codigo.' '.$this->nombre;
       $deptos = count($this->departamentos);
       if ($deptos == 0){
         if ($this->delete()) {
-              Log::info('Se borró la provincia: '.$this->codigo.' '.$this->nombre);
+              Log::info('Se borró la provincia: '.$_info);
           }else{
-              Log::error('NO se borró la provincia: '.$this->codigo.' '.$this->nombre);
+              Log::error('NO se borró la provincia: '.$_info);
           }
           return true;
       } else {
