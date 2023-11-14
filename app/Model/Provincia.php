@@ -113,4 +113,28 @@ class Provincia extends Model
         }
     }
 
+ /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \App\Model\Provincia  $archivo
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy(Provincia $provincia)
+    {    
+      $this->middleware('auth');
+      $this->middleware('can:run-setup');  
+
+      $deptos = count($provincia->departamentos);
+      if ($deptos == 0){
+        if ($provincia->delete()) {
+              Log::info('Se borró la provincia: '.$provincia->codigo.' '.$provincia->nombre);
+          }else{
+              Log::error('NO se borró la provincia: '.$provincia->codigo.' '.$provincia->nombre;
+          }
+          return true;
+      } else {
+          return false;
+      }
+      
+  }      
 }
