@@ -130,7 +130,8 @@ class Provincia extends Model
           }
           return true;
       } else {
-          return "Existen Departamentos que dependen de èsta provincia. ".$info;
+          $data = ['message' => 'Existen '.$deptos.' departamentos que dependen de ésta provincia. '.$_info];
+          return response()->json($data, 503);
       }
       
   }      
