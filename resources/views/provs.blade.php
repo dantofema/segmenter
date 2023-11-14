@@ -195,7 +195,7 @@ table.on('click', '.btn_prov_delete', function () {
             else if(response.statusCode==500){
                   alert("Error al intentar borrar. En el servidor");               
           } else {
-            alert("No se eliminará: " + response.message);
+            alert("Mensaje del Servidor: " + response.message);
           }
           console.log(response);
           propagacion = false;
