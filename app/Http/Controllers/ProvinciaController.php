@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Redirect,Response,DB,Config;
 use Datatables;
 use Auth;
+use Illuminate\Support\Facades\Log;
 
 class ProvinciaController extends Controller
 {
