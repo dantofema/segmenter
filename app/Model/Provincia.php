@@ -130,7 +130,7 @@ class Provincia extends Model
           }
           return true;
       } else {
-          return false;
+          return "Existen Departamentos que dependen de èsta provincia. ".$info;
       }
       
   }      
