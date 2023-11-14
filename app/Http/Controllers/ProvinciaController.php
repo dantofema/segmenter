@@ -169,9 +169,25 @@ class ProvinciaController extends Controller
     public function destroy(Provincia $provincia)
     {
         //
-        $this->middleware('auth');
-        $this->middleware('can:run-setup');  
+        //$provincia->middleware('auth');
+        //$provincia->middleware('can:run-setup');  
         
-        return $provincia->delete();
+        //return $provincia->delete();
+
+      $_info = $provincia->codigo.' '.$provincia->nombre;
+      $deptos = count($provincia->departamentos);
+      if ($deptos == 0){
+        if ($provincia->delete()) {
+              Log::info('Se borró la provincia: '.$_info);
+              $respuesta = ['status'=> 200,'message' => 'Se eliminó la provincia: '.$_info];
+          }else{
+              Log::error('NO se borró la provincia: '.$_info);
+              $respuesta = ['status'=> 304,'message' => 'NO se eliminó la provincia: '.$_info];
+          }          
+      } else {
+          $respuesta = ['status'=> 304,'message' => 'Existen '.$deptos.' departamentos que dependen de ésta provincia. '.$_info];
+      }
+      return response()->json($respuesta);
+      
     }
 }
