@@ -112,14 +112,5 @@ class Provincia extends Model
           return $response->headers();
         }
     }
-
- /**
-     * Remove the specified resource from storage.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function delete()
-    { 
-      
-  }      
+     
 }
