@@ -125,14 +125,15 @@ class Provincia extends Model
       if ($deptos == 0){
         if ($this->delete()) {
               Log::info('Se borró la provincia: '.$_info);
+              $respuesta = ['status'=> 200,'message' => 'Se eliminó la provincia: '.$_info];
           }else{
               Log::error('NO se borró la provincia: '.$_info);
-          }
-          return true;
+              $respuesta = ['status'=> 304,'message' => 'NO se eliminó la provincia: '.$_info];
+          }          
       } else {
-          $data = ['message' => 'Existen '.$deptos.' departamentos que dependen de ésta provincia. '.$_info];
-          return response()->json($data, 503);
+          $respuesta = ['status'=> 304,'message' => 'Existen '.$deptos.' departamentos que dependen de ésta provincia. '.$_info];
       }
+      return response()->json($respuesta;
       
   }      
 }

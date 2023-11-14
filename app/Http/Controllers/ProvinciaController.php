@@ -172,5 +172,6 @@ class ProvinciaController extends Controller
         $this->middleware('auth');
         $this->middleware('can:run-setup');  
         
+        return $provincia->delete();
     }
 }
