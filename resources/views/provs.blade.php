@@ -191,8 +191,7 @@ table.on('click', '.btn_prov_delete', function () {
                   alert("Error al intentar borrar");
             }
             elseif(response.statusCode==500){
-                  alert("Error al intentar borrar. En el servidor");
-              }            
+                  alert("Error al intentar borrar. En el servidor");               
           } else {
             alert("La Provincia " + response.message + ". No se eliminará");
           }
