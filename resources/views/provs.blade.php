@@ -39,6 +39,7 @@
              <th>% U+M</th>
              <th>%</th>
              <th style="min-width:90px;"> * </th>
+             <th>Acciones</th>
           </tr>
        </thead>
     </table>
