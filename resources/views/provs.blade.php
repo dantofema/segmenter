@@ -187,10 +187,10 @@ table.on('click', '.btn_prov_delete', function () {
                 alert("Se eliminó el registro de la provincia");       
                 $('.modal-body').html(response.message);                
             }
-            elseif(response.statusCode==405){
+            else if(response.statusCode==405){                                                           
                   alert("Error al intentar borrar");
             }
-            elseif(response.statusCode==500){
+            else if(response.statusCode==500){
                   alert("Error al intentar borrar. En el servidor");               
           } else {
             alert("La Provincia " + response.message + ". No se eliminará");
