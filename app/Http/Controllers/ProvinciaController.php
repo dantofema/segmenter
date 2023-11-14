@@ -76,16 +76,16 @@ class ProvinciaController extends Controller
       return datatables()->of($aProvs)
                 ->addColumn('action', function($data){
                     $button = '<button type="button" class="btn_descarga btn-sm btn-primary" > Descargar </button> ';
-//                    $button .= '<button type="button" class="btn_arch btn-sm btn-primary" > Ver </button>';
-//                    $button .= '<button type="button" class="btn_arch_procesar btn-sm btn-secondary" > ReProcesar </button>';
+//                    $button .= '<button type="button" class="btn_prov btn-sm btn-primary" > Ver </button>';
+//                    $button .= '<button type="button" class="btn_prov_procesar btn-sm btn-secondary" > ReProcesar </button>';
 // botón de eliminar PROVINCIA  en test
 
                     if ('admin@geoinquietos' == Auth::user()->email) {
-                        $button .= '<button type="button" class="btn_arch_delete btn-sm btn-danger " > Borrar (Admin) </button>';
+                        $button .= '<button type="button" class="btn_prov_delete btn-sm btn-danger " > Borrar (Admin) </button>';
                     }
                     try {
                         if (Auth::user()->hasPermissionTo('Borrar Provincia')){
-                            $button .= '<button type="button" class="btn_arch_delete btn-sm btn-danger " > Borrar </button>';
+                            $button .= '<button type="button" class="btn_prov_delete btn-sm btn-danger " > Borrar </button>';
                         }
                     } catch (PermissionDoesNotExist $e) {
                     Log::warning('No existe el permiso "Borrar Provincia"');

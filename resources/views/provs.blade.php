@@ -169,6 +169,40 @@
      $('#laravel_datatable').DataTable().draw(true);
   });
 
+// Función de botón Borrar.
+table.on('click', '.btn_prov_delete', function () {
+      var $ele = $(this).parent().parent();
+      var row = $(this).closest('tr');
+      var data = table.row( row ).data();
+      if (typeof data !== 'undefined') {
+      $.ajax({
+         url: "{{ url('provincia') }}"+"\\"+data.id,
+         type: "DELETE",
+	 data: {id: data.id,
+                _token:'{{ csrf_token() }}'},
+         success: function(response){ 
+	     // Add response in Modal body
+       if(response=='ok'){
+        if(response.statusCode==200){
+	          row.fadeOut().remove();
+        }
+        if(response.statusCode==405){
+              alert("Error al intentar borrar");
+        }
+        if(response.statusCode==500){
+              alert("Error al intentar borrar. En el servidor");
+          }
+        alert("Se eliminó el registro de la provincia");
+        row.fadeOut().remove();
+        $('.modal-body').html(response);
+       } else {
+        alert("La Provincia " + response + ". No se eliminará");
+       }
+           }
+      });
+      };
+    });  
+
 } );
 
 </script>
