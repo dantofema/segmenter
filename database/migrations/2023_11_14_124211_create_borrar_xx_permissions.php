@@ -29,7 +29,6 @@ class CreateBorrarXxPermissions extends Migration
     {
         DB::beginTransaction();
             /** elimino los permisos */
-            Permission::where(['name'=>'Borrar Provincia'])->first()->delete();
             Permission::where(['name'=>'Borrar Departamento'])->first()->delete();
             Permission::where(['name'=>'Borrar Localdiad'])->first()->delete();
             Permission::where(['name'=>'Borrar Fracción'])->first()->delete();

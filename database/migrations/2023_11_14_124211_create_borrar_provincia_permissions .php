@@ -14,10 +14,7 @@ class CreateBorrarProvinciaPermissions extends Migration
      */
     public function up()
     {
-        Artisan::call( 'db:seed', [
-          '--class' => 'PermissionSeederBorrar',
-          '--force' => true ]
-        );
+
     }
 
     /**
@@ -30,14 +27,6 @@ class CreateBorrarProvinciaPermissions extends Migration
         DB::beginTransaction();
             /** elimino los permisos */
             Permission::where(['name'=>'Borrar Provincia'])->first()->delete();
-            Permission::where(['name'=>'Borrar Departamento'])->first()->delete();
-            Permission::where(['name'=>'Borrar Localdiad'])->first()->delete();
-            Permission::where(['name'=>'Borrar Fracción'])->first()->delete();
-            Permission::where(['name'=>'Borrar Radio'])->first()->delete();
-            Permission::where(['name'=>'Borrar Aglomerado'])->first()->delete();
-            Permission::where(['name'=>'Borrar Paraje'])->first()->delete();
-            Permission::where(['name'=>'Borrar Entidad'])->first()->delete();
-            Permission::where(['name'=>'Borrar Base Antártica'])->first()->delete();
             DB::commit();
     }
 }
