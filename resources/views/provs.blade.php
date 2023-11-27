@@ -232,8 +232,8 @@
                         var data = table.row(row).data();
                         if ((typeof data !== 'undefined') &&
                             (confirm('El elemento “' + data.codigo +
-                                    '” va a ser borrado de la tabla provincias, ¿es correcto? \n
-                                    Selecccionar el motivo por el cual se borra el elemento(
+                                    '” va a ser borrado de la tabla provincias, ¿es correcto? \n'+
+                                    'Selecccionar el motivo por el cual se borra el elemento(
                                         en este caso“ Error de Ingreso”)
                                     ')) {
                                     $.ajax({
