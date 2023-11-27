@@ -233,9 +233,9 @@
                         if ((typeof data !== 'undefined') &&
                             (confirm('El elemento “' + data.codigo +
                                     '” va a ser borrado de la tabla provincias, ¿es correcto? \n'+
-                                    'Selecccionar el motivo por el cual se borra el elemento(
-                                        en este caso“ Error de Ingreso”)
-                                    ')) {
+                                    'Selecccionar el motivo por el cual se borra el elemento( '+
+                                    'en este caso“ Error de Ingreso”)' +
+                                    '')) {
                                     $.ajax({
                                         url: "{{ url('provincia') }}" + "\\" + data.id,
                                         type: "DELETE",
