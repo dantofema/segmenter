@@ -5,7 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use Spatie\Permission\Models\Permission;
 
-class CreateBorrarXxPermissions extends Migration
+class CreateBorrarProvinciaPermissions extends Migration
 {
     /**
      * Run the migrations.
