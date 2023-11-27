@@ -30,8 +30,8 @@ class ProvinciaController extends Controller
 
 
     public function provsList()
-    {  
-           $aProvs=[]; 
+    {
+           $aProvs=[];
            $provsQuery = Provincia::query();
            $codigo = (!empty($_GET["codigo"])) ? ($_GET["codigo"]) : ('');
            if ($codigo!='') {
@@ -171,8 +171,8 @@ class ProvinciaController extends Controller
     {
         //
         //$provincia->middleware('auth');
-        //$provincia->middleware('can:run-setup');  
-        
+        //$provincia->middleware('can:run-setup');
+
         //return $provincia->delete();
 
       $_info = $provincia->codigo.' '.$provincia->nombre;
@@ -181,14 +181,14 @@ class ProvinciaController extends Controller
         if ($provincia->delete()) {
               Log::info('Se borró la provincia: '.$_info);
               $respuesta = ['statusCode'=> 200,'message' => 'Se eliminó la provincia: '.$_info];
-          }else{
+        }else{
               Log::error('NO se borró la provincia: '.$_info);
               $respuesta = ['statusCode'=> 304,'message' => 'NO se eliminó la provincia: '.$_info];
-          }          
+        }
       } else {
           $respuesta = ['statusCode'=> 304,'message' => 'Existen '.$deptos.' departamentos que dependen de ésta provincia. '.$_info];
       }
       return response()->json($respuesta);
-      
+
     }
 }
