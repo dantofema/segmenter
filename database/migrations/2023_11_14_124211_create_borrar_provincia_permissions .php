@@ -24,9 +24,6 @@ class CreateBorrarProvinciaPermissions extends Migration
      */
     public function down()
     {
-        DB::beginTransaction();
-            /** elimino los permisos */
-            Permission::where(['name'=>'Borrar Provincia'])->first()->delete();
-            DB::commit();
+
     }
 }
