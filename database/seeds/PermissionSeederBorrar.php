@@ -14,8 +14,9 @@ class PermissionSeederProv extends Seeder
      */
     public function run()
     {
-        $arrayOfPermissionNames = ['Borrar Provincia'];
-        
+        $arrayOfPermissionNames = ['Borrar Provincia','Borrar Departamento','Borrar Localdiad','Borrar Fracción','Borrar Radio',
+                                   'Borrar Aglomerado', 'Borrar Paraje', 'Borrar Entidad', 'Borrar Base Antártica' ];
+
         $permissions = collect($arrayOfPermissionNames)->map(function ($permission) {
             return ['name' => $permission, 'guard_name' => 'web'];
         });
