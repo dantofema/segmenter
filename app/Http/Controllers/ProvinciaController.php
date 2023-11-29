@@ -77,21 +77,21 @@ class ProvinciaController extends Controller
       return datatables()->of($aProvs)
                 ->addColumn('action', function($data){
                     $button = '<button type="button" class="btn_descarga btn-sm btn-primary" > Descargar </button> ';
-//                    $button .= '<button type="button" class="btn_prov btn-sm btn-primary" > Ver </button>';
-//                    $button .= '<button type="button" class="btn_prov_procesar btn-sm btn-secondary" > ReProcesar </button>';
-// botón de eliminar PROVINCIA  en test
-
-                    if ('admin@geoinquietos' == Auth::user()->email) {
-                        $button .= '<button type="button" class="btn_prov_delete btn-sm btn-danger " > Borrar (Admin) </button>';
-                    }
-                    try {
-                        if (Auth::user()->hasPermissionTo('Borrar Provincia')){
-                            $button .= '<button type="button" class="btn_prov_delete btn-sm btn-danger " > Borrar ('.$data['departamentos_count'].') </button>';
+                    // botón de eliminar PROVINCIA  en test, si esta logueado.
+                    if (Auth::check()) {
+                            if ('admin@geoinquietos' == Auth::user()->email) {
+                                $button .= '<button type="button" class="btn_prov_delete btn-sm btn-danger " > Borrar (Admin) </button>';
+                            }
+                            try {
+                                if (Auth::user()->hasPermissionTo('Borrar Provincia')){
+                                    $button .= '<button type="button" class="btn_prov_delete btn-sm btn-danger " > Borrar ('.$data['departamentos_count'].') </button>';
+                                    Log::info($data);
+                                }
+                            } catch (PermissionDoesNotExist $e) {
+                            Log::warning('No existe el permiso "Borrar Provincia"');
+                            }
+                            return $button;
                         }
-                    } catch (PermissionDoesNotExist $e) {
-                    Log::warning('No existe el permiso "Borrar Provincia"');
-                    }
-                    return $button;
                 })
             ->make(true);
     }
