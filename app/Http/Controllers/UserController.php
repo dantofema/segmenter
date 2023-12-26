@@ -14,10 +14,15 @@ class UserController extends Controller
 {
 
   public function listarUsuarios(){
-    $usuarios = User::paginate(15);
+    $usuarios = User::all();
     $roles = Role::all();
     $permisos = Permission::all();
-    return view('users', compact('usuarios', 'roles', 'permisos'));
+    try{
+      $superadmins = User::role('Super Admin')->count();
+    } catch (Spatie\Permission\Exceptions\RoleDoesNotExist $e) {
+      Session::flash('message', 'No existe el rol "Super Admin"');
+    } 
+    return view('users', compact('usuarios', 'roles', 'permisos', 'superadmins'));
   }
 
   public function editarRolUsuario(Request $request, User $user){
