@@ -180,6 +180,11 @@ Route::get('users', 'UserController@listarUsuarios')->name('admin.listarUsuarios
 Route::get('users/{user}/roles', 'UserController@editarRolUsuario')->name('admin.editarRolUsuario');
 Route::get('users/{user}/permission', 'UserController@editarPermisoUsuario')->name('admin.editarPermisoUsuario');
 
+// ---------- PERMISOS ----------
+Route::get('permisos', 'PermissionController@listarPermisos')->name('admin.listarPermisos');
+Route::get('permisos/{permission}/rename', 'PermissionController@renombrarPermiso')->name('admin.renombrarPermiso');
+Route::get('permisos/new', 'PermissionController@crearPermiso')->name('admin.crearPermiso');
+
 // ---------- PROVINCIAS --------
 Route::get('provs-list', 'ProvinciaController@provsList'); 
 Route::get('provs','ProvinciaController@index');

@@ -21,7 +21,9 @@
               <th>Nombre</th>
               <th>Email</th>
               @can('Asignar Roles', 'Quitar Roles')
-              <th> Permisos </th>
+              <th> 
+                Permisos <a href="{{route('admin.listarPermisos')}}" class="badge badge-pill badge-primary">+</a>
+              </th>
               <th>
                 Roles
                 <!-- <a href="#" class="badge badge-pill badge-primary">+</a> TODO? ->  crear roles nuevos -->
