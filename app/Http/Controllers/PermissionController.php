@@ -17,8 +17,7 @@ class PermissionController extends Controller
     if($permiso) {
         $nuevo = Permission::where('name', $request->newName)->first();
         if($nuevo) {
-            // tengo que ver cómo redirectear al modal abierto
-            return redirect()->back()->with('error','Ya existe el permiso!');
+            return redirect()->back()->with('error_rename','Ya existe el permiso!')->with('id_error', $permission->id);
         } else {
             $permiso->name = $request->newName;
             $permiso->save();
@@ -30,8 +29,7 @@ class PermissionController extends Controller
     public function crearPermiso(Request $request){
         $permiso = Permission::where('name', $request->newPermissionName)->first();
         if($permiso) {
-            // tengo que ver cómo redirectear al modal abierto
-            return redirect()->back()->with('error','Ya existe el permiso!');
+            return redirect()->back()->with('error_create','Ya existe el permiso!')->with('id', $permiso->id);
         } else {
             Permission::create(['name' => $request->newPermissionName]);
             return redirect()->route('admin.listarPermisos')->with('info','Permiso creado!');

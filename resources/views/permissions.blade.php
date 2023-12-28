@@ -14,6 +14,19 @@
             {{Session::get('info')}}
           </div>
         @endif
+        @if(Session::has('error_rename'))
+        <script>
+            $(function() {
+                $('#editPermissionModal{{Session::get('id_error')}}').modal('show');
+            });
+          </script>
+        @elseif(Session::has('error_create'))
+          <script>
+            $(function() {
+                $('#newPermissionModal').modal('show');
+            });
+          </script>
+        @endif
         <table class="table table-bordered" id="tabla-permisos">
           @if($permisos[0] !== null)
           <thead>
@@ -53,8 +66,8 @@
                         <div class="modal-body">
                           <label for="renameInput">Nuevo nombre de permiso</label>
                           <input type="text" class="form-control" id="renameInput" name="newName" aria-describedby="renombrarPermiso">
-                          @if(Session::has('error'))
-                            <p style="color:red">{{Session::get('error')}}</p>
+                          @if(Session::has('error_rename'))
+                            <p style="color:red">{{Session::get('error_rename')}}</p>
                           @endif
                         </div>
                         <div class="modal-footer">
@@ -80,8 +93,8 @@
                         <div class="modal-body">
                           <label for="nameInput">Nombre del nuevo permiso</label>
                           <input type="text" class="form-control" id="nameInput" name="newPermissionName" aria-describedby="crearPermiso">
-                          @if(Session::has('error'))
-                            <p style="color:red">{{Session::get('error')}}</p>
+                          @if(Session::has('error_create'))
+                            <p style="color:red">{{Session::get('error_create')}}</p>
                           @endif
                         </div>
                         <div class="modal-footer">
