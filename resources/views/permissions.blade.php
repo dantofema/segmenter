@@ -6,7 +6,10 @@
 <div class="container">
 	<div class="row justify-content-center">
     <div class="card" style="width: 50rem;">
-      <div class="card-header">{{ __('Lista de permisos') }} <button type="button" class="badge badge-pill badge-success float-right" data-toggle="modal" id="btn-trigger-modal-nuevo-permiso" data-target="#newPermissionModal">+ Nuevo permiso</button></div>
+      <div class="card-header">{{ __('Lista de permisos') }} 
+        @can('Asignar Roles')
+          <button type="button" class="badge badge-pill badge-success float-right" data-toggle="modal" id="btn-trigger-modal-nuevo-permiso" data-target="#newPermissionModal">+ Nuevo permiso</button></div>
+        @endcan
       <div class="card-body">
         @if(Session::has('info'))
           <div class="alert alert-success alert-dismissible" role="alert">
@@ -32,7 +35,7 @@
           <thead>
             <tr>
               <th>Permiso</th>
-              @can('Asignar Roles', 'Quitar Roles')
+              @can('Testear Permisos')
               <th>*</th>
               @endcan
             </tr>
@@ -41,7 +44,7 @@
             @foreach ($permisos as $permiso)
             <tr>
               <td>{{$permiso->name}}</td>
-              @can('Asignar Roles', 'Quitar Roles')
+              @can('Testear Permisos')
               <td>
                 <div class="text-center">
                   <!-- Button trigger modal -->

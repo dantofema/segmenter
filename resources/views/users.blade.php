@@ -20,10 +20,12 @@
             <tr>
               <th>Nombre</th>
               <th>Email</th>
-              @can('Asignar Roles', 'Quitar Roles')
+              @can('Testear Permisos')
               <th> 
                 Permisos <a href="{{route('admin.listarPermisos')}}" class="badge badge-pill badge-primary">+</a>
               </th>
+              @endcan
+              @can('Asignar Roles', 'Quitar Roles')
               <th>
                 Roles
                 <!-- <a href="#" class="badge badge-pill badge-primary">+</a> TODO? ->  crear roles nuevos -->
@@ -36,7 +38,7 @@
             <tr>
               <td>{{$usuario->name}}</td>
               <td>{{$usuario->email}}</td>
-              @can('Asignar Roles', 'Quitar Roles')
+              @can('Testear Permisos')
               <td>
                 <div class="text-center">
                   <!-- Button trigger modal -->
@@ -65,7 +67,7 @@
                               @foreach ($permisos as $permiso)
                               <tr>                                         
                                 <td class="col align-self-center">
-                                  @if ($user_permissions->contains($permiso->name))
+                                  @if ($user_permissions->contains($permiso->name) or $usuario->hasRole('Super Admin'))
                                     <input type="checkbox" class="toggle-checkbox" disabled checked id="{{$permiso->name}}" name="permisos[]" value="{{$permiso->id}}" data-on=" " data-off=" " data-offstyle="secondary" data-width="10" data-toggle="toggle" data-size="xs" data-style="ios">
                                   @else
                                     @if ($usuario->hasPermissionTo($permiso->name, $permiso->guard_name ))
@@ -77,7 +79,7 @@
                                     <label class="form-check-label" for="{{$permiso->name}}">
                                       {{$permiso->name}}
                                     </label>
-                                    @if ($user_permissions->contains($permiso->name))
+                                    @if ($user_permissions->contains($permiso->name) or $usuario->hasRole('Super Admin'))
                                       <span class="badge badge-pill badge-danger">Heredado de rol</span>
                                     @endif
                                   </td>
@@ -94,8 +96,9 @@
                     </div>
                   </div>
                 </div>
-
               </td>
+              @endcan
+              @can('Asignar Roles', 'Quitar Roles')
               <td>
                 <div class="text-center">
                   <!-- Button trigger modal -->
@@ -142,7 +145,7 @@
                                     <span class="badge badge-pill badge-danger">Único Super Admin</span>
                                     @endif
                                   @endif
-                                  <button type="button" class="btn-sm btn-info float-right" data-toggle="modal" data-dismiss="modal" data-target="#detailsModal{{$rol->id}}{{$usuario->id}}">
+                                  <button type="button" class="btn-sm btn-primary float-right" data-toggle="modal" data-dismiss="modal" data-target="#detailsModal{{$rol->id}}{{$usuario->id}}">
                                     Detalles
                                   </button>
                                 </td>                                
@@ -173,12 +176,17 @@
                       <div class="modal-body">
                       <table class="table">
                         <tbody>
-                          @foreach ($rol->permissions as $permiso)
-                          <tr>
-                            <td class="col align-self-center">
-                                {{$permiso->name}}
-                            </td>                                
-                          @endforeach
+                          @if($rol->name == 'Super Admin')
+                            Este rol tiene todos los permisos.
+                          @else
+                            @foreach ($rol->permissions as $permiso)
+                            <tr>
+                              <td class="col align-self-center">
+                                  {{$permiso->name}}
+                              </td> 
+                            </tr>                               
+                            @endforeach
+                          @endif
                         </tbody>
                       </table>
                       </div>
