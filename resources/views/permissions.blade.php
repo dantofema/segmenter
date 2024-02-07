@@ -7,7 +7,7 @@
 	<div class="row justify-content-center">
     <div class="card" style="width: 50rem;">
       <div class="card-header">{{ __('Lista de permisos') }} 
-        @can('Testear Permisos')
+        @can('Crear Permisos')
           <button type="button" class="badge badge-pill badge-success float-right" data-toggle="modal" id="btn-trigger-modal-nuevo-permiso" data-target="#newPermissionModal">+ Nuevo permiso</button></div>
         @endcan
       <div class="card-body">
@@ -35,7 +35,7 @@
           <thead>
             <tr>
               <th>Permiso</th>
-              @can('Testear Permisos')
+              @canany(['Editar Permisos', 'Eliminar Permisos'])
               <th>*</th>
               @endcan
             </tr>
@@ -44,15 +44,17 @@
             @foreach ($permisos as $permiso)
             <tr>
               <td>{{$permiso->name}}</td>
-              @can('Testear Permisos')
+              @canany(['Editar Permisos', 'Eliminar Permisos'])
               <td>
                 <div class="text-center">
+                  @can('Editar Permisos')
                   <!-- Button trigger modal -->
                   <button type="button" class="btn-sm btn-primary text-center" data-toggle="modal" id="btn-trigger-modal-edit-permiso" data-target="#editPermissionModal{{$permiso->id}}">
                     Renombrar
                   </button>
+                  @endcan
                   <!-- Button eliminar permiso -->
-                  <!-- <button type="button" href="{{route('admin.listarPermisos')}}" class="btn-sm btn-danger">Eliminar</button> -->
+                  <!-- <button type="button" href="#" class="btn-sm btn-danger">Eliminar</button> -->
                 </div>
 
                 <!-- Modal renombrar permiso -->
