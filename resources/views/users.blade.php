@@ -28,7 +28,7 @@
               @can('Asignar Roles', 'Quitar Roles')
               <th>
                 Roles
-                <!-- <a href="#" class="badge badge-pill badge-primary">+</a> TODO? ->  crear roles nuevos -->
+                <a href="{{route('admin.listarRoles')}}" class="badge badge-pill badge-primary">+</a>
               </th>
               @endcan
             </tr>

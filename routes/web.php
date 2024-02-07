@@ -185,6 +185,11 @@ Route::get('permisos', 'PermissionController@listarPermisos')->name('admin.lista
 Route::get('permisos/{permission}/rename', 'PermissionController@renombrarPermiso')->name('admin.renombrarPermiso');
 Route::get('permisos/new', 'PermissionController@crearPermiso')->name('admin.crearPermiso');
 
+// ---------- ROLES ----------
+Route::get('roles', 'RoleController@listarRoles')->name('admin.listarRoles');
+Route::get('roles/{role}/rename', 'RoleController@renombrarRol')->name('admin.renombrarRol');
+Route::get('roles/new', 'RoleController@crearRol')->name('admin.crearRol');
+
 // ---------- PROVINCIAS --------
 Route::get('provs-list', 'ProvinciaController@provsList'); 
 Route::get('provs','ProvinciaController@index');

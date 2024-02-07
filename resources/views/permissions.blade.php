@@ -7,7 +7,7 @@
 	<div class="row justify-content-center">
     <div class="card" style="width: 50rem;">
       <div class="card-header">{{ __('Lista de permisos') }} 
-        @can('Asignar Roles')
+        @can('Testear Permisos')
           <button type="button" class="badge badge-pill badge-success float-right" data-toggle="modal" id="btn-trigger-modal-nuevo-permiso" data-target="#newPermissionModal">+ Nuevo permiso</button></div>
         @endcan
       <div class="card-body">
@@ -124,7 +124,7 @@
 @section('footer_scripts')
 <script type="text/javascript">
   function confirmarCambios(){
-    return confirm("¿Estás seguro de que deseas guardar modificar el permiso?");
+    return confirm("¿Estás seguro de que deseas modificar el permiso?");
   };
   function confirmarCreacion(){
     return confirm("¿Estás seguro de que deseas crear el nuevo permiso \"" + document.getElementById('nameInput').value +"\" ?");
