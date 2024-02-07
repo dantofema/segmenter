@@ -17,13 +17,13 @@
             {{Session::get('info')}}
           </div>
         @endif
-        @if(Session::has('error_rename'))
+        @if(Session::has('error_rename') or Session::has('error_permissions_edit'))
         <script>
             $(function() {
                 $('#editRoleModal{{Session::get('id_error')}}').modal('show');
             });
           </script>
-        @elseif(Session::has('error_create'))
+        @elseif(Session::has('error_create') or Session::has('error_permissions_new'))
           <script>
             $(function() {
                 $('#newRoleModal').modal('show');
@@ -67,23 +67,22 @@
                           <span aria-hidden="true">&times;</span>
                         </button>
                       </div>
-                      <form action="{{route('admin.renombrarRol', $rol->id)}}" method="put" id="form-edit-rol{{$rol->id}}">
+                      @if ($rol->name == 'Super Admin')
                         <div class="modal-body">
-                          <label for="renameInput">Nuevo nombre de rol</label>
-                          <input type="text" class="form-control" id="renameInput" name="newName" aria-describedby="renombrarRol">
-                          @if(Session::has('error_rename'))
-                            <p style="color:red">{{Session::get('error_rename')}}</p>
-                          @endif
-                        <br>
-                        <!-- Tabla de permisos -->
-                        <label for="tabla-permisos">Permisos del rol</label>
-                        <table class="table" id="tabla-permisos">
-                            @if ($rol->name == 'Super Admin')
-                              <span class="badge badge-pill badge-danger">Super Admin</span>
-                              <tbody>
-                                No pueden editarse los permisos de este rol.
-                              </tbody>
+                          No puede editarse este rol 
+                          <span class="badge badge-pill badge-danger">Super Admin</span>
+                        </div>
+                      @else
+                        <form action="{{route('admin.renombrarRol', $rol->id)}}" method="put" id="form-edit-rol{{$rol->id}}">
+                          <div class="modal-body">
+                            <label for="renameInput">Nuevo nombre de rol</label>
+                            <input type="text" class="form-control" id="renameInput" name="newName" aria-describedby="renombrarRol">
+                            @if(Session::has('error_rename'))
+                              <p style="color:red">{{Session::get('error_rename')}}</p>
                             @endif
+                          <br>
+                          <!-- Tabla de permisos -->
+                          <table class="table" id="tabla-permisos">
                             <tbody>
                               @php 
                                 $role_permissions = $rol->permissions;
@@ -102,14 +101,18 @@
                                   </td>
                               </tr> 
                               @endforeach
-                            </tbody>
-                          </table>
-                        </div>
-                        <div class="modal-footer">
-                          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                          <input type="submit" name="btn"  class="btn btn-primary btn-submit-edit-permiso" value="Guardar Cambios" onclick="return confirmarCambios()">
-                        </div>
-                      </form>
+                              </tbody>  
+                            </table>
+                            @if(Session::has('error_permissions_edit'))
+                              <p style="color:red">{{Session::get('error_permissions_edit')}}</p>
+                            @endif
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                            <input type="submit" name="btn"  class="btn btn-primary btn-submit-edit-permiso" value="Guardar Cambios" onclick="return confirmarCambios()">
+                          </div>
+                        </form>
+                      @endif
                     </div>
                   </div>
                 </div>
@@ -148,6 +151,9 @@
                                 @endforeach
                               </tbody>
                             </table>
+                            @if(Session::has('error_permissions_new'))
+                              <p style="color:red">{{Session::get('error_permissions_new')}}</p>
+                            @endif
                           <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
                             <input type="submit" name="btn"  class="btn btn-primary btn-submit-edit-permiso" value="Confirmar" onclick="return confirmarCreacion()">

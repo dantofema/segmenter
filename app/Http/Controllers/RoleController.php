@@ -26,8 +26,13 @@ class RoleController extends Controller
                     $rol->save();
                 }      
             }
-            $rol->syncPermissions($request->permisos);
-            return redirect()->route('admin.listarRoles')->with('info','Rol actualizado!');
+            if($request->permisos){
+                $rol->syncPermissions($request->permisos);
+                return redirect()->route('admin.listarRoles')->with('info','Rol actualizado!');
+            } else {
+                return redirect()->back()->with('error_permissions_edit','Debe asignar al menos un permiso')->with('id_error', $role->id);
+            }
+            
         }
     }
     
@@ -38,8 +43,12 @@ class RoleController extends Controller
                 return redirect()->back()->with('error_create','Ya existe el rol!')->with('id', $rol->id);
             } else {
                 $nuevoRol = Role::create(['name' => $request->newRoleName]);
-                $nuevoRol->syncPermissions($request->permisos);
-                return redirect()->route('admin.listarRoles')->with('info','Rol creado!');
+                if($request->permisos){
+                    $nuevoRol->syncPermissions($request->permisos);
+                    return redirect()->route('admin.listarRoles')->with('info','Rol creado!');
+                } else {
+                    return redirect()->back()->with('error_permissions_new','Debe asignar al menos un permiso');
+                }
             }
         } else {
             return redirect()->back()->with('error_create','El nombre del rol no puede estar vacío.');
