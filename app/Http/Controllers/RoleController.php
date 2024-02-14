@@ -42,8 +42,8 @@ class RoleController extends Controller
             if($rol) {
                 return redirect()->back()->with('error_create','Ya existe el rol!')->with('id', $rol->id);
             } else {
-                $nuevoRol = Role::create(['name' => $request->newRoleName]);
                 if($request->permisos){
+                    $nuevoRol = Role::create(['name' => $request->newRoleName]);
                     $nuevoRol->syncPermissions($request->permisos);
                     return redirect()->route('admin.listarRoles')->with('info','Rol creado!');
                 } else {
