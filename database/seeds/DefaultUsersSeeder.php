@@ -9,7 +9,7 @@ use App\User;
 class DefaultUsersSeeder extends Seeder
 {
     /**
-     * Run the database seeds.
+     * Crea el usuario Super Admin.
      *
      * @return void
      */

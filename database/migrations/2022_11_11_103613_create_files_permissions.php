@@ -15,7 +15,7 @@ class CreateFilesPermissions extends Migration
     public function up()
     {
         Artisan::call( 'db:seed', [
-            '--class' => 'PermissionSeeder',
+            '--class' => 'FilePermissionsSeeder',
             '--force' => true ]
         );
     }

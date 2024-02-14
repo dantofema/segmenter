@@ -44,10 +44,6 @@ class PopulateRolesAndPermissions extends Migration
             $superAdmin = Role::where(['name'=>'Super Admin'])->first();
             $superAdmin->syncPermissions([]);
             $superAdmin->delete();
-
-            /** elimino los permisos */
-            $asignarRoles = Permission::where(['name'=>'Asignar Roles'])->first()->delete();
-            $quitarRoles = Permission::where(['name'=>'Quitar Roles'])->first()->delete();
             DB::commit();
         
     }

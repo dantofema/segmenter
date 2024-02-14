@@ -20,7 +20,7 @@
             <tr>
               <th>Nombre</th>
               <th>Email</th>
-              @can('Testear Permisos')
+              @can('Administrar Permisos')
               <th> 
                 Permisos
               </th>
@@ -30,7 +30,7 @@
                 Filtros <a href="{{route('admin.listarFiltros')}}" class="badge badge-pill badge-primary">+</a>
               </th>
               @endcan
-              @can('Asignar Roles', 'Quitar Roles')
+              @can('Administrar Roles')
               <th>
                 Roles
                 <a href="{{route('admin.listarRoles')}}" class="badge badge-pill badge-primary">+</a>
@@ -43,7 +43,7 @@
             <tr>
               <td>{{$usuario->name}}</td>
               <td>{{$usuario->email}}</td>
-              @can('Testear Permisos')
+              @can('Administrar Permisos')
               <td>
                 <div class="text-center">
                   <!-- Button trigger modal -->
@@ -163,7 +163,7 @@
                 </div>
               </td>
               @endcan
-              @can('Asignar Roles', 'Quitar Roles')
+              @can('Administrar Roles')
               <td>
                 <div class="text-center">
                   <!-- Button trigger modal -->
