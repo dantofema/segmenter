@@ -191,24 +191,39 @@
                                 <td class="col align-self-center">
                                   @if ($rol->name == 'Super Admin')
                                     @if ($usuario->hasRole($rol->name))
+                                      <!-- No puedo quitarle el superadmin a otro usuario -->
+                                      <!-- Si soy el único superadmin no puedo quitarme el rol -->
                                       @if ($usuario->email != Auth::user()->email || $superadmins == 1)
-                                      <input type="checkbox" class="toggle-checkbox" disabled checked id="{{$rol->name}}" name="roles[]" value="{{$rol->id}}" data-on=" " data-off=" " data-offstyle="secondary" data-width="10" data-toggle="toggle" data ze="xs" data-style="ios">
+                                      <input type="checkbox" class="toggle-checkbox" disabled checked id="{{$rol->name}}" name="roles[]" value="{{$rol->id}}" data-on=" " data-off=" " data-offstyle="secondary" data-width="10" data-toggle="toggle" data-size="xs" data-style="ios">
                                       @else
                                       <input type="checkbox" class="toggle-checkbox" checked id="{{$rol->name}}" name="roles[]" value="{{$rol->id}}" data-on=" " data-off=" " data-offstyle="secondary" data-width="10" data-toggle="toggle" data-size="xs" data-style="ios">
                                       @endif
+
+                                      <label class="form-check-label" for="{{$rol->name}}">
+                                        {{$rol->name}}
+                                      </label>
+
+                                      <!-- Pills informativas para las condiciones comentadas arriba -->
+                                      @if ($usuario->email != Auth::user()->email)
+                                      <span class="badge badge-pill badge-danger">No se puede quitar este rol</span>
+                                      @elseif ($superadmins == 1)
+                                      <span class="badge badge-pill badge-danger">Único Super Admin</span>
+                                      @endif
                                     @else
                                       <input type="checkbox" class="toggle-checkbox" id="{{$rol->name}}" name="roles[]" value="{{$rol->id}}" data-on=" " data-off=" " data-offstyle="secondary" data-width="10" data-toggle="toggle" data-size="xs" data-style="ios">
+                                      <label class="form-check-label" for="{{$rol->name}}">
+                                        {{$rol->name}}
+                                      </label>
+                                      @endif
+                                  @else
+                                    @if ($usuario->hasRole($rol->name))
+                                    <input type="checkbox" class="toggle-checkbox" checked id="{{$rol->name}}" name="roles[]" value="{{$rol->id}}" data-on=" " data-off=" " data-offstyle="secondary" data-width="10" data-toggle="toggle" data-size="xs" data-style="ios">
+                                    @else
+                                    <input type="checkbox" class="toggle-checkbox" id="{{$rol->name}}" name="roles[]" value="{{$rol->id}}" data-on=" " data-off=" " data-offstyle="secondary" data-width="10" data-toggle="toggle" data-size="xs" data-style="ios">
                                     @endif
-                                  @endif
-                                  <label class="form-check-label" for="{{$rol->name}}">
-                                    {{$rol->name}}
-                                  </label>
-                                  @if ($usuario->hasRole($rol->name))
-                                    @if ($usuario->email != Auth::user()->email)
-                                    <span class="badge badge-pill badge-danger">No se puede quitar este rol</span>
-                                    @elseif ($superadmins == 1)
-                                    <span class="badge badge-pill badge-danger">Único Super Admin</span>
-                                    @endif
+                                    <label class="form-check-label" for="{{$rol->name}}">
+                                      {{$rol->name}}
+                                    </label>
                                   @endif
                                   <button type="button" class="btn-sm btn-primary float-right" data-toggle="modal" data-dismiss="modal" data-target="#detailsModal{{$rol->id}}{{$usuario->id}}">
                                     Detalles
