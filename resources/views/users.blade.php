@@ -22,7 +22,12 @@
               <th>Email</th>
               @can('Testear Permisos')
               <th> 
-                Permisos <a href="{{route('admin.listarPermisos')}}" class="badge badge-pill badge-primary">+</a>
+                Permisos
+              </th>
+              @endcan
+              @can('Administrar Filtros')
+              <th> 
+                Filtros <a href="{{route('admin.listarFiltros')}}" class="badge badge-pill badge-primary">+</a>
               </th>
               @endcan
               @can('Asignar Roles', 'Quitar Roles')
@@ -91,6 +96,66 @@
                         <div class="modal-footer">
                           <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
                           <input type="submit" name="btn"  class="btn btn-primary btn-submit-permisos" value="Guardar Cambios" onclick="return confirmarCambios('permisos')">
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </td>
+              @endcan
+              @can('Administrar Filtros')
+              <td>
+                <div class="text-center">
+                  <!-- Button trigger modal -->
+                  <button type="button" class="btn-sm btn-primary text-center" data-toggle="modal" id="btn-trigger-modal-filtros" data-target="#filtrosModal{{$usuario->id}}">
+                    Administrar Filtros
+                  </button>
+                </div>
+
+                <!-- Modal filtros del usuario -->
+                <div class="modal fade" id="filtrosModal{{$usuario->id}}" tabindex="-1" role="dialog" aria-labelledby="filtroModalLabel" aria-hidden="true">
+                  <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="filtroModalLabel">Filtros de {{$usuario->name}}</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <form action="{{route('admin.editarFiltroUsuario', $usuario->id)}}" method="put" id="form-filtros{{$usuario->id}}">
+                        <div class="modal-body">
+                          <table class="table" id="tabla-filtros">
+                            <tbody>
+                              @php 
+                                $user_filters = $usuario->getPermissionsViaRoles()->where('is_filter', true)->pluck('name');
+                              @endphp
+                              @foreach ($filtros as $filtro)
+                              <tr>                                         
+                                <td class="col align-self-center">
+                                  @if ($user_filters->contains($filtro->name) or $usuario->hasRole('Super Admin'))
+                                    <input type="checkbox" class="toggle-checkbox" disabled checked id="{{$filtro->name}}" name="filtros[]" value="{{$filtro->id}}" data-on=" " data-off=" " data-offstyle="secondary" data-width="10" data-toggle="toggle" data-size="xs" data-style="ios">
+                                  @else
+                                    @if ($usuario->hasPermissionTo($filtro->name, $filtro->guard_name ))
+                                      <input type="checkbox" class="toggle-checkbox" checked id="{{$filtro->name}}" name="filtros[]" value="{{$filtro->id}}" data-on=" " data-off=" " data-offstyle="secondary" data-width="10" data-toggle="toggle" data-size="xs" data-style="ios">
+                                    @else
+                                      <input type="checkbox" class="toggle-checkbox" id="{{$filtro->name}}" name="filtros[]" value="{{$filtro->id}}" data-on=" " data-off=" " data-offstyle="secondary" data-width="10" data-toggle="toggle" data-size="xs" data-style="ios">
+                                    @endif
+                                  @endif
+                                    <label class="form-check-label" for="{{$filtro->name}}">
+                                      {{$filtro->name}}
+                                    </label>
+                                    @if ($user_filters->contains($filtro->name) or $usuario->hasRole('Super Admin'))
+                                      <span class="badge badge-pill badge-danger">Heredado de rol</span>
+                                    @endif
+                                  </td>
+                              </tr> 
+                              @endforeach
+                            </tbody>
+                          </table>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                          <input type="submit" name="btn"  class="btn btn-primary btn-submit-filtros" value="Guardar Cambios" onclick="return confirmarCambios('filtros')">
                         </div>
                       </form>
                     </div>

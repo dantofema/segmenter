@@ -179,11 +179,12 @@ Route::get('provincia','ProvinciaController@index');
 Route::get('users', 'UserController@listarUsuarios')->name('admin.listarUsuarios');
 Route::get('users/{user}/roles', 'UserController@editarRolUsuario')->name('admin.editarRolUsuario');
 Route::get('users/{user}/permission', 'UserController@editarPermisoUsuario')->name('admin.editarPermisoUsuario');
+Route::get('users/{user}/filter', 'UserController@editarFiltroUsuario')->name('admin.editarFiltroUsuario');
 
-// ---------- PERMISOS ----------
-Route::get('permisos', 'PermissionController@listarPermisos')->name('admin.listarPermisos');
-Route::get('permisos/{permission}/rename', 'PermissionController@renombrarPermiso')->name('admin.renombrarPermiso');
-Route::get('permisos/new', 'PermissionController@crearPermiso')->name('admin.crearPermiso');
+// ---------- FILTROS ----------
+Route::get('filtros', 'FilterController@listarFiltros')->name('admin.listarFiltros');
+Route::get('filtros/{filter}/rename', 'FilterController@renombrarFiltro')->name('admin.renombrarFiltro');
+Route::get('filtros/new', 'FilterController@crearFiltro')->name('admin.crearFiltro');
 
 // ---------- ROLES ----------
 Route::get('roles', 'RoleController@listarRoles')->name('admin.listarRoles');
