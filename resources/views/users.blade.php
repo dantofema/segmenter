@@ -225,7 +225,7 @@
                                       {{$rol->name}}
                                     </label>
                                   @endif
-                                  <button type="button" class="btn-sm btn-primary float-right" data-toggle="modal" data-dismiss="modal" data-target="#detailsModal{{$rol->id}}{{$usuario->id}}">
+                                  <button type="button" class="btn-sm btn-primary float-right btn-detalles" data-toggle="modal" data-dismiss="modal" data-role-id="{{ $rol->id }}" data-user-id="{{ $usuario->id }}" data-target="#detailsModal">
                                     Detalles
                                   </button>
                                 </td>                                
@@ -244,29 +244,18 @@
                 </div>
 
                 <!-- Modal de detalles del rol -->
-                <div class="modal fade" id="detailsModal{{$rol->id}}{{$usuario->id}}" aria-hidden="true" aria-labelledby="detailsModalLabel" tabindex="-1">
+                <div class="modal fade" id="detailsModal" aria-hidden="true" aria-labelledby="detailsModalLabel" tabindex="-1">
                   <div class="modal-dialog">
                     <div class="modal-content">
                       <div class="modal-header">
-                        <h5 class="modal-title" id="detailsModalLabel">Permisos del rol {{$rol->name}}</h5>
+                        <h5 class="modal-title" id="detailsModalLabel"></h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                           <span aria-hidden="true">&times;</span>
                         </button>
                       </div>
                       <div class="modal-body">
                       <table class="table">
-                        <tbody>
-                          @if($rol->name == 'Super Admin')
-                            Este rol tiene todos los permisos.
-                          @else
-                            @foreach ($rol->permissions as $permiso)
-                            <tr>
-                              <td class="col align-self-center">
-                                  {{$permiso->name}}
-                              </td> 
-                            </tr>                               
-                            @endforeach
-                          @endif
+                        <tbody class="modal-table-body">
                         </tbody>
                       </table>
                       </div>
@@ -295,6 +284,47 @@
     return confirm("¿Estás seguro de que deseas guardar los nuevos " + tipo + "?");
   };
 </script>
+
+<script>
+  $(document).ready(function(){
+      $('.btn-detalles').click(function(){
+          var roleId = $(this).data('role-id');
+          var userId = $(this).data('user-id');
+          $.ajax({
+              url: 'roles/' + roleId + '/detail',
+              type: 'GET',
+              dataType: 'json',
+              success: function(response){
+                  if (response) {
+                      $('#detailsModal .modal-title').html('Detalles del Rol ' + response.rol.name);
+                      if(response.rol.name === 'Super Admin') {
+                        console.log("Super Admin");
+                        $('#detailsModal .modal-table-body').html('Este rol tiene todos los permisos.');
+                      } else {
+                        // Vacío el contenido del modal antes de agregar nuevos permisos
+                        $('#detailsModal .modal-table-body').empty();
+                        console.log("No Super Admin");
+                        console.log(response.permisos);
+                        $.each(response.permisos, function(index, permiso) {
+                            $('#detailsModal .modal-table-body').append('<tr><td class="col align-self-center">'+permiso+'</td></tr>');
+                        });
+                      }
+                  } else {
+                      console.log('El rol no pudo ser encontrado.');
+                  }
+              },
+              error: function(xhr, status, error) {
+                  console.error('Error al obtener detalles del rol:', error);
+              }
+          });
+      });
+      // Limpio el contenido del modal cuando se cierra
+      $('#detailsModal').on('hidden.bs.modal', function () {
+          $('#detailsModal .modal-table-body').empty();
+      });
+  });
+</script>
+
 
 <!-- datatables -->
 <script>src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"</script>
