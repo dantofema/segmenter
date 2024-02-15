@@ -69,27 +69,31 @@
                               @php 
                                 $user_permissions = $usuario->getPermissionsViaRoles()->pluck('name');
                               @endphp
-                              @foreach ($permisos as $permiso)
-                              <tr>                                         
-                                <td class="col align-self-center">
-                                  @if ($user_permissions->contains($permiso->name) or $usuario->hasRole('Super Admin'))
-                                    <input type="checkbox" class="toggle-checkbox" disabled checked id="{{$permiso->name}}" name="permisos[]" value="{{$permiso->id}}" data-on=" " data-off=" " data-offstyle="secondary" data-width="10" data-toggle="toggle" data-size="xs" data-style="ios">
-                                  @else
-                                    @if ($usuario->hasPermissionTo($permiso->name, $permiso->guard_name ))
-                                      <input type="checkbox" class="toggle-checkbox" checked id="{{$permiso->name}}" name="permisos[]" value="{{$permiso->id}}" data-on=" " data-off=" " data-offstyle="secondary" data-width="10" data-toggle="toggle" data-size="xs" data-style="ios">
-                                    @else
-                                      <input type="checkbox" class="toggle-checkbox" id="{{$permiso->name}}" name="permisos[]" value="{{$permiso->id}}" data-on=" " data-off=" " data-offstyle="secondary" data-width="10" data-toggle="toggle" data-size="xs" data-style="ios">
-                                    @endif
-                                  @endif
-                                    <label class="form-check-label" for="{{$permiso->name}}">
-                                      {{$permiso->name}}
-                                    </label>
+                              @if ($permisos->count() > 0)
+                                @foreach ($permisos as $permiso)
+                                <tr>                                         
+                                  <td class="col align-self-center">
                                     @if ($user_permissions->contains($permiso->name) or $usuario->hasRole('Super Admin'))
-                                      <span class="badge badge-pill badge-danger">Heredado de rol</span>
+                                      <input type="checkbox" class="toggle-checkbox" disabled checked id="{{$permiso->name}}" name="permisos[]" value="{{$permiso->id}}" data-on=" " data-off=" " data-offstyle="secondary" data-width="10" data-toggle="toggle" data-size="xs" data-style="ios">
+                                    @else
+                                      @if ($usuario->hasPermissionTo($permiso->name, $permiso->guard_name ))
+                                        <input type="checkbox" class="toggle-checkbox" checked id="{{$permiso->name}}" name="permisos[]" value="{{$permiso->id}}" data-on=" " data-off=" " data-offstyle="secondary" data-width="10" data-toggle="toggle" data-size="xs" data-style="ios">
+                                      @else
+                                        <input type="checkbox" class="toggle-checkbox" id="{{$permiso->name}}" name="permisos[]" value="{{$permiso->id}}" data-on=" " data-off=" " data-offstyle="secondary" data-width="10" data-toggle="toggle" data-size="xs" data-style="ios">
+                                      @endif
                                     @endif
-                                  </td>
-                              </tr> 
-                              @endforeach
+                                      <label class="form-check-label" for="{{$permiso->name}}">
+                                        {{$permiso->name}}
+                                      </label>
+                                      @if ($user_permissions->contains($permiso->name) or $usuario->hasRole('Super Admin'))
+                                        <span class="badge badge-pill badge-danger">Heredado de rol</span>
+                                      @endif
+                                    </td>
+                                </tr> 
+                                @endforeach
+                              @else
+                                No hay permisos cargados.
+                              @endif
                             </tbody>
                           </table>
                         </div>
@@ -129,27 +133,31 @@
                               @php 
                                 $user_filters = $usuario->getPermissionsViaRoles()->where('is_filter', true)->pluck('name');
                               @endphp
-                              @foreach ($filtros as $filtro)
-                              <tr>                                         
-                                <td class="col align-self-center">
-                                  @if ($user_filters->contains($filtro->name) or $usuario->hasRole('Super Admin'))
-                                    <input type="checkbox" class="toggle-checkbox" disabled checked id="{{$filtro->name}}" name="filtros[]" value="{{$filtro->id}}" data-on=" " data-off=" " data-offstyle="secondary" data-width="10" data-toggle="toggle" data-size="xs" data-style="ios">
-                                  @else
-                                    @if ($usuario->hasPermissionTo($filtro->name, $filtro->guard_name ))
-                                      <input type="checkbox" class="toggle-checkbox" checked id="{{$filtro->name}}" name="filtros[]" value="{{$filtro->id}}" data-on=" " data-off=" " data-offstyle="secondary" data-width="10" data-toggle="toggle" data-size="xs" data-style="ios">
-                                    @else
-                                      <input type="checkbox" class="toggle-checkbox" id="{{$filtro->name}}" name="filtros[]" value="{{$filtro->id}}" data-on=" " data-off=" " data-offstyle="secondary" data-width="10" data-toggle="toggle" data-size="xs" data-style="ios">
-                                    @endif
-                                  @endif
-                                    <label class="form-check-label" for="{{$filtro->name}}">
-                                      {{$filtro->name}}
-                                    </label>
+                              @if ($filtros->count() > 0)
+                                @foreach ($filtros as $filtro)
+                                <tr>                                         
+                                  <td class="col align-self-center">
                                     @if ($user_filters->contains($filtro->name) or $usuario->hasRole('Super Admin'))
-                                      <span class="badge badge-pill badge-danger">Heredado de rol</span>
+                                      <input type="checkbox" class="toggle-checkbox" disabled checked id="{{$filtro->name}}" name="filtros[]" value="{{$filtro->id}}" data-on=" " data-off=" " data-offstyle="secondary" data-width="10" data-toggle="toggle" data-size="xs" data-style="ios">
+                                    @else
+                                      @if ($usuario->hasPermissionTo($filtro->name, $filtro->guard_name ))
+                                        <input type="checkbox" class="toggle-checkbox" checked id="{{$filtro->name}}" name="filtros[]" value="{{$filtro->id}}" data-on=" " data-off=" " data-offstyle="secondary" data-width="10" data-toggle="toggle" data-size="xs" data-style="ios">
+                                      @else
+                                        <input type="checkbox" class="toggle-checkbox" id="{{$filtro->name}}" name="filtros[]" value="{{$filtro->id}}" data-on=" " data-off=" " data-offstyle="secondary" data-width="10" data-toggle="toggle" data-size="xs" data-style="ios">
+                                      @endif
                                     @endif
-                                  </td>
-                              </tr> 
-                              @endforeach
+                                      <label class="form-check-label" for="{{$filtro->name}}">
+                                        {{$filtro->name}}
+                                      </label>
+                                      @if ($user_filters->contains($filtro->name) or $usuario->hasRole('Super Admin'))
+                                        <span class="badge badge-pill badge-danger">Heredado de rol</span>
+                                      @endif
+                                    </td>
+                                </tr> 
+                                @endforeach
+                              @else
+                                No hay filtros cargados.
+                              @endif
                             </tbody>
                           </table>
                         </div>
@@ -186,51 +194,55 @@
                         <div class="modal-body">
                           <table class="table" id="tabla-roles">
                             <tbody>
-                              @foreach ($roles as $rol)
-                              <tr>
-                                <td class="col align-self-center">
-                                  @if ($rol->name == 'Super Admin')
-                                    @if ($usuario->hasRole($rol->name))
-                                      <!-- No puedo quitarle el superadmin a otro usuario -->
-                                      <!-- Si soy el único superadmin no puedo quitarme el rol -->
-                                      @if ($usuario->email != Auth::user()->email || $superadmins == 1)
-                                      <input type="checkbox" class="toggle-checkbox" disabled checked id="{{$rol->name}}" name="roles[]" value="{{$rol->id}}" data-on=" " data-off=" " data-offstyle="secondary" data-width="10" data-toggle="toggle" data-size="xs" data-style="ios">
+                              @if ($roles->count() > 0)
+                                @foreach ($roles as $rol)
+                                <tr>
+                                  <td class="col align-self-center">
+                                    @if ($rol->name == 'Super Admin')
+                                      @if ($usuario->hasRole($rol->name))
+                                        <!-- No puedo quitarle el superadmin a otro usuario -->
+                                        <!-- Si soy el único superadmin no puedo quitarme el rol -->
+                                        @if ($usuario->email != Auth::user()->email || $superadmins == 1)
+                                        <input type="checkbox" class="toggle-checkbox" disabled checked id="{{$rol->name}}" name="roles[]" value="{{$rol->id}}" data-on=" " data-off=" " data-offstyle="secondary" data-width="10" data-toggle="toggle" data-size="xs" data-style="ios">
+                                        @else
+                                        <input type="checkbox" class="toggle-checkbox" checked id="{{$rol->name}}" name="roles[]" value="{{$rol->id}}" data-on=" " data-off=" " data-offstyle="secondary" data-width="10" data-toggle="toggle" data-size="xs" data-style="ios">
+                                        @endif
+
+                                        <label class="form-check-label" for="{{$rol->name}}">
+                                          {{$rol->name}}
+                                        </label>
+
+                                        <!-- Pills informativas para las condiciones comentadas arriba -->
+                                        @if ($usuario->email != Auth::user()->email)
+                                        <span class="badge badge-pill badge-danger">No se puede quitar este rol</span>
+                                        @elseif ($superadmins == 1)
+                                        <span class="badge badge-pill badge-danger">Único Super Admin</span>
+                                        @endif
                                       @else
+                                        <input type="checkbox" class="toggle-checkbox" id="{{$rol->name}}" name="roles[]" value="{{$rol->id}}" data-on=" " data-off=" " data-offstyle="secondary" data-width="10" data-toggle="toggle" data-size="xs" data-style="ios">
+                                        <label class="form-check-label" for="{{$rol->name}}">
+                                          {{$rol->name}}
+                                        </label>
+                                        @endif
+                                    @else
+                                      @if ($usuario->hasRole($rol->name))
                                       <input type="checkbox" class="toggle-checkbox" checked id="{{$rol->name}}" name="roles[]" value="{{$rol->id}}" data-on=" " data-off=" " data-offstyle="secondary" data-width="10" data-toggle="toggle" data-size="xs" data-style="ios">
-                                      @endif
-
-                                      <label class="form-check-label" for="{{$rol->name}}">
-                                        {{$rol->name}}
-                                      </label>
-
-                                      <!-- Pills informativas para las condiciones comentadas arriba -->
-                                      @if ($usuario->email != Auth::user()->email)
-                                      <span class="badge badge-pill badge-danger">No se puede quitar este rol</span>
-                                      @elseif ($superadmins == 1)
-                                      <span class="badge badge-pill badge-danger">Único Super Admin</span>
-                                      @endif
-                                    @else
+                                      @else
                                       <input type="checkbox" class="toggle-checkbox" id="{{$rol->name}}" name="roles[]" value="{{$rol->id}}" data-on=" " data-off=" " data-offstyle="secondary" data-width="10" data-toggle="toggle" data-size="xs" data-style="ios">
+                                      @endif
                                       <label class="form-check-label" for="{{$rol->name}}">
                                         {{$rol->name}}
                                       </label>
-                                      @endif
-                                  @else
-                                    @if ($usuario->hasRole($rol->name))
-                                    <input type="checkbox" class="toggle-checkbox" checked id="{{$rol->name}}" name="roles[]" value="{{$rol->id}}" data-on=" " data-off=" " data-offstyle="secondary" data-width="10" data-toggle="toggle" data-size="xs" data-style="ios">
-                                    @else
-                                    <input type="checkbox" class="toggle-checkbox" id="{{$rol->name}}" name="roles[]" value="{{$rol->id}}" data-on=" " data-off=" " data-offstyle="secondary" data-width="10" data-toggle="toggle" data-size="xs" data-style="ios">
                                     @endif
-                                    <label class="form-check-label" for="{{$rol->name}}">
-                                      {{$rol->name}}
-                                    </label>
-                                  @endif
-                                  <button type="button" class="btn-sm btn-primary float-right btn-detalles" data-toggle="modal" data-dismiss="modal" data-role-id="{{ $rol->id }}" data-user-id="{{ $usuario->id }}" data-target="#detailsModal">
-                                    Detalles
-                                  </button>
-                                </td>                                
-                              </tr> 
-                              @endforeach
+                                    <button type="button" class="btn-sm btn-primary float-right btn-detalles" data-toggle="modal" data-dismiss="modal" data-role-id="{{ $rol->id }}" data-user-id="{{ $usuario->id }}" data-target="#detailsModal">
+                                      Detalles
+                                    </button>
+                                  </td>                                
+                                </tr> 
+                                @endforeach
+                              @else
+                                No hay roles cargados.
+                              @endif
                             </tbody>
                           </table>
                         </div>
