@@ -188,7 +188,7 @@ Route::get('filtros/new', 'FilterController@crearFiltro')->name('admin.crearFilt
 
 // ---------- ROLES ----------
 Route::get('roles', 'RoleController@listarRoles')->name('admin.listarRoles');
-Route::get('roles/{role}/rename', 'RoleController@renombrarRol')->name('admin.renombrarRol');
+Route::get('roles/{role}/edit', 'RoleController@editarRol')->name('admin.editarRol');
 Route::get('roles/new', 'RoleController@crearRol')->name('admin.crearRol');
 Route::get('roles/{roleId}/detail', 'RoleController@detallesRol')->name('admin.detallesRol');
 

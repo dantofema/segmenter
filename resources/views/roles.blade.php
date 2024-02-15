@@ -17,13 +17,13 @@
             {{Session::get('info')}}
           </div>
         @endif
-        @if(Session::has('error_rename') or Session::has('error_permissions_edit'))
+        @if(Session::has('error_rename') or Session::has('error_authorization_edit'))
         <script>
             $(function() {
                 $('#editRoleModal{{Session::get('id_error')}}').modal('show');
             });
           </script>
-        @elseif(Session::has('error_create') or Session::has('error_permissions_new'))
+        @elseif(Session::has('error_create') or Session::has('error_authorizations_new'))
           <script>
             $(function() {
                 $('#newRoleModal').modal('show');
@@ -73,27 +73,31 @@
                           <span class="badge badge-pill badge-danger">Super Admin</span>
                         </div>
                       @else
-                        <form action="{{route('admin.renombrarRol', $rol->id)}}" method="put" id="form-edit-rol{{$rol->id}}">
+                        <form action="{{route('admin.editarRol', $rol->id)}}" method="put" id="form-edit-rol{{$rol->id}}">
                           <div class="modal-body">
                             <label for="renameInput">Nuevo nombre de rol</label>
-                            <input type="text" class="form-control" id="renameInput" name="newName" aria-describedby="renombrarRol">
+                            <input type="text" class="form-control" id="renameInput" name="newName" aria-describedby="editarRol">
                             @if(Session::has('error_rename'))
                               <p style="color:red">{{Session::get('error_rename')}}</p>
                             @endif
                           <br>
+                          @if(Session::has('error_authorization_edit'))
+                            <p style="color:red">{{Session::get('error_authorization_edit')}}</p>
+                          @endif
                           <!-- Tabla de permisos -->
+                          <label for="tabla-permisos">Permisos del rol</label>
                           <table class="table" id="tabla-permisos">
                             <tbody>
                               @php 
-                                $role_permissions = $rol->permissions;
+                                $role_permissions = $rol->permissions->where('guard_name', 'web');
                               @endphp
                               @foreach ($permisos as $permiso)
                               <tr>                                         
                                 <td class="col align-self-center">
                                   @if ($role_permissions->contains($permiso))
-                                    <input type="checkbox" class="toggle-checkbox" checked id="{{$permiso->name}}" name="permisos[]" value="{{$permiso->id}}" data-on=" " data-off=" " data-offstyle="secondary" data-width="10" data-toggle="toggle" data-size="xs" data-style="ios">
+                                    <input type="checkbox" class="toggle-checkbox" checked id="{{$permiso->name}}" name="autorizaciones[]" value="{{$permiso->id}}" data-on=" " data-off=" " data-offstyle="secondary" data-width="10" data-toggle="toggle" data-size="xs" data-style="ios">
                                   @else
-                                    <input type="checkbox" class="toggle-checkbox" id="{{$permiso->name}}" name="permisos[]" value="{{$permiso->id}}" data-on=" " data-off=" " data-offstyle="secondary" data-width="10" data-toggle="toggle" data-size="xs" data-style="ios">
+                                    <input type="checkbox" class="toggle-checkbox" id="{{$permiso->name}}" name="autorizaciones[]" value="{{$permiso->id}}" data-on=" " data-off=" " data-offstyle="secondary" data-width="10" data-toggle="toggle" data-size="xs" data-style="ios">
                                   @endif
                                     <label class="form-check-label" for="{{$permiso->name}}">
                                       {{$permiso->name}}
@@ -103,13 +107,34 @@
                               @endforeach
                               </tbody>  
                             </table>
-                            @if(Session::has('error_permissions_edit'))
-                              <p style="color:red">{{Session::get('error_permissions_edit')}}</p>
-                            @endif
+                            <hr>
+                            <!-- Tabla de filtros -->
+                            <label for="tabla-filtros">Filtros del rol</label>
+                            <table class="table" id="tabla-filtros">
+                              <tbody>
+                                @php 
+                                  $role_filters = $rol->permissions->where('guard_name', 'filters');
+                                @endphp
+                                @foreach ($filtros as $filtro)
+                                <tr>                                         
+                                  <td class="col align-self-center">
+                                    @if ($role_filters->contains($filtro))
+                                      <input type="checkbox" class="toggle-checkbox" checked id="{{$filtro->name}}" name="autorizaciones[]" value="{{$filtro->id}}" data-on=" " data-off=" " data-offstyle="secondary" data-width="10" data-toggle="toggle" data-size="xs" data-style="ios">
+                                    @else
+                                      <input type="checkbox" class="toggle-checkbox" id="{{$filtro->name}}" name="autorizaciones[]" value="{{$filtro->id}}" data-on=" " data-off=" " data-offstyle="secondary" data-width="10" data-toggle="toggle" data-size="xs" data-style="ios">
+                                    @endif
+                                      <label class="form-check-label" for="{{$filtro->name}}">
+                                        {{$filtro->name}}
+                                      </label>
+                                    </td>
+                                </tr> 
+                                @endforeach
+                              </tbody>  
+                            </table>
                           </div>
                           <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                            <input type="submit" name="btn"  class="btn btn-primary btn-submit-edit-permiso" value="Guardar Cambios" onclick="return confirmarCambios()">
+                            <input type="submit" name="btn"  class="btn btn-primary btn-submit-edit-autorizaciones" value="Guardar Cambios" onclick="return confirmarCambios()">
                           </div>
                         </form>
                       @endif
@@ -135,6 +160,9 @@
                             <p style="color:red">{{Session::get('error_create')}}</p>
                           @endif
                           <br>
+                          @if(Session::has('error_authorizations_new'))
+                            <p style="color:red">{{Session::get('error_authorizations_new')}}</p>
+                          @endif
                           <!-- Tabla de permisos -->
                           <label for="tabla-permisos">Permisos del rol</label>
                           <table class="table" id="tabla-permisos">
@@ -142,7 +170,7 @@
                                 @foreach ($permisos as $permiso)
                                 <tr>                                         
                                   <td class="col align-self-center">
-                                      <input type="checkbox" class="toggle-checkbox" id="{{$permiso->name}}" name="permisos[]" value="{{$permiso->id}}" data-on=" " data-off=" " data-offstyle="secondary" data-width="10" data-toggle="toggle" data-size="xs" data-style="ios">
+                                      <input type="checkbox" class="toggle-checkbox" id="{{$permiso->name}}" name="autorizaciones[]" value="{{$permiso->id}}" data-on=" " data-off=" " data-offstyle="secondary" data-width="10" data-toggle="toggle" data-size="xs" data-style="ios">
                                       <label class="form-check-label" for="{{$permiso->name}}">
                                         {{$permiso->name}}
                                       </label>
@@ -151,12 +179,26 @@
                                 @endforeach
                               </tbody>
                             </table>
-                            @if(Session::has('error_permissions_new'))
-                              <p style="color:red">{{Session::get('error_permissions_new')}}</p>
-                            @endif
+                            <hr>
+                            <!-- Tabla de filtros -->
+                            <label for="tabla-filtros">Filtros del rol</label>
+                            <table class="table" id="tabla-filtros">
+                              <tbody>
+                                @foreach ($filtros as $filtro)
+                                <tr>                                         
+                                  <td class="col align-self-center">
+                                      <input type="checkbox" class="toggle-checkbox" id="{{$filtro->name}}" name="autorizaciones[]" value="{{$filtro->id}}" data-on=" " data-off=" " data-offstyle="secondary" data-width="10" data-toggle="toggle" data-size="xs" data-style="ios">
+                                      <label class="form-check-label" for="{{$filtro->name}}">
+                                        {{$filtro->name}}
+                                      </label>
+                                    </td>
+                                </tr> 
+                                @endforeach
+                              </tbody>
+                            </table>
                           <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-                            <input type="submit" name="btn"  class="btn btn-primary btn-submit-edit-permiso" value="Confirmar" onclick="return confirmarCreacion()">
+                            <input type="submit" name="btn"  class="btn btn-primary btn-submit-edit-autorizaciones" value="Confirmar" onclick="return confirmarCreacion()">
                           </div>
                         </div>
                         </form>

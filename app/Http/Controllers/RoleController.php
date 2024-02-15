@@ -10,11 +10,12 @@ class RoleController extends Controller
 {
     public function listarRoles(){
         $roles = Role::all();
-        $permisos = Permission::all();
-        return view('roles', compact('roles','permisos'));
+        $permisos = Permission::where('guard_name', 'web')->get();
+        $filtros = Permission::where('guard_name', 'filters')->get();
+        return view('roles', compact('roles','permisos','filtros'));
     }
 
-    public function renombrarRol(Request $request, Role $role){
+    public function editarRol(Request $request, Role $role){
         $rol = Role::find($role)->first();
         if($rol) {
             if($request->newName){
@@ -26,11 +27,13 @@ class RoleController extends Controller
                     $rol->save();
                 }      
             }
-            if($request->permisos){
-                $rol->syncPermissions($request->permisos);
+            if($request->autorizaciones){
+                // tomo los modelos ya que si a syncPermissions() le mando una lista de ids intentara sincronizar usando el guard default (web)
+                $autorizaciones = Permission::whereIn('id', $request->autorizaciones);
+                $rol->syncPermissions($autorizaciones);
                 return redirect()->route('admin.listarRoles')->with('info','Rol actualizado!');
             } else {
-                return redirect()->back()->with('error_permissions_edit','Debe asignar al menos un permiso')->with('id_error', $role->id);
+                return redirect()->back()->with('error_authorization_edit','Debe asignar al menos un permiso/filtro')->with('id_error', $role->id);
             }
             
         }
@@ -42,12 +45,14 @@ class RoleController extends Controller
             if($rol) {
                 return redirect()->back()->with('error_create','Ya existe el rol!')->with('id', $rol->id);
             } else {
-                if($request->permisos){
+                if($request->autorizaciones){
                     $nuevoRol = Role::create(['name' => $request->newRoleName]);
-                    $nuevoRol->syncPermissions($request->permisos);
+                    // tomo los modelos ya que si a syncPermissions() le mando una lista de ids intentara sincronizar usando el guard default (web)
+                    $autorizaciones = Permission::whereIn('id', $request->autorizaciones);
+                    $nuevoRol->syncPermissions($autorizaciones);
                     return redirect()->route('admin.listarRoles')->with('info','Rol creado!');
                 } else {
-                    return redirect()->back()->with('error_permissions_new','Debe asignar al menos un permiso');
+                    return redirect()->back()->with('error_authorizations_new','Debe asignar al menos un permiso/filtro');
                 }
             }
         } else {
