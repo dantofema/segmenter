@@ -131,7 +131,7 @@
                           <table class="table" id="tabla-filtros">
                             <tbody>
                               @php 
-                                $user_filters = $usuario->getPermissionsViaRoles()->where('is_filter', true)->pluck('name');
+                                $user_filters = $usuario->getPermissionsViaRoles()->where('guard_name', 'filters')->pluck('name');
                               @endphp
                               @if ($filtros->count() > 0)
                                 @foreach ($filtros as $filtro)

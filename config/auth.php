@@ -51,6 +51,12 @@ return [
             'provider' => 'users',
             'hash' => false,
         ],
+
+        /*guard para filtross */
+        'filters' => [
+            'driver' => 'session',
+            'provider' => 'users',
+        ],
     ],
 
     /*

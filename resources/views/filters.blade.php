@@ -32,7 +32,7 @@
           </script>
         @endif
         <table class="table table-bordered" id="tabla-filtros">
-          @if($filtros !== null)
+          @if($filtros->count() > 0)
           <thead>
             <tr>
               <th>Filtro</th>
