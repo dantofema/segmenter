@@ -27,15 +27,29 @@ class RoleController extends Controller
                     $rol->save();
                 }      
             }
-            if($request->autorizaciones){
-                // tomo los modelos ya que si a syncPermissions() le mando una lista de ids intentara sincronizar usando el guard default (web)
-                $autorizaciones = Permission::whereIn('id', $request->autorizaciones);
-                $rol->syncPermissions($autorizaciones);
-                return redirect()->route('admin.listarRoles')->with('info','Rol actualizado!');
-            } else {
-                return redirect()->back()->with('error_authorization_edit','Debe asignar al menos un permiso/filtro')->with('id_error', $role->id);
+            if($request->role_type == "permisos"){
+                if($request->permisos){
+                    // actualizo el guard antes de hacer la sincronizacion
+                    $rol->setAttribute('guard_name', 'web');
+                    $rol->save();
+                    $rol->syncPermissions($request->permisos);
+                    return redirect()->route('admin.listarRoles')->with('info','Rol actualizado!');
+                } else {
+                    return redirect()->back()->with('error_authorization_edit','Debe asignar al menos un permiso/filtro')->with('id_error', $role->id);
+                }
+            } elseif($request->role_type == "filtros") {
+                if($request->filtros){
+                    // tomo los modelos ya que si a syncPermissions() le mando una lista de ids intentara sincronizar usando el guard default (web)
+                    $filtros = Permission::find($request->filtros);
+                    // actualizo el guard antes de hacer la sincronizacion
+                    $rol->setAttribute('guard_name', 'filters');
+                    $rol->save();
+                    $rol->syncPermissions($request->filtros);
+                    return redirect()->route('admin.listarRoles')->with('info','Rol actualizado!');
+                } else {
+                    return redirect()->back()->with('error_authorization_edit','Debe asignar al menos un permiso/filtro')->with('id_error', $role->id);
+                }
             }
-            
         }
     }
     
@@ -45,15 +59,23 @@ class RoleController extends Controller
             if($rol) {
                 return redirect()->back()->with('error_create','Ya existe el rol!')->with('id', $rol->id);
             } else {
-                if($request->autorizaciones){
-                    $nuevoRol = Role::create(['name' => $request->newRoleName]);
+                if($request->role_type == "permisos"){
+                    if($request->permisos){
+                        $nuevoRol = Role::create(['guard_name' => 'web','name' => $request->newRoleName]);
+                        $nuevoRol->syncPermissions($request->permisos);
+                        return redirect()->route('admin.listarRoles')->with('info','Rol creado!');
+                    } else {
+                        return redirect()->back()->with('error_authorizations_new','Debe asignar al menos un permiso/filtro');
+                    }
+                } elseif($request->role_type == "filtros") {
+                    $nuevoRol = Role::create(['guard_name' => 'filters','name' => $request->newRoleName]);
                     // tomo los modelos ya que si a syncPermissions() le mando una lista de ids intentara sincronizar usando el guard default (web)
-                    $autorizaciones = Permission::whereIn('id', $request->autorizaciones);
-                    $nuevoRol->syncPermissions($autorizaciones);
+                    $filtros = Permission::find($request->filtros);
+                    $nuevoRol->syncPermissions($request->filtros);
                     return redirect()->route('admin.listarRoles')->with('info','Rol creado!');
                 } else {
                     return redirect()->back()->with('error_authorizations_new','Debe asignar al menos un permiso/filtro');
-                }
+                }       
             }
         } else {
             return redirect()->back()->with('error_create','El nombre del rol no puede estar vacío.');
@@ -63,10 +85,10 @@ class RoleController extends Controller
 
     public function detallesRol(Request $request, $roleId) {
         $rol = Role::find($roleId);
-        $permisos = $rol->permissions()->pluck('name');
+        $autorizaciones = $rol->permissions()->pluck('name');
         return response()->json([
             'rol' => $rol,
-            'permisos' => $permisos
+            'autorizaciones' => $autorizaciones,
         ]);
     }
 }

@@ -81,12 +81,16 @@
                               <p style="color:red">{{Session::get('error_rename')}}</p>
                             @endif
                           <br>
+                          <!-- Switch de cambio de tipo de rol -->
+                          <label for="switch-role-type-edit">Tipo de Rol  </label>
+                           <!-- Debe ser clase para que el script itere por cada uno de ellos -->
+                          <input type="checkbox" class="switch-role-type-edit" data-on="Filtros" data-rol-id="{{$rol->id}}" data-off="Permisos" data-onstyle="info" data-offstyle="warning" data-size="xs" data-width="20%" data-toggle="toggle" data-style="ios">
+                          
                           @if(Session::has('error_authorization_edit'))
                             <p style="color:red">{{Session::get('error_authorization_edit')}}</p>
                           @endif
                           <!-- Tabla de permisos -->
-                          <label for="tabla-permisos">Permisos del rol</label>
-                          <table class="table" id="tabla-permisos">
+                          <table class="table" id="tabla-permisos-edit-{{$rol->id}}">
                             <tbody>
                               @php 
                                 $role_permissions = $rol->permissions->where('guard_name', 'web');
@@ -95,9 +99,9 @@
                               <tr>                                         
                                 <td class="col align-self-center">
                                   @if ($role_permissions->contains($permiso))
-                                    <input type="checkbox" class="toggle-checkbox" checked id="{{$permiso->name}}" name="autorizaciones[]" value="{{$permiso->id}}" data-on=" " data-off=" " data-offstyle="secondary" data-width="10" data-toggle="toggle" data-size="xs" data-style="ios">
+                                    <input type="checkbox" class="toggle-checkbox" checked id="{{$permiso->name}}" name="permisos[]" value="{{$permiso->id}}" data-on=" " data-off=" " data-offstyle="secondary" data-width="10" data-toggle="toggle" data-size="xs" data-style="ios">
                                   @else
-                                    <input type="checkbox" class="toggle-checkbox" id="{{$permiso->name}}" name="autorizaciones[]" value="{{$permiso->id}}" data-on=" " data-off=" " data-offstyle="secondary" data-width="10" data-toggle="toggle" data-size="xs" data-style="ios">
+                                    <input type="checkbox" class="toggle-checkbox" id="{{$permiso->name}}" name="permisos[]" value="{{$permiso->id}}" data-on=" " data-off=" " data-offstyle="secondary" data-width="10" data-toggle="toggle" data-size="xs" data-style="ios">
                                   @endif
                                     <label class="form-check-label" for="{{$permiso->name}}">
                                       {{$permiso->name}}
@@ -107,10 +111,9 @@
                               @endforeach
                               </tbody>  
                             </table>
-                            <hr>
-                            <!-- Tabla de filtros -->
-                            <label for="tabla-filtros">Filtros del rol</label>
-                            <table class="table" id="tabla-filtros">
+                  
+                            <!-- Tabla de filtros (oculta por defecto)-->
+                            <table class="table" id="tabla-filtros-edit-{{$rol->id}}" style="display:none;">
                               <tbody>
                                 @php 
                                   $role_filters = $rol->permissions->where('guard_name', 'filters');
@@ -119,9 +122,9 @@
                                 <tr>                                         
                                   <td class="col align-self-center">
                                     @if ($role_filters->contains($filtro))
-                                      <input type="checkbox" class="toggle-checkbox" checked id="{{$filtro->name}}" name="autorizaciones[]" value="{{$filtro->id}}" data-on=" " data-off=" " data-offstyle="secondary" data-width="10" data-toggle="toggle" data-size="xs" data-style="ios">
+                                      <input type="checkbox" class="toggle-checkbox" checked id="{{$filtro->name}}" name="filtros[]" value="{{$filtro->id}}" data-on=" " data-off=" " data-offstyle="secondary" data-width="10" data-toggle="toggle" data-size="xs" data-style="ios">
                                     @else
-                                      <input type="checkbox" class="toggle-checkbox" id="{{$filtro->name}}" name="autorizaciones[]" value="{{$filtro->id}}" data-on=" " data-off=" " data-offstyle="secondary" data-width="10" data-toggle="toggle" data-size="xs" data-style="ios">
+                                      <input type="checkbox" class="toggle-checkbox" id="{{$filtro->name}}" name="filtros[]" value="{{$filtro->id}}" data-on=" " data-off=" " data-offstyle="secondary" data-width="10" data-toggle="toggle" data-size="xs" data-style="ios">
                                     @endif
                                       <label class="form-check-label" for="{{$filtro->name}}">
                                         {{$filtro->name}}
@@ -132,6 +135,12 @@
                               </tbody>  
                             </table>
                           </div>
+                          <!-- Tipo de rol a enviar -->
+                          @if ($rol->guard_name = 'web')
+                            <input type="hidden" id="role-type-{{$rol->id}}" name="role_type" value="permisos" />
+                          @else
+                            <input type="hidden" id="role-type-{{$rol->id}}" name="role_type" value="filtros" />
+                          @endif
                           <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
                             <input type="submit" name="btn"  class="btn btn-primary btn-submit-edit-autorizaciones" value="Guardar Cambios" onclick="return confirmarCambios()">
@@ -160,17 +169,20 @@
                             <p style="color:red">{{Session::get('error_create')}}</p>
                           @endif
                           <br>
+                          <!-- Switch de cambio de tipo de rol -->
+                          <label for="switch-role-type-create">Tipo de Rol  </label>
+                          <input type="checkbox" id="switch-role-type-create" data-on="Filtros" data-off="Permisos" data-onstyle="info" data-offstyle="warning" data-size="xs" data-width="20%" data-toggle="toggle" data-style="ios">
+
                           @if(Session::has('error_authorizations_new'))
                             <p style="color:red">{{Session::get('error_authorizations_new')}}</p>
                           @endif
                           <!-- Tabla de permisos -->
-                          <label for="tabla-permisos">Permisos del rol</label>
-                          <table class="table" id="tabla-permisos">
+                          <table class="table" id="tabla-permisos-create">
                               <tbody>
                                 @foreach ($permisos as $permiso)
                                 <tr>                                         
                                   <td class="col align-self-center">
-                                      <input type="checkbox" class="toggle-checkbox" id="{{$permiso->name}}" name="autorizaciones[]" value="{{$permiso->id}}" data-on=" " data-off=" " data-offstyle="secondary" data-width="10" data-toggle="toggle" data-size="xs" data-style="ios">
+                                      <input type="checkbox" class="toggle-checkbox" id="{{$permiso->name}}" name="permisos[]" value="{{$permiso->id}}" data-on=" " data-off=" " data-offstyle="secondary" data-width="10" data-toggle="toggle" data-size="xs" data-style="ios">
                                       <label class="form-check-label" for="{{$permiso->name}}">
                                         {{$permiso->name}}
                                       </label>
@@ -179,15 +191,14 @@
                                 @endforeach
                               </tbody>
                             </table>
-                            <hr>
-                            <!-- Tabla de filtros -->
-                            <label for="tabla-filtros">Filtros del rol</label>
-                            <table class="table" id="tabla-filtros">
+                            
+                            <!-- Tabla de filtros (oculta por defecto)-->
+                            <table class="table" id="tabla-filtros-create" style="display:none;">
                               <tbody>
                                 @foreach ($filtros as $filtro)
                                 <tr>                                         
                                   <td class="col align-self-center">
-                                      <input type="checkbox" class="toggle-checkbox" id="{{$filtro->name}}" name="autorizaciones[]" value="{{$filtro->id}}" data-on=" " data-off=" " data-offstyle="secondary" data-width="10" data-toggle="toggle" data-size="xs" data-style="ios">
+                                      <input type="checkbox" class="toggle-checkbox" id="{{$filtro->name}}" name="filtros[]" value="{{$filtro->id}}" data-on=" " data-off=" " data-offstyle="secondary" data-width="10" data-toggle="toggle" data-size="xs" data-style="ios">
                                       <label class="form-check-label" for="{{$filtro->name}}">
                                         {{$filtro->name}}
                                       </label>
@@ -196,6 +207,8 @@
                                 @endforeach
                               </tbody>
                             </table>
+                            <!-- Tipo de rol a enviar -->
+                            <input type="hidden" id="role-type-create" name="role_type" value="permisos" />
                           <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
                             <input type="submit" name="btn"  class="btn btn-primary btn-submit-edit-autorizaciones" value="Confirmar" onclick="return confirmarCreacion()">
@@ -226,6 +239,61 @@
   function confirmarCreacion(){
     return confirm("¿Estás seguro de que deseas crear el nuevo rol \"" + document.getElementById('nameInput').value +"\" ?");
   };
+</script>
+
+<script>
+    $(document).ready(function() {
+        $('#switch-role-type-create').prop('checked', false).change();
+        $('#switch-role-type-create').change(function() {
+            if ($(this).prop('checked')) {
+                // Mostrar la tabla de filtros y ocultar la tabla de permisos
+                console.log('#tabla-filtros-create');
+                $('#tabla-filtros-create').show();
+                $('#tabla-permisos-create').hide();
+
+                $('#role-type-create').val('filtros');
+            } else {
+                // Mostrar la tabla de permisos y ocultar la tabla de filtros
+                $('#tabla-permisos-create').show();
+                $('#tabla-filtros-create').hide();
+
+                $('#role-type-create').val('permisos');
+            }
+        });
+    });
+</script>
+
+<script>
+  $(document).ready(function() {
+    $('.switch-role-type-edit').change(function() {
+        // Obtener el ID del rol correspondiente al switch
+        var rolId = $(this).data('rol-id');
+        console.log("ID del Rol: " + rolId);
+
+        // Obtener las tablas correspondientes al rol actual
+        var tablaPermisos = $('#tabla-permisos-edit-' + rolId);
+        var tablaFiltros = $('#tabla-filtros-edit-' + rolId);
+
+        if ($(this).prop('checked')) {
+            // Mostrar la tabla de filtros y ocultar la tabla de permisos
+            console.log("Mostrar filtros");
+            tablaFiltros.show();
+            tablaPermisos.hide();
+
+            $('#role-type-' + rolId).val('filtros');
+        } else {
+            // Mostrar la tabla de permisos y ocultar la tabla de filtros
+            console.log("Mostrar Permisos");
+            tablaPermisos.show();
+            tablaFiltros.hide();
+
+            $('#role-type-' + rolId).val('permisos');
+        }
+    });
+
+    // Desmarcar todos los switches por defecto
+    $('.switch-role-type-edit').prop('checked', false).change();
+  });
 </script>
 
 <!-- datatables -->

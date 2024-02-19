@@ -266,13 +266,14 @@
                         </button>
                       </div>
                       <div class="modal-body">
-                      <table class="table">
-                        <tbody class="modal-table-body">
-                        </tbody>
-                      </table>
+                        <h4 class='authorization-label'></h4>
+                        <table class="authorization-table" style="width: 100%;">
+                          <tbody class="modal-authorization-table-body" style="width: 100%;">
+                          </tbody>
+                        </table>
                       </div>
                       <div class="modal-footer">
-                        <button class="btn btn-primary" data-target="#rolesModal{{$usuario->id}}" data-toggle="modal" data-dismiss="modal">Volver</button>
+                        <button class="btn btn-primary btn-volver" data-target="#rolesModal{{$usuario->id}}" data-toggle="modal" data-dismiss="modal">Volver</button>
                       </div>
                     </div>
                   </div>
@@ -308,18 +309,34 @@
               dataType: 'json',
               success: function(response){
                   if (response) {
+                      // Configuro correctamente el modal al que dirige el boton "Volver"
+                      $('#detailsModal .btn-volver').attr('data-target', '#rolesModal' + userId);
                       $('#detailsModal .modal-title').html('Detalles del Rol ' + response.rol.name);
                       if(response.rol.name === 'Super Admin') {
                         console.log("Super Admin");
-                        $('#detailsModal .modal-table-body').html('Este rol tiene todos los permisos.');
+                        // Muestro unicamente el mensaje para Super Admin
+                        $('#detailsModal .authorization-label').hide();
+                        $('#detailsModal .modal-authorization-table-body').html('Este rol tiene todas las autorizaciones.');
                       } else {
-                        // Vacío el contenido del modal antes de agregar nuevos permisos
-                        $('#detailsModal .modal-table-body').empty();
+                        // Vacío el contenido de la tabla autorizaciones antes de mostrar las nuevas
+                        $('#detailsModal .modal-authorization-table-body').empty();
+                        // Vacío el contenido del label de la tabla autorizaciones antes de mostrar el nuevo
+                        $('#detailsModal .authorization-label').empty();
+                        // Muestro nuevamente el label de la tabla autorizaciones
+                        $('#detailsModal .authorization-label').show();
+                        // Actualizo el label
+                        if(response.rol.guard_name === 'web'){
+                          $('#detailsModal .authorization-label').append('<label class="badge badge-pill badge-warning" for="authorization-table">Permisos</label>');
+                        } else if(response.rol.guard_name === 'filters'){
+                          $('#detailsModal .authorization-label').append('<label class="badge badge-pill badge-info" for="authorization-table">Filtros</label>');
+                        }
                         console.log("No Super Admin");
-                        console.log(response.permisos);
-                        $.each(response.permisos, function(index, permiso) {
-                            $('#detailsModal .modal-table-body').append('<tr><td class="col align-self-center">'+permiso+'</td></tr>');
-                        });
+                        console.log("Autorizaciones: " + response.autorizaciones);
+                        if(response.autorizaciones.length > 0){
+                          $.each(response.autorizaciones, function(index, autorizacion) {
+                            $('#detailsModal .modal-authorization-table-body').append('<tr><td class="col align-self-center">'+autorizacion+'</td></tr>');
+                          });
+                        };
                       }
                   } else {
                       console.log('El rol no pudo ser encontrado.');
@@ -332,7 +349,8 @@
       });
       // Limpio el contenido del modal cuando se cierra
       $('#detailsModal').on('hidden.bs.modal', function () {
-          $('#detailsModal .modal-table-body').empty();
+          $('#detailsModal .modal-permissions-table-body').empty();
+          $('#detailsModal .modal-filters-table-body').empty();
       });
   });
 </script>
