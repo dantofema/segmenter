@@ -495,7 +495,14 @@ FROM
                   return (DB::select('SELECT link,count(*) FROM
                           "'.$esquema.'".'.$tabla.' group by link order by count(*);'));
               }catch (QueryException $exception) {
-               Log::error('No se pudo encontrar localidades: '.$exception);
+                  try {
+                      $result_debug = DB::select('SELECT * FROM
+                              "'.$esquema.'".'.$tabla.' limit 1');
+                  }catch (QueryException $exception) {
+                     Log::error('No se pudo encontrar localidades. ',[$exception,$result_debug]);
+                   return [];
+                  }
+               Log::warning('No se pudo encontrar localidades. ',[$exception,$result_debug]);
                return [];
               }
            }
@@ -1402,7 +1409,6 @@ FROM
                 l.nrocatastr::integer END nrocatastr,
             piso, casa, dpto_habit, trim(sector) sector, trim(regexp_replace(replace(edificio,'Â¾','ó'),'â\u0096\u0091','°')) edificio, trim(entrada) entrada, tipoviv, descripcio, descripci2 ,
             row_number() over w_lado as nro_en_lado,
-            count(*) over w_lado as cant_en_lado,
             count(*) over w as conteo,
             conteo as conteo_vivs,
             row_number() over w_nrocatastr as nro_en_numero
@@ -1483,8 +1489,7 @@ FROM
                     codigo10, nomencla, codigo20,
                     tipo, nombre, e.lado ladoe, desde, hasta,e.mza mzae,
                     frac, radio, l.mza, l.lado, ccalle, ncalle, l.nrocatastr, piso,casa,dpto_habit,sector,edificio,entrada,tipoviv,
-                    descripcio,descripci2,
-                    cant_en_lado
+                    descripcio,descripci2
   ".$insert_into."      
   FROM arcos e JOIN listado l ON
             (l.lado::integer=e.lado and
