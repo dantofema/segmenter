@@ -483,7 +483,7 @@ class Archivo extends Model
 //                MyDB::createSchema($coddepto->link);
 //                MyDB::copiaraEsquemaPais('e_'.$this->tabla,'e'.$coddepto->link,$coddepto->link);
                 MyDB::createSchema($codprov);
-                MyDB::copiaraEsquemaPais('e_'.$this->tabla,'e'.$codprov,'arc',null,$codprov);
+                MyDB::copiaraEsquemaPais('e_'.$this->tabla,'e'.$codprov,'lab',null,$codprov);
                 $count++;
             }
            
@@ -492,12 +492,15 @@ class Archivo extends Model
 //                MyDB::createSchema($coddepto->link);
 //                MyDB::copiaraEsquemaPais('e_'.$this->tabla,'e'.$coddepto->link,$coddepto->link);
                 MyDB::createSchema($codprov_pol);
-                MyDB::copiaraEsquemaPais('e_'.$this->tabla,'e'.$codprov_pol,'lab',null,$codprov_pol);
+                MyDB::copiaraEsquemaPais('e_'.$this->tabla,'e'.$codprov_pol,'arc',null,$codprov_pol);
                 $count++;
+                $codprov=$codprov_pol;
             }
             
             MyDB::limpiar_esquema('e_'.$this->tabla);
-            return $codprovs;
+            $prov=array('link'=>$codprov);
+            $resultado[0] = (object) $prov;
+            return $resultado;
         } else {
             // Para cada localidad encontrada
             // creo esquema y copio datos a esquema según codigo.

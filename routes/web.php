@@ -199,6 +199,7 @@ Route::get('provs-list', 'ProvinciaController@provsList');
 Route::get('provs','ProvinciaController@index');
 Route::get('prov/{provincia}','ProvinciaController@show');
 Route::post('prov/{provincia}','ProvinciaController@show_post');
+Route::delete('provincia/{provincia}','ProvinciaController@destroy')->name('provincia.delete');
 
 // ---------- DEPARTAMENTOS --------
 
