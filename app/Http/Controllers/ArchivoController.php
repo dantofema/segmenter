@@ -200,7 +200,7 @@ class ArchivoController extends Controller
      */
     public function descargar(Archivo $archivo)
     {
-	    //
+	    // Descarga de archivo.
 	    return $archivo->descargar();
     }
 
@@ -212,7 +212,7 @@ class ArchivoController extends Controller
      */
     public function procesar(Archivo $archivo)
     {
-	    //
+	    // Mensaje extraño
 	    $mensaje = $archivo->procesar()?'ik0':'m4l';
       return view('archivo.list');
     }

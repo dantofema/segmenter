@@ -24,9 +24,9 @@ En este repositorio se encunetran 4 ramas principales.
 - prd     versión para producción
 
 ## Prerrequisitos (las instrucciones asumen que se está usando Ubuntu)
-* PHP 8.1 o superior: php-mbstring php-dom php-zip php-gd php-pdo-pgsql composer
+* PHP 8.1 o superior: php-mbstring php-dom php-zip php-gd php-pdo-pgsql php-cli php-curl composer
 ```
-sudo apt install php-mbstring php-dom php-zip php-gd php-pdo-pgsql 
+sudo apt install php-mbstring php-dom php-zip php-gd php-pdo-pgsql php-cli php-curl
 curl -sS https://getcomposer.org/installer | php
 ```
 * gdal (ogr2ogr)

@@ -147,9 +147,12 @@ class SegmenterController extends Controller
     }else{
        flash($mensajes)->important()->error();
     }
-    foreach($ppdddllls as $ppdddlll){
-       MyDB::agregarsegisegd($ppdddlll->link);
-       MyDB::juntaListadoGeom('e'.$ppdddlll->link);
+    foreach($ppdddllls as $ppdddlll)
+    {
+      if ($ppdddlll != null){
+         MyDB::agregarsegisegd($ppdddlll->link);
+         MyDB::juntaListadoGeom('e'.$ppdddlll->link);
+      }
     }
     if (isset($codaglo[0]->link)){
             if ($epsg_id=='sr-org:8333'){

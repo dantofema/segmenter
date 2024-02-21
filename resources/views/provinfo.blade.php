@@ -10,6 +10,15 @@
 <p>
     con {{ $provincia->departamentos_count }} divisiones de segundo orden (comunas/partidos/departamentos)
 </p>
+<p>
+parte de  {{ count($provincia->operativos) }} operativos
+            	@foreach($provincia->operativos as $operativo)
+    		<li class="btn  btn-outline-secondary" style="margin-bottom: 1px" >
+		     <a href="{{ url('/operativo/'.$operativo->id) }}">
+           ({{ $operativo->nombre }}) {{ $operativo->observacion }} </a>
+         </li>
+		@endforeach
+</p>
             	@foreach($provincia->departamentos->sort() as $departamento)
     		<li class="btn  btn-outline-secondary" style="margin-bottom: 1px" >
 		 <a href="{{ url('/depto/'.$departamento->id) }}">
