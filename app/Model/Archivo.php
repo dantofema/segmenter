@@ -165,7 +165,7 @@ class Archivo extends Model
 
         $fileName = 'mandarina_'.time().'_'.$this->nombre_original.'.zip';
 
-        if ($zip->open(public_path($fileName), ZipArchive::CREATE) === TRUE) {
+        if ($zip->open(storage_path().'/app/'.$fileName, ZipArchive::CREATE) === TRUE) {
 
             $files = $this->getArchivosSHP();
 
@@ -182,7 +182,7 @@ class Archivo extends Model
             $zip->close();
         }
 
-        return response()->download(public_path($fileName));
+        return response()->download(storage_path().'/app/'.$fileName);
     }
 
     public function getArchivosSHP() {
@@ -473,22 +473,31 @@ class Archivo extends Model
             // Intento cargar pais x depto :D
             $coddeptos = MyDB::getDptos('lab', 'e_'.$this->tabla);
             $coddeptos_pol = MyDB::getDptos('arc', 'e_'.$this->tabla);
-            flash('Puede ser una pais con deptos: '.count($coddeptos).' o '.count($coddeptos_pol));
-            foreach ($coddeptos as $coddepto){
-                flash('Se encontró Departamento : '.$coddepto->link);
-                MyDB::createSchema($coddepto->link);
-                MyDB::copiaraEsquemaPais('e_'.$this->tabla,'e'.$coddepto->link,$coddepto->link);
+            $codprov = MyDB::getProv('lab', 'e_'.$this->tabla);
+            $codprov_pol = MyDB::getProv('arc', 'e_'.$this->tabla);
+
+            flash('Puede ser una "pais" x prov con deptos: '.count($coddeptos).' o '.count($coddeptos_pol));            
+
+            if ($codprov != null){    
+                flash('Se encontró Provincia : '.$codprov);
+//                MyDB::createSchema($coddepto->link);
+//                MyDB::copiaraEsquemaPais('e_'.$this->tabla,'e'.$coddepto->link,$coddepto->link);
+                MyDB::createSchema($codprov);
+                MyDB::copiaraEsquemaPais('e_'.$this->tabla,'e'.$codprov,'arc',null,$codprov);
                 $count++;
             }
-            foreach ($coddeptos_pol as $coddepto){
-                flash('Se encontró Departamentos en arc/pol : '.$coddepto->link);
-                MyDB::createSchema($coddepto->link);
-                MyDB::copiaraEsquemaPais('e_'.$this->tabla,'e'.$coddepto->link,$coddepto->link);
+           
+            if ($codprov_pol != null){    
+                flash('Se encontró Departamentos en arc/pol : '.$codprov_pol);
+//                MyDB::createSchema($coddepto->link);
+//                MyDB::copiaraEsquemaPais('e_'.$this->tabla,'e'.$coddepto->link,$coddepto->link);
+                MyDB::createSchema($codprov_pol);
+                MyDB::copiaraEsquemaPais('e_'.$this->tabla,'e'.$codprov_pol,'lab',null,$codprov_pol);
                 $count++;
             }
             
             MyDB::limpiar_esquema('e_'.$this->tabla);
-            return $coddeptos;
+            return $codprovs;
         } else {
             // Para cada localidad encontrada
             // creo esquema y copio datos a esquema según codigo.

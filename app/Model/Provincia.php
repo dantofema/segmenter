@@ -27,6 +27,17 @@ class Provincia extends Model
     //
     public $timestamps = false;
 
+    public function scopeFilter($query, $params)
+    {
+        if ( isset($params['name']) && trim($params['name'] !== '') ) {
+            $query->where('nombre', 'LIKE', trim($params['name']) . '%');
+        }
+        
+        //$query->where('operativo.',) // Operativo x default.
+
+        return $query;
+    }
+
      /**
      * Get the departamentos de la provincia.
      */
@@ -50,6 +61,14 @@ class Provincia extends Model
 //    {
 //        return $this->hasManyThrough('App\Model\Radio','App\Model\Departamento');
 //    }
+
+    /**
+     * Relación con Operativo, diretamente puede tener varios operativos.
+     */
+    public function operativos()
+    {
+        return $this->hasMany('App\Model\OperativoProv');
+    }
 
     /**
      * Get the json geoservicios de la provincia.

@@ -99,6 +99,8 @@ Route::get('/setup/limpia/{esquema}',
 'SetupController@limpiarEsquema')->name('setup.limpia');
 Route::get('/setup/muestrea/{esquema}',
 'SetupController@muestreaEsquema')->name('setup.muestrea');
+Route::get('/setup/limpiar/Temporales',
+'SetupController@limpiaEsquemasTemporales')->name('setup.limpia.temporales');
 Route::get('/setup/junta/{esquema}',
 'SetupController@juntarSegmentos')->name('setup.junta');
 Route::get('/setup/junta/{esquema}/{frac}/{radio}',
