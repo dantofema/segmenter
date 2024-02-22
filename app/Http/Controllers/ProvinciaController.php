@@ -176,7 +176,7 @@ class ProvinciaController extends Controller
       $_info = $provincia->codigo.' '.$provincia->nombre;
       $deptos = count($provincia->departamentos);
       if ($deptos == 0){
-        if (Auth::user()->can($provincia->codigo, 'web')) { //podría ser tambien provincia->nombre (definir estandar)
+        if (Auth::user()->can($provincia->codigo, 'filters')) { //podría ser tambien provincia->nombre (definir estandar)
             Log::info('El usuario posee el filtro: '.$provincia->codigo);
             if ($provincia->delete()) {
                 Log::info('Se borró la provincia: '.$_info);
