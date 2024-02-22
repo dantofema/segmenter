@@ -79,12 +79,11 @@ class ProvinciaController extends Controller
                     $button = '<button type="button" class="btn_descarga btn-sm btn-primary" > Descargar </button> ';
                     // botón de eliminar PROVINCIA  en test, si esta logueado.
                     if (Auth::check()) {
-                            try {
-                                if ( ( Auth::user()->hasPermissionTo('Borrar Provincia') ) and ($data['departamentos_count']==0) ) 
+                            try {                        
+                                if ( ( Auth::user()->can('Borrar Provincia') ) and ($data['departamentos_count']==0) ) 
                                 // Botón borrar sólo si tiene permiso y la provicnia no tiene deptos.
                                 {
-                                    $button .= '<button type="button" class="btn_prov_delete btn-sm btn-danger " > Borrar ('.
-                                                $data['departamentos_count'].') </button>';
+                                    $button .= '<button type="button" class="btn_prov_delete btn-sm btn-danger "> Borrar </button>';
                                 }
                             } catch (PermissionDoesNotExist $e) {
                             Log::warning('No existe el permiso "Borrar Provincia"');
