@@ -36,20 +36,25 @@ return new class extends Migration
     public function down()
     {
         DB::beginTransaction();
-            /** elimino los permisos de administración de usuarios*/
-            Permission::where(['name'=>'Administrar Permisos'])->first()->delete();
-            Permission::where(['name'=>'Administrar Filtros'])->first()->delete();
-            Permission::where(['name'=>'Administrar Roles'])->first()->delete();
+            try {
+                /** elimino los permisos de administración de usuarios*/
+                Permission::where(['name'=>'Administrar Permisos'])->first()->delete();
+                Permission::where(['name'=>'Administrar Filtros'])->first()->delete();
+                Permission::where(['name'=>'Administrar Roles'])->first()->delete();
 
-            /** elimino los permisos de administración de filtros*/
-            Permission::where(['name'=>'Crear Filtros'])->first()->delete();
-            Permission::where(['name'=>'Editar Filtros'])->first()->delete();
-            Permission::where(['name'=>'Eliminar Filtros'])->first()->delete();
+                /** elimino los permisos de administración de filtros*/
+                Permission::where(['name'=>'Crear Filtros'])->first()->delete();
+                Permission::where(['name'=>'Editar Filtros'])->first()->delete();
+                Permission::where(['name'=>'Eliminar Filtros'])->first()->delete();
 
-            /** elimino los permisos de administración de roles*/
-            Permission::where(['name'=>'Crear Roles'])->first()->delete();
-            Permission::where(['name'=>'Editar Roles'])->first()->delete();
-            Permission::where(['name'=>'Eliminar Roles'])->first()->delete();
+                /** elimino los permisos de administración de roles*/
+                Permission::where(['name'=>'Crear Roles'])->first()->delete();
+                Permission::where(['name'=>'Editar Roles'])->first()->delete();
+                Permission::where(['name'=>'Eliminar Roles'])->first()->delete();
+            } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+                echo $e->getMessage();
+            }
+            
 
             DB::commit();
     }
