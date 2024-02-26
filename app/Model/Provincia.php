@@ -32,7 +32,7 @@ class Provincia extends Model
         if ( isset($params['name']) && trim($params['name'] !== '') ) {
             $query->where('nombre', 'LIKE', trim($params['name']) . '%');
         }
-        
+
         //$query->where('operativo.',) // Operativo x default.
 
         return $query;
