@@ -103,6 +103,11 @@
                                 <li class="nav-item dropdown">
                                   <a class="dropdown-item" href="{{ route('archivos') }}">{{ __('Archivos') }}</a>
                                 </li>
+                                @if (Auth::user()->hasRole('Super Admin'))
+                                <li class="nav-item dropdown">
+                                  <a class="dropdown-item" href="{{ route('admin.listarUsuarios') }}">{{ __('Usuarios') }}</a>
+                                </li>
+                                @endif
                               </ul>
                              </div>
 
