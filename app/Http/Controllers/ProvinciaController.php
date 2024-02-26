@@ -82,10 +82,9 @@ class ProvinciaController extends Controller
                     if (Auth::check()) {
                             try {                 
                                 $filtro = Permission::where('name',$data['codigo'])->first();                                
-                                if ( $filtro and ( (Auth::user()->hasPermissionTo($data['codigo'], 'filters') or Auth::user()->hasRole('Super Admin')) and Auth::user()->can('Borrar Provincia') and ($data['departamentos_count']==0) ) ) 
-                                // Botón borrar sólo si tiene permiso y la provicnia no tiene deptos. (or user solo para tests)
+                                if ( $filtro and ( Auth::user()->hasPermissionTo($data['codigo'], 'filters') and Auth::user()->can('Borrar Provincia') and ($data['departamentos_count']==0) ) ) 
+                                // Botón borrar sólo si tiene permiso y la provicnia no tiene deptos. (agregar or Auth::user()->hasRole('Super Admin') solo para tests)
                                 {
-                                    Log::debug('Hola');
                                     $button .= '<button type="button" class="btn_prov_delete btn-sm btn-danger "> Borrar </button>';
                                 }
                             } catch (PermissionDoesNotExist $e) {
@@ -180,7 +179,8 @@ class ProvinciaController extends Controller
       $deptos = count($provincia->departamentos);
       if ($deptos == 0){
         $filtro = Permission::where('name',$provincia->codigo)->first();
-        if (($filtro) && (Auth::user()->hasPermissionTo($provincia->codigo, 'filters') or Auth::user()->hasRole('Super Admin'))) { //or superadmin solo para tests
+        if ($filtro && Auth::user()->hasPermissionTo($provincia->codigo, 'filters')) { 
+            //agregar or Auth::user()->hasRole('Super Admin') solo para tests
             Log::info('El usuario posee el filtro: '.$provincia->codigo);
             if ($provincia->delete()) {
                 Log::info('Se borró la provincia: '.$_info);
