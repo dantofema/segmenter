@@ -16,7 +16,7 @@ return new class extends Migration
     public function up()
     {
         try{
-            $superAdmin = Role::first(['name' => 'Super Admin']);
+            $superAdmin = Role::where('name','Super Admin')->first();
             $superAdmin->syncPermissions([]);
         } catch ( Spatie\Permission\Exceptions $e) {
             $this->command->error('Error eliminando los permisos rol Super Admin...');
