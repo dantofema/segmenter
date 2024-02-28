@@ -28,16 +28,21 @@ class CreateBorrarXxPermissions extends Migration
     public function down()
     {
         DB::beginTransaction();
-            /** elimino los permisos */
-            Permission::where(['name'=>'Borrar Provincia'])->first()->delete();
-            Permission::where(['name'=>'Borrar Departamento'])->first()->delete();
-            Permission::where(['name'=>'Borrar Localdiad'])->first()->delete();
-            Permission::where(['name'=>'Borrar Fracción'])->first()->delete();
-            Permission::where(['name'=>'Borrar Radio'])->first()->delete();
-            Permission::where(['name'=>'Borrar Aglomerado'])->first()->delete();
-            Permission::where(['name'=>'Borrar Paraje'])->first()->delete();
-            Permission::where(['name'=>'Borrar Entidad'])->first()->delete();
-            Permission::where(['name'=>'Borrar Base Antártica'])->first()->delete();
+            try{
+                /** elimino los permisos */
+                Permission::where(['name'=>'Borrar Provincia'])->firstOrFail()->delete();
+                Permission::where(['name'=>'Borrar Departamento'])->firstOrFail()->delete();
+                Permission::where(['name'=>'Borrar Localdiad'])->firstOrFail()->delete();
+                Permission::where(['name'=>'Borrar Fracción'])->firstOrFail()->delete();
+                Permission::where(['name'=>'Borrar Radio'])->firstOrFail()->delete();
+                Permission::where(['name'=>'Borrar Aglomerado'])->firstOrFail()->delete();
+                Permission::where(['name'=>'Borrar Paraje'])->firstOrFail()->delete();
+                Permission::where(['name'=>'Borrar Entidad'])->firstOrFail()->delete();
+                Permission::where(['name'=>'Borrar Base Antártica'])->firstOrFail()->delete();
+            } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+                echo $e->getMessage();
+            }
+            
             DB::commit();
     }
 }
