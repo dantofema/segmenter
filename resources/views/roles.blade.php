@@ -89,7 +89,7 @@
                           <!-- Switch de cambio de tipo de rol -->
                           <label for="switch-role-type-edit">Tipo de Rol  </label>
                            <!-- Debe ser clase para que el script itere por cada uno de ellos -->
-                          <input type="checkbox" class="switch-role-type-edit" data-on="Filtros" data-rol-id="{{$rol->id}}" data-off="Permisos" data-onstyle="info" data-offstyle="warning" data-size="xs" data-width="20%" data-toggle="toggle" data-style="ios">
+                          <input type="checkbox" data-toggle="toggle" class="switch-role-type-edit" data-on="Filtros" data-rol-id="{{$rol->id}}" data-off="Permisos" data-onstyle="info" data-offstyle="warning" data-size="xs" data-width="20%" data-toggle="toggle" data-style="ios">
                           
                           @if(Session::has('error_authorization_edit'))
                             <p style="color:red">{{Session::get('error_authorization_edit')}}</p>
@@ -104,9 +104,9 @@
                               <tr>                                         
                                 <td class="col align-self-center">
                                   @if ($role_permissions->contains($permiso))
-                                    <input type="checkbox" class="toggle-checkbox" checked id="{{$permiso->name}}" name="permisos[]" value="{{$permiso->id}}" data-on=" " data-off=" " data-offstyle="secondary" data-width="10" data-toggle="toggle" data-size="xs" data-style="ios">
+                                    <input type="checkbox" data-toggle="toggle" class="toggle-checkbox" checked id="{{$permiso->name}}" name="permisos[]" value="{{$permiso->id}}" data-on=" " data-off=" " data-offstyle="secondary" data-width="10" data-toggle="toggle" data-size="xs" data-style="ios">
                                   @else
-                                    <input type="checkbox" class="toggle-checkbox" id="{{$permiso->name}}" name="permisos[]" value="{{$permiso->id}}" data-on=" " data-off=" " data-offstyle="secondary" data-width="10" data-toggle="toggle" data-size="xs" data-style="ios">
+                                    <input type="checkbox" data-toggle="toggle" class="toggle-checkbox" id="{{$permiso->name}}" name="permisos[]" value="{{$permiso->id}}" data-on=" " data-off=" " data-offstyle="secondary" data-width="10" data-toggle="toggle" data-size="xs" data-style="ios">
                                   @endif
                                     <label class="form-check-label" for="{{$permiso->name}}">
                                       {{$permiso->name}}
@@ -127,9 +127,9 @@
                                 <tr>                                         
                                   <td class="col align-self-center">
                                     @if ($role_filters->contains($filtro))
-                                      <input type="checkbox" class="toggle-checkbox" checked id="{{$filtro->name}}" name="filtros[]" value="{{$filtro->id}}" data-on=" " data-off=" " data-offstyle="secondary" data-width="10" data-toggle="toggle" data-size="xs" data-style="ios">
+                                      <input type="checkbox" data-toggle="toggle" class="toggle-checkbox" checked id="{{$filtro->name}}" name="filtros[]" value="{{$filtro->id}}" data-on=" " data-off=" " data-offstyle="secondary" data-width="10" data-toggle="toggle" data-size="xs" data-style="ios">
                                     @else
-                                      <input type="checkbox" class="toggle-checkbox" id="{{$filtro->name}}" name="filtros[]" value="{{$filtro->id}}" data-on=" " data-off=" " data-offstyle="secondary" data-width="10" data-toggle="toggle" data-size="xs" data-style="ios">
+                                      <input type="checkbox" data-toggle="toggle" class="toggle-checkbox" id="{{$filtro->name}}" name="filtros[]" value="{{$filtro->id}}" data-on=" " data-off=" " data-offstyle="secondary" data-width="10" data-toggle="toggle" data-size="xs" data-style="ios">
                                     @endif
                                       <label class="form-check-label" for="{{$filtro->name}}">
                                         {{$filtro->name}}
@@ -176,7 +176,7 @@
                           <br>
                           <!-- Switch de cambio de tipo de rol -->
                           <label for="switch-role-type-create">Tipo de Rol  </label>
-                          <input type="checkbox" id="switch-role-type-create" data-on="Filtros" data-off="Permisos" data-onstyle="info" data-offstyle="warning" data-size="xs" data-width="20%" data-toggle="toggle" data-style="ios">
+                          <input type="checkbox" data-toggle="toggle" id="switch-role-type-create" data-on="Filtros" data-off="Permisos" data-onstyle="info" data-offstyle="warning" data-size="xs" data-width="20%" data-toggle="toggle" data-style="ios">
 
                           @if(Session::has('error_authorizations_new'))
                             <p style="color:red">{{Session::get('error_authorizations_new')}}</p>
@@ -187,7 +187,7 @@
                                 @foreach ($permisos as $permiso)
                                 <tr>                                         
                                   <td class="col align-self-center">
-                                      <input type="checkbox" class="toggle-checkbox" id="{{$permiso->name}}" name="permisos[]" value="{{$permiso->id}}" data-on=" " data-off=" " data-offstyle="secondary" data-width="10" data-toggle="toggle" data-size="xs" data-style="ios">
+                                      <input type="checkbox" data-toggle="toggle" class="toggle-checkbox" id="{{$permiso->name}}" name="permisos[]" value="{{$permiso->id}}" data-on=" " data-off=" " data-offstyle="secondary" data-width="10" data-toggle="toggle" data-size="xs" data-style="ios">
                                       <label class="form-check-label" for="{{$permiso->name}}">
                                         {{$permiso->name}}
                                       </label>
@@ -203,7 +203,7 @@
                                 @foreach ($filtros as $filtro)
                                 <tr>                                         
                                   <td class="col align-self-center">
-                                      <input type="checkbox" class="toggle-checkbox" id="{{$filtro->name}}" name="filtros[]" value="{{$filtro->id}}" data-on=" " data-off=" " data-offstyle="secondary" data-width="10" data-toggle="toggle" data-size="xs" data-style="ios">
+                                      <input type="checkbox" data-toggle="toggle" class="toggle-checkbox" id="{{$filtro->name}}" name="filtros[]" value="{{$filtro->id}}" data-on=" " data-off=" " data-offstyle="secondary" data-width="10" data-toggle="toggle" data-size="xs" data-style="ios">
                                       <label class="form-check-label" for="{{$filtro->name}}">
                                         {{$filtro->name}}
                                       </label>
