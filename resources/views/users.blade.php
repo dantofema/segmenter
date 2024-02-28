@@ -137,7 +137,7 @@
                                 @foreach ($filtros as $filtro)
                                 <tr>                                         
                                   <td class="col align-self-center">
-                                    @if ($user_filters->contains($filtro->name) or $usuario->hasRole('Super Admin'))
+                                    @if ($user_filters->contains($filtro->name))
                                       <input type="checkbox" data-toggle="toggle" class="toggle-checkbox" disabled checked id="{{$filtro->name}}" name="filtros[]" value="{{$filtro->id}}" data-on=" " data-off=" " data-offstyle="secondary" data-width="10" data-toggle="toggle" data-size="xs" data-style="ios">
                                     @else
                                       @if ($usuario->hasPermissionTo($filtro->name, $filtro->guard_name ))
@@ -149,7 +149,7 @@
                                       <label class="form-check-label" for="{{$filtro->name}}">
                                         {{$filtro->name}}
                                       </label>
-                                      @if ($user_filters->contains($filtro->name) or $usuario->hasRole('Super Admin'))
+                                      @if ($user_filters->contains($filtro->name))
                                         <span class="badge badge-pill badge-danger">Heredado de rol</span>
                                       @endif
                                     </td>
