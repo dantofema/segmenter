@@ -13,12 +13,12 @@ class GrantSelectSubtipoviv extends Migration
      */
     public function up()
     {
-       try{ 
+       try{
             echo DB::statement("grant select on table public.subtipo_vivienda to geoestadistica;");
-            echo _('Se dieron permisos de lectura a tabla Subtipo de vivienda a geoestadistica
+            echo __('Se dieron permisos de lectura a tabla Subtipo de vivienda a geoestadistica
 ');
         }catch(Illuminate\Database\QueryException $e){
-            echo _('No se pudo dar permisos de lectura a tablas Subtipo de vivienda a geoestadistica
+            echo __('No se pudo dar permisos de lectura a tablas Subtipo de vivienda a geoestadistica
 '.$e->getMessage());
         }
     }

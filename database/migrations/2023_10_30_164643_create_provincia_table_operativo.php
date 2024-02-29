@@ -25,7 +25,7 @@ class CreateProvinciaTableOperativo extends Migration
     Schema::table('operativo', function (Blueprint $table) {
         $table->primary('id')->change();
     });
- 
+
 }
 
  If (! Schema::hasTable('operativo_provincia')){
@@ -38,9 +38,9 @@ class CreateProvinciaTableOperativo extends Migration
         $table->foreign('provincia_id')->references('id')->on('provincia');
         $table->foreign('operativo_id')->references('id')->on('operativo');
 
-    });    
+    });
    }else{
-	  echo _('Omitiendo creación de tabla de Operativo-Provincia existente...
+	  echo __('Omitiendo creación de tabla de Operativo-Provincia existente...
 		  ');
    }
 }

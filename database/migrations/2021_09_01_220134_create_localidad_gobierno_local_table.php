@@ -23,7 +23,7 @@ class CreateLocalidadGobiernoLocalTable extends Migration
            DB::unprepared($sql);
        }catch(Illuminate\Database\QueryException $e){
           DB::Rollback();
-          echo _('Error creando relacion localidad - gobierno_local ...');
+          echo __('Error creando relacion localidad - gobierno_local ...');
        }
     }
 

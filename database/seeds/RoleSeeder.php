@@ -16,7 +16,7 @@ class RoleSeeder extends Seeder
      * @return void
      */
     public function run()
-    {   
+    {
         // Reset cached roles and permissions
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
@@ -26,7 +26,7 @@ class RoleSeeder extends Seeder
             $this->command->info('Rol Super Admin creado.');
         } catch ( Spatie\Permission\Exceptions $e) {
             $this->command->error('Error creando rol Super Admin...');
-            echo _($e->getMessage());
+            echo __($e->getMessage());
         }
     }
 }

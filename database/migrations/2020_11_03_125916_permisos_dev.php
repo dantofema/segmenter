@@ -19,12 +19,12 @@ class PermisosDev extends Migration
         try{
             $query="GRANT ALL ON DATABASE $database TO mretamozo;";
             DB::statement($query);
-            echo _('Permisos para usuario mretamozo...
+            echo __('Permisos para usuario mretamozo...
 ');
             }
         catch(Illuminate\Database\QueryException $e){
             DB::Rollback();
-            echo _('Error con usuario mretamozo...
+            echo __('Error con usuario mretamozo...
 ');
             }
  
@@ -32,11 +32,11 @@ class PermisosDev extends Migration
             Eloquent::unguard();
             $query="GRANT ALL ON DATABASE $database TO manuel;";
             DB::statement($query);
-            echo _('Permisos para usuario manuel...
+            echo __('Permisos para usuario manuel...
 ');
             }
         catch(Exception $e){
-            echo _('Error con usuario manuel...
+            echo __('Error con usuario manuel...
 ');
             DB::Rollback();
             }
@@ -47,7 +47,7 @@ class PermisosDev extends Migration
             DB::statement($query);
             }
         catch(Exception $e){
-            echo _('Error con usuario halperin...
+            echo __('Error con usuario halperin...
 ');
             DB::Rollback();
             }
@@ -59,7 +59,7 @@ class PermisosDev extends Migration
             DB::statement($query);
             }
         catch(Exception $e){
-            echo _('Error con usuario vheredia...
+            echo __('Error con usuario vheredia...
 ');
             DB::Rollback();
             }

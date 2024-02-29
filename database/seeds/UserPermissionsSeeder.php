@@ -15,7 +15,7 @@ class UserPermissionsSeeder extends Seeder
     public function run()
     {
         $arrayOfPermissionNames = ['Administrar Permisos', 'Administrar Filtros', 'Administrar Roles'];
-        
+
         $permissions = collect($arrayOfPermissionNames)->map(function ($permission) {
             return ['name' => $permission, 'guard_name' => 'web'];
         });
@@ -27,7 +27,7 @@ class UserPermissionsSeeder extends Seeder
                 $this->command->info('Permiso '.$permission['name'].' creado.');
             } catch ( Spatie\Permission\Exception $e) {
                 $this->command->error('Error creando permiso '.$permission['name'].'...');
-                echo _($e->getMessage());
+                echo __($e->getMessage());
             }
         }
     }

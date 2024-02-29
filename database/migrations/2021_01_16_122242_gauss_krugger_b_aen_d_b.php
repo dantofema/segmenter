@@ -28,10 +28,17 @@ class GaussKruggerBAenDB extends Migration
 ';
                 return 0;
             }else{
-                dd($e);
+              if ($e->getCode()=='42P01'){
+                                echo 'Proyeccion CABA NO Se pudo instalar. Falta Postgis?
+                ';
+                        }
+                else {
+                   dd($e);
+                }
             }
         }
-        echo 'Proyeccion CABA instalada. SRID:8333
+
+	echo 'Proyeccion CABA instalada. SRID:8333
 ';
     }
 

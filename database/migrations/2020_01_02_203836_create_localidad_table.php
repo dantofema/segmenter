@@ -25,7 +25,7 @@ class CreateLocalidadTable extends Migration
            DB::unprepared($sql);
        }catch(Illuminate\Database\QueryException $e){
           DB::Rollback();
-	        echo _('Omitiendo creación de tabla de localidad...
+	        echo __('Omitiendo creación de tabla de localidad...
 		      ');
        }
     }
