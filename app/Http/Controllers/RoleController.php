@@ -83,8 +83,8 @@ class RoleController extends Controller
          
     }
 
-    public function detallesRol(Request $request, $roleId) {
-        $rol = Role::find($roleId);
+    public function detallesRol(Request $request, $role) {
+        $rol = Role::find($role);
         $autorizaciones = $rol->permissions()->pluck('name');
         return response()->json([
             'rol' => $rol,
