@@ -193,6 +193,7 @@ Route::get('roles', 'RoleController@listarRoles')->name('admin.listarRoles');
 Route::get('roles/{role}/edit', 'RoleController@editarRol')->name('admin.editarRol');
 Route::get('roles/new', 'RoleController@crearRol')->name('admin.crearRol');
 Route::get('roles/{role}/detail', 'RoleController@detallesRol')->name('admin.detallesRol');
+Route::delete('roles/{role}', 'RoleController@eliminarRol')->name('admin.eliminarRol');
 
 // ---------- PROVINCIAS --------
 Route::get('provs-list', 'ProvinciaController@provsList'); 
