@@ -55,7 +55,7 @@ class SegmenterController extends Controller
         flash($mensaje)->error()->important();
         return $mensaje;
     }
-    
+
     $AppUser = Auth::user();
     $data = [];
     $segmenta_auto = false;
@@ -97,7 +97,7 @@ class SegmenterController extends Controller
     $temp[0] = (object) $algo;
     $codaglo = isset($codaglo) ? $codaglo : $temp;
     $ppdddllls=[];
-   
+
    // Carga de arcos o e00
     if ($request->hasFile('shp')) {
       if($shp_file = Archivo::cargar($request->shp, Auth::user(),
@@ -151,7 +151,7 @@ class SegmenterController extends Controller
       if ($ppdddlll != null){
         if (strlen($ppdddlll->link)==2) {
           flash('Se cargo una provincia. La '.$ppdddlll->link)->info()->important();
-        } else {
+        } elseif ($ppdddlll->link != null){
           flash('Preparando localidad '.$ppdddlll->link.'. Agrego segi, segd e Intenta juntar Geom y Listado')->info();
           MyDB::agregarsegisegd($ppdddlll->link);
           MyDB::juntaListadoGeom('e'.$ppdddlll->link);
@@ -176,7 +176,7 @@ class SegmenterController extends Controller
          $procesar_result = false;
          flash("Error en el modelo archivo al cargar PxRad")->error();
      }
-      if ($procesar_result) 
+      if ($procesar_result)
       {
           $tabla = $pxrad_file->tabla;
             // Busco provincia encontrada en pxrad:
@@ -285,6 +285,6 @@ class SegmenterController extends Controller
                            $oDepto->loadCount('localidades')]);
       }
     return view('segmenter/index', ['data' => $data,'epsgs'=> $this->epsgs]);
-      
+
   }
 }
