@@ -280,7 +280,7 @@ class ArchivoController extends Controller
         $this->middleware('can:run-setup');
         if (Auth::check()){
             try {
-                if (Auth::user()->hasAllPermissions(['Administrar Archivos', 'Ver Archivos'])){
+                if (Auth::user()->can(['Administrar Archivos', 'Ver Archivos'])){
                     // Para todos los archivos
                     $archivos = Archivo::all();
                     $eliminados = 0;
@@ -306,6 +306,7 @@ class ArchivoController extends Controller
                     return redirect('archivos');
                 } else {
                     flash('message', 'No tienes permiso para hacer eso.')->error();
+                    return back();
                 }
             } catch (PermissionDoesNotExist $e) {
                 flash('message', 'No existe el permiso "Administrar Archivos"')->error();
@@ -318,7 +319,7 @@ class ArchivoController extends Controller
     public function listar_repetidos(){
         if (Auth::check()){
             try {
-                if (Auth::user()->hasAllPermissions(['Administrar Archivos', 'Ver Archivos'])){
+                if (Auth::user()->can(['Administrar Archivos', 'Ver Archivos'])){
                     $archivos = Archivo::all();
                     $repetidos = [];
                     foreach ($archivos as $archivo){
@@ -337,6 +338,7 @@ class ArchivoController extends Controller
                     return view('archivo.repetidos', compact('repetidos'));
                 } else {
                     flash('No tienes permiso para hacer eso.')->error();
+                    return back();
                 }
             } catch (PermissionDoesNotExist $e) {
                 flash('No existe el permiso "Administrar Archivos"')->error();
@@ -355,7 +357,7 @@ class ArchivoController extends Controller
         
         if (Auth::check()){
             try {
-                if (Auth::user()->hasAllPermissions(['Administrar Archivos', 'Ver Archivos'])){
+                if (Auth::user()->can(['Administrar Archivos', 'Ver Archivos'])){
                     $archivos = Archivo::all();
                     $recalculados = 0;
                     foreach ($archivos as $archivo){
@@ -369,6 +371,7 @@ class ArchivoController extends Controller
                     return redirect('archivos');
                 } else {
                     flash('No tienes permiso para hacer eso.')->error();
+                    return back();
                 }
             } catch (PermissionDoesNotExist $e) {
                 flash('No existe el permiso "Administrar Archivos"')->error();
@@ -381,7 +384,7 @@ class ArchivoController extends Controller
     public function listar_checksums_obsoletos(){
         if (Auth::check()){
             try {
-                if (Auth::user()->hasAllPermissions(['Administrar Archivos', 'Ver Archivos'])){
+                if (Auth::user()->can(['Administrar Archivos', 'Ver Archivos'])){
                     $archivos = Archivo::all();
                     $checksums_obsoletos = [];
                     foreach ($archivos as $archivo){
@@ -393,6 +396,7 @@ class ArchivoController extends Controller
                     return view('archivo.checksums_obsoletos', compact('checksums_obsoletos'));
                 } else {
                     flash('No tienes permiso para hacer eso.')->error();
+                    return back();
                 }
             } catch (PermissionDoesNotExist $e) {
                 flash('No existe el permiso "Administrar Archivos"')->error();
