@@ -12,9 +12,13 @@ try {
     window.$ = window.jQuery = require('jquery');
 
     require('bootstrap');
+    
     // bootstrap 4 toggle
     require('bootstrap4-toggle/css/bootstrap4-toggle.min.css');
     require('bootstrap4-toggle/js/bootstrap4-toggle.min.js');
+    // bootstrap icons
+    require('bootstrap-icons/font/bootstrap-icons.css');
+
     require('datatables.net-bs4');
     require('cose-base');
     window.cytoscape = require('cytoscape');
