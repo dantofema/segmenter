@@ -10,10 +10,6 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
-Route::get('users', 'UserController@listarUsuarios')->name('admin.listarUsuarios');
-Route::get('users/{user}/roles', 'UserController@editarRolUsuario')->name('admin.editarRolUsuario');
-Route::get('users/{user}/permission', 'UserController@editarPermisoUsuario')->name('admin.editarPermisoUsuario');
-
 Route::get('/', function () {
     return view('welcome');
 });
@@ -103,6 +99,8 @@ Route::get('/setup/limpia/{esquema}',
 'SetupController@limpiarEsquema')->name('setup.limpia');
 Route::get('/setup/muestrea/{esquema}',
 'SetupController@muestreaEsquema')->name('setup.muestrea');
+Route::get('/setup/limpiar/Temporales',
+'SetupController@limpiaEsquemasTemporales')->name('setup.limpia.temporales');
 Route::get('/setup/junta/{esquema}',
 'SetupController@juntarSegmentos')->name('setup.junta');
 Route::get('/setup/junta/{esquema}/{frac}/{radio}',
@@ -179,11 +177,29 @@ Route::get('search_provincia', 'AutoCompleteProvinciaController@index');
 Route::get('autocomplete_provincia', 'AutoCompleteProvinciaController@search');
 Route::get('provincia','ProvinciaController@index');
 
+// ---------- USUARIOS ----------
+Route::get('users', 'UserController@listarUsuarios')->name('admin.listarUsuarios');
+Route::get('users/{user}/roles', 'UserController@editarRolUsuario')->name('admin.editarRolUsuario');
+Route::get('users/{user}/permission', 'UserController@editarPermisoUsuario')->name('admin.editarPermisoUsuario');
+Route::get('users/{user}/filter', 'UserController@editarFiltroUsuario')->name('admin.editarFiltroUsuario');
+
+// ---------- FILTROS ----------
+Route::get('filtros', 'FilterController@listarFiltros')->name('admin.listarFiltros');
+Route::get('filtros/{filter}/rename', 'FilterController@renombrarFiltro')->name('admin.renombrarFiltro');
+Route::get('filtros/new', 'FilterController@crearFiltro')->name('admin.crearFiltro');
+
+// ---------- ROLES ----------
+Route::get('roles', 'RoleController@listarRoles')->name('admin.listarRoles');
+Route::get('roles/{role}/edit', 'RoleController@editarRol')->name('admin.editarRol');
+Route::get('roles/new', 'RoleController@crearRol')->name('admin.crearRol');
+Route::get('roles/{roleId}/detail', 'RoleController@detallesRol')->name('admin.detallesRol');
+
 // ---------- PROVINCIAS --------
 Route::get('provs-list', 'ProvinciaController@provsList'); 
 Route::get('provs','ProvinciaController@index');
 Route::get('prov/{provincia}','ProvinciaController@show');
 Route::post('prov/{provincia}','ProvinciaController@show_post');
+Route::delete('provincia/{provincia}','ProvinciaController@destroy')->name('provincia.delete');
 
 // ---------- DEPARTAMENTOS --------
 

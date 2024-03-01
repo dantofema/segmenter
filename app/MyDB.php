@@ -310,8 +310,14 @@ FROM
 
     public static function getProv($tabla,$esquema)
     {
-        return (DB::select('SELECT prov as link FROM
-        '.$esquema.'.'.$tabla.' Limit 1;')[0]->link);
+        try {
+            return (DB::select('SELECT prov as link FROM
+            "'.$esquema.'".'.$tabla.' Limit 1;')[0]->link);
+        }catch (\Illuminate\Database\QueryException $exception) {
+                Log::error('Error: '.$exception);
+                //Supongo codprov sin Nombre
+                return null;
+        }
     }
 
     public static function getDataProv($tabla,$esquema)
@@ -495,7 +501,14 @@ FROM
                   return (DB::select('SELECT link,count(*) FROM
                           "'.$esquema.'".'.$tabla.' group by link order by count(*);'));
               }catch (QueryException $exception) {
-               Log::error('No se pudo encontrar localidades: '.$exception);
+                  try {
+                      $result_debug = DB::select('SELECT * FROM
+                              "'.$esquema.'".'.$tabla.' limit 1');
+                  }catch (QueryException $exception) {
+                     Log::error('No se pudo encontrar localidades. ',[$exception,$result_debug]);
+                   return [];
+                  }
+               Log::warning('No se pudo encontrar localidades. ',[$exception,$result_debug]);
                return [];
               }
            }
@@ -633,36 +646,29 @@ FROM
 
     // Copia de esquema temporal a otro
     //
-    public static function copiaraEsquemaPais($de_esquema,$a_esquema,$depto_codigo=null)
+    public static function copiaraEsquemaPais($de_esquema,$a_esquema,$tipo='arc',$depto_codigo=null,$prov_codigo=null)
     {
         if (isset($depto_codigo)) {
                   //JOIN CON TABLA LAB SEGUN FACE_ID =?
                  $filtro=" WHERE prov || depto = '".$depto_codigo."' ";
-                 $filtro_lab=" WHERE prov || depto = '".$depto_codigo."'";
-        } else { $filtro='';
-                 $filtro_lab=''; }
+        } else {
+            if (isset($prov_codigo)) {
+                //JOIN CON TABLA LAB SEGUN FACE_ID =?
+               $filtro=" WHERE prov  = '".$prov_codigo."' ";
+            } else { $filtro=''; }
+        }
          try {
              DB::beginTransaction();
-             DB::unprepared('CREATE TABLE "'.$a_esquema.'".arc AS SELECT * FROM "'.$de_esquema.'".arc '.$filtro);
+             DB::unprepared('CREATE TABLE "'.$a_esquema.'".'.$tipo.' AS SELECT * FROM "'.$de_esquema.'".'.$tipo.' '.$filtro);
              DB::commit();
          }catch (QueryException $exception) {
              DB::Rollback();
-             Log::error('Error: '.$exception);
-             flash('Error procesando arc '.$exception->getMessage())->error()->important();
+             Log::warning('Error: '.$exception);
+             flash('Error procesando '.$tipo.' '.$exception->getMessage())->error()->important();
              $error = true;
              //DB::unprepared('DROP TABLE IF EXISTS '.$a_esquema.'.arc CASCADE');
          }
-         try {
-             DB::beginTransaction();
-             DB::unprepared('CREATE TABLE "'.$a_esquema.'".lab AS SELECT * FROM "'.$de_esquema.'".lab '.$filtro_lab);
-             DB::commit();
-         }catch (QueryException $exception) {
-             DB::Rollback();
-             Log::error('Error: '.$exception);
-             flash('Error procesando lab '.$exception->getMessage())->error()->important();
-             $error = true;
-             //DB::unprepared('DROP TABLE IF EXISTS '.$a_esquema.'.lab CASCADE');
-         }
+
         return true;
     }
 
@@ -1402,7 +1408,6 @@ FROM
                 l.nrocatastr::integer END nrocatastr,
             piso, casa, dpto_habit, trim(sector) sector, trim(regexp_replace(replace(edificio,'Â¾','ó'),'â\u0096\u0091','°')) edificio, trim(entrada) entrada, tipoviv, descripcio, descripci2 ,
             row_number() over w_lado as nro_en_lado,
-            count(*) over w_lado as cant_en_lado,
             count(*) over w as conteo,
             conteo as conteo_vivs,
             row_number() over w_nrocatastr as nro_en_numero
@@ -1483,8 +1488,7 @@ FROM
                     codigo10, nomencla, codigo20,
                     tipo, nombre, e.lado ladoe, desde, hasta,e.mza mzae,
                     frac, radio, l.mza, l.lado, ccalle, ncalle, l.nrocatastr, piso,casa,dpto_habit,sector,edificio,entrada,tipoviv,
-                    descripcio,descripci2,
-                    cant_en_lado
+                    descripcio,descripci2
   ".$insert_into."      
   FROM arcos e JOIN listado l ON
             (l.lado::integer=e.lado and

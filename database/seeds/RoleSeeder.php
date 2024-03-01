@@ -11,7 +11,7 @@ use Spatie\Permission\Exceptions;
 class RoleSeeder extends Seeder
 {
     /**
-     * Run the database seeds.
+     * Crea el rol Super Admin.
      *
      * @return void
      */
@@ -20,16 +20,12 @@ class RoleSeeder extends Seeder
         // Reset cached roles and permissions
         app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
-        $this->command->info('Creando permisos del Super Admin...');
         try{
-            $asignarRoles = Permission::firstOrcreate(['name' => 'Asignar Roles']);
-            $quitarRoles = Permission::firstOrcreate(['name' => 'Quitar Roles']);
-
-            $this->command->info('Creando rol Super Admin y asignando permisos...');
-            $superAdmin = Role::firstOrcreate(['name' => 'Super Admin'])->syncPermissions([$asignarRoles, $quitarRoles]);
+            $this->command->info('Creando rol Super Admin');
+            $superAdmin = Role::firstOrcreate(['name' => 'Super Admin']);
             $this->command->info('Rol Super Admin creado.');
         } catch ( Spatie\Permission\Exceptions $e) {
-            $this->command->error('Error creando permisos del Super Admin...');
+            $this->command->error('Error creando rol Super Admin...');
             echo _($e->getMessage());
         }
     }

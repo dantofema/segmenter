@@ -28,7 +28,7 @@ CREATE TABLE public.provincia (
 --
 
 CREATE SEQUENCE public.provincia_id_seq
-    START WITH 1
+    START WITH 25
     INCREMENT BY 1
     NO MINVALUE
     NO MAXVALUE

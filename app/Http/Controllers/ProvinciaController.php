@@ -7,7 +7,9 @@ use App\Model\Departamento;
 use Illuminate\Http\Request;
 use Redirect,Response,DB,Config;
 use Datatables;
-
+use Auth;
+use Illuminate\Support\Facades\Log;
+use Spatie\Permission\Models\Permission;
 
 class ProvinciaController extends Controller
 {
@@ -29,8 +31,8 @@ class ProvinciaController extends Controller
 
 
     public function provsList()
-    {  
-           $aProvs=[]; 
+    {
+           $aProvs=[];
            $provsQuery = Provincia::query();
            $codigo = (!empty($_GET["codigo"])) ? ($_GET["codigo"]) : ('');
            if ($codigo!='') {
@@ -74,6 +76,23 @@ class ProvinciaController extends Controller
                                   'departamentos_count'=>$prov->departamentos_count ];
         }
       return datatables()->of($aProvs)
+                ->addColumn('action', function($data){
+                    $button = '<button type="button" class="btn_descarga btn-sm btn-primary" > Descargar </button> ';
+                    // botón de eliminar PROVINCIA  en test, si esta logueado.
+                    if (Auth::check()) {
+                            try {                 
+                                $filtro = Permission::where('name',$data['codigo'])->first();                                
+                                if ( $filtro and ( Auth::user()->hasPermissionTo($data['codigo'], 'filters') and Auth::user()->can('Borrar Provincia') and ($data['departamentos_count']==0) ) ) 
+                                // Botón borrar sólo si tiene permiso y la provicnia no tiene deptos. (agregar or Auth::user()->hasRole('Super Admin') solo para tests)
+                                {
+                                    $button .= '<button type="button" class="btn_prov_delete btn-sm btn-danger "> Borrar </button>';
+                                }
+                            } catch (PermissionDoesNotExist $e) {
+                            Log::warning('No existe el permiso "Borrar Provincia"');
+                            }
+                            return $button;
+                        }
+                })
             ->make(true);
     }
 
@@ -151,5 +170,37 @@ class ProvinciaController extends Controller
     public function destroy(Provincia $provincia)
     {
         //
+        //$provincia->middleware('auth');
+        //$provincia->middleware('can:run-setup');
+
+        //return $provincia->delete();
+
+      $_info = $provincia->codigo.' '.$provincia->nombre;
+      $deptos = count($provincia->departamentos);
+      if ($deptos == 0){
+        $filtro = Permission::where('name',$provincia->codigo)->first();
+        if ($filtro && Auth::user()->hasPermissionTo($provincia->codigo, 'filters')) { 
+            //agregar or Auth::user()->hasRole('Super Admin') solo para tests
+            Log::info('El usuario posee el filtro: '.$provincia->codigo);
+            if ($provincia->delete()) {
+                Log::info('Se borró la provincia: '.$_info);
+                $respuesta = ['statusCode'=> 200,'message' => 'Se eliminó la provincia: '.$_info];
+            }else{
+                    Log::error('NO se borró la provincia: '.$_info);
+                    $respuesta = ['statusCode'=> 304,'message' => 'NO se eliminó la provincia: '.$_info];
+            }
+        } else {
+            if ($filtro) {
+                Log::error('El usuario no posee el filtro: '.$provincia->codigo);
+            } else {
+                Log::error('No existe el filtro: '.$provincia->codigo);
+            }
+            $respuesta = ['statusCode'=> 304,'message' => 'No cuenta con la autorización para eliminar la provincia: '.$_info];
+        }
+      } else {
+          $respuesta = ['statusCode'=> 304,'message' => 'Existen '.$deptos.' departamentos que dependen de ésta provincia. '.$_info];
+      }
+      return response()->json($respuesta);
+
     }
 }

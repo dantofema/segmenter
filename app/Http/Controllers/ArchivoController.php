@@ -24,7 +24,16 @@ class ArchivoController extends Controller
     {
 	    //
       if (Auth::check()) {
-        $archivos = $this::retrieveFiles();
+        $AppUser = Auth::user();
+        $archivos = $AppUser->visible_files()->withCount('viewers')->get();
+        $archivos = $archivos->merge($AppUser->mis_files()->withCount('viewers')->get());
+        try {
+            if ($AppUser->can('Ver Archivos')) {
+                $archivos = $archivos->merge(Archivo::withCount('viewers')->get());
+            }
+        } catch (PermissionDoesNotExist $e) {
+            Session::flash('message', 'No existe el permiso "Ver Archivos"');
+        }  
         $count_archivos = $archivos->count();
         // cuento los archivos repetidos
         $count_archivos_repetidos = 0;
@@ -84,7 +93,7 @@ class ArchivoController extends Controller
                     $button .= '<button type="button" class="btn_arch_procesar btn-sm btn-secondary" > ReProcesar </button>';
                     
                     /*
-                    Si botón de eliminar archivo por el momento
+                    Sin botón de eliminar archivo por el momento
 
                     if ($data->user_id == Auth::user()->id) {
                         $button .= '<button type="button" class="btn_arch_delete btn-sm btn-danger " > Borrar </button>';
@@ -241,7 +250,7 @@ class ArchivoController extends Controller
      */
     public function descargar(Archivo $archivo)
     {
-	    //
+	    // Descarga de archivo.
 	    return $archivo->descargar();
     }
 
@@ -253,7 +262,7 @@ class ArchivoController extends Controller
      */
     public function procesar(Archivo $archivo)
     {
-	    //
+	    // Mensaje extraño
 	    $mensaje = $archivo->procesar()?'ik0':'m4l';
       return view('archivo.list');
     }

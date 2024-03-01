@@ -21,6 +21,11 @@
     <!-- More Scripts -->
     @yield ('header_scripts')
     
+    <!-- Switches (custom checkboxes) -->
+    <style>
+    .toggle.ios, .toggle-on.ios, .toggle-off.ios { border-radius: 20rem; }
+    .toggle.ios .toggle-handle { border-radius: 20rem; }
+    </style>
 </head>
 <body>
     @yield('divs4content')
@@ -99,6 +104,11 @@
                                 <li class="nav-item dropdown">
                                   <a class="dropdown-item" href="{{ route('archivos') }}">{{ __('Archivos') }}</a>
                                 </li>
+                                @if (Auth::user()->hasRole('Super Admin'))
+                                <li class="nav-item dropdown">
+                                  <a class="dropdown-item" href="{{ route('admin.listarUsuarios') }}">{{ __('Usuarios') }}</a>
+                                </li>
+                                @endif
                               </ul>
                              </div>
 

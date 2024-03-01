@@ -137,7 +137,6 @@ class SegmenterController extends Controller
           flash('Al mismo esquema temporal lab y arc '.$shp_file->tabla.' == '.$shp_lab_file->tabla);
         }
         $ppdddllls=$shp_file->pasarData();
-        flash('3. Se pasó Data de '.count($ppdddllls));
       }else{flash('No se pudo procesar la cartografía')->error()->important();
         $mensajes.=' ERROR ';
       }
@@ -147,9 +146,17 @@ class SegmenterController extends Controller
     }else{
        flash($mensajes)->important()->error();
     }
-    foreach($ppdddllls as $ppdddlll){
-       MyDB::agregarsegisegd($ppdddlll->link);
-       MyDB::juntaListadoGeom('e'.$ppdddlll->link);
+    foreach($ppdddllls as $ppdddlll)
+    {
+      if ($ppdddlll != null){
+        if (strlen($ppdddlll->link)==2) {
+          flash('Se cargo una provincia. La '.$ppdddlll->link)->info()->important();
+        } else {
+          flash('Preparando localidad '.$ppdddlll->link.'. Agrego segi, segd e Intenta juntar Geom y Listado')->info();
+          MyDB::agregarsegisegd($ppdddlll->link);
+          MyDB::juntaListadoGeom('e'.$ppdddlll->link);
+        }
+      }
     }
     if (isset($codaglo[0]->link)){
             if ($epsg_id=='sr-org:8333'){

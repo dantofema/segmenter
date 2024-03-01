@@ -15,7 +15,7 @@ class CreateFilesPermissions extends Migration
     public function up()
     {
         Artisan::call( 'db:seed', [
-            '--class' => 'PermissionSeeder',
+            '--class' => 'FilePermissionsSeeder',
             '--force' => true ]
         );
     }
@@ -28,9 +28,14 @@ class CreateFilesPermissions extends Migration
     public function down()
     {
         DB::beginTransaction();
-            /** elimino los permisos */
-            Permission::where(['name'=>'Ver Archivos'])->first()->delete();
-            Permission::where(['name'=>'Administrar Archivos'])->first()->delete();
+            try {
+                /** elimino los permisos */
+                Permission::where(['name'=>'Ver Archivos'])->firstOrFail()->delete();
+                Permission::where(['name'=>'Administrar Archivos'])->firstOrFail()->delete();
+            } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+                echo $e->getMessage();
+            }
+
             DB::commit();
     }
 }
