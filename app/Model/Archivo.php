@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Storage;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Exception\ProcessTimedOutException;
-use Symfony\Component\Process\Exception\RuntimeException; 
+use Symfony\Component\Process\Exception\RuntimeException;
 use Illuminate\Support\Facades\Config;
 use App\Imports\SegmentosImport;
 use App\Imports\CsvImport;
@@ -57,7 +57,7 @@ class Archivo extends Model
                 }
             }
             $checksum = md5(implode('',$checksums));
-        } 
+        }
         return $checksum;
     }
 
@@ -118,7 +118,7 @@ class Archivo extends Model
                         if ($shape_file != null and $shape_file != ''){
                             $extension = strtolower($shape_file->getClientOriginalExtension());
                             $data_files[] = $shape_file->storeAs('segmentador', $random_name.'.'.$extension);
-                            $size_total =+ $shape_file->getSize();
+                            $size_total = $size_total + $shape_file->getSize();
                         };
                     }
                 }
@@ -191,7 +191,7 @@ class Archivo extends Model
 
         // genero nombre para cada extension
         $extensiones = [".shp", ".dbf", ".shx", ".prj"];
-        foreach ($extensiones as $extension) { 
+        foreach ($extensiones as $extension) {
             $o = storage_path().'/app/'.$nombre . $extension;
             $key = 'mandarina_'.$nombre_original . $extension;
             $archivos[$key]= $o;
@@ -320,7 +320,7 @@ class Archivo extends Model
             -overwrite $file )'
         );
         $processOGR2OGR->setTimeout(1800);
-        
+
         //Cargo etiquetas
         try{
             $processOGR2OGR->run(null,[
@@ -476,9 +476,9 @@ class Archivo extends Model
             $codprov = MyDB::getProv('lab', 'e_'.$this->tabla);
             $codprov_pol = MyDB::getProv('arc', 'e_'.$this->tabla);
 
-            flash('Puede ser una "pais" x prov con deptos: '.count($coddeptos).' o '.count($coddeptos_pol));            
+            flash('Puede ser una "pais" x prov con deptos: '.count($coddeptos).' o '.count($coddeptos_pol));
 
-            if ($codprov != null){    
+            if ($codprov != null){
                 flash('Se encontró Provincia : '.$codprov);
 //                MyDB::createSchema($coddepto->link);
 //                MyDB::copiaraEsquemaPais('e_'.$this->tabla,'e'.$coddepto->link,$coddepto->link);
@@ -486,8 +486,8 @@ class Archivo extends Model
                 MyDB::copiaraEsquemaPais('e_'.$this->tabla,'e'.$codprov,'lab',null,$codprov);
                 $count++;
             }
-           
-            if ($codprov_pol != null){    
+
+            if ($codprov_pol != null){
                 flash('Se encontró Departamentos en arc/pol : '.$codprov_pol);
 //                MyDB::createSchema($coddepto->link);
 //                MyDB::copiaraEsquemaPais('e_'.$this->tabla,'e'.$coddepto->link,$coddepto->link);
@@ -496,7 +496,7 @@ class Archivo extends Model
                 $count++;
                 $codprov=$codprov_pol;
             }
-            
+
             MyDB::limpiar_esquema('e_'.$this->tabla);
             $prov=array('link'=>$codprov);
             $resultado[0] = (object) $prov;
@@ -576,7 +576,7 @@ class Archivo extends Model
 
         // busco para cada extension
         $extensiones = [".dbf", ".shx", ".prj"];
-        foreach ($extensiones as $extension) { 
+        foreach ($extensiones as $extension) {
             $o = $nombre_original . $extension;
             $c = $nombre_copia . $extension;
             if(Storage::exists($c)) {
@@ -597,7 +597,7 @@ class Archivo extends Model
             }
         }
     }
-    
+
     public function chequearYBorrarStorage(Archivo $original){
         $copia = $this;
         if(Storage::exists($original->nombre)) {
@@ -648,5 +648,5 @@ class Archivo extends Model
         $this->delete();
         Log::info("Se eliminó el registro");
     }
-    
+
 }

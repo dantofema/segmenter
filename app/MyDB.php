@@ -24,14 +24,14 @@ class MyDB extends Model
             $result = DB::select("select prov,dpto,d.nombre,codloc,l.nombre,
                                      count(distinct frac::text||'-'||radio::text) radios_m_u ,
                                      count(*) segmentos,
-                                     sum(viviendas) vivs, 
+                                     sum(viviendas) vivs,
                                      round(1.0*sum(viviendas)/count(*),2) prom
-                                     from r3 join departamentos d on 
-                                        d.codigo=lpad(prov::text,2,'0')||lpad(dpto::text,3,'0') 
-                                     join localidad l on 
-                                       l.codigo=lpad(prov::text,2,'0')||lpad(dpto::text,3,'0')||lpad(codloc::text,3,'0') 
-                                     join radio r on 
-                                       r.codigo=lpad(prov::text,2,'0')||lpad(dpto::text,3,'0')||lpad(frac::text,2,'0')||lpad(radio::text,2,'0') 
+                                     from r3 join departamentos d on
+                                        d.codigo=lpad(prov::text,2,'0')||lpad(dpto::text,3,'0')
+                                     join localidad l on
+                                       l.codigo=lpad(prov::text,2,'0')||lpad(dpto::text,3,'0')||lpad(codloc::text,3,'0')
+                                     join radio r on
+                                       r.codigo=lpad(prov::text,2,'0')||lpad(dpto::text,3,'0')||lpad(frac::text,2,'0')||lpad(radio::text,2,'0')
                                      WHERE r.tipo_de_radio_id in (1,3) and prov='".$oProv->codigo."' and seg!='90' group by 1,2,3,4,5 ;");
         }catch(QueryException $e){
                 $result=null;
@@ -156,7 +156,7 @@ class MyDB extends Model
             }
             try {
               $result = (int) DB::select('
-                          SELECT count(*) cant_segmentos FROM ( 
+                          SELECT count(*) cant_segmentos FROM (
                             select segmento_id, count(indec.contar_vivienda(tipoviv)) as vivs
                             from "' . $esquema . '".listado
                             join "' . $esquema . '".segmentacion
@@ -240,7 +240,7 @@ class MyDB extends Model
             return false;
         }
 
-        // Borra los esquemas temporales donde fallaron carga de arcos y etiquetas comenzados en e_ 
+        // Borra los esquemas temporales donde fallaron carga de arcos y etiquetas comenzados en e_
         // * debo escapar el _ que es comodin de caracter en sql.
         public static function limpiaEsquemasTemporales()
         {
@@ -388,13 +388,13 @@ FROM
             // Consulta por códigos de radio con diferente tipo.
             $result = (DB::select(
                 'SELECT codprov||coddepto||frac2020||radio2020 as codigo,
-                    string_agg(distinct tiporad20||\' en \'||codloc,\',\') inconsistencia 
+                    string_agg(distinct tiporad20||\' en \'||codloc,\',\') inconsistencia
                 FROM
                 '.$esquema.'."'.$tabla.'" '.$filtro.' group by 1 HAVING count(distinct tiporad20)>1 '.
                 'order by codprov||coddepto||frac2020||radio2020 asc, count(*) desc ;'
                 )
             );
-                  
+
         } catch (\Illuminate\Database\QueryException $e) {
             Log::error('Error en consulta para validar pxrad: '.$e->getMessage());
         }
@@ -435,10 +435,10 @@ FROM
     public static function getDataRadio($tabla,$esquema,$codigo_loc=null)
     {
         log::debug(' Radios de la Localidad: '.$codigo_loc);
-        if (isset($codigo_loc)) { 
+        if (isset($codigo_loc)) {
            $filtro=" WHERE codprov||coddepto||codloc= '".$codigo_loc."'";
-        } else { 
-           $filtro=''; 
+        } else {
+           $filtro='';
         }
         try {
            $result = (DB::select('SELECT codprov||coddepto||frac2020||radio2020 as codigo,
@@ -505,7 +505,7 @@ FROM
                       $result_debug = DB::select('SELECT * FROM
                               "'.$esquema.'".'.$tabla.' limit 1');
                   }catch (QueryException $exception) {
-                     Log::error('No se pudo encontrar localidades. ',[$exception,$result_debug]);
+                     Log::error('No se pudo encontrar localidades. ',[$exception]);
                    return [];
                   }
                Log::warning('No se pudo encontrar localidades. ',[$exception,$result_debug]);
@@ -904,7 +904,7 @@ FROM
             Log::debug('eliminando registros repetidos en listado '.$esquema);
             DB::beginTransaction();
               try {$result=DB::delete('delete from '.$esquema.'.'.$tabla.'
-                                      where id not in 
+                                      where id not in
                                       (select min(id) from '.$esquema.'.'.$tabla.'
                                       group by prov, dpto, codloc, frac, radio, mza, lado, orden_reco);');
               }catch (\Illuminate\Database\QueryException $exception) {
@@ -919,9 +919,9 @@ FROM
           if (Schema::hasTable($esquema.'.'.$tabla)){
             Log::debug('eliminando registros LSV en lados con viviendas del listado '.$esquema);
             DB::beginTransaction();
-              try {$result=DB::delete('DELETE FROM  '.$esquema.'.'.$tabla.' 
-                   WHERE (frac,radio,mza,lado) in (select frac,radio,mza,lado from '.$esquema.'.'.$tabla.'  
-                    group by frac,radio,mza,lado 
+              try {$result=DB::delete('DELETE FROM  '.$esquema.'.'.$tabla.'
+                   WHERE (frac,radio,mza,lado) in (select frac,radio,mza,lado from '.$esquema.'.'.$tabla.'
+                    group by frac,radio,mza,lado
                     having \'LSV\' = ANY (array_agg(tipoviv)) and count(*)>1) and tipoviv = \'LSV\';');
               }catch (\Illuminate\Database\QueryException $exception) {
                         Log::error('No se pudo eliminar registros LSV en lados con viviendas del listado '.$esquema.'.'.$tabla,$exception);
@@ -972,7 +972,7 @@ FROM
                         self::generarAdyacencias($esquema);
                         Log::info('Se procesaron lados, conteos y adyacencias!');
                         DB::commit();
-           
+
                     // Comienzan posprocesos de carga
                        DB::beginTransaction();
                         try {
@@ -1043,7 +1043,7 @@ FROM
         // Comienzan limpieza de esquema
         try {
              // si el nombre del esquema tiene mas de 20 caracteres, es temporal :/
-             if (strlen($esquema) < 40 ) { 
+             if (strlen($esquema) < 40 ) {
                   $query_limpieza = 'ALTER SCHEMA "'.$esquema.'" RENAME TO "h_'.$esquema.'";';
                   $mensaje = 'Se renombró el esquema '.$esquema;
               } else {
@@ -1086,8 +1086,8 @@ FROM
                 return true;
               }else{
                 DB::beginTransaction();
-                DB::statement('truncate TABLE '.$esquema.'.segmentacion');  
-                DB::statement('insert into '.$esquema.'.segmentacion  
+                DB::statement('truncate TABLE '.$esquema.'.segmentacion');
+                DB::statement('insert into '.$esquema.'.segmentacion
                     select id as listado_id, Null::integer as segmento_id
                     from '.$esquema.'.listado
                     ;');
@@ -1106,17 +1106,17 @@ FROM
                 DB::beginTransaction();
                 try {
                   // Borra los id de listado que no están más en listado
-                  DB::delete('delete from '.$esquema.'.segmentacion 
-                                      where listado_id not in 
+                  DB::delete('delete from '.$esquema.'.segmentacion
+                                      where listado_id not in
                                       (select id from '.$esquema.'.listado
                                       );');
                   // Borra las segmentaciones de la r3 que no están más en segmentacion
-                  DB::delete('delete from '.$esquema.'.r3 
-                                      where segmento_id not in 
+                  DB::delete('delete from '.$esquema.'.r3
+                                      where segmento_id not in
                                       (select segmento_id from '.$esquema.'.segmentacion
                                       );');
-                  // Agrega los id de lisado nuevos en el listado. 
-                  DB::statement('insert into '.$esquema.'.segmentacion  
+                  // Agrega los id de lisado nuevos en el listado.
+                  DB::statement('insert into '.$esquema.'.segmentacion
                     select id as listado_id, Null::integer as segmento_id
                     from '.$esquema.'.listado
                     where id not in (select listado_id from '.$esquema.'.segmentacion )
@@ -1241,7 +1241,7 @@ FROM
                 }else{
                   $funcion_describe= " indec.describe_segmentos_con_direcciones_ffrr('".$esquema."',".$radio->CodigoFrac.",".$radio->CodigoRad.") ";
                 }
-            }else{ 
+            }else{
               $filtro = '';
               if (Schema::hasTable($esquema.'.r3')){
                 $funcion_describe= ' "'.$esquema.'".r3 ';
@@ -1364,7 +1364,7 @@ FROM
         if ($frac != null) {
             $filtro= ' where (l.frac::integer) =
                       ('.$frac.') ';
-            $filtro_arcos = ' and substr(mza,9,2)::integer = '.$frac.' '; 
+            $filtro_arcos = ' and substr(mza,9,2)::integer = '.$frac.' ';
             $insert_into = '';
          if (Schema::hasTable($esquema.'.listado_geo')) {
             $update_to = " INSERT INTO ".$esquema.".listado_geo ";
@@ -1375,19 +1375,19 @@ FROM
          if ($radio != null) {
              $filtro .= ' and (l.radio::integer) =
                        ('.$radio.') ';
-             $filtro_arcos .= ' and substr(mza,11,2)::integer = '.$radio.' '; 
+             $filtro_arcos .= ' and substr(mza,11,2)::integer = '.$radio.' ';
              $insert_into = '';
          }
         } else {
             $filtro = '';
-            $filtro_arcos = ''; 
+            $filtro_arcos = '';
             $update_to = '';
             $insert_into = " INTO ".$esquema.".listado_geo ";
         }
 
             try{
                 DB::beginTransaction();
-            if ($update_to=='' ) { 
+            if ($update_to=='' ) {
                 // DB::statement("DROP TABLE IF EXISTS ".$esquema.".listado_geo;");
                 // No se dropea más.
                 flash('Se encontró listado georreferenciado, no se dropea más, se puede actualizar x frac, o radio')->warning();
@@ -1438,16 +1438,16 @@ FROM
         UNION
         SELECT ogc_fid,wkb_geometry, nomencla,codigo20,codigo10,tipo, nombre,
                ancho, anchomed, ladod lado,desded desde,
-               hastad hasta,mzad mza 
+               hastad hasta,mzad mza
         FROM ".$esquema.".arc
         ) arcos_juntados
         GROUP BY nomencla,codigo20,tipo, nombre,lado,mza
         HAVING
         st_geometrytype(st_LineMerge(st_union(wkb_geometry)))='ST_LineString'
         and mza!=''
-        ".$filtro_arcos." 
+        ".$filtro_arcos."
     )
-        ".$update_to." 
+        ".$update_to."
     SELECT nro_en_lado, nro_en_numero, conteo,1.0*nro_en_lado/(conteo+1) interpolacion, l.orden_reco,
     case when 1.0*nro_en_lado/(conteo+1)>1 then
         ST_LineInterpolatePoint(st_reverse(st_offsetcurve(ST_LineSubstring(st_LineMerge(wkb_geometry),0.07,0.93),".$desp."-nro_en_lado)),0.5)
@@ -1489,7 +1489,7 @@ FROM
                     tipo, nombre, e.lado ladoe, desde, hasta,e.mza mzae,
                     frac, radio, l.mza, l.lado, ccalle, ncalle, l.nrocatastr, piso,casa,dpto_habit,sector,edificio,entrada,tipoviv,
                     descripcio,descripci2
-  ".$insert_into."      
+  ".$insert_into."
   FROM arcos e JOIN listado l ON
             (l.lado::integer=e.lado and
                 trim(e.mza) =
@@ -1669,7 +1669,7 @@ FROM
 
             public static function getCantMzas(Radio $radio,$esquema=null){
                 $esquemas=$radio->Esquemas;
-                $esquema=$radio->esquema;                
+                $esquema=$radio->esquema;
                 Log::debug('Buscando Mzas para radio '.$radio->codigo);
                 $prov=substr($radio->codigo,0,2);
                 $dpto=substr($radio->codigo,2,3);
@@ -1749,7 +1749,7 @@ FROM
              }else{
              $count=0;
              foreach($radio->esquemas as $esquema){
-                  try { 
+                  try {
                     $count += (int) DB::select("SELECT count(distinct segmento_id) FROM ".$esquema.".segmentacion s JOIN
                            ".$esquema.".listado l ON s.listado_id=l.id WHERE segmento_id is not null ".
                             ($filtro)
@@ -1954,7 +1954,7 @@ FROM
             DB::statement(
             "create index IF NOT EXISTS ".$esquema."_".$tabla."_".str_replace(array(' ', ',','(',')'),'_',$campos)." on ".$esquema.".".$tabla."
                USING ".$tipo_indice."
-               (".$campos.")"); 
+               (".$campos.")");
         }catch(QueryException $e){
             Log::error('No se pudo generar indice de en '.$esquema.' para tabla '.$tabla.' para '.$campos,[$e]);
             return;
@@ -2064,7 +2064,7 @@ public static function getPxSeg($esquema)
     }catch(QueryException $e){
       Log::warning('Problemas al establecer el SRS: '.$srid_id.' en '.$esquema.': '.$e);
       try{
-        DB::statement("ALTER TABLE ".$esquema.".arc ALTER COLUMN wkb_geometry SET DATA TYPE 
+        DB::statement("ALTER TABLE ".$esquema.".arc ALTER COLUMN wkb_geometry SET DATA TYPE
                       geometry(LINESTRING,".$srid_id.")
                       USING st_setsrid(wkb_geometry,".$srid_id.");");
         DB::statement("ALTER TABLE ".$esquema.".lab  ALTER COLUMN wkb_geometry TYPE
@@ -2182,48 +2182,48 @@ order by 1,2
             $result = DB::select("SELECT Count(*) from listados_segmentados;")[0]->count;
             self::darPermisosTabla('listados_segmentados');
             $result_vista_censar = DB::unprepared(
-                "CREATE or REPLACE VIEW public.listado_pre_censar as 
-                 (select 
-                  prov as cod_provincia, provincia as desc_provincia, 
-                  dpto as cod_departamento, departamento as desc_departamento, 
-                  codloc as cod_localidad, localidad desc_localidad, 
-                  frac cod_fraccion, radio cod_radio, seg cod_segmento, 
-                  ccalle, ncalle, nrocatastr nro_catast, piso, casa, dpto_habit, 
-                  sector, edificio, entrada, 
+                "CREATE or REPLACE VIEW public.listado_pre_censar as
+                 (select
+                  prov as cod_provincia, provincia as desc_provincia,
+                  dpto as cod_departamento, departamento as desc_departamento,
+                  codloc as cod_localidad, localidad desc_localidad,
+                  frac cod_fraccion, radio cod_radio, seg cod_segmento,
+                  ccalle, ncalle, nrocatastr nro_catast, piso, casa, dpto_habit,
+                  sector, edificio, entrada,
                   row_number() over ( partition by prov,dpto,frac,radio,seg order by mza,lado,
                                case when orden_reco!='' then orden_reco::integer else 0 end::integer
-                  ) ordenamiento, 
-                  'C' estado, tipoviv 
+                  ) ordenamiento,
+                  'C' estado, tipoviv
                 from listados_segmentados)"
             );
             $result_vista_0 = DB::unprepared(
-                "create or replace view public.listado_pre_censar_seg_0 as 
-                             select cod_provincia, desc_provincia, 
-                                    cod_departamento, desc_departamento, 
-                                    cod_localidad, desc_localidad, 
-                                    cod_fraccion, cod_radio, cod_segmento, 
-                                    'Calle S N' ncalle, 'S/N' nro_catast, '' piso, 
-                                    '' casa, '' dpto_habit, '' sector, '' edificio, 
-                                    '' entrada, 0 ordenamiento, 'F' estado 
-                             from listado_pre_censar group by 1,2,3,4,5,6,7,8,9 
+                "create or replace view public.listado_pre_censar_seg_0 as
+                             select cod_provincia, desc_provincia,
+                                    cod_departamento, desc_departamento,
+                                    cod_localidad, desc_localidad,
+                                    cod_fraccion, cod_radio, cod_segmento,
+                                    'Calle S N' ncalle, 'S/N' nro_catast, '' piso,
+                                    '' casa, '' dpto_habit, '' sector, '' edificio,
+                                    '' entrada, 0 ordenamiento, 'F' estado
+                             from listado_pre_censar group by 1,2,3,4,5,6,7,8,9
                              having count( indec.contar_vivienda(tipoviv) ) = 0 ;"
             );
             $result_vista_1 = DB::unprepared(
-                "create or replace view public.listado_pre_censar_vivs AS 
-                   select cod_provincia, desc_provincia, 
-                          cod_departamento, desc_departamento, 
-                          cod_localidad, desc_localidad, 
-                          cod_fraccion, cod_radio, cod_segmento, 
-                          ncalle, nro_catast, piso, casa, dpto_habit, sector, edificio, 
-                          entrada, ordenamiento, estado 
-                    from listado_pre_censar 
+                "create or replace view public.listado_pre_censar_vivs AS
+                   select cod_provincia, desc_provincia,
+                          cod_departamento, desc_departamento,
+                          cod_localidad, desc_localidad,
+                          cod_fraccion, cod_radio, cod_segmento,
+                          ncalle, nro_catast, piso, casa, dpto_habit, sector, edificio,
+                          entrada, ordenamiento, estado
+                    from listado_pre_censar
                 where tipoviv=indec.contar_vivienda(tipoviv);"
             );
             DB::statement("DROP TABLE if exists public.listado_censar;");
             $result_censar = DB::unprepared(
                 "CREATE TABLE public.listado_censar AS
-                    (select * from public.listado_pre_censar_vivs 
-                      union 
+                    (select * from public.listado_pre_censar_vivs
+                      union
                      select * from public.listado_pre_censar_seg_0);"
             );
             $count_censar = DB::select("SELECT Count(*) from public.listado_censar;")[0]->count;
@@ -2294,8 +2294,8 @@ order by 1,2
               DB::statement("DROP TABLE public.localidad_geo;");
             }
             DB::statement("
-                CREATE TABLE public.localidad_geo AS 
-                select st_transform(st_union(wkb_geometry),22184) wkb_geometry, prov, dpto, codloc, 
+                CREATE TABLE public.localidad_geo AS
+                select st_transform(st_union(wkb_geometry),22184) wkb_geometry, prov, dpto, codloc,
                 max(l.nombre) nombre,
                 sum(conteo) conteo, count(*) manzanas, sum(cant_lados) lados from public.manzanas
                 left join public.localidad l on l.codigo=prov||dpto||codloc
@@ -2346,14 +2346,14 @@ order by 1,2
             $result = DB::select("select prov,dpto,d.nombre,codloc,l.nombre,
                                      count(distinct frac::text||'-'||radio::text) radios_m_u ,
                                      count(*) segmentos,
-                                     sum(viviendas) vivs, 
+                                     sum(viviendas) vivs,
                                      round(1.0*sum(viviendas)/count(*),2) prom
-                                     from r3 join departamentos d on 
-                                        d.codigo=lpad(prov::text,2,'0')||lpad(dpto::text,3,'0') 
-                                     join localidad l on 
-                                       l.codigo=lpad(prov::text,2,'0')||lpad(dpto::text,3,'0')||lpad(codloc::text,3,'0') 
-                                     join radio r on 
-                                       r.codigo=lpad(prov::text,2,'0')||lpad(dpto::text,3,'0')||lpad(frac::text,2,'0')||lpad(radio::text,2,'0') 
+                                     from r3 join departamentos d on
+                                        d.codigo=lpad(prov::text,2,'0')||lpad(dpto::text,3,'0')
+                                     join localidad l on
+                                       l.codigo=lpad(prov::text,2,'0')||lpad(dpto::text,3,'0')||lpad(codloc::text,3,'0')
+                                     join radio r on
+                                       r.codigo=lpad(prov::text,2,'0')||lpad(dpto::text,3,'0')||lpad(frac::text,2,'0')||lpad(radio::text,2,'0')
                                      WHERE r.tipo_de_radio_id in (1,3) and prov='".$oProv->codigo."' and seg!='90' group by 1,2,3,4,5 ;");
         }catch(QueryException $e){
                 $result=null;
@@ -2436,11 +2436,11 @@ order by 1,2
             foreach ($result as $registro) {
                     self::setSRID($registro['esquema'], $registro['srid_id']);
                     self::cargarTopologia($registro['esquema']);
-                    self::georeferenciar_listado($registro['esquema']); 
+                    self::georeferenciar_listado($registro['esquema']);
             }
         } catch (QueryException $e) {
             Log::error('Error no se pudo corregir localidades con localidad_srid '.$filtro.$e);
-            return 'no se pudo corregir localidades con localidad_srid';   
+            return 'no se pudo corregir localidades con localidad_srid';
         }
         return 'Se corrigieron '.count($result).' localidades';
     }
@@ -2459,7 +2459,7 @@ order by 1,2
                 }, $result);
         } catch (QueryException $e) {
             Log::error('Error no se pudo revisar las localidades a cargar en topo_pais '.$filtro.$e);
-            return 'No se pudo cargar nueva topo_pais';   
+            return 'No se pudo cargar nueva topo_pais';
         }
             $se_encontro = 0; $nuevo = 0;
             foreach ($result as $registro) {
@@ -2468,7 +2468,7 @@ order by 1,2
                         $registro['esquema'].".v_radios_pais limit 1;");
                     $se_encontro = $se_encontro + 1 ;
                     flash($se_encontro.'. Se encontró cargado '.$registro['esquema'].' ')->info()->important();
-                    
+
                   } catch (QueryException $e) {
                     $nuevo = $nuevo + 1;
                     flash($nuevo.'. Cargando... '.$registro['esquema'])->warning()->important();
