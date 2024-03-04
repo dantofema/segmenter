@@ -179,22 +179,22 @@ Route::get('provincia','ProvinciaController@index');
 
 // ---------- USUARIOS ----------
 Route::get('users', 'UserController@listarUsuarios')->name('admin.listarUsuarios');
-Route::get('users/{user}/roles', 'UserController@editarRolUsuario')->name('admin.editarRolUsuario');
-Route::get('users/{user}/permission', 'UserController@editarPermisoUsuario')->name('admin.editarPermisoUsuario');
-Route::get('users/{user}/filter', 'UserController@editarFiltroUsuario')->name('admin.editarFiltroUsuario');
+Route::get('users/{user}/roles', 'UserController@editarRolUsuario')->name('admin.editarRolUsuario')->middleware('auth');
+Route::get('users/{user}/permission', 'UserController@editarPermisoUsuario')->name('admin.editarPermisoUsuario')->middleware('auth');
+Route::get('users/{user}/filter', 'UserController@editarFiltroUsuario')->name('admin.editarFiltroUsuario')->middleware('auth');
 
 // ---------- FILTROS ----------
-Route::get('filtros', 'FilterController@listarFiltros')->name('admin.listarFiltros');
-Route::get('filtros/{filter}/rename', 'FilterController@renombrarFiltro')->name('admin.renombrarFiltro');
-Route::get('filtros/new', 'FilterController@crearFiltro')->name('admin.crearFiltro');
-Route::delete('filtros/{filter}', 'FilterController@eliminarFiltro')->name('admin.eliminarFiltro');
+Route::get('filtros', 'FilterController@listarFiltros')->name('admin.listarFiltros')->middleware('auth');
+Route::get('filtros/{filter}/rename', 'FilterController@renombrarFiltro')->name('admin.renombrarFiltro')->middleware('auth');
+Route::get('filtros/new', 'FilterController@crearFiltro')->name('admin.crearFiltro')->middleware('auth');
+Route::delete('filtros/{filter}', 'FilterController@eliminarFiltro')->name('admin.eliminarFiltro')->middleware('auth');
 
 // ---------- ROLES ----------
-Route::get('roles', 'RoleController@listarRoles')->name('admin.listarRoles');
-Route::get('roles/{role}/edit', 'RoleController@editarRol')->name('admin.editarRol');
-Route::get('roles/new', 'RoleController@crearRol')->name('admin.crearRol');
-Route::get('roles/{role}/detail', 'RoleController@detallesRol')->name('admin.detallesRol');
-Route::delete('roles/{role}', 'RoleController@eliminarRol')->name('admin.eliminarRol');
+Route::get('roles', 'RoleController@listarRoles')->name('admin.listarRoles')->middleware('auth');
+Route::get('roles/{role}/edit', 'RoleController@editarRol')->name('admin.editarRol')->middleware('auth');
+Route::get('roles/new', 'RoleController@crearRol')->name('admin.crearRol')->middleware('auth');
+Route::get('roles/{role}/detail', 'RoleController@detallesRol')->name('admin.detallesRol')->middleware('auth');
+Route::delete('roles/{role}', 'RoleController@eliminarRol')->name('admin.eliminarRol')->middleware('auth');
 
 // ---------- PROVINCIAS --------
 Route::get('provs-list', 'ProvinciaController@provsList'); 
