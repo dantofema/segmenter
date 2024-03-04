@@ -28,7 +28,7 @@ class PermissionSeederBorrar extends Seeder
                 $this->command->info('Permiso '.$permission['name'].' creado.');
             } catch ( Spatie\Permission\Exception $e) {
                 $this->command->error('Error creando permiso '.$permission['name'].'...');
-                echo _($e->getMessage());
+                echo __($e->getMessage());
             }
         }
     }

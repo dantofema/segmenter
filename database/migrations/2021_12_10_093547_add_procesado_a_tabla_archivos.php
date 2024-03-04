@@ -22,7 +22,7 @@ class AddProcesadoATablaArchivos extends Migration
         });
       }catch (Exception $e){
         if($e->getCode()=='42701'){
-          echo _('Ya existe la columna
+          echo __('Ya existe la columna
 ');
           }else{
           echo ($e);

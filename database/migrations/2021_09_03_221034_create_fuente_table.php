@@ -23,7 +23,7 @@ class CreateFuenteTable extends Migration
            DB::unprepared($sql);
        }catch(Illuminate\Database\QueryException $e){
           DB::Rollback();
-          echo _('Error creando tablas fuente ...').$e;
+          echo __('Error creando tablas fuente ...').$e;
        }
     }
 

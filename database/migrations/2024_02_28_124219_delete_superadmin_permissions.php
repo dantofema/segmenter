@@ -10,7 +10,7 @@ return new class extends Migration
     /**
      * Elimino los roles del Super Admin.
      * (Son innecesarios ya que se maneja con una gate)
-     * 
+     *
      * @return void
      */
     public function up()
@@ -20,7 +20,7 @@ return new class extends Migration
             $superAdmin->syncPermissions([]);
         } catch ( Spatie\Permission\Exceptions $e) {
             $this->command->error('Error eliminando los permisos rol Super Admin...');
-            echo _($e->getMessage());
+            echo __($e->getMessage());
         }
     }
 

@@ -18,7 +18,7 @@ class CreateRadioEntidadRelation extends Migration
            DB::unprepared($sql);
        }catch(Illuminate\Database\QueryException $e){
           DB::Rollback();
-	  echo _('Error creando relacion radio - entidad...
+	  echo __('Error creando relacion radio - entidad...
 		  ');
        }
     }

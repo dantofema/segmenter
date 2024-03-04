@@ -27,7 +27,7 @@ class CreateLocalidadDepartamentosTable extends Migration
          DB::commit();
        }catch(Illuminate\Database\QueryException $e){
           DB::Rollback();
-	        echo _('Omitiendo creación de tabla de relación localidad con departamentos...
+	        echo __('Omitiendo creación de tabla de relación localidad con departamentos...
 		      ');
        }
     }

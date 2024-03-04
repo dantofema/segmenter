@@ -13,15 +13,15 @@ class GrantSelectPorvDeptoLoc extends Migration
      */
     public function up()
     {
-       try{ 
+       try{
             echo DB::statement("GRANT USAGE ON SCHEMA public TO geoestadistica;");
             echo DB::statement("grant select on table public.provincia to geoestadistica;");
             echo DB::statement("grant select on table public.departamentos to geoestadistica;");
             echo DB::statement("grant select on table public.localidad to geoestadistica;");
-            echo _('Se dieron permisos de lectura a tabla provincias,departamentos, localidades a geoestadistica
+            echo __('Se dieron permisos de lectura a tabla provincias,departamentos, localidades a geoestadistica
 ');
         }catch(Illuminate\Database\QueryException $e){
-            echo _('No se pudo dar permisos de lectura a tabla corrida a geoestadistica_admin
+            echo __('No se pudo dar permisos de lectura a tabla corrida a geoestadistica_admin
 '.$e->getMessage());
         }
     }

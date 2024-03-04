@@ -20,10 +20,10 @@ class CreateEntidadTable extends Migration
 */
     $sql = file_get_contents(app_path() . '/developer_docs/entidad.up.sql');
     try{
-       DB::unprepared($sql);        
+       DB::unprepared($sql);
     }catch(Illuminate\Database\QueryException $e){
        DB::Rollback();
-       echo _('Error creando entidad...');
+       echo __('Error creando entidad...');
     }
     }
     /**
