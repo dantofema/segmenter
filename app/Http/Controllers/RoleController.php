@@ -97,6 +97,7 @@ class RoleController extends Controller
 
     public function eliminarRol(Request $request, $role) {
         $rol = Role::find($role);
+        $nombre = $rol->name;
         if ($rol->name != 'Super Admin') {
             if (Auth::user()->can('Eliminar Roles')) {
                 $users = User::role($rol->name)->get();
@@ -105,7 +106,7 @@ class RoleController extends Controller
                 }
                 $rol->syncPermissions([]);
                 $rol->delete();
-                $respuesta = ['statusCode'=> 200,'message' => 'Rol eliminado!'];
+                $respuesta = ['statusCode'=> 200,'message' => 'Se eliminó el rol "'.$nombre.'"!'];
             } else {
                 $respuesta = ['statusCode'=> 304,'message' => 'No tenés permiso para eliminar roles.'];
             }

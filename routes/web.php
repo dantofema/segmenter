@@ -187,6 +187,7 @@ Route::get('users/{user}/filter', 'UserController@editarFiltroUsuario')->name('a
 Route::get('filtros', 'FilterController@listarFiltros')->name('admin.listarFiltros');
 Route::get('filtros/{filter}/rename', 'FilterController@renombrarFiltro')->name('admin.renombrarFiltro');
 Route::get('filtros/new', 'FilterController@crearFiltro')->name('admin.crearFiltro');
+Route::delete('filtros/{filter}', 'FilterController@eliminarFiltro')->name('admin.eliminarFiltro');
 
 // ---------- ROLES ----------
 Route::get('roles', 'RoleController@listarRoles')->name('admin.listarRoles');
