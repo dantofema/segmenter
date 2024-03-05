@@ -22,6 +22,12 @@
     <style>
     .toggle.ios, .toggle-on.ios, .toggle-off.ios { border-radius: 20rem; }
     .toggle.ios .toggle-handle { border-radius: 20rem; }
+    .toggle-handle{
+      margin-top: 4px !important;
+    }
+    .toggle-group{
+      margin-top: -8px !important;
+    }
     </style>
 </head>
 <body>
