@@ -115,12 +115,22 @@ class RoleController extends Controller
     }
 
     public function eliminarRol(Request $request, $role) {
-        if (Auth::user()->can(['Administrar Roles', 'Eliminar Roles'])){
+        if (Auth::user()->can('Administrar Roles')){
             $rol = Role::find($role);
             $nombre = $rol->name;
             if ($rol->name != 'Super Admin') {
                 if (Auth::user()->can('Eliminar Roles')) {
-                    $users = User::role($rol->name)->get();
+                    if ($rol->guard_name == 'filters') {
+                        // tengo que usar esta consulta ya que spatie no tiene implementado el User::role(role_name)->get() para multiples guards
+                        $users = User::whereHas('roles', function ($query) use ($rol) {
+                            $query->where('name', $rol->name)->where('guard_name', 'filters');
+                        })->get();
+                        // tengo que cambiar el guard del rol antes de quitarselo a los usuarios y eliminarlo ya que spatie no tiene implementadas estas funciones para multiples guards
+                        $rol->setAttribute('guard_name', 'web');
+                        $rol->save();
+                    } else {
+                        $users = User::role($rol->name)->get();
+                    }
                     foreach ($users as $user) {
                         $user->removeRole($rol->name);
                     }

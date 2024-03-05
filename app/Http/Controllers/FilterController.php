@@ -63,7 +63,7 @@ class FilterController extends Controller
     }
 
     public function eliminarFiltro(Request $request, $filter) {
-        if (Auth::user()->can(['Administrar Filtros', 'Eliminar Filtros'])){
+        if (Auth::user()->can('Administrar Filtros')){
             $filtro = Permission::where('id', $filter)->where('guard_name', 'filters')->first();
             $nombre = $filtro->name;
             if (Auth::user()->can('Eliminar Filtros')) {
@@ -71,7 +71,7 @@ class FilterController extends Controller
                 $users = User::whereHas('permissions', function ($query) use ($filtro) {
                     $query->where('name', $filtro->name)->where('guard_name', 'filters');
                 })->get();
-                // tengo que cambiar el guard del filtro antes de quitarselo a los usuarios y eliminarlo y que spatie no tiene implementadas estas funciones para multiples guards
+                // tengo que cambiar el guard del filtro antes de quitarselo a los usuarios y eliminarlo ya que spatie no tiene implementadas estas funciones para multiples guards
                 $filtro->setAttribute('guard_name', 'web');
                 $filtro->save();
                 foreach ($users as $user) {
