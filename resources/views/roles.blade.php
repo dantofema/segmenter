@@ -50,7 +50,13 @@
           <tbody>
             @foreach ($roles as $rol)
             <tr>
-              <td>{{$rol->name}}</td>
+              <td>{{$rol->name}} 
+                @if ($rol->guard_name == "web")
+                  <span class="badge badge-pill badge-warning">Permisos</span>
+                @else
+                  <span class="badge badge-pill badge-info">Filtros</span>
+                @endif
+              </td>
               @canany(['Editar Roles', 'Eliminar Roles'])
               <td>
                 <div class="text-center">
