@@ -18,13 +18,13 @@ class RoleController extends Controller
             $filtros = Permission::where('guard_name', 'filters')->get();
             return view('roles', compact('roles','permisos','filtros'));
         } else {
-            flash('message', 'No tienes permiso para hacer eso.')->error();
+            flash('No tienes permiso para hacer eso.')->error();
             return back(); 
         }
     }
 
     public function editarRol(Request $request, Role $role){
-        if (Auth::user()->can('Administrar Roles')){
+        if (Auth::user()->can(['Administrar Roles', 'Editar Roles'])){
             $rol = Role::find($role)->first();
             if($rol) {
                 if($request->newName){
@@ -61,13 +61,13 @@ class RoleController extends Controller
                 }
             }
         } else {
-            flash('message', 'No tienes permiso para hacer eso.')->error();
+            flash('No tienes permiso para hacer eso.')->error();
             return back(); 
         }
     }
     
     public function crearRol(Request $request){
-        if (Auth::user()->can('Administrar Roles')){
+        if (Auth::user()->can(['Administrar Roles', 'Crear Roles'])){
             if($request->newRoleName){
                 $rol = Role::where('name', $request->newRoleName)->first();
                 if($rol) {
@@ -95,7 +95,7 @@ class RoleController extends Controller
                 return redirect()->back()->with('error_create','El nombre del rol no puede estar vacío.');
             }
         } else {
-            flash('message', 'No tienes permiso para hacer eso.')->error();
+            flash('No tienes permiso para hacer eso.')->error();
             return back(); 
         }
     }
@@ -109,13 +109,13 @@ class RoleController extends Controller
                 'autorizaciones' => $autorizaciones,
             ]);
         } else {
-            flash('message', 'No tienes permiso para hacer eso.')->error();
+            flash('No tienes permiso para hacer eso.')->error();
             return back(); 
         }
     }
 
     public function eliminarRol(Request $request, $role) {
-        if (Auth::user()->can('Administrar Roles')){
+        if (Auth::user()->can(['Administrar Roles', 'Eliminar Roles'])){
             $rol = Role::find($role);
             $nombre = $rol->name;
             if ($rol->name != 'Super Admin') {
@@ -135,7 +135,7 @@ class RoleController extends Controller
             }
             return response()->json($respuesta);
         } else {
-            flash('message', 'No tienes permiso para hacer eso.')->error();
+            flash('No tienes permiso para hacer eso.')->error();
             return back(); 
         }
     }

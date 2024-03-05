@@ -15,13 +15,13 @@ class FilterController extends Controller
             $filtros = Permission::where('guard_name', 'filters')->get();
             return view('filters', compact('filtros'));
         } else {
-            flash('message', 'No tienes permiso para hacer eso.')->error();
+            flash('No tienes permiso para hacer eso.')->error();
             return back(); 
         }
       }
 
     public function renombrarFiltro(Request $request, Permission $filter){
-        if (Auth::user()->can('Administrar Filtros')){
+        if (Auth::user()->can(['Administrar Filtros', 'Editar Filtros'])){
             $filtro = Permission::where('id', $filter->id)->where('guard_name', 'filters')->first();
             if($filtro) {
                 if ($request->newName) {
@@ -38,13 +38,13 @@ class FilterController extends Controller
                 }
             }
         } else {
-            flash('message', 'No tienes permiso para hacer eso.')->error();
+            flash('No tienes permiso para hacer eso.')->error();
             return back(); 
         }
     }
 
     public function crearFiltro(Request $request){
-        if (Auth::user()->can('Administrar Filtros')){
+        if (Auth::user()->can(['Administrar Filtros', 'Crear Filtros'])){
             if($request->newFilterName){
                 $filtro = Permission::where('name', $request->newFilterName)->where('guard_name', 'filters')->first();
                 if($filtro) {
@@ -57,13 +57,13 @@ class FilterController extends Controller
                 return redirect()->back()->with('error_create','El nombre del filtro no puede estar vacío.');
             }   
         } else {
-            flash('message', 'No tienes permiso para hacer eso.')->error();
+            flash('No tienes permiso para hacer eso.')->error();
             return back(); 
         }
     }
 
     public function eliminarFiltro(Request $request, $filter) {
-        if (Auth::user()->can('Administrar Filtros')){
+        if (Auth::user()->can(['Administrar Filtros', 'Eliminar Filtros'])){
             $filtro = Permission::where('id', $filter)->where('guard_name', 'filters')->first();
             $nombre = $filtro->name;
             if (Auth::user()->can('Eliminar Filtros')) {
@@ -84,7 +84,7 @@ class FilterController extends Controller
             }
             return response()->json($respuesta);
         } else {
-            flash('message', 'No tienes permiso para hacer eso.')->error();
+            flash('No tienes permiso para hacer eso.')->error();
             return back(); 
         }
     }
