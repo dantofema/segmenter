@@ -28,9 +28,9 @@ class CreatePermissionTables extends Migration
                 $table->timestamps();
             });
         } else {
-            echo _('Ya existe la tabla permissions');
+            echo __('Ya existe la tabla permissions');
         }
-        
+
         if (!Schema::hasTable('roles')) {
             Schema::create($tableNames['roles'], function (Blueprint $table) {
                 $table->bigIncrements('id');
@@ -39,7 +39,7 @@ class CreatePermissionTables extends Migration
                 $table->timestamps();
             });
         } else {
-            echo _('Ya existe la tabla roles');
+            echo __('Ya existe la tabla roles');
         }
 
         if (!Schema::hasTable('model_has_permissions')) {
@@ -59,7 +59,7 @@ class CreatePermissionTables extends Migration
                         'model_has_permissions_permission_model_type_primary');
             });
         } else {
-            echo _('Ya existe la tabla model_has_permissions');
+            echo __('Ya existe la tabla model_has_permissions');
         }
 
         if (!Schema::hasTable('model_has_roles')) {
@@ -79,7 +79,7 @@ class CreatePermissionTables extends Migration
                     'model_has_roles_role_model_type_primary');
         });
         } else {
-            echo _('Ya existe la tabla model_has_roles');
+            echo __('Ya existe la tabla model_has_roles');
         }
 
         if (!Schema::hasTable('role_has_permissions')) {
@@ -100,7 +100,7 @@ class CreatePermissionTables extends Migration
             $table->primary(['permission_id', 'role_id'], 'role_has_permissions_permission_id_role_id_primary');
         });
         } else {
-            echo _('Ya existe la tabla role_has_permissions');
+            echo __('Ya existe la tabla role_has_permissions');
         }
 
         app('cache')

@@ -17,7 +17,7 @@ class CreateAglomeradosTable extends Migration
       try{
           DB::unprepared($sql);
        }catch(Illuminate\Database\QueryException $e){
-	        echo _('Omitiendo creación de tabla de aglomerados...
+	        echo __('Omitiendo creación de tabla de aglomerados...
 ');
        }
       try{
@@ -25,7 +25,7 @@ class CreateAglomeradosTable extends Migration
             $table->index(['id']);
         });
        }catch(Illuminate\Database\QueryException $e){
-	        echo _('Omitiendo creación de indices de aglomerados...
+	        echo __('Omitiendo creación de indices de aglomerados...
 ');
        }
 

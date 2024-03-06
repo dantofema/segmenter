@@ -28,8 +28,8 @@ class ArchivoController extends Controller
         $archivos = $AppUser->visible_files()->withCount('viewers')->get();
         $archivos = $archivos->merge($AppUser->mis_files()->withCount('viewers')->get());
         try {
-            if ($AppUser->hasPermissionTo('Ver Archivos')) {
-                $archivos->merge(Archivo::withCount('viewers')->get());
+            if ($AppUser->can('Ver Archivos')) {
+                $archivos = $archivos->merge(Archivo::withCount('viewers')->get());
             }
         } catch (PermissionDoesNotExist $e) {
             Session::flash('message', 'No existe el permiso "Ver Archivos"');

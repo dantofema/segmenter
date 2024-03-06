@@ -5,17 +5,16 @@ namespace Database\seeders;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 
-class PermissionSeederBorrar extends Seeder
+class RolePermissionsSeeder extends Seeder
 {
     /**
-     * Run the database seeds.
+     * Crea los permisos necesarios para administrar los roles del sistema.
      *
      * @return void
      */
     public function run()
     {
-        $arrayOfPermissionNames = ['Borrar Provincia','Borrar Departamento','Borrar Localdiad','Borrar Fracción','Borrar Radio',
-                                   'Borrar Aglomerado', 'Borrar Paraje', 'Borrar Entidad', 'Borrar Base Antártica' ];
+        $arrayOfPermissionNames = ['Crear Roles', 'Editar Roles', 'Eliminar Roles'];
 
         $permissions = collect($arrayOfPermissionNames)->map(function ($permission) {
             return ['name' => $permission, 'guard_name' => 'web'];

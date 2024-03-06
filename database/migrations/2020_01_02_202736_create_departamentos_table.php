@@ -34,7 +34,7 @@ class CreateDepartamentosTable extends Migration
 		//$table->timestamps();
 	  });
    }else{
-	  echo _('Omitiendo creación de tabla de departametos existente...
+	  echo __('Omitiendo creación de tabla de departametos existente...
 ');
    }
 /*

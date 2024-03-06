@@ -29,7 +29,7 @@ class CreateArchivosTable extends Migration
             $table->timestamps();
         });
       }else{
-      	 echo _('Omitiendo creación de tabla de archivos existente...
+      	 echo __('Omitiendo creación de tabla de archivos existente...
 ');
      }
     }
