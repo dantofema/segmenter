@@ -1506,7 +1506,11 @@
             ],
             "support": {
                 "issues": "https://github.com/guzzle/psr7/issues",
+<<<<<<< HEAD
                 "source": "https://github.com/guzzle/psr7/tree/2.6.1"
+=======
+                "source": "https://github.com/guzzle/psr7/tree/2.5.0"
+>>>>>>> 3a977afca436b382e6daeafc19f942d7fa25c5ef
             },
             "funding": [
                 {
@@ -1522,7 +1526,11 @@
                     "type": "tidelift"
                 }
             ],
+<<<<<<< HEAD
             "time": "2023-08-27T10:13:57+00:00"
+=======
+            "time": "2023-04-17T16:11:26+00:00"
+>>>>>>> 3a977afca436b382e6daeafc19f942d7fa25c5ef
         },
         {
             "name": "guzzlehttp/uri-template",
@@ -3881,6 +3889,7 @@
         },
         {
             "name": "psr/http-message",
+<<<<<<< HEAD
             "version": "2.0",
             "source": {
                 "type": "git",
@@ -3891,6 +3900,18 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/php-fig/http-message/zipball/402d35bcb92c70c026d1a6a9883f06b2ead23d71",
                 "reference": "402d35bcb92c70c026d1a6a9883f06b2ead23d71",
+=======
+            "version": "1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-fig/http-message.git",
+                "reference": "cb6ce4845ce34a8ad9e68117c10ee90a29919eba"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-fig/http-message/zipball/cb6ce4845ce34a8ad9e68117c10ee90a29919eba",
+                "reference": "cb6ce4845ce34a8ad9e68117c10ee90a29919eba",
+>>>>>>> 3a977afca436b382e6daeafc19f942d7fa25c5ef
                 "shasum": ""
             },
             "require": {
@@ -3899,7 +3920,11 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
+<<<<<<< HEAD
                     "dev-master": "2.0.x-dev"
+=======
+                    "dev-master": "1.1.x-dev"
+>>>>>>> 3a977afca436b382e6daeafc19f942d7fa25c5ef
                 }
             },
             "autoload": {
@@ -3928,9 +3953,15 @@
                 "response"
             ],
             "support": {
+<<<<<<< HEAD
                 "source": "https://github.com/php-fig/http-message/tree/2.0"
             },
             "time": "2023-04-04T09:54:51+00:00"
+=======
+                "source": "https://github.com/php-fig/http-message/tree/1.1"
+            },
+            "time": "2023-04-04T09:50:52+00:00"
+>>>>>>> 3a977afca436b382e6daeafc19f942d7fa25c5ef
         },
         {
             "name": "psr/log",
@@ -8102,5 +8133,9 @@
         "php": "^8.1"
     },
     "platform-dev": [],
+<<<<<<< HEAD
     "plugin-api-version": "2.6.0"
+=======
+    "plugin-api-version": "2.3.0"
+>>>>>>> 3a977afca436b382e6daeafc19f942d7fa25c5ef
 }
