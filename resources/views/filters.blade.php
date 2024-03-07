@@ -13,7 +13,8 @@
     <div class="card" style="width: 50rem;">
       <div class="card-header">{{ __('Lista de filtros') }} 
         @can('Crear Filtros')
-          <button type="button" class="badge badge-pill badge-success float-right" data-toggle="modal" id="btn-trigger-modal-nuevo-filtro" data-target="#newFilterModal">+ Nuevo filtro</button>
+          <button type="button" class="badge badge-pill badge-success float-right" data-toggle="modal" id="btn-trigger-modal-nuevo-filtro" data-target="#newFilterModal">+ Nuevo filtro</button> 
+          <button type="button" class="badge badge-pill badge-success float-right mr-1" id="btn-trigger-modal-filtros-provs"><i class="bi bi-pencil"></i> Filtros de Provincias</button>
         @endcan
         </div>
       <div class="card-body">
@@ -125,9 +126,34 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
-          <input type="submit" name="btn"  class="btn btn-primary btn-submit-edit-filtro" value="Confirmar" onclick="return confirmarCreacion()">
+          <input type="submit" name="btn"  class="btn btn-primary btn-submit-create-filtro" value="Confirmar" onclick="return confirmarCreacion()">
         </div>
-        </form>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal crear filtro para provincias-->
+<div class="modal fade" id="provsFiltersModal" tabindex="-1" role="dialog" aria-labelledby="provsFiltersModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="provsFiltersModalLabel">Administrar Filtros de Provincias</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form action="{{route('admin.editarFiltrosProvs')}}" method="put" id="form-editar-filtros-provs">
+        <div class="modal-body">
+          <table class="table table-bordered" id="tabla-filtros-provs">
+            <!-- Acá van la logica de los filtros por provincias (ver script) -->
+          </table>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+          <input type="submit" name="btn"  class="btn btn-primary btn-submit-create-filtro-prov" value="Confirmar" onclick="return confirmarProvs()">
+        </div>
+      </form>
     </div>
   </div>
 </div>
@@ -140,6 +166,9 @@
   };
   function confirmarCreacion(){
     return confirm("¿Estás seguro de que deseas crear el nuevo filtro \"" + document.getElementById('nameInput').value +"\" ?");
+  };
+  function confirmarProvs(){
+    return confirm("¿Guardar cambios en los filtros de Provincias?");
   };
 </script>
 
@@ -171,6 +200,63 @@
         });
       };
     });
+  });
+</script>
+
+<script>
+  $(document).ready(function() {
+    $('#btn-trigger-modal-filtros-provs').click(function() {
+        // Abre el modal al hacer clic en el botón
+        $('#provsFiltersModal').modal('show');
+        // Llama a la función para cargar los filtros en la tabla
+        actualizarTablaFiltros();
+    });
+
+    function actualizarTablaFiltros() {
+      console.log("hola");
+      $.ajax({
+        url: 'filtros/provs',
+        type: "GET",
+        success: function(response) {
+          var filtros = response.filtros;
+          var provincias = response.provincias;
+          var tablaProvs = $('#tabla-filtros-provs');
+          tablaProvs.empty(); // limpio la tabla antes de agregar los nuevos filtros
+          if (provincias.length > 0) {
+            provincias.forEach(function(provincia) {
+              var isChecked = filtros.includes(provincia.codigo);
+              console.log(isChecked);
+
+              var fila = '<tr>' +
+                '<td class="col align-self-center">' +
+                '<input type="checkbox" data-toggle="toggle" class="toggle-checkbox" ' + (isChecked ? 'checked' : '') + ' id="' + provincia.codigo + '" name="provincias[]" value="' + provincia.codigo +'">' +
+                '<label class="form-check-label ml-2" for="' + provincia.codigo + '">' +
+                provincia.nombre + ' (Código: ' + provincia.codigo + ')' +
+                '</label>' +
+                '</td>' +
+                '</tr>';
+              tablaProvs.append(fila);
+            });
+
+            // Inicializa Bootstrap Toggle después de agregar los inputs
+            $('.toggle-checkbox').bootstrapToggle({
+                on: ' ',
+                off: ' ',
+                offstyle: 'secondary',
+                width: 10,
+                size: 'xs',
+                style: 'ios'
+            });
+            
+          } else {
+              tablaProvs.append('<tr><td class="col align-self-center">No hay provincias cargadas.</td></tr>');
+          }
+        },
+        error: function(xhr, status, error) {
+            // Maneja los errores de la solicitud AJAX si es necesario
+        }
+      });
+    }
   });
 </script>
 

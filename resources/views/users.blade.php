@@ -234,6 +234,11 @@
                                         {{$rol->name}}
                                       </label>
                                     @endif
+                                    @if ($rol->guard_name == "web")
+                                      <span class="badge badge-pill badge-warning">Permisos</span>
+                                    @else
+                                      <span class="badge badge-pill badge-info">Filtros</span>
+                                    @endif
                                     <button type="button" class="btn-sm btn-primary float-right btn-detalles" data-toggle="modal" data-dismiss="modal" data-role-id="{{ $rol->id }}" data-user-id="{{ $usuario->id }}" data-target="#detailsModal">
                                       Detalles
                                     </button>
@@ -316,7 +321,7 @@
                         console.log("Super Admin");
                         // Muestro unicamente el mensaje para Super Admin
                         $('#detailsModal .authorization-label').hide();
-                        $('#detailsModal .modal-authorization-table-body').html('Este rol tiene todas las autorizaciones.');
+                        $('#detailsModal .modal-authorization-table-body').html('Este rol tiene todos los permisos.');
                       } else {
                         // Vacío el contenido de la tabla autorizaciones antes de mostrar las nuevas
                         $('#detailsModal .modal-authorization-table-body').empty();

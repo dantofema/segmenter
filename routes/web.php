@@ -190,6 +190,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('filtros', 'FilterController@listarFiltros')->name('admin.listarFiltros');
     Route::get('filtros/{filter}/rename', 'FilterController@renombrarFiltro')->name('admin.renombrarFiltro');
     Route::get('filtros/new', 'FilterController@crearFiltro')->name('admin.crearFiltro');
+    Route::get('filtros/provs/edit', 'FilterController@editarFiltrosProvs')->name('admin.editarFiltrosProvs');
+    Route::get('filtros/provs', 'FilterController@listarFiltrosProvs')->name('admin.listarFiltrosProvs');
     Route::delete('filtros/{filter}', 'FilterController@eliminarFiltro')->name('admin.eliminarFiltro');
 });
 
