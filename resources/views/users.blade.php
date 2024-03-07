@@ -301,10 +301,10 @@
 <script>
   $(document).ready(function(){
       $('.btn-detalles').click(function(){
-          var roleId = $(this).data('role-id');
+          var role = $(this).data('role-id');
           var userId = $(this).data('user-id');
           $.ajax({
-              url: 'roles/' + roleId + '/detail',
+              url: 'roles/' + role + '/detail',
               type: 'GET',
               dataType: 'json',
               success: function(response){
