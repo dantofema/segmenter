@@ -72,7 +72,7 @@
                     <button type="button" class="btn-sm btn-danger btn-role-delete" data-role="{{ $rol }}">Eliminar</button>
                     @endcan
                   @else
-                    <i class="bi bi-file-lock"> No se puede editar este rol.</i>
+                    <i class="bi bi-ban"> No se puede editar este rol.</i>
                   @endif
                 </div>
 

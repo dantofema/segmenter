@@ -14,7 +14,7 @@
       <div class="card-header">{{ __('Lista de filtros') }} 
         @can('Crear Filtros')
           <button type="button" class="badge badge-pill badge-success float-right" data-toggle="modal" id="btn-trigger-modal-nuevo-filtro" data-target="#newFilterModal">+ Nuevo filtro</button> 
-          <button type="button" class="badge badge-pill badge-success float-right mr-1" id="btn-trigger-modal-filtros-provs"><i class="bi bi-pencil"></i>Filtros de Provincias</button>
+          <button type="button" class="badge badge-pill badge-success float-right mr-1" id="btn-trigger-modal-filtros-provs"><i class="bi bi-pencil"></i> Filtros de Provincias</button>
         @endcan
         </div>
       <div class="card-body">
