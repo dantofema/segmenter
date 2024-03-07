@@ -16,12 +16,14 @@
           <button type="button" class="badge badge-pill badge-success float-right" data-toggle="modal" id="btn-trigger-modal-nuevo-rol" data-target="#newRoleModal">+ Nuevo rol</button></div>
         @endcan
       <div class="card-body">
-        @if(Session::has('info'))
-          <div class="alert alert-success alert-dismissible" role="alert">
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            {{Session::get('info')}}
-          </div>
-        @endif
+        <div id="alert-container">
+          @if(Session::has('info'))
+            <div class="alert alert-success alert-dismissible" role="alert">
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              {{Session::get('info')}}
+            </div>
+          @endif
+        </div>
         @if(Session::has('error_rename') or Session::has('error_authorization_edit'))
         <script>
             $(function() {
@@ -52,14 +54,20 @@
               @canany(['Editar Roles', 'Eliminar Roles'])
               <td>
                 <div class="text-center">
-                  @can('Editar Roles')
-                  <!-- Button trigger modal -->
-                  <button type="button" class="btn-sm btn-primary text-center" data-toggle="modal" id="btn-trigger-modal-edit-role" data-target="#editRoleModal{{$rol->id}}">
-                    Editar
-                  </button>
-                  @endcan
-                  <!-- Button eliminar rol -->
-                  <!-- <button type="button" href="#" class="btn-sm btn-danger">Eliminar</button> -->
+                  @if ($rol->name != 'Super Admin')
+                    @can('Editar Roles')
+                    <!-- Button trigger modal -->
+                    <button type="button" class="btn-sm btn-primary text-center" data-toggle="modal" id="btn-trigger-modal-edit-role" data-target="#editRoleModal{{$rol->id}}">
+                      Editar
+                    </button>
+                    @endcan
+                    @can('Eliminar Roles')
+                    <!-- Button eliminar rol -->
+                    <button type="button" class="btn-sm btn-danger btn-role-delete" data-role="{{ $rol }}">Eliminar</button>
+                    @endcan
+                  @else
+                    <i class="bi bi-file-lock"> No se puede editar este rol.</i>
+                  @endif
                 </div>
 
                 <!-- Modal editar rol -->
@@ -298,6 +306,37 @@
 
     // Desmarcar todos los switches por defecto
     $('.switch-role-type-edit').prop('checked', false).change();
+  });
+</script>
+
+<script>
+  $(document).ready(function(){
+    $('.btn-role-delete').click(function(){
+      var role = $(this).data('role');
+      var row = $(this).closest('tr');
+      if ((confirm('Está seguro de que desea eliminar el rol “' + role.name + '"?'))) {
+        var csrfToken = $('meta[name="csrf-token"]').attr('content');
+        $.ajax({
+          url: 'roles/' + role.id,
+          type: "DELETE",
+          data: {
+            '_token': csrfToken
+          },
+          success: function(response) {
+              var alertClass = (response.statusCode == 200) ? 'alert-success' : 'alert-danger';
+              var alertHtml = '<div class="alert ' + alertClass + ' alert-dismissible" role="alert">' +
+                                '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                                response.message +
+                              '</div>';
+              $('#alert-container').html(alertHtml);
+              if (response.statusCode == 200) {
+                  row.fadeOut().remove();
+              }
+              console.log(response);
+          }
+        });
+      };
+    });
   });
 </script>
 

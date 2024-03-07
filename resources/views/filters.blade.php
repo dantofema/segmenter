@@ -17,12 +17,14 @@
         @endcan
         </div>
       <div class="card-body">
-        @if(Session::has('info'))
-          <div class="alert alert-success alert-dismissible" role="alert">
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            {{Session::get('info')}}
-          </div>
-        @endif
+        <div id="alert-container">
+          @if(Session::has('info'))
+            <div class="alert alert-success alert-dismissible" role="alert">
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              {{Session::get('info')}}
+            </div>
+          @endif
+        </div>
         @if(Session::has('error_rename'))
         <script>
             $(function() {
@@ -59,8 +61,10 @@
                     Renombrar
                   </button>
                   @endcan
+                  @can('Eliminar Filtros')
                   <!-- Button eliminar filtro -->
-                  <!-- <button type="button" href="#" class="btn-sm btn-danger">Eliminar</button> -->
+                  <button type="button" class="btn-sm btn-danger btn-filter-delete" data-filter="{{ $filtro }}">Eliminar</button>
+                  @endcan
                 </div>
 
                 <!-- Modal renombrar filtro -->
@@ -137,6 +141,37 @@
   function confirmarCreacion(){
     return confirm("¿Estás seguro de que deseas crear el nuevo filtro \"" + document.getElementById('nameInput').value +"\" ?");
   };
+</script>
+
+<script>
+  $(document).ready(function(){
+    $('.btn-filter-delete').click(function(){
+      var filter = $(this).data('filter');
+      var row = $(this).closest('tr');
+      if ((confirm('Está seguro de que desea eliminar el filtro “' + filter.name + '"?'))) {
+        var csrfToken = $('meta[name="csrf-token"]').attr('content');
+        $.ajax({
+          url: 'filtros/' + filter.id,
+          type: "DELETE",
+          data: {
+            '_token': csrfToken
+          },
+          success: function(response) {
+              var alertClass = (response.statusCode == 200) ? 'alert-success' : 'alert-danger';
+              var alertHtml = '<div class="alert ' + alertClass + ' alert-dismissible" role="alert">' +
+                                '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                                response.message +
+                              '</div>';
+              $('#alert-container').html(alertHtml);
+              if (response.statusCode == 200) {
+                  row.fadeOut().remove();
+              }
+              console.log(response);
+          }
+        });
+      };
+    });
+  });
 </script>
 
 <!-- datatables -->

@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Permission;
+use Illuminate\Support\Facades\Log;
+use App\User;
+use Auth;
 
 class FilterController extends Controller
 {
@@ -42,5 +45,27 @@ class FilterController extends Controller
         } else {
             return redirect()->back()->with('error_create','El nombre del filtro no puede estar vacío.');
         }   
+    }
+
+    public function eliminarFiltro(Request $request, $filter) {
+        $filtro = Permission::where('id', $filter)->where('guard_name', 'filters')->first();
+        $nombre = $filtro->name;
+        if (Auth::user()->can('Eliminar Filtros')) {
+            // tengo que usar esta consulta ya que spatie no tiene implementado el User::permission(permission_name)->get() para multiples guards
+            $users = User::whereHas('permissions', function ($query) use ($filtro) {
+                $query->where('name', $filtro->name)->where('guard_name', 'filters');
+            })->get();
+            // tengo que cambiar el guard del filtro antes de quitarselo a los usuarios y eliminarlo y que spatie no tiene implementadas estas funciones para multiples guards
+            $filtro->setAttribute('guard_name', 'web');
+            $filtro->save();
+            foreach ($users as $user) {
+                $user->revokePermissionTo($filtro->name);
+            }
+            $filtro->delete();
+            $respuesta = ['statusCode'=> 200,'message' => 'Se eliminó el filtro "'.$nombre.'"!'];
+        } else {
+            $respuesta = ['statusCode'=> 304,'message' => 'No tenés permiso para eliminar filtros.'];
+        }
+        return response()->json($respuesta);
     }
 }

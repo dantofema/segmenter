@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
+use Illuminate\Support\Facades\Log;
+use App\User;
+use Auth;
 
 class RoleController extends Controller
 {
@@ -83,12 +86,33 @@ class RoleController extends Controller
          
     }
 
-    public function detallesRol(Request $request, $roleId) {
-        $rol = Role::find($roleId);
+    public function detallesRol(Request $request, $role) {
+        $rol = Role::find($role);
         $autorizaciones = $rol->permissions()->pluck('name');
         return response()->json([
             'rol' => $rol,
             'autorizaciones' => $autorizaciones,
         ]);
+    }
+
+    public function eliminarRol(Request $request, $role) {
+        $rol = Role::find($role);
+        $nombre = $rol->name;
+        if ($rol->name != 'Super Admin') {
+            if (Auth::user()->can('Eliminar Roles')) {
+                $users = User::role($rol->name)->get();
+                foreach ($users as $user) {
+                    $user->removeRole($rol->name);
+                }
+                $rol->syncPermissions([]);
+                $rol->delete();
+                $respuesta = ['statusCode'=> 200,'message' => 'Se eliminó el rol "'.$nombre.'"!'];
+            } else {
+                $respuesta = ['statusCode'=> 304,'message' => 'No tenés permiso para eliminar roles.'];
+            }
+        } else {
+            $respuesta = ['statusCode'=> 304,'message' => 'No se puede eliminar el rol Super Admin.'];
+        }
+        return response()->json($respuesta);
     }
 }
