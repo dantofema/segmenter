@@ -20,7 +20,7 @@ class CreateFileViewerTable extends Migration
                 $table->timestamps();
             });
         } else {
-            echo _("Ya existe la tabla file_viewer. No se creará");
+            echo __("Ya existe la tabla file_viewer. No se creará");
         }
     }
 

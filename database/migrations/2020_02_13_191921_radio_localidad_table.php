@@ -19,7 +19,7 @@ class RadioLocalidadTable extends Migration
            DB::unprepared($sql);
        }catch(Illuminate\Database\QueryException $e){
           DB::Rollback();
-	        echo _('Omitiendo creación de tabla de relación radio localidad...
+	        echo __('Omitiendo creación de tabla de relación radio localidad...
 		      ');
        }
     }

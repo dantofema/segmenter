@@ -19,7 +19,7 @@ class FraccionesTable extends Migration
            DB::unprepared($sql);
        }catch(Illuminate\Database\QueryException $e){
           DB::Rollback();
-	        echo _('Omitiendo creación de tabla de fracciones...
+	        echo __('Omitiendo creación de tabla de fracciones...
 		      ');
        }
     }

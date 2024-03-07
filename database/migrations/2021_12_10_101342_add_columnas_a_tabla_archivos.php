@@ -26,7 +26,7 @@ class AddColumnasATablaArchivos extends Migration
         });
       }catch (Exception $e){
         if($e->getCode()=='42701'){
-          echo _('Ya existen la columnas
+          echo __('Ya existen la columnas
 ');
           }else{
           echo ($e);

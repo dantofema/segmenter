@@ -23,7 +23,7 @@ class CreateOperativosTables extends Migration
            DB::unprepared($sql);
        }catch(Illuminate\Database\QueryException $e){
           DB::Rollback();
-          echo _('Error creando tablas operativos ...').$e;
+          echo __('Error creando tablas operativos ...').$e;
        }
     }
 

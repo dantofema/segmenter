@@ -24,15 +24,15 @@ class DefaultUsersSeeder extends Seeder
                ])->assignRole('Super Admin');
             $this->command->info('Usuario Super Admin creado.');
         } catch (Exception $e) {
-            echo _($e->getMessage());
-        
+            echo __($e->getMessage());
+
         } catch (QueryException $e) {
             if ($e->getCode() == 23505) {
               User::where('email','superadmin@segmenter')->first()->assignRole('Super Admin');
             }else {
-              echo _($e->getMessage());
+              echo __($e->getMessage());
             }
         }
-        
+
     }
 }
