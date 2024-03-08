@@ -194,6 +194,10 @@
               $('#alert-container').html(alertHtml);
               if (response.statusCode == 200) {
                   row.fadeOut().remove();
+                  if ($('#tabla-filtros tbody').children().length == 0) {
+                    $('#tabla-filtros').DataTable().destroy();
+                    $('#tabla-filtros').html('<h2>No hay filtros cargados</h2>');
+                  }
               }
               console.log(response);
           }
@@ -213,7 +217,6 @@
     });
 
     function actualizarTablaFiltros() {
-      console.log("hola");
       $.ajax({
         url: 'filtros/provs',
         type: "GET",
@@ -262,7 +265,7 @@
 
 <!-- datatables -->
 <script>
-  $('#tabla-permisos').DataTable({
+  $('#tabla-filtros').DataTable({
     language: {
       "sProcessing":     "Procesando...",
       "sLengthMenu":     "Mostrar _MENU_ registros",
@@ -290,7 +293,10 @@
           "copy": "Copiar",
           "colvis": "Visibilidad"
       }
-    }
+    },
+    columnDefs: [
+      { "orderable": false, "targets": [-1] }
+    ]
   });
 </script>
 @endsection

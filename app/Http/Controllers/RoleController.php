@@ -104,9 +104,15 @@ class RoleController extends Controller
         if (Auth::user()->can('Administrar Roles')){
             $rol = Role::find($role);
             $autorizaciones = $rol->permissions()->pluck('name');
+            if (Auth::user()->hasRole('Super Admin')) {
+                $autorizaciones_usuario = Permission::all();
+            } else {
+                $autorizaciones_usuario = Auth::user()->permissions;
+            }
             return response()->json([
                 'rol' => $rol,
                 'autorizaciones' => $autorizaciones,
+                'autorizaciones_usuario' => $autorizaciones_usuario->pluck('name')
             ]);
         } else {
             flash('No tienes permiso para hacer eso.')->error();

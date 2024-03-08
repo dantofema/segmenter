@@ -98,9 +98,10 @@ class FilterController extends Controller
 
     public function editarFiltrosProvs(Request $request){
         if (Auth::user()->can(['Administrar Filtros', 'Crear Filtros','Eliminar Filtros'])){
+            $nuevos = ($request->provincias == null) ? [] : $request->provincias;
             $filtros = Permission::where('guard_name', 'filters')->get()->pluck('name');
             // si el cod de alguna provincia de la colección enviada desde la view no está en la lista de filtros, creo el filtro
-            foreach ($request->provincias as $cod_provincia) {
+            foreach ($nuevos as $cod_provincia) {
                 if (!$filtros->contains($cod_provincia)){
                     Permission::create(['name' => $cod_provincia, 'guard_name' => 'filters']);
                 }
@@ -109,7 +110,7 @@ class FilterController extends Controller
             $provincias = Provincia::all()->pluck('codigo');
             // si existe un filtro cuyo nombre = el codigo y el código no está en la colección de provincias enviada desde la view, elimino el filtro
             foreach ($provincias as $cod_provincia) {
-                if ($filtros->contains($cod_provincia) and !in_array($cod_provincia, $request->provincias)){
+                if ($filtros->contains($cod_provincia) and (empty($nuevos) or !in_array($cod_provincia, $nuevos))){
                     $filtro = Permission::where('name', $cod_provincia)->where('guard_name', 'filters')->first();
                     // tengo que usar esta consulta ya que spatie no tiene implementado el User::permission(permission_name)->get() para multiples guards
                     $users = User::whereHas('permissions', function ($query) use ($filtro) {
