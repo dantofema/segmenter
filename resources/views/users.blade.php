@@ -362,8 +362,6 @@
 
 
 <!-- datatables -->
-<script>src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"</script>
-<script>src="https://cdn.datatables.net/1.13.4/js/dataTables.bootstrap4.min.js"</script>
 <script>
   $('#tabla-usuarios').DataTable({
     language: {
@@ -393,7 +391,10 @@
           "copy": "Copiar",
           "colvis": "Visibilidad"
       }
-    }
+    },
+    columnDefs: [
+      { "orderable": false, "targets": [2,3,4] }
+    ]
   });
 </script>
 @endsection

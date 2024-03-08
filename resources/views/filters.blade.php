@@ -262,7 +262,7 @@
 
 <!-- datatables -->
 <script>
-  $('#tabla-permisos').DataTable({
+  $('#tabla-filtros').DataTable({
     language: {
       "sProcessing":     "Procesando...",
       "sLengthMenu":     "Mostrar _MENU_ registros",
@@ -290,7 +290,10 @@
           "copy": "Copiar",
           "colvis": "Visibilidad"
       }
-    }
+    },
+    columnDefs: [
+      { "orderable": false, "targets": [-1] }
+    ]
   });
 </script>
 @endsection
