@@ -56,6 +56,9 @@
                 @else
                   <span class="badge badge-pill badge-info">Filtros</span>
                 @endif
+                @if ($rol->permissions->isEmpty() and $rol->name != 'Super Admin') 
+                  <span class="badge badge-pill badge-danger">Vacío</span>
+                @endif 
               </td>
               @canany(['Editar Roles', 'Eliminar Roles'])
               <td>

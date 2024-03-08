@@ -213,7 +213,6 @@
     });
 
     function actualizarTablaFiltros() {
-      console.log("hola");
       $.ajax({
         url: 'filtros/provs',
         type: "GET",
