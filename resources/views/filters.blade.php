@@ -194,6 +194,10 @@
               $('#alert-container').html(alertHtml);
               if (response.statusCode == 200) {
                   row.fadeOut().remove();
+                  if ($('#tabla-filtros tbody').children().length == 0) {
+                    $('#tabla-filtros').DataTable().destroy();
+                    $('#tabla-filtros').html('<h2>No hay filtros cargados</h2>');
+                  }
               }
               console.log(response);
           }
