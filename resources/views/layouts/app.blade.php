@@ -94,6 +94,9 @@
                                 <!-- DropDown Of Side Navbar -->
                                 <ul class="navbar-nav ml-auto">
                                 <li class="nav-item dropdown">
+                                  <a class="dropdown-item" href="{{ route('perfil') }}">{{ __('Perfil') }}</a>
+                                </li>
+                                <li class="nav-item dropdown">
                                     <a class="dropdown-item" href="{{ route('logout') }}"
                                        onclick="event.preventDefault();
                                                      document.getElementById('logout-form').submit();">

@@ -176,6 +176,7 @@ Route::post('csv_file/import', 'CsvFile@csv_import')->name('import');
 Route::get('search_provincia', 'AutoCompleteProvinciaController@index');
 Route::get('autocomplete_provincia', 'AutoCompleteProvinciaController@search');
 Route::get('provincia','ProvinciaController@index');
+Route::get('perfil', 'UserController@mostrarPerfil')->name('perfil')->middleware('auth');
 
 // ---------- USUARIOS ----------
 Route::get('users', 'UserController@listarUsuarios')->name('admin.listarUsuarios');

@@ -26,6 +26,16 @@ class UserController extends Controller
     return view('users', compact('usuarios', 'roles', 'permisos', 'filtros', 'superadmins'));
   }
 
+  public function mostrarPerfil(){
+    $usuario = User::find(Auth::user()->id);
+    $permisos = $usuario->getAllPermissions()->where('guard_name', 'web');
+    $permisos_roles = $usuario->getPermissionsViaRoles()->pluck('name');
+    $filtros = $usuario->getAllPermissions()->where('guard_name', 'filters');
+    $filtros_roles = $usuario->getPermissionsViaRoles()->where('guard_name', 'filters')->pluck('name');
+    $roles = $usuario->roles();
+    return view('perfil', compact('usuario', 'permisos', 'permisos_roles', 'filtros', 'filtros_roles', 'roles'));
+  }
+
   public function editarRolUsuario(Request $request, User $user){
     $user->roles()->sync($request->roles);
     return redirect()->route('admin.listarUsuarios')->with('info','Roles actualizados!');
