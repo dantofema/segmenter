@@ -369,22 +369,9 @@ class Archivo extends Model
         MyDB::createSchema('_'.$this->tabla);
         flash('Procesando Geom desde Shape '.$capa.'...')->warning();
         $mensajes = '';
-        $path_ogr2ogr = "c:\OSGeo4W64\bin\ogr2ogr.exe";
+        $path_ogr2ogr = "/usr/bin/ogr2ogr";
         $processOGR2OGR = Process::fromShellCommandline(
-          '( !ogr2ogr! -f
-          "PostgreSQL" PG:"dbname=!db! host=!host! user=!user! port=!port!
-          active_schema=e!esquema! password=!pass!" --config PG_USE_COPY YES
-          -lco OVERWRITE=YES --config OGR_TRUNCATE YES -dsco
-          PRELUDE_STATEMENTS="SET client_encoding TO latin1;CREATE SCHEMA
-          IF NOT EXISTS e!esquema!;" -dsco active_schema=e!esquema! -lco
-          PRECISION=NO -lco SCHEMA=e!esquema!
-          -nln !capa!
-          -skipfailures
-          -overwrite !file! )'
-      );
-        /*$path_ogr2ogr = "/usr/bin/ogr2ogr";
-        $processOGR2OGR = Process::fromShellCommandline(
-            '( c:\OSGeo4W64\bin\ogr2ogr.exe -f \
+            '( $ogr2ogr -f \
             "PostgreSQL" PG:"dbname=$db host=$host user=$user port=$port \
             active_schema=e$esquema password=$pass" --config PG_USE_COPY YES \
             -lco OVERWRITE=YES --config OGR_TRUNCATE YES -dsco \
@@ -394,7 +381,7 @@ class Archivo extends Model
             -nln $capa \
             -skipfailures \
             -overwrite $file )'
-        );*/
+        );
         $processOGR2OGR->setTimeout(1800);
 
         //Cargo etiquetas
