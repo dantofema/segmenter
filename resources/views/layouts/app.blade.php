@@ -82,7 +82,7 @@
                                     onclick="$('div.alert').toggle();">
                                     Mensajes</a>
                             </li>
-                            <li class="nav-item dropdown">
+                            <li class="nav-item dropdown" style="display: flex; align-items: center;">
                                 <a id="navbarDropdownLogin" class="nav-link
                                 dropdown-toggle" href="#logout" role="button"
                                 aria-controls=logout
