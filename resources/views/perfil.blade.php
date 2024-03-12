@@ -16,45 +16,59 @@
       border-radius: 5px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
       display: flex;
-      align-items: center; /* Centro vertical */
-      position: relative; /* Permite posicionamiento absoluto del botón */
-      flex-wrap: wrap; /* Permitir que los elementos se envuelvan en varias líneas si es necesario */
-    }
-    .profile-picture {
-      width: 150px;
-      height: 150px;
-      border-radius: 50%;
-      margin-right: 10%;
-      margin-left: 10%;
+      align-items: center;
+      position: relative; /* permite posicionamiento absoluto del botón editar*/
+      flex-wrap: wrap;
     }
     .user-details {
       margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
     }
     .username {
       font-size: 24px;
       margin-bottom: 10px;
+      margin-top: 20px
     }
     .email {
       font-size: 18px;
       color: #666;
     }
-    .edit-button {
+    .password-button {
+      margin-top: 10px;
+      font-size: 14px;
+      padding: auto;
+      background-color: #fff;
+      color: orange;
+      border: 1px solid orange;
+      border-radius: 50px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background-color 0.3s, color 0.3s;
+      display: none
+    }
+    .password-button:hover {
+      background-color: orange;
+      color: #fff;
+    }
+    .mode-button {
       position: absolute;
-      top: 10px; /* Posición desde la parte superior */
-      right: 10px; /* Posición desde la parte derecha */
+      top: 10px; /* posición desde la parte superior */
+      right: 10px; /* posición desde la parte derecha */
       padding: 5px 10px;
       font-size: 13px;
-      background-color: transparent; /* Botón transparente */
-      color: orange; /* Texto naranja */
-      border: 1px solid orange; /* Borde naranja */
+      background-color: transparent;
+      color: orange;
+      border: 1px solid orange;
       border-radius: 5px;
       cursor: pointer;
       text-decoration: none;
-      transition: background-color 0.3s, color 0.3s; /* Transición suave */
+      transition: background-color 0.3s, color 0.3s;
     }
-    .edit-button:hover {
-      background-color: orange; /* Cambia el fondo al pasar el cursor */
-      color: #fff; /* Cambia el color del texto al pasar el cursor */
+    .mode-button:hover {
+      background-color: orange;
+      color: #fff;
     }
     .buttons-container {
       justify-content: space-between;
@@ -63,44 +77,91 @@
       width: 100%;
       color: orange
     }
-    .button {
+    .modal-button {
       flex: 1;
       padding: 10px 0;
       margin: 5px;
       font-size: 16px;
-      background-color: orange; /* Color naranja */
+      background-color: orange;
       color: #fff;
-      border: 1px solid orange; /* Borde naranja */
-      border-radius: 50px; /* Forma de píldora */
+      border: 1px solid orange;
+      border-radius: 50px;
       cursor: pointer;
       text-decoration: none;
-      transition: background-color 0.3s, color 0.3s; /* Transición suave */
+      transition: background-color 0.3s, color 0.3s;
     }
-    .button:hover {
-      background-color: transparent; /* Cambia el fondo al pasar el cursor */
-      color: orange; /* Cambia el color del texto al pasar el cursor */
+    .modal-button:hover {
+      background-color: transparent;
+      color: orange;
     }
     .divider {
       width: 100%;
-      border-top: 1px solid #ccc; /* Línea divisoria */
-      margin-top: 20px; /* Espacio superior */
-      margin-bottom: 20px; /* Espacio inferior */
+      border-top: 1px solid #ccc;
+      margin-top: 20px;
+      margin-bottom: 20px;
+    }
+    .profile-picture {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+    }
+    .profile-picture-container {
+      width: 170px;
+      height: 150px;
+      margin-right: 5%;
+      margin-left: 15%;
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .edit-button, .edit-photo-button {
+      font-size: 12px;
+      background-color: transparent;
+      color: orange;
+      border: 1px solid orange;
+      border-radius: 5px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background-color 0.3s, color 0.3s;
+      display: none; /* Ocultar los botones por defecto */
+    }
+    .edit-button:hover, .edit-photo-button:hover {
+      background-color: orange;
+      color: #fff;
+    }
+    .edit-photo-button {
+      position: absolute;
+      top: 10px; /* Distancia desde la parte superior */
+      right: 10px; /* Distancia desde la derecha */
+      font-size: 12px;
     }
   </style>
 </head>
 <body>
 <div class="profile-container">
-  <img class="profile-picture" src="https://i.pinimg.com/1200x/01/bf/df/01bfdf2066554fb5b021b992465c3e86.jpg" alt="Foto de perfil">
-  <div class="user-details">
-    <div class="username">{{$usuario->name}}</div>
-    <div class="email">{{$usuario->email}}</div>
+  <div class="profile-picture-container">
+    <img class="profile-picture" src="/images/mandarina.svg" alt="Foto de perfil">
+    <button class="edit-photo-button" onclick="changeProfilePicture()"><i class="bi bi-pen"></i></button>
   </div>
-  <button class="edit-button"><i class="bi bi-pen"></i></button> <!-- Botón de edición -->
+  <div class="user-details">
+    <div 
+      class="username">{{$usuario->name}}
+      <button class="edit-button ml-2" onclick="editField('username')"><i class="bi bi-pen"></i></button>
+    </div>
+    
+    <div class="email">
+      {{$usuario->email}}
+      <button class="edit-button ml-2" onclick="editField('email')"><i class="bi bi-pen"></i></button>
+    </div>
+
+    <button class="password-button" id="password-button" onclick="changePassword()">Cambiar contraseña</button>
+  </div>
+  <button class="mode-button" onclick="toggleEditMode()"><i class="bi bi-pen"></i></button> <!-- Botón de edición -->
   <div class="buttons-container">
     <hr class="divider"> <!-- Línea divisoria -->
-    <button class="button" data-toggle="modal" id="btn-trigger-modal-permisos" data-target="#permisosModal">Mis Permisos</button>
-    <button class="button" data-toggle="modal" id="btn-trigger-modal-permisos" data-target="#filtrosModal">Mis Filtros</button>
-    <button class="button" data-toggle="modal" id="btn-trigger-modal-permisos" data-target="#rolesModal">Mis Roles</button>
+    <button class="modal-button" data-toggle="modal" id="btn-trigger-modal-permisos" data-target="#permisosModal">Mis Permisos</button>
+    <button class="modal-button" data-toggle="modal" id="btn-trigger-modal-permisos" data-target="#filtrosModal">Mis Filtros</button>
+    <button class="modal-button" data-toggle="modal" id="btn-trigger-modal-permisos" data-target="#rolesModal">Mis Roles</button>
   </div>
 </div>
 
@@ -318,4 +379,52 @@
       });
   });
 </script>
+
+<script>
+    function editField(fieldId) {
+      var field = document.getElementById(fieldId);
+      var value = field.textContent;
+      var input = document.createElement('input');
+      input.type = 'text';
+      input.value = value;
+      input.setAttribute('data-original-value', value);
+      field.textContent = '';
+      field.appendChild(input);
+    }
+
+    function toggleEditMode() {
+      var editModeButton = document.querySelector('.mode-button i');
+      var passwordButton = document.querySelector('.password-button');
+      var userDetails = document.querySelector('.user-details');
+  
+      if (editModeButton.classList.contains('bi-pen')) {
+        editModeButton.classList.remove('bi-pen');
+        editModeButton.classList.add('bi-x-lg'); //Cambio el icono
+        document.querySelectorAll('.edit-button, .edit-photo-button').forEach(function(button) {
+          button.style.display = 'inline-block';
+        });
+        passwordButton.style.display = 'block'; // Muestro el botón de cambio de contraseña
+        userDetails.style.marginBottom = '10px'; 
+      } else {
+        editModeButton.classList.remove('bi-x-lg');
+        editModeButton.classList.add('bi-pen'); //Restauro icono editar
+        document.querySelectorAll('.edit-button, .edit-photo-button').forEach(function(button) {
+          button.style.display = 'none';
+        });
+        passwordButton.style.display = 'none'; // Oculto el botón de cambio de contraseña
+        document.querySelectorAll('.user-details input').forEach(function(input) {
+          input.parentNode.textContent = input.getAttribute('data-original-value');
+        });
+        userDetails.style.marginBottom = '20px';
+      }
+    }
+
+    function changePassword() {
+      // Lógica para cambiar la contraseña
+    }
+
+    function changeProfilePicture() {
+      // Lógica para cambiar la foto de perfil
+    }
+  </script>
 @endsection
