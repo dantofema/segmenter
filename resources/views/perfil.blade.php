@@ -100,7 +100,7 @@
     <hr class="divider"> <!-- Línea divisoria -->
     <button class="button" data-toggle="modal" id="btn-trigger-modal-permisos" data-target="#permisosModal">Mis Permisos</button>
     <button class="button" data-toggle="modal" id="btn-trigger-modal-permisos" data-target="#filtrosModal">Mis Filtros</button>
-    <button class="button">Mis Roles</button>
+    <button class="button" data-toggle="modal" id="btn-trigger-modal-permisos" data-target="#rolesModal">Mis Roles</button>
   </div>
 </div>
 
@@ -123,13 +123,13 @@
                 <td class="col align-self-center">
                   {{$permiso->name}}
                   @if ($permisos_roles->contains($permiso->name) or $usuario->hasRole('Super Admin'))
-                    <span class="badge badge-pill badge-danger">Heredado de rol</span>
+                    <span class="badge badge-pill badge-danger ml-2">Heredado de rol</span>
                   @endif
                 </td>
               </tr> 
               @endforeach
             @else
-              No hay permisos cargados.
+              No tenés permisos asignados.
             @endif
           </tbody>
         </table>
@@ -155,15 +155,15 @@
               @foreach ($filtros as $filtro)
               <tr>                                         
                 <td class="col align-self-center">
-                  {{$filtro->name}}
+                  {{$filtro->name}} 
                   @if ($filtros_roles->contains($filtro->name))
-                    <span class="badge badge-pill badge-danger">Heredado de rol</span>
+                    <span class="badge badge-pill badge-danger ml-2">Heredado de rol</span>
                   @endif
                 </td>
               </tr> 
               @endforeach
             @else
-              No hay filtros cargados.
+              No tenés filtros asignados.
             @endif
           </tbody>
         </table>
@@ -172,7 +172,150 @@
   </div>
 </div>
 
+<!-- Modal roles del usuario -->
+<div class="modal fade" id="rolesModal" tabindex="-1" role="dialog" aria-labelledby="rolesModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="rolesModalLabel">Mis Roles</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <table class="table" id="tabla-roles">
+          <tbody>
+            @if ($roles->count() > 0)
+              @foreach ($roles as $rol)
+              <tr>
+                <td class="col align-self-center">
+                  {{$rol->name}}
+                  @if ($rol->guard_name == "web")
+                    <span class="badge badge-pill badge-warning">Permisos</span>
+                  @else
+                    <span class="badge badge-pill badge-info">Filtros</span>
+                  @endif
+                  <button type="button" class="btn-sm btn-primary float-right btn-detalles" data-toggle="modal" data-dismiss="modal" data-role-id="{{ $rol->id }}" data-target="#detailsModal">
+                    Detalles
+                  </button>
+                </td>                                
+              </tr> 
+              @endforeach
+            @else
+              No tenés roles asignados.
+            @endif
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de detalles del rol -->
+<div class="modal fade" id="detailsModal" aria-hidden="true" aria-labelledby="detailsModalLabel" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="detailsModalLabel"></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <h4 class='authorization-label'></h4>
+        <table class="authorization-table" style="width: 100%;">
+          <tbody class="modal-authorization-table-body" style="width: 100%;">
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary btn-volver" data-target="#rolesModal{{$usuario->id}}" data-toggle="modal" data-dismiss="modal">Volver</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
 
+@endsection
+
+@section('footer_scripts')
+<script>
+  $(document).ready(function(){
+      $('.btn-detalles').click(function(){
+          var role = $(this).data('role-id');
+          $.ajax({
+              url: 'roles/' + role + '/detail',
+              type: 'GET',
+              dataType: 'json',
+              success: function(response){
+                  if (response) {
+                      // Configuro correctamente el modal al que dirige el boton "Volver"
+                      $('#detailsModal .btn-volver').attr('data-target', '#rolesModal');
+                      $('#detailsModal .modal-title').html('Detalles del Rol ' + response.rol.name);
+                      if(response.rol.name === 'Super Admin') {
+                        console.log("Super Admin");
+                        // Muestro unicamente el mensaje para Super Admin
+                        $('#detailsModal .authorization-label').hide();
+                        $('#detailsModal .modal-authorization-table-body').html('Este rol tiene todos los permisos.');
+                      } else {
+                        // Vacío el contenido de la tabla autorizaciones antes de mostrar las nuevas
+                        $('#detailsModal .modal-authorization-table-body').empty();
+                        // Vacío el contenido del label de la tabla autorizaciones antes de mostrar el nuevo
+                        $('#detailsModal .authorization-label').empty();
+                        // Muestro nuevamente el label de la tabla autorizaciones
+                        $('#detailsModal .authorization-label').show();
+                        // Actualizo el label
+                        if(response.rol.guard_name === 'web'){
+                          $('#detailsModal .authorization-label').append('<label class="badge badge-pill badge-warning" for="authorization-table">Permisos</label>');
+                        } else if(response.rol.guard_name === 'filters'){
+                          $('#detailsModal .authorization-label').append('<label class="badge badge-pill badge-info" for="authorization-table">Filtros</label>');
+                        }
+                        console.log("No Super Admin");
+                        console.log("Autorizaciones: " + response.autorizaciones);
+                        if(response.autorizaciones.length > 0){
+                          $.each(response.autorizaciones, function(index, autorizacion) {
+                            $('#detailsModal .modal-authorization-table-body').append('<tr><td class="col align-self-center">'+autorizacion+'</td></tr>');
+                          });
+                        } else {
+                          console.log(response.autorizaciones_usuario);
+                          if(response.rol.guard_name === 'web'){
+                            if(response.autorizaciones_usuario.includes('Administrar Roles')) {
+                              $('#detailsModal .modal-authorization-table-body').append('<tr class=detail_info_row><td class="col align-self-center">Los permisos pertenecientes a este rol no se encuentran cargados en el sistema.</td></tr>');
+                              $('#detailsModal .detail_info_row').append('<td><a href="{{route('admin.listarRoles')}}"">Administrar Roles</a></td>');
+                            } else {
+                              $('#detailsModal .modal-authorization-table-body').append('<tr><td class="col align-self-center">Los permisos pertenecientes a este rol no se encuentran cargados en el sistema. Comunicarse con un administrador.</td></tr>');
+                            }
+                          } else if(response.rol.guard_name === 'filters'){
+                            if(response.autorizaciones_usuario.includes('Administrar Roles') || response.autorizaciones_usuario.includes('Administrar Filtros')) {
+                              $('#detailsModal .modal-authorization-table-body').append('<tr class=detail_info_row><td class="col align-self-center">Los filtros pertenecientes a este rol no se encuentran cargados en el sistema.</td></tr>');
+                              if(response.autorizaciones_usuario.includes('Administrar Roles')) {
+                                $('#detailsModal .detail_info_row').append('<td><a href="{{route('admin.listarRoles')}}"">Administrar Roles</a></td>');
+                              }
+                              if(response.autorizaciones_usuario.includes('Administrar Filtros')) {
+                                $('#detailsModal .detail_info_row').append('<td><a href="{{route('admin.listarFiltros')}}"">Administrar Filtros</a></td>');
+                              }
+                            } else {
+                              $('#detailsModal .modal-authorization-table-body').append('<tr><td class="col align-self-center">Los filtros pertenecientes a este rol no se encuentran cargados en el sistema. Comunicarse con un administrador.</td></tr>');
+                            }
+                          }
+                        };
+                      }
+                  } else {
+                      console.log('El rol no pudo ser encontrado.');
+                  }
+              },
+              error: function(xhr, status, error) {
+                  console.error('Error al obtener detalles del rol:', error);
+              }
+          });
+      });
+      // Limpio el contenido del modal cuando se cierra
+      $('#detailsModal').on('hidden.bs.modal', function () {
+          $('#detailsModal .modal-permissions-table-body').empty();
+          $('#detailsModal .modal-filters-table-body').empty();
+      });
+  });
+</script>
 @endsection

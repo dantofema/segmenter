@@ -101,23 +101,18 @@ class RoleController extends Controller
     }
 
     public function detallesRol(Request $request, $role) {
-        if (Auth::user()->can('Administrar Roles')){
-            $rol = Role::find($role);
-            $autorizaciones = $rol->permissions()->pluck('name');
-            if (Auth::user()->hasRole('Super Admin')) {
-                $autorizaciones_usuario = Permission::all();
-            } else {
-                $autorizaciones_usuario = Auth::user()->permissions;
-            }
-            return response()->json([
-                'rol' => $rol,
-                'autorizaciones' => $autorizaciones,
-                'autorizaciones_usuario' => $autorizaciones_usuario->pluck('name')
-            ]);
+        $rol = Role::find($role);
+        $autorizaciones = $rol->permissions()->pluck('name');
+        if (Auth::user()->hasRole('Super Admin')) {
+            $autorizaciones_usuario = Permission::all();
         } else {
-            flash('No tienes permiso para hacer eso.')->error();
-            return back(); 
+            $autorizaciones_usuario = Auth::user()->permissions;
         }
+        return response()->json([
+            'rol' => $rol,
+            'autorizaciones' => $autorizaciones,
+            'autorizaciones_usuario' => $autorizaciones_usuario->pluck('name')
+        ]);
     }
 
     public function eliminarRol(Request $request, $role) {

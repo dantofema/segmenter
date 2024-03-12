@@ -9,6 +9,7 @@ use Carbon\Carbon;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
@@ -32,7 +33,8 @@ class UserController extends Controller
     $permisos_roles = $usuario->getPermissionsViaRoles()->pluck('name');
     $filtros = $usuario->getAllPermissions()->where('guard_name', 'filters');
     $filtros_roles = $usuario->getPermissionsViaRoles()->where('guard_name', 'filters')->pluck('name');
-    $roles = $usuario->roles();
+    $roles = $usuario->roles;
+    Log::debug($roles);
     return view('perfil', compact('usuario', 'permisos', 'permisos_roles', 'filtros', 'filtros_roles', 'roles'));
   }
 
