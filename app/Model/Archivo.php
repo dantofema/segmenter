@@ -45,13 +45,15 @@ class Archivo extends Model
     private static function checksumCalculate($request_file, $shape_files = []){
         // O generar archivo comprimido de una vez :/
         // DO IT
-        $checksum = md5_file($request_file->getRealPath());
+        Log::error($request_file, $shape_files);
+        $checksum = md5_file($request_file); //->getRealPath());
         if ($shape_files != null){
             $checksums[] = $checksum;
-            foreach ($shape_files as $shape_file) {
+            foreach ($shape_files as $key => $shape_file) {
                 // Hay e00 con shapefiles con valor null
                 if ($shape_file != null and $shape_file != ''){
-                    $checksums[] =  md5_file($shape_file->getRealPath());
+
+                  Log::error(  $checksums[] =  md5_file($shape_file));//->getRealPath());
                 }
             }
             $checksum = md5(implode('',$checksums));
@@ -64,15 +66,18 @@ class Archivo extends Model
         if ($this->isMultiArchivo()){
             // si soy multiarchivo calculo el checksum en base a mis shapefiles
             $shape_files = $this->getArchivosSHP();
-            $checksums_shp = [];
+            $this->checksum = $this->checksumCalculate( array_pull($shape_files, 0), $shape_files);
+/*            $checksums_shp = [];
             foreach ($shape_files as $key => $value) {
                 //value contiene el path del archivo
                 $checksums_shp[] =  md5_file($value);
             }
             $this->checksum = md5(implode('',$checksums_shp));
+            */
         } else {
             $this->checksum = md5(Storage::get($this->nombre));
         }
+
         $this->save();
     }
 
@@ -92,30 +97,32 @@ class Archivo extends Model
             if ( $this->checksum == md5( Storage::get($this->nombre) ) ){
                 if ( $this->isMultiArchivo() ){
                     // si el checksum corresponde al nombre del archivo solamente y soy multiarchivo está mal
-                    error_log($this->tipo.' Checksum deprecated!');
+                    Log::error($this->tipo.' Checksum deprecated 1!');
                     $result = false;
                 } else {
-                    error_log($this->tipo.' Checksum ok!');
+                  Log::error($this->tipo.' Checksum ok!');
                 }
             } else {
                 if ( $this->isMultiArchivo() ){
                     // si soy multiarchivo verifico que el checksum se corresponda con mis shapefiles
                     $shape_files = $this->getArchivosSHP();
+                    $checksum_shape_files = $this->checksumCalculate( array_shift($shape_files), array_values($shape_files));
+/*
                     $checksums_shp = [];
                     foreach ($shape_files as $key => $value) {
                         //value contiene el path del archivo
                         $checksums_shp[] =  md5_file($value);
                     }
-                    $checksum_shape_files = md5(implode('',$checksums_shp));
+                    $checksum_shape_files = md5(implode('',$checksums_shp));*/
                     if ($this->checksum == $checksum_shape_files) {
-                        error_log($this->tipo.' Checksum ok!');
+                      Log::error($this->tipo.' Checksum ok!');
                     } else {
-                        error_log($this->tipo.' Checksum deprecated!');
+                      Log::error($this->tipo.' Checksum deprecated 2! '.$checksum_shape_files.' != '.$this->checksum);
                         $result = false;
                     }
                 } else {
                     // si el checksum no corresponde al nombre del archivo solamente y no soy multiarchivo está mal
-                    error_log($this->tipo.' Checksum deprecated!');
+                    Log::error($this->tipo.' Checksum deprecated 3!');
                     $result = false;
                 }
             }
@@ -131,7 +138,7 @@ class Archivo extends Model
             $nombre = explode(".",$this->nombre)[0];
             // busco para cada extension
             $extensiones = [".dbf", ".shx", ".prj"];
-            foreach ($extensiones as $extension) { 
+            foreach ($extensiones as $extension) {
                 $n = $nombre . $extension;
                 if(Storage::exists($n)) {
                     error_log($this->tipo.' Storage ok!');
@@ -245,7 +252,7 @@ class Archivo extends Model
         $nombre_original = substr($this->nombre_original,0,-4);
 
         // genero nombre para cada extension
-        $extensiones = [".shp", ".dbf", ".shx", ".prj"];
+        $extensiones = [".shp", ".shx", ".dbf", ".prj"];
         foreach ($extensiones as $extension) {
             $o = storage_path().'/app/'.$nombre . $extension;
             $key = 'mandarina_'.$nombre_original . $extension;
@@ -362,8 +369,22 @@ class Archivo extends Model
         MyDB::createSchema('_'.$this->tabla);
         flash('Procesando Geom desde Shape '.$capa.'...')->warning();
         $mensajes = '';
+        $path_ogr2ogr = "c:\OSGeo4W64\bin\ogr2ogr.exe";
         $processOGR2OGR = Process::fromShellCommandline(
-            '(/usr/bin/ogr2ogr -f \
+          '( !ogr2ogr! -f
+          "PostgreSQL" PG:"dbname=!db! host=!host! user=!user! port=!port!
+          active_schema=e!esquema! password=!pass!" --config PG_USE_COPY YES
+          -lco OVERWRITE=YES --config OGR_TRUNCATE YES -dsco
+          PRELUDE_STATEMENTS="SET client_encoding TO latin1;CREATE SCHEMA
+          IF NOT EXISTS e!esquema!;" -dsco active_schema=e!esquema! -lco
+          PRECISION=NO -lco SCHEMA=e!esquema!
+          -nln !capa!
+          -skipfailures
+          -overwrite !file! )'
+      );
+        /*$path_ogr2ogr = "/usr/bin/ogr2ogr";
+        $processOGR2OGR = Process::fromShellCommandline(
+            '( c:\OSGeo4W64\bin\ogr2ogr.exe -f \
             "PostgreSQL" PG:"dbname=$db host=$host user=$user port=$port \
             active_schema=e$esquema password=$pass" --config PG_USE_COPY YES \
             -lco OVERWRITE=YES --config OGR_TRUNCATE YES -dsco \
@@ -373,7 +394,7 @@ class Archivo extends Model
             -nln $capa \
             -skipfailures \
             -overwrite $file )'
-        );
+        );*/
         $processOGR2OGR->setTimeout(1800);
 
         //Cargo etiquetas
@@ -388,7 +409,8 @@ class Archivo extends Model
                 'host'=>Config::get('database.connections.pgsql.host'),
                 'user'=>Config::get('database.connections.pgsql.username'),
                 'pass'=>Config::get('database.connections.pgsql.password'),
-                'port'=>Config::get('database.connections.pgsql.port')
+                'port'=>Config::get('database.connections.pgsql.port'),
+                'ogr2ogr'=>$path_ogr2ogr
             ]);
             $mensajes.='<br />'.$processOGR2OGR->getErrorOutput().'<br />'.$processOGR2OGR->getOutput();
             flash($mensajes)->info();
@@ -632,7 +654,7 @@ class Archivo extends Model
 
         // busco para cada extension
         $extensiones = [".dbf", ".shx", ".prj"];
-        foreach ($extensiones as $extension) { 
+        foreach ($extensiones as $extension) {
             Log::info("Verificando archivos con extensión ".$extension." en el storage");
             $o = $nombre_original . $extension;
             $c = $nombre_copia . $extension;
@@ -695,14 +717,14 @@ class Archivo extends Model
                 if (!$viewer->visible_files()->get()->contains($original)){
                     # Si el viewer no es viewer del archivo original creo la relación
                     $viewer->visible_files()->attach($original->id);
-                    
+
                 }
             }
             Log::info("Los viewers de la copia ". $this->id ." ahora son viewers del archivo original ".$original->id);
             # Elimino la relación con todos los viewers
             $this->viewers()->detach();
             Log::info("Se eliminaron los viewers de la copia.");
-        } 
+        }
         $this->delete();
         Log::info("Se eliminó el registro perteneciente a la copia");
     }
