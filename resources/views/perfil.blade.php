@@ -177,14 +177,14 @@
       <button class="edit-button ml-2" id="edit-email" onclick="toggleEditEmail()"><i class="bi bi-pen"></i></button>
     </div>
 
-    <button class="password-button" id="password-button" onclick="changePassword()">Cambiar contraseña</button>
+    <button class="password-button" data-toggle="modal" id="btn-trigger-modal-password" data-target="#passwordModal">Cambiar contraseña</button>
   </div>
   <button class="mode-button" onclick="toggleEditMode()"><i class="bi bi-pen"></i></button> <!-- Botón de edición -->
   <div class="buttons-container">
     <hr class="divider"> <!-- Línea divisoria -->
     <button class="modal-button" data-toggle="modal" id="btn-trigger-modal-permisos" data-target="#permisosModal">Mis Permisos</button>
-    <button class="modal-button" data-toggle="modal" id="btn-trigger-modal-permisos" data-target="#filtrosModal">Mis Filtros</button>
-    <button class="modal-button" data-toggle="modal" id="btn-trigger-modal-permisos" data-target="#rolesModal">Mis Roles</button>
+    <button class="modal-button" data-toggle="modal" id="btn-trigger-modal-filtros" data-target="#filtrosModal">Mis Filtros</button>
+    <button class="modal-button" data-toggle="modal" id="btn-trigger-modal-roles" data-target="#rolesModal">Mis Roles</button>
   </div>
 </div>
 
@@ -314,6 +314,47 @@
       </div>
       <div class="modal-footer">
         <button class="btn btn-primary btn-volver" data-target="#rolesModal{{$usuario->id}}" data-toggle="modal" data-dismiss="modal">Volver</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal roles del usuario -->
+<div class="modal fade" id="passwordModal" tabindex="-1" role="dialog" aria-labelledby="passwordModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="passwordModalLabel">Cambiar contraseña</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="card">
+          <div class="card-body">
+            <form id="passwordForm">
+              <div class="form-group">
+                <label for="currentPassword">Contraseña actual:</label>
+                <input type="password" class="form-control" id="currentPassword" required>
+                <div id="currentError"></div>
+              </div>
+              <div class="form-group">
+                <label for="newPassword">Nueva contraseña:</label>
+                <input type="password" class="form-control" id="newPassword" required>
+                <div id="newError"></div>
+              </div>
+              <div class="form-group">
+                <label for="confirmPassword">Repetir nueva contraseña:</label>
+                <input type="password" class="form-control" id="confirmPassword" required>
+                <div id="confirmError"></div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+        <input type="submit" name="btn" class="btn btn-primary btn-submit-edit-password" value="Confirmar" onclick="updatePassword()">
       </div>
     </div>
   </div>
@@ -577,6 +618,47 @@
             
           }
       });
+    }
+
+    function updatePassword() {
+        var currentPassword = $('#currentPassword').val();
+        var newPassword = $('#newPassword').val();
+        var confirmPassword = $('#confirmPassword').val();
+        
+        if (newPassword !== confirmPassword) {
+            alert('Las contraseñas no coinciden');
+            return;
+        }
+        
+        var url = 'perfil/edit-password';
+        var data = {
+            currentPassword: currentPassword,
+            newPassword: newPassword
+        };
+        
+        $.ajax({
+            type: 'POST',
+            url: url,
+            data: data,
+            success: function(response) {
+                if (response.statusCode === 200) {
+                  console.log('Contraseña actualizada correctamente!');
+                  var alertHtml = '<div class="alert alert-danger alert-dismissible" role="alert">' +
+                                  '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                                  'El nuevo email no puede estar vacío.</div>';
+                  $('#alert-container').html(alertHtml);
+                } else {
+                  var alertClass = 'alert-danger';
+                }
+                alert('Contraseña actualizada correctamente');
+                $('#passwordModal').modal('hide');
+            },
+            error: function(xhr, status, error) {
+                // Manejar error
+                console.error('Error al actualizar la contraseña:', error);
+                alert('Hubo un error al actualizar la contraseña');
+            }
+        });
     }
   </script>
 @endsection

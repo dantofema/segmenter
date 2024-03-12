@@ -41,7 +41,7 @@ class UserController extends Controller
     $user = Auth::user();
     $user->name = $request->input('newUsername');
     $user->save();
-    return response()->json(['statusCode'=> 200,'message' => 'Nombre de usuario actualizado correctamente']);
+    return response()->json(['statusCode'=> 200,'message' => 'Nombre de usuario actualizado correctamente!']);
   }
 
   public function editarEmail(Request $request) {
@@ -53,7 +53,28 @@ class UserController extends Controller
     $user = Auth::user();
     $user->email = $request->input('newEmail');
     $user->save();
-    return response()->json(['statusCode'=> 200, 'message' => 'Email actualizado correctamente']);
+    return response()->json(['statusCode'=> 200, 'message' => 'Email actualizado correctamente!']);
+  }
+
+  public function updatePassword(Request $request)
+  {
+    $request->validate([
+        'currentPassword' => 'required',
+        'newPassword' => 'required|min:8',
+    ]);
+    $current = $request->input('currentPassword');
+    $new = $request->input('newPassword');
+    $user = Auth::user();
+    if (Hash::make($current) == $user->password) {
+      if (strlen($new) < 8) {
+        return response()->json(['statusCode'=> 304, 'message' => 'La contraseña debe tener al menos 8 caracteres.']);
+      }
+      $user->password = $request->input('newEmail');
+      $user->save();
+      return response()->json(['statusCode'=> 200, 'message' => 'Email actualizado correctamente!']);
+    } else {
+      return response()->json(['statusCode'=> 304, 'message' => 'La contraseña actual es incorrecta.']);
+    } 
   }
 
   public function editarRolUsuario(Request $request, User $user){

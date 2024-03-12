@@ -182,6 +182,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('perfil', 'UserController@mostrarPerfil')->name('perfil');
     Route::post('perfil/edit-username', 'UserController@editarUsername')->name('editarUsername');
     Route::post('perfil/edit-email', 'UserController@editarEmail')->name('editarEmail');
+    Route::post('perfil/edit-password', 'UserController@editarContraseña')->name('editarContraseña');
 });
 
 // ---------- USUARIOS ----------
