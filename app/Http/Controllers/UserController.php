@@ -34,8 +34,26 @@ class UserController extends Controller
     $filtros = $usuario->getAllPermissions()->where('guard_name', 'filters');
     $filtros_roles = $usuario->getPermissionsViaRoles()->where('guard_name', 'filters')->pluck('name');
     $roles = $usuario->roles;
-    Log::debug($roles);
     return view('perfil', compact('usuario', 'permisos', 'permisos_roles', 'filtros', 'filtros_roles', 'roles'));
+  }
+
+  public function editarUsername(Request $request) {
+    $user = Auth::user();
+    $user->name = $request->input('newUsername');
+    $user->save();
+    return response()->json(['statusCode'=> 200,'message' => 'Nombre de usuario actualizado correctamente']);
+  }
+
+  public function editarEmail(Request $request) {
+    $email = $request->input('newEmail');
+    $emailOwner = User::where('email', $email)->first();
+    if ($emailOwner) {
+      return response()->json(['statusCode'=> 304, 'message' => 'El email ya está en uso.']);
+    }
+    $user = Auth::user();
+    $user->email = $request->input('newEmail');
+    $user->save();
+    return response()->json(['statusCode'=> 200, 'message' => 'Email actualizado correctamente']);
   }
 
   public function editarRolUsuario(Request $request, User $user){

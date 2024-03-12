@@ -8,6 +8,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
+    #alert-container {
+      max-width: 600px;
+      margin: 0 auto
+    }
     .profile-container {
       max-width: 600px;
       margin: 20px auto;
@@ -152,6 +156,9 @@
   </style>
 </head>
 <body>
+<div id="alert-container">
+    <!-- acá se cargan las alertas de los scripts -->
+</div>
 <div class="profile-container">
   <div class="profile-picture-container">
     <img class="profile-picture" src="/images/mandarina.svg" alt="Foto de perfil">
@@ -445,19 +452,19 @@
       var editButton = document.getElementById('edit-username');
 
       if (editUsernameButton.style.display === 'none') {
-        // Mostrar campo de entrada y ocultar nombre de usuario
+        // oculto el username y muestro el input
         editUsernameButton.style.display = 'inline-block';
         editUsernameButton.value = usernameDiv.textContent;
         usernameDiv.style.display = 'none';
-        // Cambiar icono del botón a "check"
+        // cambio el icono del boton a "check"
         editButton.innerHTML = '<i class="bi bi-check-lg"></i>';
       } else {
-        // Ocultar campo de entrada y mostrar nombre de usuario
+        // oculto el input y muestro el username
         editUsernameButton.style.display = 'none';
         usernameDiv.style.display = 'inline-block';
-        // Cambiar icono del botón a "pen"
+        // cambio icono del botón a "pen"
         editButton.innerHTML = '<i class="bi bi-pen"></i>';
-        // Actualizar nombre de usuario
+        // actualizo nombre de usuario
         updateUsername(editUsernameButton.value);
       }
     }
@@ -468,22 +475,108 @@
       var editButton = document.getElementById('edit-email');
 
       if (editEmailButton.style.display === 'none') {
-        // Mostrar campo de entrada y ocultar nombre de usuario
+        // oculto el mail y muestro el input
         editEmailButton.style.display = 'inline-block';
         editEmailButton.value = emailDiv.textContent;
         emailDiv.style.display = 'none';
-        // Cambiar icono del botón a "check"
+        // cambio el icono del boton a "check"
         editButton.innerHTML = '<i class="bi bi-check-lg"></i>';
       } else {
-        // Ocultar campo de entrada y mostrar nombre de usuario
+        // oculto el input y muestro el email
         editEmailButton.style.display = 'none';
         emailDiv.style.display = 'inline-block';
-        // Cambiar icono del botón a "pen"
+        // cambio icono del botón a "pen"
         editButton.innerHTML = '<i class="bi bi-pen"></i>';
-        // Actualizar nombre de usuario
+        // actualizo email
         updateEmail(editEmailButton.value);
       }
     }
 
+    function updateUsername(newUsername) {
+      var currentUsername = document.querySelector('.username').textContent;
+      if (!newUsername.trim()) {
+        console.error('El nuevo nombre de usuario no puede estar vacío.');
+        var alertHtml = '<div class="alert alert-danger alert-dismissible" role="alert">' +
+                        '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                        'El nuevo nombre de usuario no puede estar vacío.</div>';
+        $('#alert-container').html(alertHtml);
+        return;
+      }
+
+      if (newUsername === currentUsername) {
+        console.error('El nuevo nombre de usuario debe ser distinto al actual.');
+        // no alerto nada para que parezca una simple cancelación
+        return;
+      }
+
+      $.ajax({
+          url: 'perfil/edit-username',
+          type: 'POST',
+          dataType: 'json',
+          data: {
+            newUsername: newUsername,
+            _token: $('meta[name="csrf-token"]').attr('content')
+          },
+          success: function(response) {
+            console.log('Nombre de usuario actualizado correctamente:', response);
+            $('.username').text(newUsername); //actualizo el nombre en el frontend
+            var alertHtml = '<div class="alert alert-success alert-dismissible" role="alert">' +
+                            '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                            response.message + 
+                          '</div>';
+            $('#alert-container').html(alertHtml);
+          },
+          error: function(xhr, status, error) {
+            console.error('Error al actualizar el nombre de usuario:', error);
+            var alertHtml = '<div class="alert alert-danger alert-dismissible" role="alert">' +
+                            '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                            'Hubo un problema al actualizar el nombre de usuario.' +
+                          '</div>';
+            $('#alert-container').html(alertHtml);
+          }
+      });
+    }
+
+    function updateEmail(newEmail) {
+      var currentEmail = document.querySelector('.email').textContent;
+      if (!newEmail.trim()) {
+        console.error('El nuevo email no puede estar vacío.');
+        var alertHtml = '<div class="alert alert-danger alert-dismissible" role="alert">' +
+                        '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                        'El nuevo email no puede estar vacío.</div>';
+        $('#alert-container').html(alertHtml);
+        return;
+      }
+
+      if (newEmail === currentEmail) {
+        console.error('El nuevo email debe ser distinto al actual.');
+        // no alerto nada para que parezca una simple cancelación
+        return;
+      }
+
+      $.ajax({
+          url: 'perfil/edit-email',
+          type: 'POST',
+          dataType: 'json',
+          data: {
+            newEmail: newEmail,
+            _token: $('meta[name="csrf-token"]').attr('content')
+          },
+          success: function(response) {
+            if (response.statusCode === 200) {
+              var alertClass = 'alert-success';
+              $('.email').text(newEmail); //actualizo el nombre en el frontend
+            } else {
+              var alertClass = 'alert-danger';
+            }
+            var alertHtml = '<div class="alert ' + alertClass + ' alert-dismissible" role="alert">' +
+                              '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                              response.message +
+                            '</div>';
+            $('#alert-container').html(alertHtml);
+            
+          }
+      });
+    }
   </script>
 @endsection
