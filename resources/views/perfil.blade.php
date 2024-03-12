@@ -26,17 +26,31 @@
       flex-direction: column;
       align-items: flex-start;
     }
-    .username {
+    .username-container {
+      position: relative;
       font-size: 24px;
       margin-bottom: 10px;
-      margin-top: 20px
+      margin-top: 20px;
+      display: flex;
+      align-items: center; 
     }
-    .email {
+    .edit-username-input {
+      font-size: 19px;
+      width: 63%; 
+    }
+    .email-container {
+      position: relative;
       font-size: 18px;
       color: #666;
+      display: flex;
+      align-items: center; 
+    }
+    .edit-email-input {
+      font-size: 16px;
+      width: 76%; 
     }
     .password-button {
-      margin-top: 10px;
+      margin-top: 15px;
       font-size: 14px;
       padding: auto;
       background-color: #fff;
@@ -144,14 +158,16 @@
     <button class="edit-photo-button" onclick="changeProfilePicture()"><i class="bi bi-pen"></i></button>
   </div>
   <div class="user-details">
-    <div 
-      class="username">{{$usuario->name}}
-      <button class="edit-button ml-2" onclick="editField('username')"><i class="bi bi-pen"></i></button>
+    <div class="username-container">
+      <div class="username">{{$usuario->name}}</div>
+      <input type="text" class="edit-username-input" style="display: none;">
+      <button class="edit-button ml-2" id="edit-username" onclick="toggleEditUsername()"><i class="bi bi-pen"></i></button>
     </div>
     
-    <div class="email">
-      {{$usuario->email}}
-      <button class="edit-button ml-2" onclick="editField('email')"><i class="bi bi-pen"></i></button>
+    <div class="email-container">
+      <div class="email">{{$usuario->email}}</div>
+      <input type="text" class="edit-email-input" style="display: none;">
+      <button class="edit-button ml-2" id="edit-email" onclick="toggleEditEmail()"><i class="bi bi-pen"></i></button>
     </div>
 
     <button class="password-button" id="password-button" onclick="changePassword()">Cambiar contraseña</button>
@@ -381,21 +397,15 @@
 </script>
 
 <script>
-    function editField(fieldId) {
-      var field = document.getElementById(fieldId);
-      var value = field.textContent;
-      var input = document.createElement('input');
-      input.type = 'text';
-      input.value = value;
-      input.setAttribute('data-original-value', value);
-      field.textContent = '';
-      field.appendChild(input);
-    }
-
     function toggleEditMode() {
       var editModeButton = document.querySelector('.mode-button i');
       var passwordButton = document.querySelector('.password-button');
       var userDetails = document.querySelector('.user-details');
+      var usernameContainer = document.querySelector('.username-container');
+      var emailContainer = document.querySelector('.email-container');
+      var editUsernameInput = document.querySelector('.edit-username-input');
+      var editEmailInput = document.querySelector('.edit-email-input');
+
   
       if (editModeButton.classList.contains('bi-pen')) {
         editModeButton.classList.remove('bi-pen');
@@ -412,19 +422,68 @@
           button.style.display = 'none';
         });
         passwordButton.style.display = 'none'; // Oculto el botón de cambio de contraseña
-        document.querySelectorAll('.user-details input').forEach(function(input) {
-          input.parentNode.textContent = input.getAttribute('data-original-value');
-        });
         userDetails.style.marginBottom = '20px';
+        //si estaba editando username o email, cancelo
+        if (usernameContainer.querySelector('.username').style.display == 'none') {
+          usernameContainer.querySelector('.username').style.display = 'inline-block';
+          editUsernameInput.style.display = 'none';
+        }
+        if (emailContainer.querySelector('.email').style.display == 'none') {
+          emailContainer.querySelector('.email').style.display = 'inline-block';
+          editEmailInput.style.display = 'none';
+        }
+        // le coloco el tick nuevamente a los edit buttons
+        document.querySelectorAll('.edit-button').forEach(function(button) {
+          button.innerHTML = '<i class="bi bi-pen"></i>';
+        });
       }
     }
 
-    function changePassword() {
-      // Lógica para cambiar la contraseña
+    function toggleEditUsername() {
+      var editUsernameButton = document.querySelector('.edit-username-input');
+      var usernameDiv = document.querySelector('.username');
+      var editButton = document.getElementById('edit-username');
+
+      if (editUsernameButton.style.display === 'none') {
+        // Mostrar campo de entrada y ocultar nombre de usuario
+        editUsernameButton.style.display = 'inline-block';
+        editUsernameButton.value = usernameDiv.textContent;
+        usernameDiv.style.display = 'none';
+        // Cambiar icono del botón a "check"
+        editButton.innerHTML = '<i class="bi bi-check-lg"></i>';
+      } else {
+        // Ocultar campo de entrada y mostrar nombre de usuario
+        editUsernameButton.style.display = 'none';
+        usernameDiv.style.display = 'inline-block';
+        // Cambiar icono del botón a "pen"
+        editButton.innerHTML = '<i class="bi bi-pen"></i>';
+        // Actualizar nombre de usuario
+        updateUsername(editUsernameButton.value);
+      }
     }
 
-    function changeProfilePicture() {
-      // Lógica para cambiar la foto de perfil
+    function toggleEditEmail() {
+      var editEmailButton = document.querySelector('.edit-email-input');
+      var emailDiv = document.querySelector('.email');
+      var editButton = document.getElementById('edit-email');
+
+      if (editEmailButton.style.display === 'none') {
+        // Mostrar campo de entrada y ocultar nombre de usuario
+        editEmailButton.style.display = 'inline-block';
+        editEmailButton.value = emailDiv.textContent;
+        emailDiv.style.display = 'none';
+        // Cambiar icono del botón a "check"
+        editButton.innerHTML = '<i class="bi bi-check-lg"></i>';
+      } else {
+        // Ocultar campo de entrada y mostrar nombre de usuario
+        editEmailButton.style.display = 'none';
+        emailDiv.style.display = 'inline-block';
+        // Cambiar icono del botón a "pen"
+        editButton.innerHTML = '<i class="bi bi-pen"></i>';
+        // Actualizar nombre de usuario
+        updateEmail(editEmailButton.value);
+      }
     }
+
   </script>
 @endsection
