@@ -11,6 +11,7 @@ use Spatie\Permission\Models\Permission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
@@ -77,6 +78,28 @@ class UserController extends Controller
       return response()->json(['statusCode'=> 304, 'message' => 'La contraseña actual es incorrecta.']);
     } 
   }
+
+  public function editarFoto(Request $request){
+    // el error que esto genera podría atenderlo en el error de la funcion de ajax pero no puedo reproducirlo
+    $request->validate([
+        'profilePic' => 'image',
+    ]);
+
+    $user = Auth::user();
+    if ($request->has('profilePic')) {
+        $imagePath = $request->file('profilePic')->store('profile', 'public');
+
+        // si existe una foto de perfil anterior la elimino del storage
+        if ($user->profile_pic) {
+            Storage::disk('public')->delete($user->profile_pic);
+        }
+        $user->profile_pic = $imagePath;
+        $user->save();
+        return response()->json(['statusCode' => 200, 'imageUrl' => $user->getProfilePicURL(), 'message' => 'Foto de perfil actualizada correctamente!']);
+    } else {
+        return response()->json(['statusCode' => 304, 'message' => 'Ocurrió un error al actualizar la foto de perfil.']);
+    }
+}
 
   public function editarRolUsuario(Request $request, User $user){
     $user->roles()->sync($request->roles);

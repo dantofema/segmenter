@@ -150,8 +150,28 @@
     .edit-photo-button {
       position: absolute;
       top: 10px; /* Distancia desde la parte superior */
-      right: 10px; /* Distancia desde la derecha */
+      right: 15px; /* Distancia desde la derecha */
       font-size: 12px;
+    }
+    .overlay {
+      position: absolute;
+      width: 170px;
+      height: 150px;
+      top: 0;
+      left: 0;
+      width: 90%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      cursor: pointer;
+      border-radius: 45%;
+    }
+    .overlay label {
+        cursor: pointer;
     }
   </style>
 </head>
@@ -161,8 +181,14 @@
 </div>
 <div class="profile-container">
   <div class="profile-picture-container">
-    <img class="profile-picture" src="/images/mandarina.svg" alt="Foto de perfil">
-    <button class="edit-photo-button" onclick="changeProfilePicture()"><i class="bi bi-pen"></i></button>
+    <div class="overlay" style="display: none;">
+        <label for="edit-photo-input">
+            <i class="bi bi-camera"></i> Cambiar foto
+        </label>
+        <input type="file" id="edit-photo-input" accept="image/jpeg, image/png, image/jpg" style="display: none;">
+    </div>
+    <img class="profile-picture" src="{{$usuario->getProfilePicURL()}}" alt="Foto de perfil">
+    <button class="edit-photo-button" id="edit-photo" onclick="toggleEditProfilePic()"><i class="bi bi-pen"></i></button>
   </div>
   <div class="user-details">
     <div class="username-container">
@@ -370,6 +396,17 @@
 
 @section('footer_scripts')
 <script>
+  var profilePicUrl = document.querySelector('.profile-picture').src;
+
+  document.getElementById('edit-photo-input').addEventListener('change', function(event) {
+      var file = event.target.files[0];
+      var profilePicture = document.querySelector('.profile-picture');
+
+      profilePicture.src = URL.createObjectURL(file);
+  });
+
+
+  // Función modal detalles de roles
   $(document).ready(function(){
       $('.btn-detalles').click(function(){
           var role = $(this).data('role-id');
@@ -445,9 +482,7 @@
           $('#detailsModal .modal-filters-table-body').empty();
       });
   });
-</script>
 
-<script>
     function toggleEditMode() {
       var editModeButton = document.querySelector('.mode-button i');
       var passwordButton = document.querySelector('.password-button');
@@ -456,6 +491,10 @@
       var emailContainer = document.querySelector('.email-container');
       var editUsernameInput = document.querySelector('.edit-username-input');
       var editEmailInput = document.querySelector('.edit-email-input');
+      var profilePicture = document.querySelector('.profile-picture');
+      var overlay = document.querySelector('.overlay');
+      var editButton = document.getElementById('edit-photo');
+      var fileInput = document.getElementById('edit-photo-input');
 
   
       if (editModeButton.classList.contains('bi-pen')) {
@@ -483,6 +522,12 @@
           emailContainer.querySelector('.email').style.display = 'inline-block';
           editEmailInput.style.display = 'none';
         }
+        // si estaba editando la foto, cancelo
+        if (overlay.style.display !== 'none') {
+          overlay.style.display = 'none';
+          editButton.innerHTML = '<i class="bi bi-pen"></i>';
+          profilePicture.src = profilePicUrl;
+        }
         // le coloco el tick nuevamente a los edit buttons
         document.querySelectorAll('.edit-button').forEach(function(button) {
           button.innerHTML = '<i class="bi bi-pen"></i>';
@@ -491,49 +536,71 @@
     }
 
     function toggleEditUsername() {
-      var editUsernameButton = document.querySelector('.edit-username-input');
+      var editUsernameInput = document.querySelector('.edit-username-input');
       var usernameDiv = document.querySelector('.username');
       var editButton = document.getElementById('edit-username');
 
-      if (editUsernameButton.style.display === 'none') {
+      if (editUsernameInput.style.display === 'none') {
         // oculto el username y muestro el input
-        editUsernameButton.style.display = 'inline-block';
-        editUsernameButton.value = usernameDiv.textContent;
+        editUsernameInput.style.display = 'inline-block';
+        editUsernameInput.value = usernameDiv.textContent;
         usernameDiv.style.display = 'none';
         // cambio el icono del boton a "check"
         editButton.innerHTML = '<i class="bi bi-check-lg"></i>';
       } else {
         // oculto el input y muestro el username
-        editUsernameButton.style.display = 'none';
+        editUsernameInput.style.display = 'none';
         usernameDiv.style.display = 'inline-block';
         // cambio icono del botón a "pen"
         editButton.innerHTML = '<i class="bi bi-pen"></i>';
         // actualizo nombre de usuario
-        updateUsername(editUsernameButton.value);
+        updateUsername(editUsernameInput.value);
       }
     }
 
     function toggleEditEmail() {
-      var editEmailButton = document.querySelector('.edit-email-input');
+      var editEmailInput = document.querySelector('.edit-email-input');
       var emailDiv = document.querySelector('.email');
       var editButton = document.getElementById('edit-email');
 
-      if (editEmailButton.style.display === 'none') {
+      if (editEmailInput.style.display === 'none') {
         // oculto el mail y muestro el input
-        editEmailButton.style.display = 'inline-block';
-        editEmailButton.value = emailDiv.textContent;
+        editEmailInput.style.display = 'inline-block';
+        editEmailInput.value = emailDiv.textContent;
         emailDiv.style.display = 'none';
         // cambio el icono del boton a "check"
         editButton.innerHTML = '<i class="bi bi-check-lg"></i>';
       } else {
         // oculto el input y muestro el email
-        editEmailButton.style.display = 'none';
+        editEmailInput.style.display = 'none';
         emailDiv.style.display = 'inline-block';
         // cambio icono del botón a "pen"
         editButton.innerHTML = '<i class="bi bi-pen"></i>';
         // actualizo email
-        updateEmail(editEmailButton.value);
+        updateEmail(editEmailInput.value);
       }
+    }
+
+    function toggleEditProfilePic() {
+        var overlay = document.querySelector('.overlay');
+        var editButton = document.getElementById('edit-photo');
+        var fileInput = document.getElementById('edit-photo-input');
+
+        if (overlay.style.display === 'none') {
+            //muestro el overlay y cambio el icono del botón
+            overlay.style.display = 'flex';
+            editButton.innerHTML = '<i class="bi bi-check-lg"></i>'
+        } else {
+            // oculto el overlay y reestabelzco el icono del botón
+            overlay.style.display = 'none';
+            editButton.innerHTML = '<i class="bi bi-pen"></i>';
+            // actualizo foto de perfil si es necesario    
+            if (fileInput.files.length > 0) {
+                updateProfilePic();
+                // vacío el input luego de actulizar la foto
+                fileInput.value = null;
+            }
+        }
     }
 
     function updateUsername(newUsername) {
@@ -653,6 +720,48 @@
                                   response.message +'</div>';
                   $('#password-alert-container').html(alertHtml);
                 }
+            }
+        });
+    }
+
+    function updateProfilePic() {
+        var fileInput = document.getElementById('edit-photo-input');
+        var file = fileInput.files[0];
+
+        var formData = new FormData();
+        formData.append('profilePic', file);
+        var csrfToken = $('meta[name="csrf-token"]').attr('content');
+
+        $.ajax({
+            url: 'perfil/edit-profile-pic',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            headers: {
+              'X-CSRF-TOKEN': csrfToken
+            },
+            success: function(response) {
+                if (response.statusCode === 200) {
+                  // actualizo dinámicamente el src de profile-picture
+                  var profilePicture = document.querySelector('.profile-picture');
+                  profilePicUrl = response.imageUrl;
+
+                  console.log(response.message);
+                  var alertHtml = '<div class="alert alert-success alert-dismissible" role="alert">' +
+                                  '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                                  response.message +'</div>';
+                  $('#alert-container').html(alertHtml);
+                } else {
+                  console.log(response.message);
+                  var alertHtml = '<div class="alert alert-danger alert-dismissible" role="alert">' +
+                                  '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                                  response.message +'</div>';
+                  $('#alert-container').html(alertHtml);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Error al actualizar la foto de perfil:', error);
             }
         });
     }
