@@ -10,6 +10,7 @@ use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -56,22 +57,22 @@ class UserController extends Controller
     return response()->json(['statusCode'=> 200, 'message' => 'Email actualizado correctamente!']);
   }
 
-  public function updatePassword(Request $request)
+  public function editarContraseña(Request $request)
   {
-    $request->validate([
-        'currentPassword' => 'required',
-        'newPassword' => 'required|min:8',
-    ]);
     $current = $request->input('currentPassword');
     $new = $request->input('newPassword');
+    $confirm = $request->input('confirmPassword');
     $user = Auth::user();
-    if (Hash::make($current) == $user->password) {
+    if (Hash::check($current, $user->password)) {
       if (strlen($new) < 8) {
         return response()->json(['statusCode'=> 304, 'message' => 'La contraseña debe tener al menos 8 caracteres.']);
       }
-      $user->password = $request->input('newEmail');
+      if ($new != $confirm) {
+        return response()->json(['statusCode'=> 304, 'message' => 'Las contraseñas no coinciden.']);
+      }
+      $user->password = Hash::make($new);
       $user->save();
-      return response()->json(['statusCode'=> 200, 'message' => 'Email actualizado correctamente!']);
+      return response()->json(['statusCode'=> 200, 'message' => 'Contraseña actualizada correctamente!']);
     } else {
       return response()->json(['statusCode'=> 304, 'message' => 'La contraseña actual es incorrecta.']);
     } 

@@ -319,7 +319,7 @@
   </div>
 </div>
 
-<!-- Modal roles del usuario -->
+<!-- Modal cambio de contraseña -->
 <div class="modal fade" id="passwordModal" tabindex="-1" role="dialog" aria-labelledby="passwordModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
     <div class="modal-content">
@@ -330,6 +330,9 @@
         </button>
       </div>
       <div class="modal-body">
+      <div id="password-alert-container">
+        <!-- acá se cargan las alertas de los scripts -->
+      </div>
         <div class="card">
           <div class="card-body">
             <form id="passwordForm">
@@ -615,7 +618,6 @@
                               response.message +
                             '</div>';
             $('#alert-container').html(alertHtml);
-            
           }
       });
     }
@@ -624,16 +626,12 @@
         var currentPassword = $('#currentPassword').val();
         var newPassword = $('#newPassword').val();
         var confirmPassword = $('#confirmPassword').val();
-        
-        if (newPassword !== confirmPassword) {
-            alert('Las contraseñas no coinciden');
-            return;
-        }
-        
         var url = 'perfil/edit-password';
         var data = {
             currentPassword: currentPassword,
-            newPassword: newPassword
+            newPassword: newPassword,
+            confirmPassword: confirmPassword,
+            _token: $('meta[name="csrf-token"]').attr('content')
         };
         
         $.ajax({
@@ -642,21 +640,19 @@
             data: data,
             success: function(response) {
                 if (response.statusCode === 200) {
-                  console.log('Contraseña actualizada correctamente!');
+                  console.log(response.message);
+                  var alertHtml = '<div class="alert alert-success alert-dismissible" role="alert">' +
+                                  '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
+                                  response.message +'</div>';
+                  $('#alert-container').html(alertHtml);
+                  $('#passwordModal').modal('hide');
+                } else {
+                  console.log(response.message);
                   var alertHtml = '<div class="alert alert-danger alert-dismissible" role="alert">' +
                                   '<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
-                                  'El nuevo email no puede estar vacío.</div>';
-                  $('#alert-container').html(alertHtml);
-                } else {
-                  var alertClass = 'alert-danger';
+                                  response.message +'</div>';
+                  $('#password-alert-container').html(alertHtml);
                 }
-                alert('Contraseña actualizada correctamente');
-                $('#passwordModal').modal('hide');
-            },
-            error: function(xhr, status, error) {
-                // Manejar error
-                console.error('Error al actualizar la contraseña:', error);
-                alert('Hubo un error al actualizar la contraseña');
             }
         });
     }
