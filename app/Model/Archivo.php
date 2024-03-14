@@ -83,7 +83,7 @@ class Archivo extends Model
     }
 
     // Funciona para verificar que es checksum del archivo esté actualizado
-    public function checkChecksum(){
+    public function getcheckChecksumAttribute(){
         $result = true;
         if (Storage::exists($this->nombre) ){
             if ( $this->checksum == md5( Storage::get($this->nombre) ) ){
@@ -702,7 +702,7 @@ class Archivo extends Model
         Log::info("Se eliminó el registro perteneciente a la copia");
     }
 
-    public function es_copia(){
+    public function getes_copiaAttributte(){
         $original = Archivo::where('checksum',$this->checksum)->orderby('id','asc')->first();
         return $original->id != $this->id;
     }
