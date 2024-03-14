@@ -22,16 +22,7 @@ class ArchivoController extends Controller
      */
     public function index(Request $request)
     {
-        $AppUser = Auth::user();
-        $archivos = $AppUser->visible_files()->withCount('viewers')->get();
-        $archivos = $archivos->merge($AppUser->mis_files()->withCount('viewers')->get());
-        try {
-            if ($AppUser->can('Ver Archivos')) {
-                $archivos = $archivos->merge(Archivo::withCount('viewers')->get());
-            }
-        } catch (PermissionDoesNotExist $e) {
-            Session::flash('message', 'No existe el permiso "Ver Archivos"');
-        }  
+        $archivos = self::retrieveFiles();  
         $count_archivos = $archivos->count();
 
         if ($request->ajax()) {
@@ -107,12 +98,12 @@ class ArchivoController extends Controller
         $archivos = $AppUser->visible_files()->withCount('viewers')->get();
         $archivos = $archivos->merge($AppUser->mis_files()->withCount('viewers')->get());
         try {
-            if ($AppUser->hasPermissionTo('Ver Archivos')) {
-                $archivos = Archivo::withCount('viewers')->get();
+            if ($AppUser->can('Ver Archivos')) {
+                $archivos = $archivos->merge(Archivo::withCount('viewers')->get());
             }
         } catch (PermissionDoesNotExist $e) {
             Session::flash('message', 'No existe el permiso "Ver Archivos"');
-        }  
+        } 
         return $archivos;
     }
 
@@ -262,21 +253,17 @@ class ArchivoController extends Controller
                 $eliminados = 0;
                 Log::error("------------- ELIMINAR ARCHIVOS REPETIDOS -----------------------------");
                 foreach ($archivos as $archivo){
-                    if ( $archivo->repetido() ){
-                    // Archivo repetido
+                    if ( $archivo->es_copia() ){
+                        // Archivo repetido
                         $original = Archivo::where('checksum',$archivo->checksum)->orderby('id','asc')->first();
-                        if ($original != $archivo){
-                            // Logs repetidos pero es necesario ya que este log debe mostrarse antes que los de limpiar_copia()
-                            Log::error("Archivo " . $archivo->id . ". Checksum: " . $archivo->checksum.". Copia de archivo id: ".$original->id."." );
-                            $archivo->limpiar_copia($original);
-                            $eliminados = $eliminados + 1;
-                        } else {
-                            Log::info("Archivo " . $archivo->id . ". Checksum: " . $archivo->checksum.". Es el archivo original." );
-                        }
+                        // Logs repetidos pero es necesario ya que este log debe mostrarse antes que los de limpiar_copia()
+                        Log::error("Archivo " . $archivo->id . ". Checksum: " . $archivo->checksum.". Copia de archivo id: ".$original->id."." );
+                        $archivo->limpiar_copia($original);
+                        $eliminados = $eliminados + 1;
                     } else {
-                        Log::info("Archivo " . $archivo->id . ". Checksum: " . $archivo->checksum.". Archivo no repetido." );
+                        Log::info("Archivo " . $archivo->id . ". Checksum: " . $archivo->checksum.". Es el archivo original." );
                     }
-                    $archivo->checkChecksum();
+                    $archivo->checkChecksum(); //para que?
                 }
                 flash($eliminados . " archivos eliminados de ".$archivos->count()." encontrados.")->info();
                 return redirect('archivos');
@@ -295,16 +282,12 @@ class ArchivoController extends Controller
                 $archivos = Archivo::all();
                 $repetidos = [];
                 foreach ($archivos as $archivo){
-                    if ( $archivo->repetido() ){
-                    // Archivo repetido
+                    if ( $archivo->es_copia() ){
+                        // Archivo repetido
                         $original = Archivo::where('checksum',$archivo->checksum)->orderby('id','asc')->first();
-                        if ($original != $archivo){
-                            $repetidos[] = [$original,$archivo];
-                        } else {
-                            $mensaje = "Es el archivo original.";
-                        }
+                        $repetidos[] = [$original,$archivo];
                     } else {
-                        $mensaje = "Archivo no repetido.";  
+                        $mensaje = "Es el archivo original.";
                     }
                 }
                 return view('archivo.repetidos', compact('repetidos'));

@@ -89,10 +89,10 @@ class Archivo extends Model
             if ( $this->checksum == md5( Storage::get($this->nombre) ) ){
                 if ( $this->isMultiArchivo() ){
                     // si el checksum corresponde al nombre del archivo solamente y soy multiarchivo está mal
-                    Log::warning($this->tipo.' Checksum deprecated! (Multiarchivo: No se tienen en cuenta los shapefiles)');
+                    Log::warning($this->nombre_original.' Checksum deprecated! (Multiarchivo: No se tienen en cuenta los shapefiles)');
                     $result = false;
                 } else {
-                  Log::info($this->tipo.' Checksum ok!');
+                  Log::info($this->nombre_original.' Checksum ok!');
                 }
             } else {
                 if ( $this->isMultiArchivo() ){
@@ -100,19 +100,19 @@ class Archivo extends Model
                     $shape_files = $this->getArchivosSHP();
                     $checksum_shape_files = $this->checksumCalculate( array_shift($shape_files), array_values($shape_files));
                     if ($this->checksum == $checksum_shape_files) {
-                      Log::info($this->tipo.' Checksum ok!');
+                      Log::info($this->nombre_original.' Checksum ok!');
                     } else {
-                      Log::warning($this->tipo.' Checksum deprecated (Multiarchivo: mal calculado)! '.$checksum_shape_files.' != '.$this->checksum);
+                      Log::warning($this->nombre_original.' Checksum deprecated (Multiarchivo: mal calculado)! '.$checksum_shape_files.' != '.$this->checksum);
                         $result = false;
                     }
                 } else {
                     // si el checksum no corresponde al nombre del archivo solamente y no soy multiarchivo está mal
-                    Log::warning($this->tipo.' Checksum deprecated (Archivo simple: mal calculado)!');
+                    Log::warning($this->nombre_original.' Checksum deprecated (Archivo simple: mal calculado)!');
                     $result = false;
                 }
             }
         } else {
-         Log::error($this->tipo.' WARNING! No existe el archivo en el Storage "'.$this->nombre.'" !!');
+         Log::error($this->nombre_original.' WARNING! No existe el archivo en el Storage "'.$this->nombre.'" !!');
         }
         return $result;
     }
@@ -126,18 +126,18 @@ class Archivo extends Model
             foreach ($extensiones as $extension) {
                 $n = $nombre . $extension;
                 if(Storage::exists($n)) {
-                    Log::info($this->tipo.' Storage ok!');
+                    Log::info($this->nombre_original.' Storage ok!');
                 } else {
-                    Log::warning($this->tipo.' Storage missing! ('.$n.')');
+                    Log::warning($this->nombre_original.' Storage missing! ('.$n.')');
                     $result = false;
                 }
             }
         } else {
             $n = $this->nombre;
             if (Storage::exists($n)){
-                Log::info($this->tipo.' Storage ok!');
+                Log::info($this->nombre_original.' Storage ok!');
             } else {
-                Log::warning($this->tipo.' Storage missing!('.$n.')');
+                Log::warning($this->nombre_original.' Storage missing!('.$n.')');
                 $result = false;
             }
         }
@@ -700,11 +700,6 @@ class Archivo extends Model
         }
         $this->delete();
         Log::info("Se eliminó el registro perteneciente a la copia");
-    }
-
-    public function repetido(){
-        $repeticiones = Archivo::where('checksum',$this->checksum)->count();
-        return $repeticiones > 1;
     }
 
     public function es_copia(){
