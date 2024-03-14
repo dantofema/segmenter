@@ -177,6 +177,15 @@ Route::get('search_provincia', 'AutoCompleteProvinciaController@index');
 Route::get('autocomplete_provincia', 'AutoCompleteProvinciaController@search');
 Route::get('provincia','ProvinciaController@index');
 
+// ---------- PERFIL ----------
+Route::middleware(['auth'])->group(function () {
+    Route::get('perfil', 'UserController@mostrarPerfil')->name('perfil');
+    Route::post('perfil/edit-username', 'UserController@editarUsername')->name('editarUsername');
+    Route::post('perfil/edit-email', 'UserController@editarEmail')->name('editarEmail');
+    Route::post('perfil/edit-password', 'UserController@editarContraseña')->name('editarContraseña');
+    Route::post('perfil/edit-profile-pic', 'UserController@editarFoto')->name('editarFoto');
+});
+
 // ---------- USUARIOS ----------
 Route::get('users', 'UserController@listarUsuarios')->name('admin.listarUsuarios');
 Route::middleware(['auth'])->group(function () {

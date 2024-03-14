@@ -76,13 +76,14 @@
                                 </li>
                             @endif
                         @else
-                            <li class="nav-item btn">
+                            <li class="nav-item btn mr-4">
                                     <a class="nav-link" alt="Ver/Ocultar mensajes"
                                     title="Ver/Ocultar Menaajes flash"
                                     onclick="$('div.alert').toggle();">
                                     Mensajes</a>
                             </li>
-                            <li class="nav-item dropdown">
+                            <li class="nav-item dropdown" style="display: flex; align-items: center;">
+                                <img src="{{Auth::user()->getProfilePicURL()}}" style="border-radius: 50%;" width="30" height="30" class="d-inline-block align-top" alt="Foto de perfil">
                                 <a id="navbarDropdownLogin" class="nav-link
                                 dropdown-toggle" href="#logout" role="button"
                                 aria-controls=logout
@@ -93,6 +94,9 @@
                                 aria-labelledby="navbarDropdownLogin">
                                 <!-- DropDown Of Side Navbar -->
                                 <ul class="navbar-nav ml-auto">
+                                <li class="nav-item dropdown">
+                                  <a class="dropdown-item" href="{{ route('perfil') }}">{{ __('Perfil') }}</a>
+                                </li>
                                 <li class="nav-item dropdown">
                                     <a class="dropdown-item" href="{{ route('logout') }}"
                                        onclick="event.preventDefault();
