@@ -19,7 +19,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password',
+        'name', 'email', 'password', 'profile_pic'
     ];
 
     /**
@@ -48,5 +48,15 @@ class User extends Authenticatable
     public function mis_files()
     {
       return $this->hasMany(Archivo::class);
+    }
+
+    public function getProfilePicURL()
+    {
+      if($this->profile_pic) {
+        return url('storage/'.$this->profile_pic);
+      } else {
+        return "/images/mandarina.svg";
+      }
+ 
     }
 }
