@@ -30,12 +30,9 @@
     @endif
    <h2>Listado de Archivos</h2>
    @can('Administrar Archivos', 'Ver Archivos')
-   @if($deprecated_checksums > 0)
-   <h4><a href="{{route('checksums_obsoletos')}}" class="badge badge-pill badge-danger"> Ver checksums obsoletos ({{$deprecated_checksums}})</a></h4>
-   @endif
-   @if($repetidos > 0)
-  <h4><a href="{{route('archivos_repetidos')}}" class="badge badge-pill badge-warning"> Ver archivos repetidos ({{$repetidos}})</a></h4>
-   @endif
+   <div id="botones-problemas">
+    <!-- Acá se cargan los botones para archivos repetidos y checksums obsoletos -->
+   </div>
    @endcan
    <br>
    <div class="row">
@@ -262,5 +259,44 @@
   });
 
 } );
+
+    // función mostrar botones archios repetidos y checksums obsoletos
+    $(document).ready(function() {
+        // Ejecutar después de que Datatables ha terminado de cargar los datos
+        $('#laravel_datatable').on('draw.dt', function() {
+            var count_archivos_repetidos = 0;
+            var deprecated_checksums = 0;
+
+            // Iterar sobre las filas de la tabla
+            $('#laravel_datatable tbody tr').each(function() {
+                var statusColumn = $(this).find('td:eq(6)'); // La columna 'status' es la numero 11 (comenzando por 0)
+                console.log(statusColumn);
+                var statusText = statusColumn.text();
+
+                // Contar archivos repetidos y checksums obsoletos
+                if (statusText.includes('Copia')) {
+                    count_archivos_repetidos++;
+                }
+                if (statusText.includes('Checksum obsoleto')) {
+                    deprecated_checksums++;
+                }
+            });
+
+            // Agregar elementos HTML al div 'botones-problemas'
+            var botonesProblemas = $('#botones-problemas');
+            botonesProblemas.empty(); // Limpiar contenido previo
+
+            if (deprecated_checksums > 0) {
+                var checksumsObsoletosLink = $('<h4><a href="{{ route("checksums_obsoletos") }}" class="badge badge-pill badge-danger">Ver checksums obsoletos (' + deprecated_checksums + ')</a></h4>');
+                botonesProblemas.append(checksumsObsoletosLink);
+            }
+            if (count_archivos_repetidos > 0) {
+                var archivosRepetidosLink = $('<h4><a href="{{ route("archivos_repetidos") }}" class="badge badge-pill badge-warning">Ver archivos repetidos (' + count_archivos_repetidos + ')</a></h4>');
+                botonesProblemas.append(archivosRepetidosLink);
+            }
+        });
+    });
+
+
 </script>
 @endsection

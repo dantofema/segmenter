@@ -33,24 +33,6 @@ class ArchivoController extends Controller
             Session::flash('message', 'No existe el permiso "Ver Archivos"');
         }  
         $count_archivos = $archivos->count();
-        // cuento los archivos repetidos
-        $count_archivos_repetidos = 0;
-        foreach ($archivos as $archivo){
-            if ( $archivo->repetido() ){
-                // Archivo repetido
-                $original = Archivo::where('checksum',$archivo->checksum)->orderby('id','asc')->first();
-                if ($original->id != $archivo->id){
-                    $count_archivos_repetidos++;
-                }
-            }
-        }
-        $deprecated_checksums = 0;
-        foreach ($archivos as $archivo){
-            if (!$archivo->checkChecksum()){
-                // Archivo con checksum viejo
-                $deprecated_checksums++;
-            }
-        }
 
         if ($request->ajax()) {
             return Datatables::of($archivos)
@@ -69,18 +51,22 @@ class ArchivoController extends Controller
                         }
                         return $size;
                         })
-                ->addColumn('status', function($data){
+                ->addColumn('status', function($data){ 
                     $info = '';
+                    $unico = $checksumOk = $storageOk = true;
                     if($data->es_copia()){ 
+                        $unico = false;
                         $info .= '<span class="badge badge-pill badge-warning"><span class="bi bi-exclamation-triangle" style="font-size: 0.8rem; color: rgb(0, 0, 0);"> Copia</span></span><br>';
                     }
                     if (!$data->checkChecksum()){
+                        $checksumOk = false;
                         $info .= '<span class="badge badge-pill badge-danger"><span class="bi bi-exclamation-triangle" style="font-size: 0.8rem; color: rgb(255, 255, 255);"> Checksum obsoleto</span></span><br>';
                     }
                     if (!$data->checkStorage()){
+                        $storageOk = false;
                         $info .= '<span class="badge badge-pill badge-dark"><span class="bi bi-archive" style="font-size: 0.8rem; color: rgb(255, 255, 255);"> Problema de storage</span></span><br>';
                     }
-                    if (!$data->es_copia() and $data->checkChecksum() and $data->checkStorage()){
+                    if ($unico and $checksumOk and $storageOk){
                         $info .= '<span class="badge badge-pill badge-success"><span class="bi bi-check" style="font-size: 0.8rem; color: rgb(255, 255, 255);"> OK</span></span><br>';
                     }
                     return $info;
@@ -113,7 +99,7 @@ class ArchivoController extends Controller
                 ->setTotalRecords($count_archivos)
                 ->make(true);
         }
-        return view('archivo.list')->with(['data'=>$archivos, 'repetidos'=>$count_archivos_repetidos, 'deprecated_checksums'=>$deprecated_checksums]);
+        return view('archivo.list')->with(['data'=>$archivos]);
     }
 
     private static function retrieveFiles(){
