@@ -35,21 +35,7 @@
    </div>
    @endcan
    <br>
-   <div class="row">
-    <div class="form-group col-md-6">
-     <h5>Codigo<span class="text-danger"></span></h5>
-     <div class="controls">
-	<input type="numeric" name="codigo" id="codigo" class="form-control " placeholder="Por favor introduzca un código">
-        <div class="help-block"></div>
-     </div>
-    </div>
-    <div class="text-left" style="
-    margin-left: 15px;
-    ">
-    <button type="text" id="btnFiterSubmitSearch" class="btn btn-info">Submit</button>
-    </div>
-   </div>
-   <div class="row">
+
    <div class="col-lg-12">
     <table class="table table-striped table-bordered dataTable table-hover order-column" id="laravel_datatable">
        <thead>
