@@ -15,7 +15,30 @@
  
       </div>
       <div class="modal-footer">
-       <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+       <button type="button" class="btn-sm btn-primary float-right btn-detalles" data-dismiss="modal">Cerrar</button>
+      </div>
+     </div>
+    </div>
+   </div>
+
+   <!-- Modal checksum -->
+   <div class="modal fade" id="checksumModal" role="dialog">
+    <div class="modal-dialog">
+     <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">
+          <!-- acá se carga el título -->
+        </h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <!-- acá se carga la info ya acciones -->
+        <h5>No se realizó la verificación del checksum de este archivo.</h5>
+        
+        <h3></h3>
+      </div>
+      <div class="modal-footer">
+       <button type="button" class="btn-sm btn-primary float-right btn-detalles" data-dismiss="modal">Cerrar</button>
       </div>
      </div>
     </div>
@@ -125,23 +148,43 @@
         ]
       });
 
-   table.on( 'click', 'tr', function () {
-        var data = table.row( this ).data();
-// AJAX request
-   $.ajax({
-    url: "{{ url('archivo') }}"+"\\"+data.id,
-    type: 'post',
-    data: {id: data.id,format: 'html'},
-    success: function(response){ 
-      // Add response in Modal body
-      $('.modal-body').html(response);
+  // funcion abrir info archivo al clickear fila
+   table.on( 'click', 'tr', function (e) {
+    if ($(e.target).closest('button').length === 0) {
+      var data = table.row( this ).data();
+      // AJAX request
+        $.ajax({
+          url: "{{ url('archivo') }}"+"\\"+data.id,
+          type: 'post',
+          data: {id: data.id,format: 'html'},
+          success: function(response){ 
+            // Add response in Modal body
+            $('#empModal .modal-body').html(response);
 
-      // Display Modal
-      $('#empModal').modal('show'); 
-    }
-  });
+            // Display Modal
+            $('#empModal').modal('show'); 
+          }
+        });
         console.log( 'You clicked on '+data.id+'\'s row' );
+    }
    });
+
+   // funcion abrir modal de checksum
+   $('#checksumModal').on('show.bs.modal', function(event) {
+        var button = $(event.relatedTarget); // botón que activó el modal
+        var file = button.data('file'); 
+        var nombre_original = button.data('name'); 
+        var status = button.data('status'); 
+
+        $(this).find('.modal-title').text('Info sobre checksum (' + nombre_original + ')');
+
+        var modalBody = $(this).find('.modal-body');
+        if (status === 'no_check') {
+            //modalBody.html('No se realizó la verificación del checksum de este archivo.');
+        } else if (status === 'old_check') {
+            //modalBody.html('Mensaje Y para cuando el estado es "oldCheck"');
+        }
+    });
 
     table.on('click', '.btn_arch', function () {
       var row = $(this).closest('tr');

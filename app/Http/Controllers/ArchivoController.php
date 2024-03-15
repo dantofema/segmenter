@@ -24,7 +24,6 @@ class ArchivoController extends Controller
     {
         $archivos = self::retrieveFiles();
         $count_archivos = $archivos->count();
-
         if ($request->ajax()) {
             return Datatables::of($archivos)
                 ->addIndexColumn()
@@ -44,20 +43,24 @@ class ArchivoController extends Controller
                         })
                 ->addColumn('status', function($data){
                     $info = '';
-                    $unico = $checksumOk = $storageOk = true;
+                    $unico = $checksumCalculado = $checksumOk = $storageOk = true;
                     if($data->es_copia){
                         $unico = false;
                         $info .= '<span class="badge badge-pill badge-warning"><span class="bi bi-exclamation-triangle" style="font-size: 0.8rem; color: rgb(0, 0, 0);"> Copia</span></span><br>';
                     }
-                    if (!$data->checkChecksum){
+                    if (!$data->checksum_control()->exists()){
+                        $checksumCalculado = false;
+                        Log::warning($data->nombre_original. " Checksum no calculado!");
+                        $info .= '<button class="badge badge-pill badge-danger" data-toggle="modal" data-name="' . $data->nombre_original . '" data-file="' . $data . '" data-status="no_check" data-target="#checksumModal"><span class="bi bi-exclamation-triangle" style="font-size: 0.8rem; color: rgb(255, 255, 255);"> Checksum no calculado</span></button><br>';
+                    } else if (!$data->checkChecksum) {
                         $checksumOk = false;
-                        $info .= '<span class="badge badge-pill badge-danger"><span class="bi bi-exclamation-triangle" style="font-size: 0.8rem; color: rgb(255, 255, 255);"> Checksum obsoleto</span></span><br>';
+                        $info .= '<button class="badge badge-pill badge-danger" data-toggle="modal" data-name="' . $data->nombre_original . '"data-file="' . $data . '" data-status="old_check" data-target="#checksumModal"><span class="bi bi-x-circle" style="font-size: 0.8rem; color: rgb(255, 255, 255);"> Checksum obsoleto</span></button><br>';
                     }
                     if (!$data->checkStorage()){
                         $storageOk = false;
                         $info .= '<span class="badge badge-pill badge-dark"><span class="bi bi-archive" style="font-size: 0.8rem; color: rgb(255, 255, 255);"> Problema de storage</span></span><br>';
                     }
-                    if ($unico and $checksumOk and $storageOk){
+                    if ($unico and $checksumCalculado and $checksumOk and $storageOk){
                         $info .= '<span class="badge badge-pill badge-success"><span class="bi bi-check" style="font-size: 0.8rem; color: rgb(255, 255, 255);"> OK</span></span><br>';
                     }
                     return $info;
@@ -263,7 +266,6 @@ class ArchivoController extends Controller
                     } else {
                         Log::info("Archivo " . $archivo->id . ". Checksum: " . $archivo->checksum.". Es el archivo original." );
                     }
-                    $archivo->checkChecksum; //para que?
                 }
                 flash($eliminados . " archivos eliminados de ".$archivos->count()." encontrados.")->info();
                 return redirect('archivos');

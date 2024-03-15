@@ -41,21 +41,25 @@ class Archivo extends Model
        return $this->belongsToMany(User::class, 'file_viewer');
     }
 
+    public function checksum_control()
+    {
+        return $this->hasOne(ChecksumControl::class);
+    }
+
     // Funciona para checksum shape (varios files)
     private static function checksumCalculate($request_file, $shape_files = []){
         // O generar archivo comprimido de una vez :/
         // DO IT
-        Log::debug($request_file, $shape_files);
         $checksum = md5_file($request_file); //->getRealPath());
         if ($shape_files != null){
             $checksums[] = $checksum;
             foreach ($shape_files as $key => $shape_file) {
                 // Hay e00 con shapefiles con valor null
                 if ($shape_file != null and $shape_file != ''){
-                  Log::debug($checksums[] =  md5_file($shape_file));//->getRealPath());
+                  $checksums[] =  md5_file($shape_file);//->getRealPath());
                 }
             }
-            Log::debug($checksum = md5(implode('',$checksums)));
+            $checksum = md5(implode('',$checksums));
         }
         return $checksum;
     }
@@ -65,12 +69,23 @@ class Archivo extends Model
         if ($this->isMultiArchivo()){
             // si soy multiarchivo calculo el checksum en base a mis shapefiles
             $shape_files = $this->getArchivosSHP();
-            $this->checksum = $this->checksumCalculate( array_pull($shape_files, 0), $shape_files);
+            $checksum = $this->checksumCalculate( array_pull($shape_files, 0), $shape_files);
         } else {
-            $this->checksum = md5(Storage::get($this->nombre));
+            $checksum = md5(Storage::get($this->nombre));
         }
-
+        // guardo el nuevo checksum en el archivo
+        $this->checksum = $checksum;
         $this->save();
+
+        // guardo el nuevo checksum en su checksum_control
+        $control = $this->checksum_control;
+        if (!$control) {
+            // si no existe lo creo
+            $control = new ChecksumControl();
+            $control->archivo_id = $this->id;
+        }
+        $control->checksum = $checksum;
+        $control->save();
     }
 
     // isMultiArchivo, si es del tipo que son muchos archivos.
@@ -85,34 +100,14 @@ class Archivo extends Model
     // Funciona para verificar que es checksum del archivo esté actualizado
     public function getcheckChecksumAttribute(){
         $result = true;
-        if (Storage::exists($this->nombre) ){
-            if ( $this->checksum == md5( Storage::get($this->nombre) ) ){
-                if ( $this->isMultiArchivo() ){
-                    // si el checksum corresponde al nombre del archivo solamente y soy multiarchivo está mal
-                    Log::warning($this->nombre_original.' Checksum deprecated! (Multiarchivo: No se tienen en cuenta los shapefiles)');
-                    $result = false;
-                } else {
-                  Log::info($this->nombre_original.' Checksum ok!');
-                }
-            } else {
-                if ( $this->isMultiArchivo() ){
-                    // si soy multiarchivo verifico que el checksum se corresponda con mis shapefiles
-                    $shape_files = $this->getArchivosSHP();
-                    $checksum_shape_files = $this->checksumCalculate( array_shift($shape_files), array_values($shape_files));
-                    if ($this->checksum == $checksum_shape_files) {
-                      Log::info($this->nombre_original.' Checksum ok!');
-                    } else {
-                      Log::warning($this->nombre_original.' Checksum deprecated (Multiarchivo: mal calculado)! '.$checksum_shape_files.' != '.$this->checksum);
-                        $result = false;
-                    }
-                } else {
-                    // si el checksum no corresponde al nombre del archivo solamente y no soy multiarchivo está mal
-                    Log::warning($this->nombre_original.' Checksum deprecated (Archivo simple: mal calculado)!');
-                    $result = false;
-                }
+        $control = $this->checksumControl;
+        if($control) {
+            if ($this->checksum != $control->checksum) {
+                $result = false;
+                Log::error($this->nombre_original.' checksum mal calculado!');
             }
         } else {
-         Log::error($this->nombre_original.' WARNING! No existe el archivo en el Storage "'.$this->nombre.'" !!');
+            Log::warning($this->nombre_original.' no tiene el checksum calculado!');
         }
         return $result;
     }
@@ -121,14 +116,15 @@ class Archivo extends Model
         $result = true;
         if ( $this->isMultiArchivo() ){
             $nombre = explode(".",$this->nombre)[0];
+            $nombre_original = explode(".",$this->nombre_original)[0];
             // busco para cada extension
             $extensiones = [".dbf", ".shx", ".prj"];
             foreach ($extensiones as $extension) {
                 $n = $nombre . $extension;
                 if(Storage::exists($n)) {
-                    Log::info($this->nombre_original.' Storage ok!');
+                    Log::info($nombre_original.$extension.' Storage ok!');
                 } else {
-                    Log::warning($this->nombre_original.' Storage missing! ('.$n.')');
+                    Log::error($nombre_original.$extension.' Storage missing! ('.$n.')');
                     $result = false;
                 }
             }
@@ -137,7 +133,7 @@ class Archivo extends Model
             if (Storage::exists($n)){
                 Log::info($this->nombre_original.' Storage ok!');
             } else {
-                Log::warning($this->nombre_original.' Storage missing!('.$n.')');
+                Log::error($this->nombre_original.' Storage missing!('.$n.')');
                 $result = false;
             }
         }
@@ -147,8 +143,9 @@ class Archivo extends Model
     // Funcion para cargar información de archivo en la base de datos.
     public static function cargar($request_file, $user, $tipo=null, $shape_files = []) {
         $original_extension = strtolower($request_file->getClientOriginalExtension());
+        $checksum = self::checksumCalculate($request_file, $shape_files);
         # Ordeno por id para que, de ser necesario, el registro en file_viewer se cree sobre el archivo original y no una copia
-        $file = self::where('checksum', '=', self::checksumCalculate($request_file, $shape_files))->orderBy('id', 'asc')->first();
+        $file = self::where('checksum', '=', $checksum)->orderBy('id', 'asc')->first();
         if (!$file) {
             flash("Nuevo archivo ".$original_extension);
             $guess_extension = strtolower($request_file->guessClientExtension());
@@ -171,7 +168,6 @@ class Archivo extends Model
                     }
                 }
             }
-            $checksum = self::checksumCalculate($request_file, $shape_files);
 
             $file = self::create([
                 'user_id' => $user->id,
@@ -183,6 +179,17 @@ class Archivo extends Model
                 'size' => $size_total,
                 'mime' => $request_file->getClientMimeType()
             ]);
+            // guardo el checksum en su checksum_control
+            $control = $file->checksum_control;
+            if (!$control) {
+                // si no existe lo creo
+                $control = new ChecksumControl();
+                $control->checksum = $checksum;
+                $file->checksum_control()->save($control);
+            } else {
+                $control->checksum = $checksum;
+                $control->save();
+            }
         } else {
             # Si no es su archivo y no está en sus archivos visibles lo agrego
             if (!$user->visible_files()->get()->contains($file) and !$user->mis_files()->get()->contains($file)){
@@ -702,9 +709,15 @@ class Archivo extends Model
         Log::info("Se eliminó el registro perteneciente a la copia");
     }
 
-    public function getes_copiaAttributte(){
+    public function getesCopiaAttribute(){
         $original = Archivo::where('checksum',$this->checksum)->orderby('id','asc')->first();
-        return $original->id != $this->id;
+        $es_copia = $original->id != $this->id;
+        if ($es_copia) {
+            Log::warning($this->nombre_original." es copia!");
+        } else {
+            Log::info($this->nombre_original." es el archivo original!");
+        }
+        return $es_copia;
     }
 
 }
