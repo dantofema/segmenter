@@ -50,8 +50,8 @@ class ArchivoController extends Controller
                     }
                     if (!$data->checksum_control()->exists()){
                         $checksumCalculado = false;
-                        Log::warning($data->nombre_original. " Checksum no calculado!");
-                        $info .= '<button class="badge badge-pill badge-checksum" data-toggle="modal" data-name="' . $data->nombre_original . '" data-file="' . $data->id . '" data-status="no_check" data-target="#checksumModal"><span class="bi bi-exclamation-triangle" style="font-size: 0.8rem; color: rgb(0, 0, 0);"> Checksum no calculado</span></button><br>';
+                        Log::warning($data->nombre_original. " Checksum no validado!");
+                        $info .= '<button class="badge badge-pill badge-checksum" data-toggle="modal" data-name="' . $data->nombre_original . '" data-file="' . $data->id . '" data-status="no_check" data-target="#checksumModal"><span class="bi bi-exclamation-triangle" style="font-size: 0.8rem; color: rgb(0, 0, 0);"> Checksum no validado</span></button><br>';
                     } else if (!$data->checkChecksum) {
                         $checksumOk = false;
                         $info .= '<button class="badge badge-pill badge-danger" data-toggle="modal" data-name="' . $data->nombre_original . '"data-file="' . $data->id . '" data-status="old_check" data-target="#checksumModal"><span class="bi bi-x-circle" style="font-size: 0.8rem; color: rgb(255, 255, 255);"> Checksum obsoleto</span></button><br>';
@@ -274,7 +274,7 @@ class ArchivoController extends Controller
                 return back();
             }
         } catch (PermissionDoesNotExist $e) {
-            flash('message', 'No existe el permiso "Administrar Archivos"')->error();
+            flash('message', 'No existe el permiso "Administrar Archivos" o "Ver Archivos"')->error();
         }
     }
 
@@ -284,7 +284,7 @@ class ArchivoController extends Controller
                 $archivos = Archivo::all();
                 $repetidos = [];
                 foreach ($archivos as $archivo){
-                    if ( $archivo->es_copia() ){
+                    if ( $archivo->esCopia ){
                         // Archivo repetido
                         $original = Archivo::where('checksum',$archivo->checksum)->orderby('id','asc')->first();
                         $repetidos[] = [$original,$archivo];
@@ -298,7 +298,7 @@ class ArchivoController extends Controller
                 return back();
             }
         } catch (PermissionDoesNotExist $e) {
-            flash('No existe el permiso "Administrar Archivos"')->error();
+            flash('No existe el permiso "Administrar Archivos" o "Ver Archivos"')->error();
         }
     }
 
@@ -344,21 +344,32 @@ class ArchivoController extends Controller
     public function listar_checksums_obsoletos(){
         try {
             if (Auth::user()->can(['Administrar Archivos', 'Ver Archivos'])){
-                $archivos = Archivo::all(); //modificar para traer solo los obsoletos con un scope
-                $checksums_obsoletos = [];
-                foreach ($archivos as $archivo){ 
-                    if (!$archivo->checkChecksum){ //si uso el scope esto no debería chequearse
-                        // Archivo con checksum viejo
-                        $checksums_obsoletos[] = $archivo;
-                    }
-                }
+                $checksums_obsoletos = Archivo::all()->filter(function ($archivo) {
+                    return !$archivo->checkChecksum;
+                });
                 return view('archivo.checksums_obsoletos', compact('checksums_obsoletos'));
             } else {
                 flash('No tienes permiso para hacer eso.')->error();
                 return back();
             }
         } catch (PermissionDoesNotExist $e) {
-            flash('No existe el permiso "Administrar Archivos"')->error();
+            flash('No existe el permiso "Administrar Archivos" o "Ver Archivos"')->error();
+        }
+    }
+
+    public function listar_checksums_no_calculados(){
+        try {
+            if (Auth::user()->can(['Administrar Archivos', 'Ver Archivos'])){
+                $checksums_no_calculados = Archivo::all()->filter(function ($archivo) {
+                    return !$archivo->checksum_control()->exists();
+                });
+                return view('archivo.checksums_no_calculados', compact('checksums_no_calculados'));
+            } else {
+                flash('No tienes permiso para hacer eso.')->error();
+                return back();
+            }
+        } catch (PermissionDoesNotExist $e) {
+            flash('No existe el permiso "Administrar Archivos" o "Ver Archivos"')->error();
         }
     }
 }

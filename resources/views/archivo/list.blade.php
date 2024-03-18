@@ -199,7 +199,7 @@
         if (status === 'no_check') {
           // actualizo mensajes
           modalBody.find('#checksum-message').text('No se realizó la verificación del checksum de este archivo.');
-          modalfooter.find('#checksum-button').text('Calcular checksum')
+          modalfooter.find('#checksum-button').text('Validar checksum')
         } else if (status === 'old_check') {
             // actualizo mensajes
             modalBody.find('#checksum-message').text('El checksum de este archivo está obsoleto.');
@@ -330,7 +330,7 @@
                 if (statusText.includes('Copia')) {
                     count_archivos_repetidos++;
                 }
-                if (statusText.includes('Checksum no calculado')) {
+                if (statusText.includes('Checksum no validado')) {
                     null_checksums++;
                 }
                 if (statusText.includes('Checksum obsoleto')) {
@@ -347,7 +347,7 @@
                 botonesProblemas.append(checksumsObsoletosLink);
             }
             if (null_checksums > 0) {
-                var checksumsObsoletosLink = $('<h4><a href="" class="badge badge-pill badge-checksum">Ver checksums no calculados (' + null_checksums + ')</a></h4>');
+                var checksumsObsoletosLink = $('<h4><a href="{{ route("checksums_no_calculados") }}" class="badge badge-pill badge-checksum">Ver checksums no validados (' + null_checksums + ')</a></h4>');
                 botonesProblemas.append(checksumsObsoletosLink);
             }
             if (count_archivos_repetidos > 0) {
