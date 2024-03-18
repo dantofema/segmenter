@@ -69,7 +69,8 @@ class Archivo extends Model
         if ($this->isMultiArchivo()){
             // si soy multiarchivo calculo el checksum en base a mis shapefiles
             $shape_files = $this->getArchivosSHP();
-            $checksum = $this->checksumCalculate( array_pull($shape_files, 0), $shape_files);
+            $shp = array_shift($shape_files);
+            $checksum = $this->checksumCalculate($shp, $shape_files);
         } else {
             $checksum = md5(Storage::get($this->nombre));
         }
@@ -77,15 +78,17 @@ class Archivo extends Model
         $this->checksum = $checksum;
         $this->save();
 
-        // guardo el nuevo checksum en su checksum_control
+        // guardo el checksum en su checksum_control
         $control = $this->checksum_control;
         if (!$control) {
             // si no existe lo creo
             $control = new ChecksumControl();
-            $control->archivo_id = $this->id;
+            $control->checksum = $checksum;
+            $this->checksum_control()->save($control);
+        } else {
+            $control->checksum = $checksum;
+            $control->save();
         }
-        $control->checksum = $checksum;
-        $control->save();
     }
 
     // isMultiArchivo, si es del tipo que son muchos archivos.
@@ -100,11 +103,13 @@ class Archivo extends Model
     // Funciona para verificar que es checksum del archivo esté actualizado
     public function getcheckChecksumAttribute(){
         $result = true;
-        $control = $this->checksumControl;
+        $control = $this->checksum_control;
         if($control) {
             if ($this->checksum != $control->checksum) {
                 $result = false;
                 Log::error($this->nombre_original.' checksum mal calculado!');
+            } else {
+                Log::info($this->nombre_original.' checksum ok!');
             }
         } else {
             Log::warning($this->nombre_original.' no tiene el checksum calculado!');

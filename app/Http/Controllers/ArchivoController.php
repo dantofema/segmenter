@@ -51,10 +51,10 @@ class ArchivoController extends Controller
                     if (!$data->checksum_control()->exists()){
                         $checksumCalculado = false;
                         Log::warning($data->nombre_original. " Checksum no calculado!");
-                        $info .= '<button class="badge badge-pill badge-danger" data-toggle="modal" data-name="' . $data->nombre_original . '" data-file="' . $data . '" data-status="no_check" data-target="#checksumModal"><span class="bi bi-exclamation-triangle" style="font-size: 0.8rem; color: rgb(255, 255, 255);"> Checksum no calculado</span></button><br>';
+                        $info .= '<button class="badge badge-pill badge-checksum" data-toggle="modal" data-name="' . $data->nombre_original . '" data-file="' . $data->id . '" data-status="no_check" data-target="#checksumModal"><span class="bi bi-exclamation-triangle" style="font-size: 0.8rem; color: rgb(0, 0, 0);"> Checksum no calculado</span></button><br>';
                     } else if (!$data->checkChecksum) {
                         $checksumOk = false;
-                        $info .= '<button class="badge badge-pill badge-danger" data-toggle="modal" data-name="' . $data->nombre_original . '"data-file="' . $data . '" data-status="old_check" data-target="#checksumModal"><span class="bi bi-x-circle" style="font-size: 0.8rem; color: rgb(255, 255, 255);"> Checksum obsoleto</span></button><br>';
+                        $info .= '<button class="badge badge-pill badge-danger" data-toggle="modal" data-name="' . $data->nombre_original . '"data-file="' . $data->id . '" data-status="old_check" data-target="#checksumModal"><span class="bi bi-x-circle" style="font-size: 0.8rem; color: rgb(255, 255, 255);"> Checksum obsoleto</span></button><br>';
                     }
                     if (!$data->checkStorage()){
                         $storageOk = false;
@@ -303,41 +303,51 @@ class ArchivoController extends Controller
     }
 
     //no envio los obsoletos directamente desde la vista para permitir acceder a la función directamente por URL sin pasar por el listado
-    public function reclacular_checksums_obsoletos(){
+    public function recalcular_checksums($archivo_id = null){
 
-        flash('Función aún en testeo...')->warning()->important();
-        return redirect('archivos');
+        //flash('Función aún en testeo...')->warning()->important();
+        //return redirect('archivos');
         //Aún falta testeo
 
         try {
             if (Auth::user()->can(['Administrar Archivos', 'Ver Archivos'])){
-                $archivos = Archivo::all();
-                $recalculados = 0;
-                foreach ($archivos as $archivo){
-                    if (!$archivo->checkChecksum){
-                        // Archivo con checksum viejo
-                        $archivo->checksumRecalculate();
-                        $recalculados++;
+                //si envié un archivo calculo ese
+                if ($archivo_id) {
+                    $archivo = Archivo::findOrFail($archivo_id);
+                    $archivo->checksumRecalculate();
+                    flash('Checksum recalculado para el archivo ' . $archivo->nombre_original)->info();
+                } else {
+                    flash('Función aún en testeo...')->warning()->important();
+                    return redirect('archivos');
+                    //Aún falta testeo
+                    $archivos = Archivo::all(); //modificar para traer solo los obsoletos con un scope
+                    $recalculados = 0;
+                    foreach ($archivos as $archivo){
+                        if (!$archivo->checkChecksum){ //si uso el scope esto no debería chequearse
+                            // Archivo con checksum viejo
+                            $archivo->checksumRecalculate();
+                            $recalculados++;
+                        }
                     }
+                    flash($recalculados . " checksums recalculados.")->info();
                 }
-                flash($recalculados . " checksums recalculados.")->info();
                 return redirect('archivos');
             } else {
                 flash('No tienes permiso para hacer eso.')->error();
                 return back();
             }
         } catch (PermissionDoesNotExist $e) {
-            flash('No existe el permiso "Administrar Archivos"')->error();
+            flash('No existe el permiso "Administrar Archivos" o "Ver Archivos"')->error();
         }
     }
 
     public function listar_checksums_obsoletos(){
         try {
             if (Auth::user()->can(['Administrar Archivos', 'Ver Archivos'])){
-                $archivos = Archivo::all();
+                $archivos = Archivo::all(); //modificar para traer solo los obsoletos con un scope
                 $checksums_obsoletos = [];
-                foreach ($archivos as $archivo){
-                    if (!$archivo->checkChecksum){
+                foreach ($archivos as $archivo){ 
+                    if (!$archivo->checkChecksum){ //si uso el scope esto no debería chequearse
                         // Archivo con checksum viejo
                         $checksums_obsoletos[] = $archivo;
                     }

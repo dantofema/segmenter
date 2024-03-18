@@ -292,7 +292,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('archivo/{archivo}/procesar','ArchivoController@procesar');
     Route::get('archivos/limpiar','ArchivoController@eliminar_repetidos')->name('limpiar_archivos');
     Route::get('archivos/repetidos','ArchivoController@listar_repetidos')->name('archivos_repetidos');
-    Route::get('archivos/recalcular_cs','ArchivoController@reclacular_checksums_obsoletos')->name('recalcular_checksums');
+    Route::get('archivos/recalcular_cs/{archivo_id?}','ArchivoController@recalcular_checksums')->name('recalcular_checksums'); //el parametro es opcional
     Route::get('archivos/checksums_obsoletos','ArchivoController@listar_checksums_obsoletos')->name('checksums_obsoletos');
 });
 
