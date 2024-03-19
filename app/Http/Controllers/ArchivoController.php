@@ -46,7 +46,7 @@ class ArchivoController extends Controller
                     $unico = $checksumCalculado = $checksumOk = $storageOk = true;
                     if($data->es_copia){
                         $unico = false;
-                        $info .= '<span class="badge badge-pill badge-warning"><span class="bi bi-exclamation-triangle" style="font-size: 0.8rem; color: rgb(0, 0, 0);"> Copia</span></span><br>';
+                        $info .= '<span class="badge badge-pill badge-warning"><span class="bi bi-copy" style="font-size: 0.8rem; color: rgb(0, 0, 0);"> Copia</span></span><br>';
                     }
                     if (!$data->checksum_control()->exists()){
                         $checksumCalculado = false;

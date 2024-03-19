@@ -9,6 +9,16 @@
     .badge-checksum:hover {
     color: black;
     }
+    .grid-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    text-align: center;
+    justify-content: center;
+    } 
+    .grid-item {
+    padding: 10px;
+    text-align: center;
+    }
   </style>
   <!-- Modal -->
   <div class="modal fade" id="empModal" role="dialog">
@@ -44,11 +54,10 @@
       <!-- acá se carga el mensaje -->
       <h5 id="checksum-message"></h5>
       <br>
-      <div class="flexbox-align">
-        <span>Esto puede implicar:</span> 
-        <li>Información erronea</li>
-        <li>Contenido manipulado</li>
-        <li>Contenido duplicado</li>
+      <div style="text-align: center; font-size: 16px">Esto puede implicar:</div> 
+      <div class="grid-container"> 
+        <div class="grid-item"><i class="bi bi-file-earmark-excel"></i><br><span class="badge badge-pill badge-danger" style="font-size: 13px">Información erronea</span></div>
+        <div class="grid-item"><i class="bi bi-copy"></i><br><span class="badge badge-pill badge-warning" style="font-size: 13px">Contenido duplicado</span></div>
       </div>
     </div>
     <div class="modal-footer">
