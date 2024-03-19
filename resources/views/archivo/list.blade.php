@@ -52,8 +52,10 @@
       </div>
     </div>
     <div class="modal-footer">
+      @can('Administrar Archivos', 'Ver Archivos')
       <!-- al botón se le carga la ruta correspondiente en el script -->
       <button id="checksum-button" type="button" class="btn-sm btn-success" onclick="recalcularChecksum(this)"></button>
+      @endcan
       <button type="button" class="btn-sm btn-primary float-right btn-detalles" data-dismiss="modal">Cerrar</button>
     </div>
     </div>
