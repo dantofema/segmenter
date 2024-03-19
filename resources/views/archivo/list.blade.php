@@ -52,8 +52,8 @@
       </div>
     </div>
     <div class="modal-footer">
-      <!-- acá se carga el botón con la acción correspondiente -->
-      <a id="checksum-button" type="button" class="btn-sm btn-success"></a>
+      <!-- al botón se le carga la ruta correspondiente en el script -->
+      <button id="checksum-button" type="button" class="btn-sm btn-success" onclick="recalcularChecksum(this)"></button>
       <button type="button" class="btn-sm btn-primary float-right btn-detalles" data-dismiss="modal">Cerrar</button>
     </div>
     </div>
@@ -209,15 +209,22 @@
         modalfooter.find('#checksum-button').attr('href', "{{route('recalcular_checksums', ':archivo_id') }}".replace(':archivo_id', file_id));
     });
 
-    table.on('click', '.btn_arch', function () {
-      var row = $(this).closest('tr');
-      var data = table.row( row ).data();
-      console.log('Ver Archivo: '+data.codigo);
-        if (typeof data !== 'undefined') {
-            url= "{{ url('archivo') }}"+"/"+data.id;
-            $(location).attr('href',url);
-           };
+    $('#checksum-button').on('click', function(event) {
+        event.preventDefault(); // evita que el botón diriga directamente a su href
+        if (confirm('¿Estás seguro de que deseas calcular el checksum?')) {
+            window.location.href = $(this).attr('href');
+        }
     });
+
+  table.on('click', '.btn_arch', function () {
+    var row = $(this).closest('tr');
+    var data = table.row( row ).data();
+    console.log('Ver Archivo: '+data.codigo);
+      if (typeof data !== 'undefined') {
+          url= "{{ url('archivo') }}"+"/"+data.id;
+          $(location).attr('href',url);
+          };
+  });
 
 // Función de botón Procesar.
     table.on('click', '.btn_arch_procesar', function () {

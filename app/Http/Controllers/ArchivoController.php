@@ -305,8 +305,8 @@ class ArchivoController extends Controller
     //no envio los obsoletos directamente desde la vista para permitir acceder a la función directamente por URL sin pasar por el listado
     public function recalcular_checksums($archivo_id = null){
 
-        //flash('Función aún en testeo...')->warning()->important();
-        //return redirect('archivos');
+        flash('Función aún en testeo...')->warning()->important();
+        return redirect('archivos');
         //Aún falta testeo
 
         try {
@@ -317,9 +317,6 @@ class ArchivoController extends Controller
                     $archivo->checksumRecalculate();
                     flash('Checksum recalculado para el archivo ' . $archivo->nombre_original)->info();
                 } else {
-                    flash('Función aún en testeo...')->warning()->important();
-                    return redirect('archivos');
-                    //Aún falta testeo
                     $archivos = Archivo::all(); //modificar para traer solo los obsoletos con un scope
                     $recalculados = 0;
                     foreach ($archivos as $archivo){
